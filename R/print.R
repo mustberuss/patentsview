@@ -19,7 +19,9 @@ print.pv_data_result <- function(x, ...) {
     patents = "a patent", inventors = "an inventor",
     assignees = "an assignee", locations = "a location",
     cpc_subsections = "a CPC subsection", uspc_mainclasses = "a USPC main class",
-    nber_subcategories = "a NBER subcategory"
+    nber_categories = "a NBER category", patent_citations = "a patent citation",
+    application_citations = "an application citation",
+    "nber_subcategories" = "a NBER subcategory"
   )
 
   lst <- ifelse("list" %in% k, " (with list column(s) inside) ", " ")

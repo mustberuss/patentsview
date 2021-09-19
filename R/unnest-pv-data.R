@@ -14,13 +14,13 @@
 #'
 #' @examples
 #' get_ok_pk(endpoint = "inventors") # Returns "inventor_id"
-#' get_ok_pk(endpoint = "cpc_subsections") # Returns "cpc_subsection_id"
+#' get_ok_pk(endpoint = "cpc_subsection") # Returns "cpc_subsection_id"
 #'
 #' @export
 get_ok_pk <- function(endpoint) {
   es_eps <- c(
-    "uspc_mainclasses" = "uspc_mainclass_id",
-    "nber_subcategories" = "nber_subcategory_id",
+    "uspc_mainclass" = "uspc_mainclass_id",
+    "nber_category" = "nber_category_id",
     "patents" = "patent_number"
   )
   ifelse(

@@ -19,11 +19,11 @@ validate_misc_args <- function(query, fields, endpoint, method, subent_cnts,
 
   asrt(
     all(is.numeric(page), length(page) == 1, page >= 1),
-    "page must be a numeric value greater than 1"
+    "page must be a numeric value greater than or equal to 1"
   )
   asrt(
-    all(is.numeric(per_page), length(per_page) == 1, per_page <= 10000),
-    "per_page must be a numeric value less than or equal to 10,000"
+    all(is.numeric(per_page), length(per_page) == 1, per_page <= 1000),
+    "per_page must be a numeric value less than or equal to 1,000"
   )
 
   if (!is.null(sort))

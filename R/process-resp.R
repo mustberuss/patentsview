@@ -14,8 +14,8 @@ get_request <- function(resp) {
 #' @noRd
 get_data <- function(prsd_resp) {
   structure(
-    list(prsd_resp[[1]]),
-    names = names(prsd_resp[1]),
+    list(prsd_resp[[4]]),
+    names = names(prsd_resp[4]),
     class = c("list", "pv_data_result")
   )
 }
