@@ -22,7 +22,7 @@ throw_if_loc_error <- function(resp) {
 #' @noRd
 hit_locations_ep <- function(url) {
   grepl(
-    "^https://api.patentsview.org/locations/",
+    "^https://search.patentsview.org/api/v1/location/",
     url,
     ignore.case = TRUE
   )
@@ -41,7 +41,7 @@ get_num_groups <- function(url) {
 xheader_er_or_status <- function(resp) {
 
   # look for the api's ultra-helpful X-Status-Reason header
-  xhdr <- get_x_status(resp)
+  xhdr <- httr::headers(resp)['X-Status-Reason']
 
   if (length(xhdr) != 1)
     httr::stop_for_status(resp)
@@ -49,8 +49,4 @@ xheader_er_or_status <- function(resp) {
     stop(xhdr[[1]], call. = FALSE)
 }
 
-#' @noRd
-get_x_status <- function(resp) {
-  headers <- httr::headers(resp)
-  headers[grepl("x-status-reason", names(headers), ignore.case = TRUE)]
-}
+
