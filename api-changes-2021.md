@@ -1,6 +1,6 @@
 # Affects of the 2021 Patentsview api changes on the R package
 
-As announced [here](https://patentsview.org/data-in-action/whats-new-patentsview-july-2021), the patentsview api will be changing in 2021. This will impact the r package in the following ways.
+As announced [here](https://patentsview.org/data-in-action/whats-new-patentsview-july-2021) in 2021, the patentsview api will be changing sometime in 2022. This will impact the r package in the following ways.
 
 1. An api key will be required and will affect all users. Following the best practice of using an environmental variable to hold the value (https://cran.r-project.org/web/packages/httr/vignettes/api-packages.html), PATENTSVIEW_API_KEY must exist in the environment.  Changes in search-pv.R 
 2. Endpoint Changes
@@ -16,10 +16,11 @@ As announced [here](https://patentsview.org/data-in-action/whats-new-patentsview
         * /uspc_mainclass
         * /uspc_subclass
 Note that cpc_subsection looks like the existing cpc endpoint and uspc_mainclass looks like the existing uspc endpoint but they will behave quite differently.
-   3. Existing endpoints not currently on the test server
+   3. Existing endpoints currently on the test server
          *  /patents
-        *  /assignees
+         *  /assignees
          *  /inventors
+   4. Existing endpoints not currently on the test server
          *  /locations
      
     Note that there are new, get-only convience endpoints that take url parameters.  The r package can ignore these and just use the ones that do posts and gets using q,f,s and o parameters.
@@ -66,7 +67,7 @@ Changes in search-pv.R sleep Retry-After seconds then retries the query to hide 
 
 
 ## Notes
-1. The online documentation is lagging.  The two new endpoints are documented on https://patentsview.org/data-in-action/whats-new-patentsview-july-2021 but they're missing the Query column.  Pages for the other endpoint haven't been changed. I created fake pages for data-raw/mbr_fieldsdf.R to consume.  They're listed on  https://patentsview.historicip.com/api/.  If I was better at R I would have parsed out the swagger object (corrected on is currently at https://patentsview.historicip.com/swagger/openapi_v2.yml) We would need to iterate over the paths (the endpoints).  The paths with url parameters wouldn't matter to the r package, it would continue to use the ones that take the q,f,s and o parameters.  The 200 responses' content could be parsed.  The assumption is that we'd be able to query for each of the output fields.
+1. The online documentation is lagging.  The two new endpoints are documented on https://patentsview.org/data-in-action/whats-new-patentsview-july-2021 but they're missing the Query column.  Pages for the other endpoint haven't been changed. I created fake pages for data-raw/mbr_fieldsdf.R to consume.  They're listed on  https://patentsview.historicip.com/api/.  If I was better at R I would have parsed out the swagger object (corrected one is currently at https://patentsview.historicip.com/swagger/openapi_v2.yml) We would need to iterate over the paths (the endpoints).  The paths with url parameters wouldn't matter to the r package, it would continue to use the ones that take the q,f,s and o parameters.  The 200 responses' content could be parsed.  The assumption is that we'd be able to query for each of the output fields.
 2. The Swagger definition (https://patentsview.historicip.com/swagger/openapi_v2.yml) can be imported into Postman to give you a nicely loaded collection for the changed api.  You'll just need to set a global variable PVIEW_KEY and set the authorization's value to {{PVIEW_KEY}}.  The [Swagger UI page](https://patentsview.historicip.com/swagger/new_swagger.htm) can also be used but there's [an api bug](https://github.com/PatentsView/PatentsView-API/issues/37) preventing the X-Status-Reason and X-Status-Reason-Code from being displayed.
 3. The swagger definition shows a X-Status-Reason-Code in addition to the existing X-Status-Reason. Not sure it matters to or would be useful for the r package
     ~~~~
