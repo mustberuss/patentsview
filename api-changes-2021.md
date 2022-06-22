@@ -42,7 +42,8 @@ Changes in search-pv.R sleep Retry-After seconds then retries the query to hide 
         size = per_page
         ```
     2. size/per_page maximum changes from 10,000 to 1,000 could affect users       maximum check and message changed in validate-args.R could throw a warning when per_page is set above 1,000 send to api as 1,000
-    3. matched_subentities_only and include_subentity_total_counts seem to have gone away. They don't seem to throw errors if present. Removed in search-pv.R so they aren't sent to the api, could also remove  parameters subent_cnts and mtchd_subent_only but that might affect users.
+    3. matched_subentities_only and include_subentity_total_counts seem to have gone away. https://patentsview.org/api-v01-information-page mentions 
+     Owing to de-normalized and split API design, sub-entity information is not available directly via each endpoint. As a consequence, "matched_subentity" option parameters are not valid. 
     4. The api's default result set size changed from 25 to 100 when no side/per_page is specified.  In search-pv.R it's defaulted to 25 when not specified, so no impact to current package users.
 6. POST requests will need to send JSON data (instead of string representation of JSON). Added a Content-Type: application/json header in search-pv.R, otherwise the api returned Unsupported Media Type (HTTP 415).
 
@@ -65,19 +66,24 @@ Changes in search-pv.R sleep Retry-After seconds then retries the query to hide 
     change in search-pv.R
       req_pages
 
+## Observations
+1. assignee_organization is now a full text field, formerly it had been a string
+2. The swagger definition (https://search.patentsview.org/static/openapi_v2.yml) does not contain  government interest fields or ipc fields. Assuming these fields are going away.
 
 ## Notes
-1. The online documentation is lagging.  The two new endpoints are documented on https://patentsview.org/data-in-action/whats-new-patentsview-july-2021 but they're missing the Query column.  Pages for the other endpoint haven't been changed. I created fake pages for data-raw/mbr_fieldsdf.R to consume.  They're listed on  https://patentsview.historicip.com/api/.  If I was better at R I would have parsed out the swagger object (corrected one is currently at https://patentsview.historicip.com/swagger/openapi_v2.yml) We would need to iterate over the paths (the endpoints).  The paths with url parameters wouldn't matter to the r package, it would continue to use the ones that take the q,f,s and o parameters.  The 200 responses' content could be parsed.  The assumption is that we'd be able to query for each of the output fields.
-2. The Swagger definition (https://patentsview.historicip.com/swagger/openapi_v2.yml) can be imported into Postman to give you a nicely loaded collection for the changed api.  You'll just need to set a global variable PVIEW_KEY and set the authorization's value to {{PVIEW_KEY}}.  The [Swagger UI page](https://patentsview.historicip.com/swagger/new_swagger.htm) can also be used but there's [an api bug](https://github.com/PatentsView/PatentsView-API/issues/37) preventing the X-Status-Reason and X-Status-Reason-Code from being displayed.
-3. The swagger definition shows a X-Status-Reason-Code in addition to the existing X-Status-Reason. Not sure it matters to or would be useful for the r package
+1. The online documentation is lagging.  The two new endpoints are documented on https://patentsview.org/data-in-action/whats-new-patentsview-july-2021 but they're missing the Query column (see the next note).  Pages for the other endpoint haven't been changed. I created fake pages for data-raw/mbr_fieldsdf.R to consume.  They're listed on  https://patentsview.historicip.com/api/.  If I was better at R I would have parsed out the swagger definition https://search.patentsview.org/static/openapi_v2.yml  We would need to iterate over the paths (the endpoints).  The paths with url parameters wouldn't matter to the r package, it would continue to use the ones that take the q,f,s and o parameters.  The 200 responses' content could be parsed.  
+2. All fields are queryable.  From https://patentsview.org/apis/purpose Field List
+Please refer to the 200 "Response" section for each endpoint for full list of fields available. All the available fields are "queryable."
+3. The Swagger definition (https://patentsview.historicip.com/swagger/openapi_v2.yml) can be imported into Postman to give you a nicely loaded collection for the changed api.  You'll just need to set a global variable PVIEW_KEY and set the authorization's value to {{PVIEW_KEY}}.  The [Swagger UI page](https://patentsview.historicip.com/swagger/new_swagger.htm) can also be used but there's [an api bug](https://github.com/PatentsView/PatentsView-API/issues/37) preventing the X-Status-Reason and X-Status-Reason-Code from being displayed.
+4. The swagger definition shows a X-Status-Reason-Code in addition to the existing X-Status-Reason. Not sure it matters to or would be useful for the r package
     ~~~~
     > print(httr::headers(resp)[['X-Status-Reason']])
     [1] "Invaild field: shoe_size"
     > print(httr::headers(resp)[['X-Status-Reason-Code']])
     [1] "ERR_Q"
     ~~~~
-4. in print.R it's still cpc_subsections even though the endpoint is now singular. Potential api bug. Groups and endpoints are now singular rather than being plural patent instead of patents etc. according to the spreadsheet they sent out. 
-5. Not all of the cpc and uspc endpoints are working.  Some return a 400 with an X-Status-Reason: 
+5. in print.R it's still cpc_subsections even though the endpoint is now singular. Potential api bug. Groups and endpoints are now singular rather than being plural patent instead of patents etc. according to the spreadsheet they sent out. 
+6. Not all of the cpc and uspc endpoints are working.  Some return a 400 with an X-Status-Reason: 
     > Text fields are not optimised for operations that require per-document field data like aggregations and sorting, so these operations are disabled by default. Please use a keyword field instead. Alternatively, set fielddata=true on [uspc_mainclass_id] in order to load field data by uninverting the inverted index. Note that this can use significant memory.
 
 
@@ -86,16 +92,17 @@ Changes in search-pv.R sleep Retry-After seconds then retries the query to hide 
 2. Update comments
 3. Paging isn't quite right, making a second request if all_pages = TRUE also seems to be sending offset:0, size:25 the first time and offset 0, size 25, per_page:10000, page:1
 4. Test throttling
-5. Check that the fake documentation's can query fields are set properly.  Currently assumes that all fields can be queried.
-6. Check that the change in #6 above is correct
-7. Test that what comes back from the api calls matches the spreadsheet (singular/plural thing mentioned above)
-8. Implement the warning mentioned above (second change to the options parameter)
-9. Check if the location specific error checking is still needed (throw_if_loc_error() in process-error.R). The locations endpoint won't return as many fields as before. 
-10. Add a warning message if the http status 403 Incorrect/Missing API Key is received. The api key must be in the environment at start up, so a 403 on a query should only be returned if it is invalid.
-
+5. Check if we need to do anything about JSON on Posts (#6 at the top of the page)
+6. Test that what comes back from the api calls matches the spreadsheet (singular/plural thing mentioned above)
+7. Implement the warning mentioned above (second change to the options parameter)
+8. Check if the location specific error checking is still needed (throw_if_loc_error() in process-error.R). The locations endpoint won't return as many fields as before. 
+9. Add a warning message if the http status 403 Incorrect/Missing API Key is received. The api key must be in the environment at start up, so a 403 on a query should only be returned if it is invalid.
+10. Maybe instead of having fake documentation, something like data-raw/mbr_fieldsdf.R should read the swagger definition to produce data-raw/fieldsdf.csv
 
 ## Questions
 1. Does anything need to change in cast-pv-data.R?
-2. Are existing sleeps in search-pv.R needed?
+2. Are existing sleeps in search-pv.R needed? (If the throttling works)
+3. Are there any other fields changing type?  (like assignee_organization becoming a full text field, formerly it had been a string)
+4. Are there more fields (like the government interests) that went away?
 &nbsp;
 &nbsp;
