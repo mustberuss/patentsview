@@ -4,13 +4,19 @@ library(dplyr)
 library(devtools)
 
 endpoints <- c(
-  "assignees" = "assignees",
-  "cpc_subsections" = "cpc",
-  "inventors" = "inventors",
-  "locations" = "locations",
-  "nber_subcategories" = "nber",
-  "patents" = "patents",
-  "uspc_mainclasses" = "uspc"
+  "assignee" = "assignees",
+  "application_citation" = "application_citations",
+  "cpc_group" = "cpc_groups",
+  "cpc_subgroup" = "cpc_groups",
+  "cpc_subsections" = "cpc_subsections",
+  "inventor" = "inventors",
+  "location" = "locations",
+  "nber_category" = "nber_categories",
+  "nber_subcategy" = "nber_subcategories",
+  "patent" = "patents",
+  "patent_citation" = "patent_citations",
+  "uspc_mainclass" = "uspc_mainclasses",
+  "uspc_subclass" = "uspc_subclasses"
 )
 
 all_tabs <- sapply(endpoints, function(x) {

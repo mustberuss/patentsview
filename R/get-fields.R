@@ -15,13 +15,13 @@
 #'   can specify for a given endpoint (e.g., the
 #'   \href{https://patentsview.org/apis/api-endpoints/patents}{patents
 #'   endpoint table}), or use the \code{fieldsdf} table
-#'   (e.g., \code{unique(fieldsdf[fieldsdf$endpoint == "patents", "group"])}).
+#'   (e.g., \code{unique(fieldsdf[fieldsdf$endpoint == "patent", "group"])}).
 #'
 #' @return A character vector with field names.
 #'
 #' @examples
 #' # Get all assignee-level fields for the patents endpoint:
-#' fields <- get_fields(endpoint = "patents", groups = "assignees")
+#' fields <- get_fields(endpoint = "patent", groups = "assignees_at_grant")
 #'
 #' #...Then pass to search_pv:
 #' \dontrun{
@@ -32,7 +32,7 @@
 #' )
 #'}
 #' # Get all patent and assignee-level fields for the patents endpoint:
-#' fields <- get_fields(endpoint = "patents", groups = c("assignees", "patents"))
+#' fields <- get_fields(endpoint = "patent", groups = c("assignees_at_grant", "patents"))
 #'
 #' \dontrun{
 #' #...Then pass to search_pv:
@@ -61,7 +61,7 @@ get_fields <- function(endpoint, groups = NULL) {
 #' @return A character vector with the names of the 9 endpoints. Those endpoints are:
 #'
 #' \itemize{
-#'    \item assignees
+#'    \item assignee
 #'    \item cpc_subsection
 #'    \item cpc_group
 #'    \item cpc_subgroup
@@ -81,8 +81,8 @@ get_fields <- function(endpoint, groups = NULL) {
 #' @export
 get_endpoints <- function() {
   c(
-    "assignees", "cpc_subsection", "cpc_group", "cpc_subgroup", "uspc_subclass",
-    "nber_category", "nber_subcategory", "patents", "uspc_mainclass",
-    "application_citation", "patent_citation", "inventors", "locations"
+    "assignee", "cpc_subsection", "cpc_group", "cpc_subgroup", "uspc_subclass",
+    "nber_category", "nber_subcategory", "patent", "uspc_mainclass",
+    "application_citation", "patent_citation", "inventor", "location"
   )
 }

@@ -16,12 +16,19 @@ print.pv_data_result <- function(x, ...) {
   k <- vapply(names(df), function(y) class(df[, y]), FUN.VALUE = character(1))
 
   dat_level <- c(
-    patents = "a patent", inventors = "an inventor",
-    assignees = "an assignee", locations = "a location",
-    cpc_subsections = "a CPC subsection", uspc_mainclasses = "a USPC main class",
-    nber_categories = "a NBER category", patent_citations = "a patent citation",
+    assignees = "an assignee",
     application_citations = "an application citation",
-    "nber_subcategories" = "a NBER subcategory"
+    cpc_group = "a CPC group", 
+    cpc_subgroup = "a CPC sub group", 
+    cpc_subsections = "a CPC subsection", 
+    inventors = "an inventor", 
+    locations = "a location",
+    nber_categories = "a NBER category", 
+    nber_subcategories = "a NBER subcategory",
+    patents = "a patent", 
+    patent_citations = "a patent citation",
+    uspc_mainclasses = "a USPC main class",
+    uspc_subclasses = "a USPC sub class",
   )
 
   lst <- ifelse("list" %in% k, " (with list column(s) inside) ", " ")

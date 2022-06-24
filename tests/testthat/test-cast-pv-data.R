@@ -11,8 +11,8 @@ test_that("cast_pv_data casts data types as expected", {
   dat <- cast_pv_data(data = pv_out$data)
 
   date <- !is.character(dat$patents$patent_date)
-  num <- is.numeric(dat$patents$patent_num_claims)
-  date2 <- !is.character(dat$patents$assignees[[1]]$assignee_last_seen_date[1])
+  num <- is.numeric(dat$patents$patent_detail_desc_length)
+  date2 <- is.character(dat$patents$assigenees_at_grant[[1]]$type[1])
 
   expect_true(date && num && date2)
 })

@@ -32,7 +32,7 @@ hit_locations_ep <- function(url) {
 get_num_groups <- function(url) {
   prsd_json_filds <- gsub(".*&f=([^&]*).*", "\\1", utils::URLdecode(url))
   fields <- jsonlite::fromJSON(prsd_json_filds)
-  grps <- fieldsdf[fieldsdf$endpoint == "locations" &
+  grps <- fieldsdf[fieldsdf$endpoint == "location" &
                      fieldsdf$field %in% fields, "group"]
   length(unique(grps))
 }

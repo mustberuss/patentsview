@@ -1,4 +1,4 @@
-# Affects of the 2021 Patentsview api changes on the R package
+# Affects on the R package of the Patentsview api changes announced in 2021
 
 As announced [here](https://patentsview.org/data-in-action/whats-new-patentsview-july-2021) in 2021, the patentsview api will be changing sometime in 2022. This will impact the r package in the following ways.
 
@@ -23,7 +23,7 @@ Note that cpc_subsection looks like the existing cpc endpoint and uspc_mainclass
    4. Existing endpoints not currently on the test server
          *  /locations
      
-    Note that there are new, get-only convience endpoints that take url parameters.  The r package can ignore these and just use the ones that do posts and gets using q,f,s and o parameters.
+    Note that there are new, get-only convience endpoints that take a url parameter.  The r package can ignore these and just use the ones that do posts and gets using q,f,s and o parameters.
 
 3. Throttling will be imposed. An http status of 429 "Too many requests" will be returned if more than 45 requests are received per minute.  The Retry-After header will specify the number of seconds to wait before sending the next request.
 Changes in search-pv.R sleep Retry-After seconds then retries the query to hide this change from package users. 
@@ -67,8 +67,12 @@ Changes in search-pv.R sleep Retry-After seconds then retries the query to hide 
       req_pages
 
 ## Observations
-1. assignee_organization is now a full text field, formerly it had been a string
-2. The swagger definition (https://search.patentsview.org/static/openapi_v2.yml) does not contain  government interest fields or ipc fields. Assuming these fields are going away.
+1. The endpoints are singular now, instead of being plural.  Ex /patents is now /patent
+2. organization (formerly assignee_organization) is now a full text field, formerly it had been a string
+3. The swagger definition (https://search.patentsview.org/static/openapi_v2.yml) does not contain  government interest fields, ipc fields, wipo fields, lawyer fields, foreign_priority fields, examiner fields, pct fields, raw inventor fields, coinventor fields, patent_firstnamed fields or patent_num_claims. Assuming these fields are all going away.
+4. There  seems to be a change in case sensitivity compared to the original api. The original api would return results for q:{"patent_type":"Design"} while the ElasticSearch version does not.
+5. Nested fields can be specified in the f: parameter (ex [ "patent_number", "assignees_at_grant.organization","assignees_at_grant.assignee"]) but the api throws a 500 error when they are used in the q: parameter (ex: q:{"cpc_current.cpc_subgroup_title": "Hand tools"}).  It also seems to matter on the endpoints that use url parameters.
+6. It probably won't not matter to the r package but the slash in the url parameters of /api/v1/uspc_subclass/{uspc_subclass_id}/ and /api/v1/cpc_subgroup/{cpc_subgroup_id}/ need to be changed to colons, ex. 100:1 for 100/1 and A01B1:00 for A01B1/00 and respectively.  This can be seen in the return from the patent's endpoint's cpc_current.cpc_subgroup, example  "https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4865/" It's a HATEOAS style link that conatins a colon instead of a slash. 
 
 ## Notes
 1. The online documentation is lagging.  The two new endpoints are documented on https://patentsview.org/data-in-action/whats-new-patentsview-july-2021 but they're missing the Query column (see the next note).  Pages for the other endpoint haven't been changed. I created fake pages for data-raw/mbr_fieldsdf.R to consume.  They're listed on  https://patentsview.historicip.com/api/.  If I was better at R I would have parsed out the swagger definition https://search.patentsview.org/static/openapi_v2.yml  We would need to iterate over the paths (the endpoints).  The paths with url parameters wouldn't matter to the r package, it would continue to use the ones that take the q,f,s and o parameters.  The 200 responses' content could be parsed.  
@@ -102,7 +106,7 @@ Please refer to the 200 "Response" section for each endpoint for full list of fi
 ## Questions
 1. Does anything need to change in cast-pv-data.R?
 2. Are existing sleeps in search-pv.R needed? (If the throttling works)
-3. Are there any other fields changing type?  (like assignee_organization becoming a full text field, formerly it had been a string)
+3. Are there any other fields changing type?  (like assignee organization becoming a full text field, formerly it had been a string)
 4. Are there more fields (like the government interests) that went away?
 &nbsp;
 &nbsp;
