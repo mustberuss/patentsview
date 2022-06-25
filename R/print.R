@@ -28,7 +28,7 @@ print.pv_data_result <- function(x, ...) {
     patents = "a patent", 
     patent_citations = "a patent citation",
     uspc_mainclasses = "a USPC main class",
-    uspc_subclasses = "a USPC sub class",
+    uspc_subclasses = "a USPC sub class"
   )
 
   lst <- ifelse("list" %in% k, " (with list column(s) inside) ", " ")

@@ -72,13 +72,15 @@ Changes in search-pv.R sleep Retry-After seconds then retries the query to hide 
 3. The swagger definition (https://search.patentsview.org/static/openapi_v2.yml) does not contain  government interest fields, ipc fields, wipo fields, lawyer fields, foreign_priority fields, examiner fields, pct fields, raw inventor fields, coinventor fields, patent_firstnamed fields or patent_num_claims. Assuming these fields are all going away.
 4. There  seems to be a change in case sensitivity compared to the original api. The original api would return results for q:{"patent_type":"Design"} while the ElasticSearch version does not.
 5. Nested fields can be specified in the f: parameter (ex [ "patent_number", "assignees_at_grant.organization","assignees_at_grant.assignee"]) but the api throws a 500 error when they are used in the q: parameter (ex: q:{"cpc_current.cpc_subgroup_title": "Hand tools"}).  It also seems to matter on the endpoints that use url parameters.
-6. It probably won't not matter to the r package but the slash in the url parameters of /api/v1/uspc_subclass/{uspc_subclass_id}/ and /api/v1/cpc_subgroup/{cpc_subgroup_id}/ need to be changed to colons, ex. 100:1 for 100/1 and A01B1:00 for A01B1/00 and respectively.  This can be seen in the return from the patent's endpoint's cpc_current.cpc_subgroup, example  "https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4865/" It's a HATEOAS style link that conatins a colon instead of a slash. 
+6. It probably won't not matter to the r package but the slash in the url parameters of /api/v1/uspc_subclass/{uspc_subclass_id}/ and /api/v1/cpc_subgroup/{cpc_subgroup_id}/ need to be changed to colons, ex. 100:1 for 100/1 and A01B1:00 for A01B1/00 and respectively.  This can be seen in the return from the patent endpoint's cpc_current.cpc_subgroup, example  "https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4865/" It's a HATEOAS style link that conatins a colon instead of a slash.
+7. The api seems like it will become less useful.  A lot of use cases will break, like the ones lists on https://docs.ropensci.org/patentsview/articles/examples.html 
+8. There used to be endpoint specific _counts ex total_assignee_count.  Now all the endpoints return total_hits
 
 ## Notes
 1. The online documentation is lagging.  The two new endpoints are documented on https://patentsview.org/data-in-action/whats-new-patentsview-july-2021 but they're missing the Query column (see the next note).  Pages for the other endpoint haven't been changed. I created fake pages for data-raw/mbr_fieldsdf.R to consume.  They're listed on  https://patentsview.historicip.com/api/.  If I was better at R I would have parsed out the swagger definition https://search.patentsview.org/static/openapi_v2.yml  We would need to iterate over the paths (the endpoints).  The paths with url parameters wouldn't matter to the r package, it would continue to use the ones that take the q,f,s and o parameters.  The 200 responses' content could be parsed.  
 2. All fields are queryable.  From https://patentsview.org/apis/purpose Field List
 Please refer to the 200 "Response" section for each endpoint for full list of fields available. All the available fields are "queryable."
-3. The Swagger definition (https://patentsview.historicip.com/swagger/openapi_v2.yml) can be imported into Postman to give you a nicely loaded collection for the changed api.  You'll just need to set a global variable PVIEW_KEY and set the authorization's value to {{PVIEW_KEY}}.  The [Swagger UI page](https://patentsview.historicip.com/swagger/new_swagger.htm) can also be used but there's [an api bug](https://github.com/PatentsView/PatentsView-API/issues/37) preventing the X-Status-Reason and X-Status-Reason-Code from being displayed.
+3. The Swagger definition (https://patentsview.historicip.com/swagger/openapi_v2.yml) can be imported into Postman to give you a nicely loaded collection for the changed api.  You'll just need to set a global variable PVIEW_KEY and set the authorization's value to {{PVIEW_KEY}}.  
 4. The swagger definition shows a X-Status-Reason-Code in addition to the existing X-Status-Reason. Not sure it matters to or would be useful for the r package
     ~~~~
     > print(httr::headers(resp)[['X-Status-Reason']])
@@ -86,13 +88,9 @@ Please refer to the 200 "Response" section for each endpoint for full list of fi
     > print(httr::headers(resp)[['X-Status-Reason-Code']])
     [1] "ERR_Q"
     ~~~~
-5. in print.R it's still cpc_subsections even though the endpoint is now singular. Potential api bug. Groups and endpoints are now singular rather than being plural patent instead of patents etc. according to the spreadsheet they sent out. 
-6. Not all of the cpc and uspc endpoints are working.  Some return a 400 with an X-Status-Reason: 
-    > Text fields are not optimised for operations that require per-document field data like aggregations and sorting, so these operations are disabled by default. Please use a keyword field instead. Alternatively, set fielddata=true on [uspc_mainclass_id] in order to load field data by uninverting the inverted index. Note that this can use significant memory.
-
 
 ## TODOS
-1. Vignettes and any automated testing will most likely have to change
+1. Vignettes and any automated testing will most likely have to change.  Looks like we'd need to set up a secret to hold an api key https://docs.github.com/en/rest/actions/secrets
 2. Update comments
 3. Paging isn't quite right, making a second request if all_pages = TRUE also seems to be sending offset:0, size:25 the first time and offset 0, size 25, per_page:10000, page:1
 4. Test throttling
@@ -103,6 +101,14 @@ Please refer to the 200 "Response" section for each endpoint for full list of fi
 9. Add a warning message if the http status 403 Incorrect/Missing API Key is received. The api key must be in the environment at start up, so a 403 on a query should only be returned if it is invalid.
 10. Maybe instead of having fake documentation, something like data-raw/mbr_fieldsdf.R should read the swagger definition to produce data-raw/fieldsdf.csv
 
+## Try it yourself
+Steps to try this out locally
+1. Request an api key from the patentsview team https://patentsview.org/apis/keyrequest
+2. Set the environmental variable PATENTSVIEW_API_KEY value to your key.     
+ ex: set PATENTSVIEW_API_KEY=your_key_here
+3. Install the patentsview package from mustberuss' api-change-2021 branch devtools::install_github("mustberuss/patentsview@api-change-2021")
+
+The environmental variable's name is the same one I used in the api's python wrapper https://github.com/mustberuss/PatentsView-APIWrapper/tree/api-change-2022
 ## Questions
 1. Does anything need to change in cast-pv-data.R?
 2. Are existing sleeps in search-pv.R needed? (If the throttling works)
