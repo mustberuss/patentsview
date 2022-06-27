@@ -6,12 +6,17 @@ test_that("", {
   skip_on_cran()
   skip_on_ci()
 
-  eps_no_loc <- eps[eps != "locations"]
+  #eps_no_loc <- eps[eps != "location"]
+  # with the new api we can only search by patent_number on few of the endpoints
+  testable_eps = get_patent_num_searchable_endpoints()
 
-  z <- lapply(eps_no_loc, function(x) {
+  # TODO: do we need other searches for the untested endpoints?
+
+  z <- lapply(testable_eps, function(x) {
     Sys.sleep(1)
+    print(x)
     pv_out <- search_pv(
-      "{\"patent_number\":\"5116621\"}",
+      "{\"patent_number\":\"10966293\"}",
       endpoint = x,
       fields = get_fields(x)
     )

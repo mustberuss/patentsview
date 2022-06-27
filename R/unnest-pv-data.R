@@ -17,11 +17,16 @@
 #' get_ok_pk(endpoint = "cpc_subsection") # Returns "cpc_subsection_id"
 #'
 #' @export
+
+# there is an assignee_id, cpc_subsection_id, cpc_subgroup_id, cpc_group_id,
+# inventor_id, uspc_mainclass_id, uspc_subclass_id, nber_category_id, nber_subcategory_id
+
+# the endpoints are singular but their returned object are plural
 get_ok_pk <- function(endpoint) {
   es_eps <- c(
-    "uspc_mainclass" = "uspc_mainclass_id",
-    "nber_category" = "nber_category_id",
-    "patents" = "patent_number"
+    "patents" = "patent_number",
+    "patent_citations" = "patent_number",
+    "application_citations" = "patent_number"
   )
   ifelse(
     endpoint %in% names(es_eps),

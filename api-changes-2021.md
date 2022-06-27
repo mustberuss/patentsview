@@ -77,9 +77,9 @@ Changes in search-pv.R sleep Retry-After seconds then retries the query to hide 
 8. There used to be endpoint specific _counts ex total_assignee_count.  Now all the endpoints return total_hits
 
 ## Notes
-1. The online documentation is lagging.  The two new endpoints are documented on https://patentsview.org/data-in-action/whats-new-patentsview-july-2021 but they're missing the Query column (see the next note).  Pages for the other endpoint haven't been changed. I created fake pages for data-raw/mbr_fieldsdf.R to consume.  They're listed on  https://patentsview.historicip.com/api/.  If I was better at R I would have parsed out the swagger definition https://search.patentsview.org/static/openapi_v2.yml  We would need to iterate over the paths (the endpoints).  The paths with url parameters wouldn't matter to the r package, it would continue to use the ones that take the q,f,s and o parameters.  The 200 responses' content could be parsed.  
+1. The online documentation is lagging.  The two new endpoints are documented on https://patentsview.org/data-in-action/whats-new-patentsview-july-2021 but they're missing the Query column (see the next note).  Pages for the other endpoint haven't been changed. I created fake pages for data-raw/mbr_fieldsdf.R to consume.  They're listed on  https://patentsview.historicip.com/api/.  If I was better at R I would have parsed out the swagger definition https://search.patentsview.org/static/openapi_v2.yml  We would need to iterate over the paths (the endpoints).  The paths with url parameters wouldn't matter to the r package, it would continue to use the ones that take the q,f,s and o parameters.  The 200 responses' content could be parsed, though I'm not sure strings can be differentiate from full text fields.
 2. All fields are queryable.  From https://patentsview.org/apis/purpose Field List
-Please refer to the 200 "Response" section for each endpoint for full list of fields available. All the available fields are "queryable."
+Please refer to the 200 "Response" section for each endpoint for full list of fields available. All the available fields are "queryable." It's referring to the 200 Responses shown on the swagger page https://search.patentsview.org/swagger-ui/
 3. The Swagger definition (https://patentsview.historicip.com/swagger/openapi_v2.yml) can be imported into Postman to give you a nicely loaded collection for the changed api.  You'll just need to set a global variable PVIEW_KEY and set the authorization's value to {{PVIEW_KEY}}.  
 4. The swagger definition shows a X-Status-Reason-Code in addition to the existing X-Status-Reason. Not sure it matters to or would be useful for the r package
     ~~~~
@@ -100,6 +100,15 @@ Please refer to the 200 "Response" section for each endpoint for full list of fi
 8. Check if the location specific error checking is still needed (throw_if_loc_error() in process-error.R). The locations endpoint won't return as many fields as before. 
 9. Add a warning message if the http status 403 Incorrect/Missing API Key is received. The api key must be in the environment at start up, so a 403 on a query should only be returned if it is invalid.
 10. Maybe instead of having fake documentation, something like data-raw/mbr_fieldsdf.R should read the swagger definition to produce data-raw/fieldsdf.csv
+11. mbr_fieldsdf.R probably needs to output group.field where the group doesn't match the endpoint's name.  Ex. for the patent endpoint, the group of patents doesn't need the group to be specified but the other fields would need to be preceded by their group and a dot.  Or change the fields in the fake documentation (to add the group.field where necessary)?
+12. we probably don't need this in process-error.R
+
+        "Your request resulted in a 500 error, likely because you have ",
+        "requested too many fields in your request (the locations endpoint ",
+        "currently has restrictions on the number of fields/groups you can ",
+        "request). Try slimming down your field list and trying again."
+13. problems with cast-pv-data.R  We need the dots when requesting data, ex. assignees_at_grant.state at patent endpoint, but then we don't want the dots when casting.  Probably need to remove the dots from the fake web pages and rescrape.  get_fields would need to add the groups and dot when the fields are nested. It's the one test that fails.
+
 
 ## Try it yourself
 Steps to try this out locally

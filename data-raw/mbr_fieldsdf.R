@@ -34,8 +34,9 @@ all_tabs <- sapply(endpoints, function(x) {
   html_table(html)[[2]]
 }, simplify = FALSE, USE.NAMES = TRUE)
 
+# we want to allow dots for nested objects
 clean_field <- function(x) {
-  gsub("[^[:alnum:]_]", "", tolower(as.character(x)))
+  gsub("[^[:alnum:]_.]", "", tolower(as.character(x)))
 }
 
 convert_to_ascii <- function(x) {

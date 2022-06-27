@@ -5,14 +5,17 @@ test_that("cast_pv_data casts data types as expected", {
   skip_on_ci()
 
   pv_out <- search_pv(
-    query = "{\"patent_number\":\"5116621\"}", fields = get_fields("patents")
+    query = "{\"patent_number\":\"5116621\"}", fields = get_fields("patent") # endpoint singular now
   )
 
   dat <- cast_pv_data(data = pv_out$data)
 
   date <- !is.character(dat$patents$patent_date)
-  num <- is.numeric(dat$patents$patent_detail_desc_length)
-  date2 <- is.character(dat$patents$assigenees_at_grant[[1]]$type[1])
+  # dat$patents$patent_detail_desc_length isn't being set?
 
-  expect_true(date && num && date2)
+  # num <- is.numeric(dat$patents$patent_detail_desc_length)
+  num <- is.numeric(dat$patents$         assignees_at_grant[[1]]$latitude[1])
+  assignee_type <- is.character(dat$patents$         assignees_at_grant[[1]]$type[1])
+  print(cat('**', date, num, assignee_type))
+  expect_true(date && num && assignee_type)
 })

@@ -86,3 +86,13 @@ get_endpoints <- function() {
     "application_citation", "patent_citation", "inventor", "location"
   )
 }
+
+# now not all endpoints are searchable by patent number
+
+#' get_endpoints()
+#' @export
+get_patent_num_searchable_endpoints <- function() {
+  c(
+    "patent", "application_citation", "patent_citation"
+  )
+}

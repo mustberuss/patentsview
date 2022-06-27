@@ -43,3 +43,24 @@ validate_pv_data <- function(data) {
     "Wrong input type for data...See example for correct input type"
   )
 }
+
+#' @noRd
+to_singular <- function(data) {
+
+   data_to_endpoint <- c(
+      "application_citations" = "application_citation",
+      "assignees" = "assignee",
+      "cpc_group" = "cpc_group",
+      "cpc_subgroups" = "cpc_subgroup",
+      "cpc_subsections" = "cpc_subsection",
+      "inventors" = "inventor",
+      "locations" = "location",
+      "nber_categories" = "nber_category",
+      "nber_subcategories" = "nber_subcategory",
+      "patents" = "patent",
+      "patent_citations" = "patent_citation",
+      "uspc_mainclasses" = "uspc_mainclass",
+      "uspc_subclasses" = "uspc_subclass")
+
+   data_to_endpoint[[data]]
+}
