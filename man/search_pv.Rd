@@ -7,7 +7,7 @@
 search_pv(
   query,
   fields = NULL,
-  endpoint = "patents",
+  endpoint = "patent",
   subent_cnts = FALSE,
   mtchd_subent_only = TRUE,
   page = 1,
@@ -46,8 +46,10 @@ endpoint}) or by viewing the \code{fieldsdf} data frame
 out the fields available for a given endpoint.}
 
 \item{endpoint}{The web service resource you wish to search. \code{endpoint}
-must be one of the following: "patents", "inventors", "assignees",
-"locations", "cpc_subsections", "uspc_mainclasses", or "nber_subcategories".}
+must be one of the following: "patent", "inventor", "assignee",
+"location", "cpc_group", "cpc_subgroup", "cpc_subsection", "uspc_mainclass",  
+"uspc_subclass","nber_category", "nber_subcategory", "application_citation", 
+or "patent_citation"}
 
 \item{subent_cnts}{Do you want the total counts of unique subentities to be
 returned? This is equivalent to the \code{include_subentity_total_counts}
@@ -64,7 +66,7 @@ equivalent to the \code{matched_subentities_only} parameter found
 \item{page}{The page number of the results that should be returned.}
 
 \item{per_page}{The number of records that should be returned per page. This
-value can be as high as 10,000 (e.g., \code{per_page = 10000}).}
+value can be as high as 10,000 (e.g., \code{per_page = 1000}).}
 
 \item{all_pages}{Do you want to download all possible pages of output? If
 \code{all_pages = TRUE}, the values of \code{page} and \code{per_page} are
@@ -118,7 +120,7 @@ search_pv(query = '{"_gt":{"patent_year":2010}}')
 
 search_pv(
   query = qry_funs$gt(patent_year = 2010),
-  fields = get_fields("patents", c("patents", "assignees"))
+  fields = get_fields("patent", c("patents", "assignees_at_grant"))
 )
 
 search_pv(
@@ -129,17 +131,18 @@ search_pv(
 )
 
 search_pv(
-  query = qry_funs$eq(inventor_last_name = "crew"),
+  query = qry_funs$eq(name_last = "crew"),
+  endpoint = "inventor",
   all_pages = TRUE
 )
 
 search_pv(
-  query = qry_funs$contains(inventor_last_name = "smith"),
-  endpoint = "assignees"
+  query = qry_funs$contains(name_last = "smith"),
+  endpoint = "assignee"
 )
 
 search_pv(
-  query = qry_funs$contains(inventor_last_name = "smith"),
+  query = qry_funs$contains(name_last = "smith"),
   config = httr::timeout(40)
 )
 }

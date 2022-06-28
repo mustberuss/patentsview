@@ -17,7 +17,7 @@ membership). See the field tables located online to see which groups you
 can specify for a given endpoint (e.g., the
 \href{https://patentsview.org/apis/api-endpoints/patents}{patents
 endpoint table}), or use the \code{fieldsdf} table
-(e.g., \code{unique(fieldsdf[fieldsdf$endpoint == "patents", "group"])}).}
+(e.g., \code{unique(fieldsdf[fieldsdf$endpoint == "patent", "group"])}).}
 }
 \value{
 A character vector with field names.
@@ -31,7 +31,7 @@ possible fields for each endpoint).
 }
 \examples{
 # Get all assignee-level fields for the patents endpoint:
-fields <- get_fields(endpoint = "patents", groups = "assignees")
+fields <- get_fields(endpoint = "patent", groups = "assignees_at_grant")
 
 #...Then pass to search_pv:
 \dontrun{
@@ -42,7 +42,7 @@ search_pv(
 )
 }
 # Get all patent and assignee-level fields for the patents endpoint:
-fields <- get_fields(endpoint = "patents", groups = c("assignees", "patents"))
+fields <- get_fields(endpoint = "patent", groups = c("assignees_at_grant", "patents"))
 
 \dontrun{
 #...Then pass to search_pv:
