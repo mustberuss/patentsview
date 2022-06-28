@@ -25,13 +25,15 @@ print.pv_data_result <- function(x, ...) {
     locations = "a location",
     nber_categories = "a NBER category", 
     nber_subcategories = "a NBER subcategory",
-    patents = "a patent", 
+    patent = "a patent", 
+    patents = "a patent",
     patent_citations = "a patent citation",
     uspc_mainclasses = "a USPC main class",
     uspc_subclasses = "a USPC sub class"
   )
 
   lst <- ifelse("list" %in% k, " (with list column(s) inside) ", " ")
+  print(names(x)[1])
 
   cat(
     "#### A list with a single data frame", lst, "on ",

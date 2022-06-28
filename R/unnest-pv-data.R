@@ -4,7 +4,7 @@
 #' in \code{\link{unnest_pv_data}}, based on the endpoint you searched.
 #' It will return a potential unique identifier for a given entity (i.e., a
 #' given endpoint). For example, it will return "patent_number" when
-#' \code{endpoint = "patents"}.
+#' \code{endpoint = "patent"}.
 #'
 #' @param endpoint The endpoint which you would like to know a potential primary
 #'   key for.

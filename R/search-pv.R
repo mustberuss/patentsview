@@ -201,17 +201,18 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, ...) {
 #' )
 #'
 #' search_pv(
-#'   query = qry_funs$eq(inventor_last_name = "crew"),
+#'   query = qry_funs$eq(name_last = "crew"),
+#'   endpoint = "inventor",
 #'   all_pages = TRUE
 #' )
 #'
 #' search_pv(
-#'   query = qry_funs$contains(inventor_last_name = "smith"),
+#'   query = qry_funs$contains(name_last = "smith"),
 #'   endpoint = "assignee"
 #' )
 #'
 #' search_pv(
-#'   query = qry_funs$contains(inventor_last_name = "smith"),
+#'   query = qry_funs$contains(name_last = "smith"),
 #'   config = httr::timeout(40)
 #' )
 #' }

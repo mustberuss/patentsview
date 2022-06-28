@@ -77,9 +77,7 @@ cast_one <- function(one, name, typesdf) UseMethod("cast_one")
 cast_pv_data <- function(data) {
   validate_pv_data(data)
 
-  # now the data returned is plural (patents) but the endpoints are singular (patent)
   endpoint <- to_singular(names(data))
-  print(endpoint)
 
   typesdf <- fieldsdf[fieldsdf$endpoint == endpoint, c("field", "data_type")]
 

@@ -50,7 +50,7 @@ to_singular <- function(data) {
    data_to_endpoint <- c(
       "application_citations" = "application_citation",
       "assignees" = "assignee",
-      "cpc_group" = "cpc_group",
+      "cpc_groups" = "cpc_group",
       "cpc_subgroups" = "cpc_subgroup",
       "cpc_subsections" = "cpc_subsection",
       "inventors" = "inventor",
@@ -63,4 +63,25 @@ to_singular <- function(data) {
       "uspc_subclasses" = "uspc_subclass")
 
    data_to_endpoint[[data]]
+}
+
+#' @noRd
+to_plural <- function(data) {
+
+   endpoint_to_data <- c(
+      "application_citation" = "application_citations",
+      "assignee" = "assignees",
+      "cpc_group" = "cpc_groups",
+      "cpc_subgroup" = "cpc_subgroups",
+      "cpc_subsection" = "cpc_subsections",
+      "inventor" = "inventors",
+      "location" = "locations",
+      "nber_category" = "nber_categories",
+      "nber_subcategory" = "nber_subcategories",
+      "patent" = "patents",
+      "patent_citation" = "patent_citations",
+      "uspc_mainclass" = "uspc_mainclasses",
+      "uspc_subclass" = "uspc_subclasses")
+
+   endpoint_to_data [[data]]
 }
