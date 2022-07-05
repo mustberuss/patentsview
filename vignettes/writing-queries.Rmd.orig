@@ -25,12 +25,12 @@ query_v_1 <-
   '{"_and":[
           {"_gte":{"patent_date":"2007-03-01"}},
           {"_or":[
-            {"_text_all":{"patent_title":"dog"}},
+            {"_contains":{"patent_title":"dog"}},
             {"_text_all":{"patent_abstract":"dog"}}
           ]},
           {"_or":[
-            {"_eq":{"assingee_country":"US"}},
-            {"_eq":{"assingee_country":"CA"}}
+            {"_text_phrase":{"inventors_at_grant.country":"US"}},
+            {"_text_phrase":{"inventors_at_grant.country":"CA"}}
           ]}
   ]}'
 ```
@@ -44,14 +44,14 @@ query_v_2 <-
           list("_gte" = list(patent_date = "2007-03-01")),
           list("_or" = 
                  list(
-                   list("_text_all" = list(patent_title = "dog")),
+                   list("_contains" = list(patent_title = "dog")),
                    list("_text_all" = list(patent_abstract = "dog"))
                    )
                ),
           list("_or" = 
                  list(
-                   list("_eq" = list(assingee_country = "US")),
-                   list("_eq" = list(assingee_country = "CA"))
+                   list("_text_phrase" = list(inventors_at_grant.country = "US")),
+                   list("_text_phrase" = list(inventors_at_grant.country = "CA"))
                    )
                )
       )
@@ -68,10 +68,13 @@ query_v_3 <-
     and(
       gte(patent_date = "2007-03-01"),
       or(
-        text_all(patent_title = "dog"),
+        contains(patent_title = "dog"),
         text_all(patent_abstract = "dog")
       ),
-      eq(assingee_country = c("US", "CA"))
+      or(
+        text_phrase(inventors_at_grant.country = "US"),
+        text_phrase(inventors_at_grant.country = "CA")
+      )
     )
   )
 ```
@@ -151,19 +154,19 @@ Patents that:
 
 OR
 
-* Have an inventor listed on them whose last name is “Hopper” AND
+* Have an inventor listed on them whose last name is “Turner” AND
 * Have “COBOL” in their title 
 
 ```{r}
 with_qfuns(
   or(
     and(
-      eq(inventor_last_name = "smith"),
-      text_phrase(patent_title = "cotton gin")
+      eq(inventors_at_grant.name_last = "smith"),
+      contains(patent_title = "cotton gin")
     ),
     and(
-      eq(inventor_last_name = "hopper"),
-      text_phrase(patent_title = "COBOL")
+      eq(inventors_at_grant.name_last = "turner"),
+      contains(patent_title = "COBOL")
     )
   )
 )

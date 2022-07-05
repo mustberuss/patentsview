@@ -29,27 +29,57 @@ library(stringr)
 library(knitr)
 
 # Write a query to pull patents assigned to the CPC code of "Y10S707/933"
-query <- qry_funs$begins(cpc_subgroup_id = "Y10S707/933")
+
+# ** the api currently throws a 500 error when searching by CPC codes
+# query <- qry_funs$contains(cpc_current.cpc_subgroup_id = "Y10S707:933")
+
+# for now we'll pretend it worked
+pat_nums <- c("10095778","9075849","8818996","8504560","8131701","7966328","7797336","7716226","7523126","6499026","6339767")
+
+# we have to go against the patent_citiation endpoint now, these fields are no longer available from the patent endpoint
+# can we _or the two queries or does that blend the results? ie do we need a cited by query
+# and a separate citing query?
+
+combined_query <- qry_funs$or(
+   qry_funs$eq(patent_number = pat_nums),
+   qry_funs$eq(cited_patent_number = pat_nums)
+)
+
+citing_query = qry_funs$eq(patent_number = pat_nums);
+cited_query = qry_funs$eq(cited_patent_number = pat_nums);
+
+# mutate results here to mimic the return of the original version of the api??
+# or can we deal with the new structure directly?
+
+# old structure was
+# "patents": { { "patent_number": "10095778","cited_patents": [{"cited_patent_number": "4991087",...}],
+#                                            "citedby_patents": [{"citedby_patent_number": "10635705"}],{...}}
 
 # Create a list of fields to pull from the API
 fields <- c(
   "patent_number", 
-  "patent_title",
-  "cited_patent_number", # Which patents do these patents cite?
-  "citedby_patent_number" # Which patents cite them?
+  "cited_patent_number"
 )
 
+# use a post?  the q: parameter is pretty big
 # Send a request to the API
-res <- search_pv(query, fields = fields, all_pages = TRUE)
+res <- search_pv(citing_query, fields = fields, all_pages = TRUE, endpoint = "patent_citation", method = "POST")
+
+# now we'd like to group res$x by patent number - does that get close to the original api's structure?
 
 # Unnest the data found in the list columns
 res_lst <- unnest_pv_data(res$data, pk = "patent_number")
 res_lst
 ```
-
-There are only `r nrow(res_lst$patents)` PCA patents. These patents cite `r nrow(res_lst$cited_patents)` patents and are cited by `r nrow(res_lst$citedby_patents)` patents. Let's visualize the citations among the PCA patents. We'll create our visualization using the `visNetwork` package, which requires us to create a data frame of nodes and a data frame of edges.
+# TODO: this needs work - not quite right?
+# count the distinct patent_number and cited_patent_number
+There are only `r length(pat_nums)` PCA patents. These patents cite `r n_distinct(res_lst$patent_citations$cited_patent_number)` patents and are cited by `r nrow(res_lst$patent_citations)` patents. Let's visualize the citations among the PCA patents. We'll create our visualization using the `visNetwork` package, which requires us to create a data frame of nodes and a data frame of edges.
 
 ```{r}
+
+# with the api change we wouldn't have titles unless we call the patent endpoint
+# we'll use the patent number as the title for now
+
 pat_title <- function(title, number) {
   temp_title <- str_wrap(title)
   i <- gsub("\\n", "<br>", temp_title)
@@ -57,16 +87,16 @@ pat_title <- function(title, number) {
 }
 
 edges <-
-  res_lst$cited_patents %>%
+  res_lst$patent_citations %>%
     semi_join(x = ., y = ., by = c("cited_patent_number" = "patent_number")) %>%
     set_colnames(c("from", "to"))
 
 nodes <-
-  res_lst$patents %>%
+  res_lst$patent_citations %>%
     mutate(
       id = patent_number,
       label = patent_number,
-      title = pat_title(patent_title, patent_number)
+      title = pat_title(patent_number, patent_number)
     )
 
 visNetwork(

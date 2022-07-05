@@ -42,7 +42,7 @@
   
 
 <meta property="og:title" content="Get endpoints — get_endpoints" />
-<meta property="og:description" content="This function reminds the user what the 7 possible PatentsView API endpoints
+<meta property="og:description" content="This function reminds the user what the 9 possible PatentsView API endpoints
 are." />
 
 
@@ -161,7 +161,7 @@ are." />
     </div>
 
     <div class="ref-description">
-    <p>This function reminds the user what the 7 possible PatentsView API endpoints
+    <p>This function reminds the user what the 9 possible PatentsView API endpoints
 are.</p>
     </div>
 
@@ -170,23 +170,31 @@ are.</p>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A character vector with the names of the 7 endpoints. Those endpoints are:</p>
+    <p>A character vector with the names of the 9 endpoints. Those endpoints are:</p>
 <ul>
-<li><p>assignees</p></li>
-<li><p>cpc_subsections</p></li>
+<li><p>assignee</p></li>
+<li><p>cpc_subsection</p></li>
+<li><p>cpc_group</p></li>
+<li><p>cpc_subgroup</p></li>
 <li><p>inventors</p></li>
 <li><p>locations</p></li>
-<li><p>nber_subcategories</p></li>
+<li><p>nber_category</p></li>
+<li><p>nber_subcategory</p></li>
 <li><p>patents</p></li>
-<li><p>uspc_mainclasses</p></li>
+<li><p>uspc_mainclass</p></li>
+<li><p>uspc_subclass</p></li>
+<li><p>application_citation</p></li>
+<li><p>patent_citation</p></li>
 </ul>
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'>get_endpoints</span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] "assignees"          "cpc_subsections"    "inventors"         
-#&gt; [4] "locations"          "nber_subcategories" "patents"           
-#&gt; [7] "uspc_mainclasses"  </div></pre>
+</div><div class='output co'>#&gt;  [1] "assignee"             "cpc_subsection"       "cpc_group"           
+#&gt;  [4] "cpc_subgroup"         "uspc_subclass"        "nber_category"       
+#&gt;  [7] "nber_subcategory"     "patent"               "uspc_mainclass"      
+#&gt; [10] "application_citation" "patent_citation"      "inventor"            
+#&gt; [13] "location"            </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

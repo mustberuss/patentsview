@@ -13,7 +13,7 @@
 #'   \code{\link{unnest_pv_data}}.
 #'
 #' @examples
-#' get_ok_pk(endpoint = "inventors") # Returns "inventor_id"
+#' get_ok_pk(endpoint = "inventor") # Returns "inventor_id"
 #' get_ok_pk(endpoint = "cpc_subsection") # Returns "cpc_subsection_id"
 #'
 #' @export
@@ -23,6 +23,13 @@
 
 # the endpoints are singular but their returned object are plural
 get_ok_pk <- function(endpoint) {
+
+  # check if plural endpoint was passed, convert to singular to ease transition
+  if (is_plural_endpoint(endpoint)) {
+     endpoint = to_singular(endpoint)
+     warning(paste("endpoints are now singular, using",endpoint))
+  }
+
   es_eps <- c(
     "patents" = "patent_number",
     "patent_citations" = "patent_number",
@@ -63,7 +70,7 @@ get_ok_pk <- function(endpoint) {
 #' @examples
 #' \dontrun{
 #'
-#' fields <- c("patent_number", "patent_title", "inventor_city", "inventor_country")
+#' fields <- c("patent_number", "patent_title", "inventors_at_grant.city", "inventors_at_grant.country")
 #' res <- search_pv(query = '{"_gte":{"patent_year":2015}}', fields = fields)
 #' unnest_pv_data(data = res$data, pk = "patent_number")
 #' }

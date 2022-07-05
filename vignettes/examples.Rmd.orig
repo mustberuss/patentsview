@@ -14,6 +14,11 @@ knitr::opts_chunk$set(
 )
 ```
 
+## Recent API Change
+
+With the recent api change, the patent endpoint is the main way to retrieve data. The other 
+endpoints supply additional information.
+
 ## Patents endpoint
 
 Which patents have been cited by more than 500 US patents?
@@ -21,7 +26,7 @@ Which patents have been cited by more than 500 US patents?
 ```{r}
 library(patentsview)
 
-search_pv(query = qry_funs$gt(patent_num_cited_by_us_patents = 500))
+search_pv(query = qry_funs$gt(patent_num_times_cited_by_us_patents = 500))
 ```
 
 How many distinct inventors are represented by these highly-cited patents?
@@ -30,25 +35,25 @@ How many distinct inventors are represented by these highly-cited patents?
 # Setting subent_cnts = TRUE will give us the subentity counts. Since inventors 
 # are subentities for the patents endpoint, this means we will get their counts.
 search_pv(
-  query = qry_funs$gt(patent_num_cited_by_us_patents = 500),
-  fields = c("patent_number", "inventor_id"), 
+  query = qry_funs$gt(patent_num_times_cited_by_us_patents = 500),
+  fields = c("patent_number", "inventors_at_grant.inventor"), 
   subent_cnts = TRUE
 )
 ```
 
-Where geographically have Microsoft inventors been coming from over the past 20 years?
+Where geographically have Microsoft inventors been coming from over the past few years?
 
 ```{r}
 # Write the query
 query <- with_qfuns(
   and(
-    gte(patent_date = "2007-07-25"), # Dates are in yyyy-mm-dd format 
-    contains(assignee_organization = "microsoft")
+    gte(patent_date = "2019-07-30"), # Dates are in yyyy-mm-dd format 
+    text_phrase(assignees_at_grant.organization = "microsoft")
   )
 )
 
 # Create a field list
-inv_fields <- get_fields(endpoint = "patents", groups = "inventors")
+inv_fields <- get_fields(endpoint = "patent", groups = "inventors_at_grant")
 fields <- c(inv_fields, "patent_number")
 
 # Pull the data
@@ -58,25 +63,21 @@ pv_out <- search_pv(query, fields = fields, all_pages = TRUE)
 unnest_pv_data(pv_out$data, "patent_number")
 ```
 
-## Inventors endpoint
-
 Which inventors have Chicago, IL listed as their location on at least one patent.[^1]
 
 ```{r}
 search_pv(
-  query = '{"_and":[{"location_city":"Chicago"},{"location_state":"IL"}]}',
-  endpoint = "inventors"
+  query = '{"_and":[{"_text_phrase": {"inventors_at_grant.city":"Chicago"}},{"_text_phrase": {"inventors_at_grant.state":"IL"}}]}',
+  endpoint = "patent"
 )
 ```
-
-## Assignees endpoint
 
 Which assignees have an interest in beer?
 
 ```{r}
 search_pv(
-  query = qry_funs$text_phrase(patent_title = "beer"), 
-  endpoint = "assignees"
+  query = qry_funs$contains(patent_title = "beer"), 
+  endpoint = "patent"
 )
 ```
 

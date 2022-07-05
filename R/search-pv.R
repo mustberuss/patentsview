@@ -224,7 +224,7 @@ search_pv <- function(query,
                       subent_cnts = FALSE,
                       mtchd_subent_only = TRUE,
                       page = 1,
-                      per_page = 25,
+                      per_page = 1000,
                       all_pages = FALSE,
                       sort = NULL,
                       method = "GET",
@@ -233,6 +233,12 @@ search_pv <- function(query,
 
   if (!is.null(error_browser))
     warning("error_browser parameter has been deprecated")
+
+  # check if plural endpoint was passed, convert to singular to ease transition
+  if (is_plural_endpoint(endpoint)) {
+     endpoint = to_singular(endpoint)
+     warning(paste("endpoints are now singular, using",endpoint))
+  }
 
   validate_endpoint(endpoint)
 

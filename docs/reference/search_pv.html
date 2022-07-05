@@ -168,7 +168,7 @@ the user's query.</p>
     <pre class="usage"><span class='fu'>search_pv</span><span class='op'>(</span>
   <span class='va'>query</span>,
   fields <span class='op'>=</span> <span class='cn'>NULL</span>,
-  endpoint <span class='op'>=</span> <span class='st'>"patents"</span>,
+  endpoint <span class='op'>=</span> <span class='st'>"patent"</span>,
   subent_cnts <span class='op'>=</span> <span class='cn'>FALSE</span>,
   mtchd_subent_only <span class='op'>=</span> <span class='cn'>TRUE</span>,
   page <span class='op'>=</span> <span class='fl'>1</span>,
@@ -204,7 +204,7 @@ the user's query.</p>
 A value of <code>NULL</code> indicates that the default fields should be
 returned. Acceptable fields for a given endpoint can be found at the API's
 online documentation (e.g., check out the field list for the
-<a href='http://www.patentsview.org/api/patent.html#field_list'>patents
+<a href='https://patentsview.org/apis/api-endpoints/patents'>patents
 endpoint</a>) or by viewing the <code>fieldsdf</code> data frame
 (<code><a href='https://rdrr.io/r/utils/View.html'>View(fieldsdf)</a></code>). You can also use <code><a href='get_fields.html'>get_fields</a></code> to list
 out the fields available for a given endpoint.</p></td>
@@ -212,14 +212,16 @@ out the fields available for a given endpoint.</p></td>
     <tr>
       <th>endpoint</th>
       <td><p>The web service resource you wish to search. <code>endpoint</code>
-must be one of the following: "patents", "inventors", "assignees",
-"locations", "cpc_subsections", "uspc_mainclasses", or "nber_subcategories".</p></td>
+must be one of the following: "patent", "inventor", "assignee",
+"location", "cpc_group", "cpc_subgroup", "cpc_subsection", "uspc_mainclass",  
+"uspc_subclass","nber_category", "nber_subcategory", "application_citation", 
+or "patent_citation"</p></td>
     </tr>
     <tr>
       <th>subent_cnts</th>
       <td><p>Do you want the total counts of unique subentities to be
 returned? This is equivalent to the <code>include_subentity_total_counts</code>
-parameter found <a href='http://www.patentsview.org/api/query-language.html#options_parameter'>here</a>.</p></td>
+parameter found <a href='https://patentsview.org/apis/api-query-language'>here</a>.</p></td>
     </tr>
     <tr>
       <th>mtchd_subent_only</th>
@@ -229,7 +231,7 @@ has to meet your query's requirements in order for it to be returned, while
 a value of <code>FALSE</code> indicates that all subentity data will be returned,
 even those records that don't meet your query's requirements. This is
 equivalent to the <code>matched_subentities_only</code> parameter found
-<a href='http://www.patentsview.org/api/query-language.html#options_parameter'>here</a>.</p></td>
+<a href='https://patentsview.org/apis/api-query-language'>here</a>.</p></td>
     </tr>
     <tr>
       <th>page</th>
@@ -238,7 +240,7 @@ equivalent to the <code>matched_subentities_only</code> parameter found
     <tr>
       <th>per_page</th>
       <td><p>The number of records that should be returned per page. This
-value can be as high as 10,000 (e.g., <code>per_page = 10000</code>).</p></td>
+value can be as high as 10,000 (e.g., <code>per_page = 1000</code>).</p></td>
     </tr>
     <tr>
       <th>all_pages</th>
@@ -302,7 +304,7 @@ your query is very long (say, over 2,000 characters in length).</p></td>
 
 <span class='fu'>search_pv</span><span class='op'>(</span>
   query <span class='op'>=</span> <span class='va'>qry_funs</span><span class='op'>$</span><span class='fu'>gt</span><span class='op'>(</span>patent_year <span class='op'>=</span> <span class='fl'>2010</span><span class='op'>)</span>,
-  fields <span class='op'>=</span> <span class='fu'><a href='get_fields.html'>get_fields</a></span><span class='op'>(</span><span class='st'>"patents"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"patents"</span>, <span class='st'>"assignees"</span><span class='op'>)</span><span class='op'>)</span>
+  fields <span class='op'>=</span> <span class='fu'><a href='get_fields.html'>get_fields</a></span><span class='op'>(</span><span class='st'>"patent"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"patents"</span>, <span class='st'>"assignees_at_grant"</span><span class='op'>)</span><span class='op'>)</span>
 <span class='op'>)</span>
 
 <span class='fu'>search_pv</span><span class='op'>(</span>
@@ -313,17 +315,18 @@ your query is very long (say, over 2,000 characters in length).</p></td>
 <span class='op'>)</span>
 
 <span class='fu'>search_pv</span><span class='op'>(</span>
-  query <span class='op'>=</span> <span class='va'>qry_funs</span><span class='op'>$</span><span class='fu'>eq</span><span class='op'>(</span>inventor_last_name <span class='op'>=</span> <span class='st'>"crew"</span><span class='op'>)</span>,
+  query <span class='op'>=</span> <span class='va'>qry_funs</span><span class='op'>$</span><span class='fu'>eq</span><span class='op'>(</span>name_last <span class='op'>=</span> <span class='st'>"crew"</span><span class='op'>)</span>,
+  endpoint <span class='op'>=</span> <span class='st'>"inventor"</span>,
   all_pages <span class='op'>=</span> <span class='cn'>TRUE</span>
 <span class='op'>)</span>
 
 <span class='fu'>search_pv</span><span class='op'>(</span>
-  query <span class='op'>=</span> <span class='va'>qry_funs</span><span class='op'>$</span><span class='fu'>contains</span><span class='op'>(</span>inventor_last_name <span class='op'>=</span> <span class='st'>"smith"</span><span class='op'>)</span>,
-  endpoint <span class='op'>=</span> <span class='st'>"assignees"</span>
+  query <span class='op'>=</span> <span class='va'>qry_funs</span><span class='op'>$</span><span class='fu'>contains</span><span class='op'>(</span>name_last <span class='op'>=</span> <span class='st'>"smith"</span><span class='op'>)</span>,
+  endpoint <span class='op'>=</span> <span class='st'>"assignee"</span>
 <span class='op'>)</span>
 
 <span class='fu'>search_pv</span><span class='op'>(</span>
-  query <span class='op'>=</span> <span class='va'>qry_funs</span><span class='op'>$</span><span class='fu'>contains</span><span class='op'>(</span>inventor_last_name <span class='op'>=</span> <span class='st'>"smith"</span><span class='op'>)</span>,
+  query <span class='op'>=</span> <span class='va'>qry_funs</span><span class='op'>$</span><span class='fu'>contains</span><span class='op'>(</span>name_last <span class='op'>=</span> <span class='st'>"smith"</span><span class='op'>)</span>,
   config <span class='op'>=</span> <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/timeout.html'>timeout</a></span><span class='op'>(</span><span class='fl'>40</span><span class='op'>)</span>
 <span class='op'>)</span>
 <span class='op'>}</span>

@@ -62,7 +62,10 @@ to_singular <- function(data) {
       "uspc_mainclasses" = "uspc_mainclass",
       "uspc_subclasses" = "uspc_subclass")
 
-   data_to_endpoint[[data]]
+   if(data %in% names(data_to_endpoint))
+      data_to_endpoint[[data]]
+   else
+      NA
 }
 
 #' @noRd
@@ -83,5 +86,16 @@ to_plural <- function(data) {
       "uspc_mainclass" = "uspc_mainclasses",
       "uspc_subclass" = "uspc_subclasses")
 
-   endpoint_to_data [[data]]
+   if(data %in% names(endpoint_to_data))
+      endpoint_to_data[[data]]
+   else
+      NA
 }
+
+#' @noRd
+is_plural_endpoint <- function(data) {
+  
+   x = to_singular(data)
+   !is.na(to_singular(data))
+}
+

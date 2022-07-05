@@ -44,6 +44,13 @@
 #'
 #' @export
 get_fields <- function(endpoint, groups = NULL) {
+  
+  # check if plural endpoint was passed, convert to singular to ease transition
+  if (is_plural_endpoint(endpoint)) {
+     endpoint = to_singular(endpoint)
+     warning(paste("endpoints are now singular, using",endpoint))
+  }
+
   validate_endpoint(endpoint)
   if (is.null(groups)) {
     fieldsdf[fieldsdf$endpoint == endpoint, "field"]
@@ -55,10 +62,10 @@ get_fields <- function(endpoint, groups = NULL) {
 
 #' Get endpoints
 #'
-#' This function reminds the user what the 9 possible PatentsView API endpoints
+#' This function reminds the user what the 13 possible PatentsView API endpoints
 #' are.
 #'
-#' @return A character vector with the names of the 9 endpoints. Those endpoints are:
+#' @return A character vector with the names of the 13 endpoints. Those endpoints are:
 #'
 #' \itemize{
 #'    \item assignee
@@ -69,7 +76,7 @@ get_fields <- function(endpoint, groups = NULL) {
 #'    \item locations
 #'    \item nber_category
 #'    \item nber_subcategory
-#'    \item patents
+#'    \item patent
 #'    \item uspc_mainclass
 #'    \item uspc_subclass
 #'    \item application_citation
@@ -87,8 +94,21 @@ get_endpoints <- function() {
   )
 }
 
-# now not all endpoints are searchable by patent number
 
+#' Get Patent Num Searchable Endpoints 
+#'
+#' With the api chage, not all endpoints can be searched by patent number
+#' This function reminds the user which endpoints can be searched by patent number
+#'
+#' @return A character vector with the names of the 13 endpoints. Those endpoints are:
+#'
+#' \itemize{
+#'    \item patent
+#'    \item application_citation
+#'    \item patent_citation
+#'  }
+#'
+#' @examples
 #' get_endpoints()
 #' @export
 get_patent_num_searchable_endpoints <- function() {

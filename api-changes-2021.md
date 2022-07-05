@@ -90,10 +90,10 @@ Please refer to the 200 "Response" section for each endpoint for full list of fi
     ~~~~
 
 ## TODOS
-1. Vignettes and any automated testing will most likely have to change.  Looks like we'd need to set up a secret to hold an api key https://docs.github.com/en/rest/actions/secrets
-2. Update comments
+1. Vignettes and examples need updating, some may not be possible due to the api change, like searching inventors by location.
+2. Make sure that all the comments have been updated.
 3. Paging isn't quite right, making a second request if all_pages = TRUE also seems to be sending offset:0, size:25 the first time and offset 0, size 25, per_page:10000, page:1
-4. Test throttling
+4. Test throttling- possibly set all_pages = TRUE with a small per_page.  Remove Sys.sleep(3) in search-pv.R
 5. Check if we need to do anything about JSON on Posts (#6 at the top of the page)
 6. Test that what comes back from the api calls matches the spreadsheet (singular/plural thing mentioned above)
 7. Implement the warning mentioned above (second change to the options parameter)
@@ -108,6 +108,7 @@ Please refer to the 200 "Response" section for each endpoint for full list of fi
         "currently has restrictions on the number of fields/groups you can ",
         "request). Try slimming down your field list and trying again."
 13. problems with cast-pv-data.R  We need the dots when requesting data, ex. assignees_at_grant.state at patent endpoint, but then we don't want the dots when casting.  Probably need to remove the dots from the fake web pages and rescrape.  get_fields would need to add the groups and dot when the fields are nested. It's the one test that fails.
+14. casting may only be necessary to convert dates, the new version of the api seems to return integers and floats.  Exception seems to be assignees_at_grant.type, it's a string that probably should be an int
 
 
 ## Try it yourself
@@ -119,9 +120,10 @@ Steps to try this out locally
 
 The environmental variable's name is the same one I used in the api's python wrapper https://github.com/mustberuss/PatentsView-APIWrapper/tree/api-change-2022
 ## Questions
-1. Does anything need to change in cast-pv-data.R?
-2. Are existing sleeps in search-pv.R needed? (If the throttling works)
-3. Are there any other fields changing type?  (like assignee organization becoming a full text field, formerly it had been a string)
-4. Are there more fields (like the government interests) that went away?
+1. Are existing sleeps in search-pv.R needed? (If the throttling works)
+2. Are there any other fields changing type?  (like assignee organization becoming a full text field, formerly it had been a string)
+3. Are there more fields (like the government interests) that went away?
+4. Do we need to set up an api key as a secret?  It would be needed if there are api calls in the build workflow.
+5. It looks like Dates are the only thing that cast-pv-data needs to convert. The api seems to return integers etc., not always strings.  Exception is assignees_at_grant.type, it's still a string when it should be an int
 &nbsp;
 &nbsp;

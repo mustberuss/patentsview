@@ -9,6 +9,11 @@ vignette: >
 
 
 
+## Recent API Change
+
+With the recent api change, the patent endpoint is the main way to retrieve data. The other 
+endpoints supply additional information.
+
 ## Patents endpoint
 
 Which patents have been cited by more than 500 US patents?
@@ -17,20 +22,24 @@ Which patents have been cited by more than 500 US patents?
 ```r
 library(patentsview)
 
-search_pv(query = qry_funs$gt(patent_num_cited_by_us_patents = 500))
+search_pv(query = qry_funs$gt(patent_num_times_cited_by_us_patents = 500))
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_gt%22%3A%7B%22patent_num_times_cited_by_us_patents%22%3A500%7D%7D&f=&o={\"offset\":0,\"size\":1000}&s="
 #> $data
-#> #### A list with a single data frame on a patent level:
+#> [1] "patents"
+#> #### A list with a single data frame (with list column(s) inside) on a patent level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	25 obs. of  3 variables:
-#>   ..$ patent_id    : chr [1:25] "3940844" ...
-#>   ..$ patent_number: chr [1:25] "3940844" ...
-#>   ..$ patent_title : chr [1:25] "Method of installing an insulating sleeve on"..
+#>  $ patents:'data.frame':	1000 obs. of  5 variables:
+#>   ..$ patent_number     : chr [1:1000] "4278837" ...
+#>   ..$ patent_title      : chr [1:1000] "Crypto microprocessor for executing e"..
+#>   ..$ patent_date       : chr [1:1000] "1981-07-14" ...
+#>   ..$ inventors_at_grant:List of 1000
+#>   ..$ assignees_at_grant:List of 1000
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_patent_count = 7,915
+#> total_hits = 9,108
 ```
 
 How many distinct inventors are represented by these highly-cited patents?
@@ -40,124 +49,118 @@ How many distinct inventors are represented by these highly-cited patents?
 # Setting subent_cnts = TRUE will give us the subentity counts. Since inventors 
 # are subentities for the patents endpoint, this means we will get their counts.
 search_pv(
-  query = qry_funs$gt(patent_num_cited_by_us_patents = 500),
-  fields = c("patent_number", "inventor_id"), 
+  query = qry_funs$gt(patent_num_times_cited_by_us_patents = 500),
+  fields = c("patent_number", "inventors_at_grant.inventor"), 
   subent_cnts = TRUE
 )
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_gt%22%3A%7B%22patent_num_times_cited_by_us_patents%22%3A500%7D%7D&f=[\"patent_number\",\"inventors_at_grant.inventor\"]&o={\"offset\":0,\"size\":1000}&s="
 #> $data
-#> #### A list with a single data frame (with list column(s) inside) on a patent level:
+#> [1] "patents"
+#> #### A list with a single data frame on a patent level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	25 obs. of  2 variables:
-#>   ..$ patent_number: chr [1:25] "3940844" ...
-#>   ..$ inventors    :List of 25
+#>  $ patents:'data.frame':	1000 obs. of  1 variable:
+#>   ..$ patent_number: chr [1:1000] "4278837" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_patent_count = 7,915, total_inventor_count = 11,263
+#> total_hits = 9,108
 ```
 
-Where geographically have Microsoft inventors been coming from over the past 20 years?
+Where geographically have Microsoft inventors been coming from over the past few years?
 
 
 ```r
 # Write the query
 query <- with_qfuns(
   and(
-    gte(patent_date = "2007-07-25"), # Dates are in yyyy-mm-dd format 
-    contains(assignee_organization = "microsoft")
+    gte(patent_date = "2019-07-30"), # Dates are in yyyy-mm-dd format 
+    text_phrase(assignees_at_grant.organization = "microsoft")
   )
 )
 
 # Create a field list
-inv_fields <- get_fields(endpoint = "patents", groups = "inventors")
+inv_fields <- get_fields(endpoint = "patent", groups = "inventors_at_grant")
 fields <- c(inv_fields, "patent_number")
 
 # Pull the data
 pv_out <- search_pv(query, fields = fields, all_pages = TRUE)
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&o={\"offset\":0,\"size\":1000}&s="
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&o={\"offset\":1000,\"size\":1000}&s="
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&o={\"offset\":2000,\"size\":1000}&s="
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&o={\"offset\":3000,\"size\":1000}&s="
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&o={\"offset\":4000,\"size\":1000}&s="
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&o={\"offset\":5000,\"size\":1000}&s="
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&o={\"offset\":6000,\"size\":1000}&s="
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&o={\"offset\":7000,\"size\":1000}&s="
 
 # Unnest the inventor list column
 unnest_pv_data(pv_out$data, "patent_number")
 #> List of 2
-#>  $ inventors:'data.frame':	144495 obs. of  24 variables:
-#>   ..$ patent_number                 : chr [1:144495] "10001683" ...
-#>   ..$ inventor_city                 : chr [1:144495] "Mountain View" ...
-#>   ..$ inventor_country              : chr [1:144495] "US" ...
-#>   ..$ inventor_county               : logi [1:144495] NA ...
-#>   ..$ inventor_county_fips          : chr [1:144495] "6085" ...
-#>   ..$ inventor_first_name           : chr [1:144495] "Andriy" ...
-#>   ..$ inventor_first_seen_date      : chr [1:144495] "2014-04-22" ...
-#>   ..$ inventor_id                   : chr [1:144495] "fl:a_ln:pletenetskyy-1" ..
-#>   ..$ inventor_last_name            : chr [1:144495] "Pletenetskyy" ...
-#>   ..$ inventor_last_seen_date       : chr [1:144495] "2020-10-13" ...
-#>   ..$ inventor_lastknown_city       : chr [1:144495] "Mountain View" ...
-#>   ..$ inventor_lastknown_country    : chr [1:144495] "US" ...
-#>   ..$ inventor_lastknown_latitude   : chr [1:144495] "37.4139" ...
-#>   ..$ inventor_lastknown_location_id: chr [1:144495] "37.4139|-122.085" ...
-#>   ..$ inventor_lastknown_longitude  : chr [1:144495] "-122.085" ...
-#>   ..$ inventor_lastknown_state      : chr [1:144495] "CA" ...
-#>   ..$ inventor_latitude             : chr [1:144495] "37.4139" ...
-#>   ..$ inventor_location_id          : chr [1:144495] "37.4139|-122.085" ...
-#>   ..$ inventor_longitude            : chr [1:144495] "-122.085" ...
-#>   ..$ inventor_sequence             : chr [1:144495] "0" ...
-#>   ..$ inventor_state                : chr [1:144495] "CA" ...
-#>   ..$ inventor_state_fips           : chr [1:144495] "06" ...
-#>   ..$ inventor_total_num_patents    : chr [1:144495] "15" ...
-#>   ..$ inventor_key_id               : chr [1:144495] "489570" ...
-#>  $ patents  :'data.frame':	39051 obs. of  1 variable:
-#>   ..$ patent_number: chr [1:39051] "10001683" ...
+#>  $ inventors_at_grant:'data.frame':	22801 obs. of  6 variables:
+#>   ..$ patent_number: chr [1:22801] "10733252" ...
+#>   ..$ name_first   : chr [1:22801] "Yongzheng" ...
+#>   ..$ name_last    : chr [1:22801] "Zhang" ...
+#>   ..$ city         : chr [1:22801] "San Jose" ...
+#>   ..$ state        : chr [1:22801] "CA" ...
+#>   ..$ country      : chr [1:22801] "US" ...
+#>  $ patents           :'data.frame':	5703 obs. of  1 variable:
+#>   ..$ patent_number: chr [1:5703] "10733252" ...
 ```
-
-## Inventors endpoint
 
 Which inventors have Chicago, IL listed as their location on at least one patent.[^1]
 
 
 ```r
 search_pv(
-  query = '{"_and":[{"location_city":"Chicago"},{"location_state":"IL"}]}',
-  endpoint = "inventors"
+  query = '{"_and":[{"_text_phrase": {"inventors_at_grant.city":"Chicago"}},{"_text_phrase": {"inventors_at_grant.state":"IL"}}]}',
+  endpoint = "patent"
 )
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_text_phrase%22%3A%20%7B%22inventors_at_grant.city%22%3A%22Chicago%22%7D%7D%2C%7B%22_text_phrase%22%3A%20%7B%22inventors_at_grant.state%22%3A%22IL%22%7D%7D%5D%7D&f=&o={\"offset\":0,\"size\":1000}&s="
 #> $data
-#> #### A list with a single data frame on an inventor level:
+#> [1] "patents"
+#> #### A list with a single data frame (with list column(s) inside) on a patent level:
 #> 
 #> List of 1
-#>  $ inventors:'data.frame':	25 obs. of  3 variables:
-#>   ..$ inventor_id        : chr [1:25] "fl:b_ln:gunderson-2" ...
-#>   ..$ inventor_first_name: chr [1:25] "Bjorn" ...
-#>   ..$ inventor_last_name : chr [1:25] "Gunderson" ...
+#>  $ patents:'data.frame':	1000 obs. of  5 variables:
+#>   ..$ patent_number     : chr [1:1000] "4278694" ...
+#>   ..$ patent_title      : chr [1:1000] "Modified liquid smoke compositions an"..
+#>   ..$ patent_date       : chr [1:1000] "1981-07-14" ...
+#>   ..$ assignees_at_grant:List of 1000
+#>   ..$ inventors_at_grant:List of 1000
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_inventor_count = 16,360
+#> total_hits = 10,000
 ```
-
-## Assignees endpoint
 
 Which assignees have an interest in beer?
 
 
 ```r
 search_pv(
-  query = qry_funs$text_phrase(patent_title = "beer"), 
-  endpoint = "assignees"
+  query = qry_funs$contains(patent_title = "beer"), 
+  endpoint = "patent"
 )
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_contains%22%3A%7B%22patent_title%22%3A%22beer%22%7D%7D&f=&o={\"offset\":0,\"size\":1000}&s="
 #> $data
-#> #### A list with a single data frame on an assignee level:
+#> [1] "patents"
+#> #### A list with a single data frame (with list column(s) inside) on a patent level:
 #> 
 #> List of 1
-#>  $ assignees:'data.frame':	25 obs. of  4 variables:
-#>   ..$ assignee_id          : chr [1:25] "6cdc5a48-9dd2-4d1c-8c35-27eaef76ffd1"..
-#>   ..$ assignee_first_name  : logi [1:25] NA ...
-#>   ..$ assignee_last_name   : logi [1:25] NA ...
-#>   ..$ assignee_organization: chr [1:25] "Rohm Co., Ltd." ...
+#>  $ patents:'data.frame':	323 obs. of  5 variables:
+#>   ..$ patent_number     : chr [1:323] "4299161" ...
+#>   ..$ patent_title      : chr [1:323] "Ring and snap-on ring for preventing b"..
+#>   ..$ patent_date       : chr [1:323] "1981-11-10" ...
+#>   ..$ assignees_at_grant:List of 323
+#>   ..$ inventors_at_grant:List of 323
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_assignee_count = 225
+#> total_hits = 323
 ```
 
 [^1]: Example taken from http://www.patentsview.org/api/inventor.html.

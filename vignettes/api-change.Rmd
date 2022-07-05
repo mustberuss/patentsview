@@ -1,0 +1,12 @@
+---
+title: "Api Changes"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Api Changes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+
