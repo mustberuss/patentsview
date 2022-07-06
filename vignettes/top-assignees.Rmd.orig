@@ -166,13 +166,17 @@ IBM is far and away the biggest player in the field. However, we can see that Or
 # don't know enough R to do this properly!
 # would really only want to return the patent year if the 
 
-grant_years = lapply(pv_out$data$patents, function(y,i) {
+with_grant_years = lapply(pv_out$data$patents, function(y,i) {
    grant_year = y$patent_year
+   abc = c()
    lapply(y$assignees_at_grant, function(z,i) {
-      grant_year
+      abc = append(abc, grant_year)
+      z
       }, y$assignees_at_grant)
-   grant_year
+   y$assignees_at_grant$grant_year = abc
+   y
 }, y=pv_out$data$patents)
+
 
 # trouble is that this is the years for all assignees, not just the top 75
 # probably need to iterate through top_asgns to figure this out or to 
@@ -181,6 +185,7 @@ grant_years = lapply(pv_out$data$patents, function(y,i) {
 # wanting to add grant_year to assignees_at_grant but it's failing
 ##pv_out$data$patents$assignees_at_grant$grant_year <- NA
 ##pv_out$data$patents$assignees_at_grant$grant_year <- grant_years$patent_year
+# replacement has 6599 rows, data has 6598
 
 # Create a data frame with patent counts by grant year for each assignee
 

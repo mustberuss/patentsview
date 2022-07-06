@@ -31,9 +31,9 @@ get_ok_pk <- function(endpoint) {
   }
 
   es_eps <- c(
-    "patents" = "patent_number",
-    "patent_citations" = "patent_number",
-    "application_citations" = "patent_number"
+    "patent" = "patent_number",
+    "patent_citation" = "patent_number",
+    "application_citation" = "patent_number"
   )
   ifelse(
     endpoint %in% names(es_eps),
@@ -57,7 +57,7 @@ get_ok_pk <- function(endpoint) {
 #'   inside it. See examples.
 #' @param pk The column/field name that will link the data frames together. This
 #'   should be the unique identifier for the primary entity. For example, if you
-#'   used the patents endpoint in your call to \code{search_pv}, you could
+#'   used the patent endpoint in your call to \code{search_pv}, you could
 #'   specify \code{pk = "patent_number"}. \strong{This identifier has to have
 #'   been included in your \code{fields} vector when you called
 #'   \code{search_pv}}. You can use \code{\link{get_ok_pk}} to suggest a
@@ -93,7 +93,8 @@ unnest_pv_data <- function(data, pk = get_ok_pk(names(data))) {
   sub_ent_df <- df[, !prim_ent_var, drop = FALSE]
   sub_ents <- colnames(sub_ent_df)
 
-  ok_pk <- get_ok_pk(names(data))
+  # data uses plural name while endpoint uses singular name
+  ok_pk <- get_ok_pk(to_singular(names(data)))
 
   out_sub_ent <- lapply2(sub_ents, function(x) {
     temp <- sub_ent_df[[x]]

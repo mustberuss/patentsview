@@ -90,12 +90,12 @@ Please refer to the 200 "Response" section for each endpoint for full list of fi
     ~~~~
 
 ## TODOS
-1. Vignettes and examples need updating, some may not be possible due to the api change, like searching inventors by location.
+1. Vignettes and examples need updating, some may not be possible due to the api change, like searching inventors by location.  No errors are thrown by citation-networks.Rmd.orig but there are differences in the output.  Seems to work locally but not by workflow
 2. Make sure that all the comments have been updated.
-3. Paging isn't quite right, making a second request if all_pages = TRUE also seems to be sending offset:0, size:25 the first time and offset 0, size 25, per_page:10000, page:1
-4. Test throttling- possibly set all_pages = TRUE with a small per_page.  Remove Sys.sleep(3) in search-pv.R
+3. Paging isn't quite right, repeats first request if all_pages = TRUE 
+4. Test throttling- possibly set all_pages = TRUE with a small per_page.  Removed Sys.sleep(3) in search-pv.R
 5. Check if we need to do anything about JSON on Posts (#6 at the top of the page)
-6. Test that what comes back from the api calls matches the spreadsheet (singular/plural thing mentioned above)
+6. Test that what comes back from the api calls matches the spreadsheet (singular/plural thing mentioned above) There's a link to the spreadsheet at the bottom of https://patentsview.org/apis/purpose
 7. Implement the warning mentioned above (second change to the options parameter)
 8. Check if the location specific error checking is still needed (throw_if_loc_error() in process-error.R). The locations endpoint won't return as many fields as before. 
 9. Add a warning message if the http status 403 Incorrect/Missing API Key is received. The api key must be in the environment at start up, so a 403 on a query should only be returned if it is invalid.
@@ -109,7 +109,7 @@ Please refer to the 200 "Response" section for each endpoint for full list of fi
         "request). Try slimming down your field list and trying again."
 13. problems with cast-pv-data.R  We need the dots when requesting data, ex. assignees_at_grant.state at patent endpoint, but then we don't want the dots when casting.  Probably need to remove the dots from the fake web pages and rescrape.  get_fields would need to add the groups and dot when the fields are nested. It's the one test that fails.
 14. casting may only be necessary to convert dates, the new version of the api seems to return integers and floats.  Exception seems to be assignees_at_grant.type, it's a string that probably should be an int
-
+15 probably shouldn't have api-change.Rmd.orig as a vignette
 
 ## Try it yourself
 Steps to try this out locally

@@ -9,4 +9,119 @@ vignette: >
 
 
 
+## Summary of the api changes announced in 2021
+ 
+In July of 2021 the patentview api team announced upcoming api changes here https://patentsview.org/data-in-action/whats-new-patentsview-july-2021.  This page will explain the impact to the r package and any existing code.
+ 
+The patentsview api team has provided a Swagger UI page for the new version of the api at https://search.patentsview.org/swagger-ui/. It shows all the available endpoints and their responses.  Each field in the 200 response sections could be requested in the f: parameter and each field is supposed to be queryable.  The Swagger UI page can be used to make requests, if you have an api key to enter in the authorization screen, more about the new api key below.  The Swagger UI definition at https://patentsview.historicip.com/swagger/openapi_v2.yml can be imported into Postman to give you a nicely loaded collection for the changed api. You'll just need to set a global variable PVIEW_KEY and set the authorization's value to {{PVIEW_KEY}} to your api key. (The patentsview's Swagger UI definition https://search.patentsview.org/static/openapi_v2.yml could be imported into Postman but it currently contains errors and does not contain a servers entry.  This was reported to the api team.)
 
+## An API Key is required
+Perhaps the most important change, without an api key your queries will be rejected.  Request an api key using this link: https://patentsview.org/apis/keyrequest  Once you have one, you'll need to set an environmental variable PATENTSVIEW_API_KEY to the value of your api key for the R package to use.
+
+## Philosophical Changes
+These changes are likely to break existing code.  Now there are more endpoints and each returns a smaller, more specific data structure pertinent to that endpoint. As an example, previously the inventor endpoint could return assignee information, it no longer does that.  The exception is the patent endpoint.  It now can return assignees_at_grant, inventors_at_grant, cpc_current along with patent specific fields. Note that now subsequent queries would have to be made to the USPC specific endpoints if you are looking for these fields.
+
+Now there are 13 endpoints, up from the original 7.  The urls changed slightly but the R package takes care of that for you. 
+1. There are 2 totally new endpoints
+    *  /api/v1/patent_citation/
+    *  /api/v1/application_citation/
+2. 7 of the original api's endpoints have singular names but lighter responses and fewer queryable fields as mentioned above. 
+   *  /api/v1/assignee/
+   *  /api/v1/inventor/
+   *  /api/v1/location/  (not currently on the test server)
+   *  /api/v1/patent/
+   *  /api/v1/cpc_subsection/
+   *  /api/v1/nber_subcategory/
+   *  /api/v1/uspc_subclass/
+3. There are an additional 4 new endpoints which are subdivisions of the original classification endpoints
+   * /api/v1/cpc_group/
+   * /api/v1/cpc_subgroup/
+   * /api/v1/nber_category/
+   * /api/v1/uspc_mainclass/
+
+## Data Reduction
+
+Quite a few fields seem to have gone away, including government interest fields, ipc fields, wipo fields, lawyer fields, foreign_priority fields, examiner fields, pct fields, raw inventor fields, coinventor fields, patent_firstnamed fields or patent_num_claims.  There's a link to a spreadsheet of the fields returned by endpoint at the bottom of https://patentsview.org/apis/purpose
+
+
+## HATEOAS
+Some of the returned fields are links to retrieve more information about that field. Slight funky is the cpc_current's cpc_subgroup, returned by the patent endpoint.  Here the slash in the cpc is turned into a colon.  This is a picularity of two of the new convience urls that shouldn't be noticable in the r package, unless you are trying to infer the uspc and cpc values from the returned urls.
+
+ "cpc_current": {
+     "cpc_subgroup": "https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4865/" 
+  }
+
+Note that you'll get an error if you click on that link as an api key is not sent with as the  
+X-Api-Key header.  The response will be an http 403 Forbidden, instead of a 200.
+
+
+## Query size changes
+1. The default result set size is now 100, originally it was 25. 
+2. The maximum rows that can be requested at one time is now 1,000, down from 10,000
+3. The overall paged result set size limit is now 10,000 rows, down from the original 100,000 
+
+The R package should take care of these changes, though you may have to make additional
+queries to get around the new overall paged result set size of 10,000 rows.
+
+## Throttling
+The api will now allow 45 requests per minute, making more requests will anger the api.  It will send back an error code with a header indicating how many seconds to wait before repeating the query.  The R package should take care of this for you.
+
+## Miscellaneous Changes
+
+* Some of the fields names changed.  assignee_last_name is now name_last in the assignees data structure.
+
+* Some string fields are now full text fields, meaning you need to use different methods
+when including them in your query.  Example:  assignee organization is renamed organization and is now a full text field, formerly it had been a string. 
+
+* There are some new convience methods, which take url parameters.  The api will still respond to GETs and POSTs, so the R package won't need to use these new urls.
+
+* The endpoints are now singluar, patent for example, where in the past they were plural, patents
+for example.  The R package will display a warning if the plural name is used but the singular name will be used when calling the api.  There would be a small chance that an existing script would work, once the now-required api key is set up.
+
+* All fields are supposed to be queryable with the new version of the api.
+
+* The subdomain of the api changed from https://api.patentsview.org/ to https://search.patentsview.org.  The patentsview package takes care of this for you.
+
+* Nested fields seem to need to be fully qualified in the f:parameter. Here are all the patent endpoint's fields:
+
+```r
+library(patentsview)
+get_fields("patent")
+#>  [1] "patent_number"                                               
+#>  [2] "patent_title"                                                
+#>  [3] "patent_date"                                                 
+#>  [4] "patent_type"                                                 
+#>  [5] "patent_country"                                              
+#>  [6] "patent_year"                                                 
+#>  [7] "patent_abstract"                                             
+#>  [8] "patent_kind"                                                 
+#>  [9] "patent_num_foreign_documents_cited"                          
+#> [10] "patent_num_us_applications_cited"                            
+#> [11] "patent_num_us_patents_cited"                                 
+#> [12] "patent_num_total_documents_cited"                            
+#> [13] "patent_num_times_cited_by_us_patents"                        
+#> [14] "patent_earliest_application_date"                            
+#> [15] "patent_patent_processing_days"                               
+#> [16] "patent_uspc_current_mainclass_average_patent_processing_days"
+#> [17] "patent_cpc_current_group_average_patent_processing_days"     
+#> [18] "patent_term_extension"                                       
+#> [19] "patent_detail_desc_length"                                   
+#> [20] "assignees_at_grant.assignee_id"                              
+#> [21] "assignees_at_grant.name_first"                               
+#> [22] "assignees_at_grant.name_last"                                
+#> [23] "assignees_at_grant.organization"                             
+#> [24] "assignees_at_grant.type"                                     
+#> [25] "assignees_at_grant.city"                                     
+#> [26] "assignees_at_grant.state"                                    
+#> [27] "assignees_at_grant.country"                                  
+#> [28] "inventors_at_grant.inventor"                                 
+#> [29] "inventors_at_grant.name_first"                               
+#> [30] "inventors_at_grant.name_last"                                
+#> [31] "inventors_at_grant.city"                                     
+#> [32] "inventors_at_grant.state"                                    
+#> [33] "inventors_at_grant.country"                                  
+#> [34] "cpc_current.cpc_subsection"                                  
+#> [35] "cpc_current.cpc_group"                                       
+#> [36] "cpc_current.cpc_subgroup_id"                                 
+#> [37] "cpc_current.cpc_group_title"
+```

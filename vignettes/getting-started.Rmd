@@ -145,20 +145,20 @@ search_pv(
   all_pages = TRUE
 )
 #> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_eq%22%3A%7B%22inventors_at_grant.name_last%22%3A%22chambers%22%7D%7D&f=&o={\"offset\":0,\"size\":1000}&s="
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_eq%22%3A%7B%22inventors_at_grant.name_last%22%3A%22chambers%22%7D%7D&f=&o={\"offset\":0,\"size\":1000}&s="
 #> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_eq%22%3A%7B%22inventors_at_grant.name_last%22%3A%22chambers%22%7D%7D&f=&o={\"offset\":1000,\"size\":1000}&s="
 #> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_eq%22%3A%7B%22inventors_at_grant.name_last%22%3A%22chambers%22%7D%7D&f=&o={\"offset\":2000,\"size\":1000}&s="
-#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_eq%22%3A%7B%22inventors_at_grant.name_last%22%3A%22chambers%22%7D%7D&f=&o={\"offset\":3000,\"size\":1000}&s="
 #> $data
 #> [1] "patents"
 #> #### A list with a single data frame (with list column(s) inside) on a patent level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	1156 obs. of  5 variables:
-#>   ..$ patent_number     : chr [1:1156] "8406383" ...
-#>   ..$ patent_title      : chr [1:1156] "Voice authentication for call control"..
-#>   ..$ patent_date       : chr [1:1156] "2013-03-26" ...
-#>   ..$ assignees_at_grant:List of 1156
-#>   ..$ inventors_at_grant:List of 1156
+#>  $ patents:'data.frame':	2156 obs. of  5 variables:
+#>   ..$ patent_number     : chr [1:2156] "4279524" ...
+#>   ..$ patent_title      : chr [1:2156] "Apparatus for advancing a record medi"..
+#>   ..$ patent_date       : chr [1:2156] "1981-07-21" ...
+#>   ..$ assignees_at_grant:List of 2156
+#>   ..$ inventors_at_grant:List of 2156
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
@@ -345,6 +345,12 @@ res$data
 
 ```r
 library(tidyr)
+#> Warning: package 'tidyr' was built under R version 3.6.3
+#> 
+#> Attaching package: 'tidyr'
+#> The following object is masked from 'package:magrittr':
+#> 
+#>     extract
 
 # Get assignee data:
 res$data$patents %>% 

@@ -48,7 +48,7 @@ Now there are 13 endpoints, up from the original 7.  The urls changed slightly b
 
 ## Data Reduction
 
-Quite a few fields seem to have gone away, including government interest fields, ipc fields, wipo fields, lawyer fields, foreign_priority fields, examiner fields, pct fields, raw inventor fields, coinventor fields, patent_firstnamed fields or patent_num_claims.
+Quite a few fields seem to have gone away, including government interest fields, ipc fields, wipo fields, lawyer fields, foreign_priority fields, examiner fields, pct fields, raw inventor fields, coinventor fields, patent_firstnamed fields or patent_num_claims.  There's a link to a spreadsheet of the fields returned by endpoint at the bottom of https://patentsview.org/apis/purpose
 
 
 ## HATEOAS

@@ -53,7 +53,7 @@ one_request <- function(method, query, base_url, arg_list, ...) {
 
   if (method == "GET") {
     get_url <- get_get_url(query, base_url, arg_list)
-    print(get_url);
+    print(get_url)
     resp <- httr::GET(get_url, httr::add_headers("X-Api-Key" = pview_key()), ua, ...)
 
     # sleep and retry on a 429 Too many requests
@@ -83,6 +83,7 @@ one_request <- function(method, query, base_url, arg_list, ...) {
 request_apply <- function(ex_res, method, query, base_url, arg_list, ...) {
 
   req_pages <- ceiling(ex_res$query_results[[1]] / 1000)
+
   if (req_pages < 1) {
     stop(
       "No records matched your query...Can't download multiple pages",
@@ -90,10 +91,11 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, ...) {
     )
   }
 
+  # this is repeating the first call, could put ex_res in tmp and loop lapply 2:req_pages
   tmp <- lapply(1:req_pages, function(i) {
-    Sys.sleep(3)
+    # should really be page_size not 1000 so we can test throttling by using a small page size
     arg_list$opts$size <- 1000
-    arg_list$opts$offset <- i  * 1000
+    arg_list$opts$offset <- (i - 1) * 1000
     x <- one_request(method, query, base_url, arg_list, ...)
     x$data[[1]]
   })

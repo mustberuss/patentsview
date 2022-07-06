@@ -182,7 +182,8 @@ are subdivisions of the original classification endpoints *
 interest fields, ipc fields, wipo fields, lawyer fields,
 foreign_priority fields, examiner fields, pct fields, raw inventor
 fields, coinventor fields, patent_firstnamed fields or
-patent_num_claims.</p>
+patent_num_claims. There’s a link to a spreadsheet of the fields
+returned by endpoint at the bottom of <a href="https://patentsview.org/apis/purpose" class="uri">https://patentsview.org/apis/purpose</a></p>
 </div>
 <div id="hateoas" class="section level2">
 <h2 class="hasAnchor">
@@ -236,9 +237,10 @@ field, formerly it had been a string.</p></li>
 The api will still respond to GETs and POSTs, so the R package won’t
 need to use these new urls.</p></li>
 <li><p>The endpoints are now singluar, patent for example, where in the
-past they were plural, patents for example. ** Perhaps the R package
-could isolate this change from users? Internally converting from patents
-to patent? **</p></li>
+past they were plural, patents for example. The R package will display a
+warning if the plural name is used but the singular name will be used
+when calling the api. There would be a small chance that an existing
+script would work, once the now-required api key is set up.</p></li>
 <li><p>All fields are supposed to be queryable with the new version of
 the api.</p></li>
 <li><p>The subdomain of the api changed from <a href="https://api.patentsview.org/" class="uri">https://api.patentsview.org/</a> to <a href="https://search.patentsview.org" class="uri">https://search.patentsview.org</a>. The patentsview package

@@ -40,20 +40,26 @@ pat_nums <- c("10095778","9075849","8818996","8504560","8131701","7966328","7797
 # can we _or the two queries or does that blend the results? ie do we need a cited by query
 # and a separate citing query?
 
+# probably could do combined query and have two dplyrs to pull out citing and cited patents
+# one looking for patent_number in pat_nums and one looking for cited patent_number in pat_nums 
 combined_query <- qry_funs$or(
    qry_funs$eq(patent_number = pat_nums),
    qry_funs$eq(cited_patent_number = pat_nums)
 )
 
-citing_query = qry_funs$eq(patent_number = pat_nums);
-cited_query = qry_funs$eq(cited_patent_number = pat_nums);
+citing_query = qry_funs$eq(patent_number = pat_nums)
+cited_query = qry_funs$eq(cited_patent_number = pat_nums)
 
 # mutate results here to mimic the return of the original version of the api??
 # or can we deal with the new structure directly?
 
 # old structure was
-# "patents": { { "patent_number": "10095778","cited_patents": [{"cited_patent_number": "4991087",...}],
-#                                            "citedby_patents": [{"citedby_patent_number": "10635705"}],{...}}
+# "patents": [ { "patent_number": "10095778","cited_patents": [{"cited_patent_number": "4991087",...}],
+#                                            "citedby_patents": [{"citedby_patent_number": "10635705"}],{...}]
+
+# new structure
+# "patent_citations": [ {"patent_number": "10095778", "cited_patent_number": "6430539"} ... ]
+
 
 # Create a list of fields to pull from the API
 fields <- c(
@@ -63,17 +69,20 @@ fields <- c(
 
 # use a post?  the q: parameter is pretty big
 # Send a request to the API
-res <- search_pv(citing_query, fields = fields, all_pages = TRUE, endpoint = "patent_citation", method = "POST")
+res <- search_pv(citing_query, fields = fields, all_pages = TRUE, endpoint = "patent_citation", method = "GET")
+res2 <- search_pv(cited_query , fields = fields, all_pages = TRUE, endpoint = "patent_citation", method = "GET")
 
-# now we'd like to group res$x by patent number - does that get close to the original api's structure?
-
-# Unnest the data found in the list columns
+# Unnest the data found in the two lists of columns
 res_lst <- unnest_pv_data(res$data, pk = "patent_number")
 res_lst
+
+res_lst2 <- unnest_pv_data(res2$data, pk = "patent_number")
+res_lst2
+
 ```
-# TODO: this needs work - not quite right?
+
 # count the distinct patent_number and cited_patent_number
-There are only `r length(pat_nums)` PCA patents. These patents cite `r n_distinct(res_lst$patent_citations$cited_patent_number)` patents and are cited by `r nrow(res_lst$patent_citations)` patents. Let's visualize the citations among the PCA patents. We'll create our visualization using the `visNetwork` package, which requires us to create a data frame of nodes and a data frame of edges.
+There are only `r length(pat_nums)` PCA patents. These patents cite `r nrow(res_lst$patent_citations)` patents and are cited by `r nrow(res_lst2$patent_citations)` patents. Let's visualize the citations among the PCA patents. We'll create our visualization using the `visNetwork` package, which requires us to create a data frame of nodes and a data frame of edges.
 
 ```{r}
 
@@ -86,13 +95,17 @@ pat_title <- function(title, number) {
   paste0('<a href="https://patents.google.com/patent/US', number, '">', i, '</a>')
 }
 
+# using right query results?  check what calling the original api produces
 edges <-
   res_lst$patent_citations %>%
-    semi_join(x = ., y = ., by = c("cited_patent_number" = "patent_number")) %>%
+    semi_join(x = ., y = ., by = c("cited_patent_number" = "patent_number" )) %>%
     set_colnames(c("from", "to"))
 
+# call the patent endpoint so we can iterate through the data here?
+# or pull unique patent numbers from the first query? 
 nodes <-
   res_lst$patent_citations %>%
+  distinct(patent_number) %>%
     mutate(
       id = patent_number,
       label = patent_number,
@@ -105,6 +118,7 @@ visNetwork(
 ) %>%
   visEdges(arrows = list(to = list(enabled = TRUE))) %>%
   visIgraphLayout()
+
 ```
 
 It looks like several of the patents cite patent number 6,499,026, perhaps indicating that this patent contains technology that is foundational to the field. However, when we hover over the nodes we see that several of the patents have the same title. Clicking on the titles brings us to their full text on Google Patents, which confirms that many of these PCA patents belong to the same patent family.[^1]  Let's choose one of the patents in each family to act as the family's representative. This will reduce the size of the subsequent network, while hopefully retaining its overall structure.
@@ -118,30 +132,45 @@ With only 3 patents, it will probably be possible to visualize how these patents
 
 ```{r}
 rel_pats <-
-  res_lst2$cited_patents %>%
-    rbind(setNames(res_lst2$citedby_patents, names(.))) %>% 
+  res_lst$patent_citations %>%
+    rbind(setNames(res_lst$patent_citations, names(.))) %>% 
     select(-patent_number) %>%
     rename(patent_number = cited_patent_number) %>%
     bind_rows(data.frame(patent_number = p3)) %>% 
     distinct() %>%
     filter(!is.na(patent_number))
 
+# difference here from the original api's output
+# then: Rows: 537 Columns: 1 $ patent_number
+#  now: Rows: 269 Columns: 1 $ patent_number 
+
 # Look up which patents the relevant patents cite
+# we use the patent_citation endpoint now, we can't get patent_title here
+
 rel_pats_res <- search_pv(
   query = list(patent_number = rel_pats$patent_number),
-  fields =  c("cited_patent_number", "patent_number", "patent_title"), 
-  all_pages = TRUE, method = "POST"
+  fields =  c("cited_patent_number", "patent_number"), 
+  all_pages = TRUE, method = "POST", endpoint = "patent_citation"
 )
 
 rel_pats_lst <- unnest_pv_data(rel_pats_res$data, "patent_number")
+
+# another difference here
+# old data.frame':  537 obs. of  2 variables
+# new 'data.frame': 4855 obs. of  2 variables
+
 ```
 
-Now we know which patents the `r nrow(rel_pats_lst$patents)` relevant patents cite. This allows us to measure the similarity between the `r nrow(rel_pats_lst$patents)` patents by seeing how many cited references they share in common (a method known as [bibliographic coupling](https://en.wikipedia.org/wiki/Bibliographic_coupling)).
+Now we know which patents the `r nrow(rel_pats_lst$patent_citations)` relevant patents cite. This allows us to measure the similarity between the `r nrow(rel_pats_lst$patent_citations)` patents by seeing how many cited references they share in common (a method known as [bibliographic coupling](https://en.wikipedia.org/wiki/Bibliographic_coupling)).
 
 ```{r}
 cited_pats <-
-  rel_pats_lst$cited_patents %>%
+  rel_pats_lst$patent_citations %>%
     filter(!is.na(cited_patent_number))
+
+# difference here too
+# old Rows: 51,266
+# new Rows:  4,855
 
 full_network <- 
   cited_pats %>%
@@ -183,14 +212,15 @@ edges <-
     mutate(title = paste("Cosine similarity =", as.character(round(value, 3))))
 
 nodes <-
-  rel_pats_lst$patents %>%
+  rel_pats_lst$patent_citations %>%
+    distinct(patent_number) %>%
     rename(id = patent_number) %>%
     mutate(
       # the 3 patents of interest will be represented as blue nodes, all others
       # will be yellow
       color = ifelse(id %in% p3, "#97C2FC", "#DDCC77"), 
       label = id,
-      title = pat_title(patent_title, id)
+      title = pat_title(id, id)  # we don't get patent_title now (formerly first argument)
     )
 
 visNetwork(
@@ -200,6 +230,7 @@ visNetwork(
   visEdges(color = list(color = "#343434")) %>%
   visOptions(highlightNearest = list(enabled = TRUE, degree = 1)) %>%
   visIgraphLayout()
+
 ```
 
 
