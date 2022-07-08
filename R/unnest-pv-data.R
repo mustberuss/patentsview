@@ -13,27 +13,20 @@
 #'   \code{\link{unnest_pv_data}}.
 #'
 #' @examples
-#' get_ok_pk(endpoint = "inventor") # Returns "inventor_id"
-#' get_ok_pk(endpoint = "cpc_subsection") # Returns "cpc_subsection_id"
+#' get_ok_pk(endpoint = "inventors") # Returns "inventor_id"
+#' get_ok_pk(endpoint = "cpc_subsections") # Returns "cpc_subsection_id"
 #'
 #' @export
 
 # there is an assignee_id, cpc_subsection_id, cpc_subgroup_id, cpc_group_id,
 # inventor_id, uspc_mainclass_id, uspc_subclass_id, nber_category_id, nber_subcategory_id
 
-# the endpoints are singular but their returned object are plural
 get_ok_pk <- function(endpoint) {
 
-  # check if plural endpoint was passed, convert to singular to ease transition
-  if (is_plural_endpoint(endpoint)) {
-     endpoint = to_singular(endpoint)
-     warning(paste("endpoints are now singular, using",endpoint))
-  }
-
   es_eps <- c(
-    "patent" = "patent_number",
-    "patent_citation" = "patent_number",
-    "application_citation" = "patent_number"
+    "patents" = "patent_number",
+    "patent_citations" = "patent_number",
+    "application_citations" = "patent_number"
   )
   ifelse(
     endpoint %in% names(es_eps),
@@ -94,7 +87,7 @@ unnest_pv_data <- function(data, pk = get_ok_pk(names(data))) {
   sub_ents <- colnames(sub_ent_df)
 
   # data uses plural name while endpoint uses singular name
-  ok_pk <- get_ok_pk(to_singular(names(data)))
+  ok_pk <- get_ok_pk(names(data))
 
   out_sub_ent <- lapply2(sub_ents, function(x) {
     temp <- sub_ent_df[[x]]

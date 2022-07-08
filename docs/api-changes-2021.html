@@ -260,7 +260,9 @@ total_patent_count</p>
 <a href="#observations" class="anchor"></a>Observations</h2>
 <ol>
 <li>The endpoints are singular now, instead of being plural. Ex /patents
-is now /patent</li>
+is now /patent The returned data structure is still plural, ex. patents.
+The R package will keep the endpoints plural to match the returned
+data.</li>
 <li>organization (formerly assignee_organization) is now a full text
 field, formerly it had been a string</li>
 <li>The swagger definition (<a href="https://search.patentsview.org/static/openapi_v2.yml" class="uri">https://search.patentsview.org/static/openapi_v2.yml</a>)
@@ -334,7 +336,8 @@ shoe_size” print(httr::headers(resp)[[‘X-Status-Reason-Code’]]) [1]
 <li><p>Vignettes and examples need updating, some may not be possible
 due to the api change, like searching inventors by location. No errors
 are thrown by citation-networks.Rmd.orig but there are differences in
-the output. Seems to work locally but not by workflow</p></li>
+the output. Works if I paste commands into R but but not by
+workflow</p></li>
 <li><p>Make sure that all the comments have been updated.</p></li>
 <li><p>Paging isn’t quite right, repeats first request if all_pages =
 TRUE</p></li>

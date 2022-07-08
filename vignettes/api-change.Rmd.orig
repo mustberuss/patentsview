@@ -92,5 +92,5 @@ for example.  The R package will display a warning if the plural name is used bu
 * Nested fields seem to need to be fully qualified in the f:parameter. Here are all the patent endpoint's fields:
 ```{r}
 library(patentsview)
-get_fields("patent")
+get_fields("patents")
 ```

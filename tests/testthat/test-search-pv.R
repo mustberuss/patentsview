@@ -14,8 +14,7 @@ test_that("API returns expected df names for all endpoints", {
     print(names(j[[1]]))
   }, FUN.VALUE = character(1), USE.NAMES = FALSE)
 
-  # now the endpoints are singluar (patent) but the returned data is plural (patents)
-  expect_equal(paste(eps,"s",sep=''), z)
+  expect_equal(eps, z)
 })
 
 test_that("DSL-based query returns expected results", {
@@ -63,7 +62,7 @@ test_that("search_pv can return subent_cnts", {
 
   out_spv <- search_pv(
     "{\"patent_number\":\"5116621\"}",
-    fields = get_fields("patent", c("patents", "inventors")),
+    fields = get_fields("patents", c("patents", "inventors")),
     subent_cnts = TRUE
   )
   expect_true(out_spv$query_results == 1)
@@ -77,8 +76,8 @@ test_that("Sort option works as expected", {
 
   out_spv <- search_pv(
     qry_funs$neq(assignee_id = 1),
-    fields = get_fields("assignee"),
-    endpoint = "assignee",
+    fields = get_fields("assignees"),
+    endpoint = "assignees",
     sort = c("lastknown_latitude" = "desc"),
     per_page = 100
   )
@@ -96,14 +95,19 @@ test_that("search_pv can pull all fields by group for the locations endpoint", {
 
   z <- lapply(groups, function(x) {
     Sys.sleep(3)
-    search_pv(
-      '{"patent_number":"5116621"}',
-      endpoint = "inventor",
-      fields = get_fields("inventors", x)
+
+    # the locations endpoint isn't on the test server yet and probably won't be 
+    # queryable by patent number
+    expect_error(
+       search_pv(
+         '{"patent_number":"5116621"}',
+         endpoint = "inventors",
+         fields = get_fields("inventors", x)
+       )
     )
   })
 
-   expect_true(TRUE)
+#   expect_true(TRUE)
 })
 
 test_that("search_pv properly encodes queries", {
@@ -115,7 +119,7 @@ test_that("search_pv properly encodes queries", {
   result <- search_pv(
     query = with_qfuns(
       text_phrase(organization = "Johnson & Johnson")
-    ), endpoint = "assignee"
+    ), endpoint = "assignees"
   )
 
   expect_true(TRUE)

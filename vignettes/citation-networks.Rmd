@@ -21,6 +21,7 @@ library(visNetwork)
 library(magrittr)
 library(stringr)
 library(knitr)
+library(webshot2)
 
 # Write a query to pull patents assigned to the CPC code of "Y10S707/933"
 
@@ -63,11 +64,11 @@ fields <- c(
 
 # use a post?  the q: parameter is pretty big
 # Send a request to the API
-res <- search_pv(citing_query, fields = fields, all_pages = TRUE, endpoint = "patent_citation", method = "GET")
+res <- search_pv(citing_query, fields = fields, all_pages = TRUE, endpoint = "patent_citations", method = "GET")
 #> [1] "https://search.patentsview.org/api/v1/patent_citation/?q=%7B%22_or%22%3A%5B%7B%22_eq%22%3A%7B%22patent_number%22%3A%2210095778%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%229075849%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%228818996%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%228504560%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%228131701%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%227966328%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%227797336%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%227716226%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%227523126%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%226499026%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%226339767%22%7D%7D%5D%7D&f=[\"patent_number\",\"cited_patent_number\"]&o={\"offset\":0,\"size\":1000}&s="
 #> [1] "https://search.patentsview.org/api/v1/patent_citation/?q=%7B%22_or%22%3A%5B%7B%22_eq%22%3A%7B%22patent_number%22%3A%2210095778%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%229075849%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%228818996%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%228504560%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%228131701%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%227966328%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%227797336%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%227716226%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%227523126%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%226499026%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%226339767%22%7D%7D%5D%7D&f=[\"patent_number\",\"cited_patent_number\"]&o={\"offset\":0,\"size\":1000}&s="
 #> [1] "https://search.patentsview.org/api/v1/patent_citation/?q=%7B%22_or%22%3A%5B%7B%22_eq%22%3A%7B%22patent_number%22%3A%2210095778%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%229075849%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%228818996%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%228504560%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%228131701%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%227966328%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%227797336%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%227716226%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%227523126%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%226499026%22%7D%7D%2C%7B%22_eq%22%3A%7B%22patent_number%22%3A%226339767%22%7D%7D%5D%7D&f=[\"patent_number\",\"cited_patent_number\"]&o={\"offset\":1000,\"size\":1000}&s="
-res2 <- search_pv(cited_query , fields = fields, all_pages = TRUE, endpoint = "patent_citation", method = "GET")
+res2 <- search_pv(cited_query , fields = fields, all_pages = TRUE, endpoint = "patent_citations", method = "GET")
 #> [1] "https://search.patentsview.org/api/v1/patent_citation/?q=%7B%22_or%22%3A%5B%7B%22_eq%22%3A%7B%22cited_patent_number%22%3A%2210095778%22%7D%7D%2C%7B%22_eq%22%3A%7B%22cited_patent_number%22%3A%229075849%22%7D%7D%2C%7B%22_eq%22%3A%7B%22cited_patent_number%22%3A%228818996%22%7D%7D%2C%7B%22_eq%22%3A%7B%22cited_patent_number%22%3A%228504560%22%7D%7D%2C%7B%22_eq%22%3A%7B%22cited_patent_number%22%3A%228131701%22%7D%7D%2C%7B%22_eq%22%3A%7B%22cited_patent_number%22%3A%227966328%22%7D%7D%2C%7B%22_eq%22%3A%7B%22cited_patent_number%22%3A%227797336%22%7D%7D%2C%7B%22_eq%22%3A%7B%22cited_patent_number%22%3A%227716226%22%7D%7D%2C%7B%22_eq%22%3A%7B%22cited_patent_number%22%3A%227523126%22%7D%7D%2C%7B%22_eq%22%3A%7B%22cited_patent_number%22%3A%226499026%22%7D%7D%2C%7B%22_eq%22%3A%7B%22cited_patent_number%22%3A%226339767%22%7D%7D%5D%7D&f=[\"patent_number\",\"cited_patent_number\"]&o={\"offset\":0,\"size\":1000}&s="
 #> [1] "https://search.patentsview.org/api/v1/patent_citation/?q=%7B%22_or%22%3A%5B%7B%22_eq%22%3A%7B%22cited_patent_number%22%3A%2210095778%22%7D%7D%2C%7B%22_eq%22%3A%7B%22cited_patent_number%22%3A%229075849%22%7D%7D%2C%7B%22_eq%22%3A%7B%22cited_patent_number%22%3A%228818996%22%7D%7D%2C%7B%22_eq%22%3A%7B%22cited_patent_number%22%3A%228504560%22%7D%7D%2C%7B%22_eq%22%3A%7B%22cited_patent_number%22%3A%228131701%22%7D%7D%2C%7B%22_eq%22%3A%7B%22cited_patent_number%22%3A%227966328%22%7D%7D%2C%7B%22_eq%22%3A%7B%22cited_patent_number%22%3A%227797336%22%7D%7D%2C%7B%22_eq%22%3A%7B%22cited_patent_number%22%3A%227716226%22%7D%7D%2C%7B%22_eq%22%3A%7B%22cited_patent_number%22%3A%227523126%22%7D%7D%2C%7B%22_eq%22%3A%7B%22cited_patent_number%22%3A%226499026%22%7D%7D%2C%7B%22_eq%22%3A%7B%22cited_patent_number%22%3A%226339767%22%7D%7D%5D%7D&f=[\"patent_number\",\"cited_patent_number\"]&o={\"offset\":0,\"size\":1000}&s="
 
@@ -125,7 +126,7 @@ visNetwork(
 ) %>%
   visEdges(arrows = list(to = list(enabled = TRUE))) %>%
   visIgraphLayout()
-#> Error in loadNamespace(name): there is no package called 'webshot'
+#> Error in file(con, "rb"): cannot open the connection
 ```
 
 It looks like several of the patents cite patent number 6,499,026, perhaps indicating that this patent contains technology that is foundational to the field. However, when we hover over the nodes we see that several of the patents have the same title. Clicking on the titles brings us to their full text on Google Patents, which confirms that many of these PCA patents belong to the same patent family.[^1]  Let's choose one of the patents in each family to act as the family's representative. This will reduce the size of the subsequent network, while hopefully retaining its overall structure.
@@ -159,7 +160,7 @@ rel_pats <-
 rel_pats_res <- search_pv(
   query = list(patent_number = rel_pats$patent_number),
   fields =  c("cited_patent_number", "patent_number"), 
-  all_pages = TRUE, method = "POST", endpoint = "patent_citation"
+  all_pages = TRUE, method = "POST", endpoint = "patent_citations"
 )
 
 rel_pats_lst <- unnest_pv_data(rel_pats_res$data, "patent_number")
@@ -254,7 +255,7 @@ visNetwork(
   visEdges(color = list(color = "#343434")) %>%
   visOptions(highlightNearest = list(enabled = TRUE, degree = 1)) %>%
   visIgraphLayout()
-#> Error in loadNamespace(name): there is no package called 'webshot'
+#> Error in file(con, "rb"): cannot open the connection
 ```
 
 

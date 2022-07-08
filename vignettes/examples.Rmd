@@ -81,7 +81,7 @@ query <- with_qfuns(
 )
 
 # Create a field list
-inv_fields <- get_fields(endpoint = "patent", groups = "inventors_at_grant")
+inv_fields <- get_fields(endpoint = "patents", groups = "inventors_at_grant")
 fields <- c(inv_fields, "patent_number")
 
 # Pull the data
@@ -115,7 +115,7 @@ Which inventors have Chicago, IL listed as their location on at least one patent
 ```r
 search_pv(
   query = '{"_and":[{"_text_phrase": {"inventors_at_grant.city":"Chicago"}},{"_text_phrase": {"inventors_at_grant.state":"IL"}}]}',
-  endpoint = "patent"
+  endpoint = "patents"
 )
 #> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_text_phrase%22%3A%20%7B%22inventors_at_grant.city%22%3A%22Chicago%22%7D%7D%2C%7B%22_text_phrase%22%3A%20%7B%22inventors_at_grant.state%22%3A%22IL%22%7D%7D%5D%7D&f=&o={\"offset\":0,\"size\":1000}&s="
 #> $data
@@ -142,7 +142,7 @@ Which assignees have an interest in beer?
 ```r
 search_pv(
   query = qry_funs$contains(patent_title = "beer"), 
-  endpoint = "patent"
+  endpoint = "patents"
 )
 #> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_contains%22%3A%7B%22patent_title%22%3A%22beer%22%7D%7D&f=&o={\"offset\":0,\"size\":1000}&s="
 #> $data

@@ -19,7 +19,7 @@ library(patentsview)
 
 search_pv(
   query = '{"_gte":{"patent_date":"2007-01-01"}}',
-  endpoint = "patent"
+  endpoint = "patents"
 )
 #> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_gte%22%3A%7B%22patent_date%22%3A%222007-01-01%22%7D%7D&f=&o={\"offset\":0,\"size\":1000}&s="
 #> $data
@@ -97,7 +97,7 @@ To list all of the retrievable fields for a given endpoint, use `get_fields()`:
 
 
 ```r
-retrvble_flds <- get_fields(endpoint = "patent")
+retrvble_flds <- get_fields(endpoint = "patents")
 head(retrvble_flds)
 #> [1] "patent_number"  "patent_title"   "patent_date"    "patent_type"   
 #> [5] "patent_country" "patent_year"
@@ -180,7 +180,7 @@ query <- qry_funs$eq(inventors_at_grant.name_last = "chambers")
 fields <- c("patent_number", "inventors_at_grant.name_last", "assignees_at_grant.organization")
 
 # Here we are using the patent endpoint:
-search_pv(query, endpoint = "patent", fields = fields)
+search_pv(query, endpoint = "patents", fields = fields)
 #> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_eq%22%3A%7B%22inventors_at_grant.name_last%22%3A%22chambers%22%7D%7D&f=[\"patent_number\",\"inventors_at_grant.name_last\",\"assignees_at_grant.organization\"]&o={\"offset\":0,\"size\":1000}&s="
 #> $data
 #> [1] "patents"
@@ -201,7 +201,7 @@ search_pv(query, endpoint = "patent", fields = fields)
 # ```{r}
 # this no longer works - these fields are not available at the assignee endpont
 # While here we are using the assignees endpoint:
-search_pv(query, endpoint = "assignee", fields = fields)
+search_pv(query, endpoint = "assignees", fields = fields)
 #```
 
 Your choice of endpoint determines two things:
@@ -243,11 +243,11 @@ res
 
 # Use more appropriate data types:
 cast_pv_data(res$data)
-#> [1] "patent"
+#> [1] "patents"
 #> #### A list with a single data frame on a patent level:
 #> 
 #> List of 1
-#>  $ patent:'data.frame':	1 obs. of  3 variables:
+#>  $ patents:'data.frame':	1 obs. of  3 variables:
 #>   ..$ patent_title: chr "Anti-inflammatory analgesic patch"
 #>   ..$ patent_date : Date[1:1], format: "1992-05-26"
 #>   ..$ patent_year : logi NA
@@ -301,12 +301,12 @@ Government interests fields are no longer present
 
 ```r
 # Create field list -
-fields <- get_fields("patent")
+fields <- get_fields("patents")
 
 # Pull data
 res <- search_pv(
   query = qry_funs$contains(inventors_at_grant.name_last = "smith"), 
-  endpoint = "patent", 
+  endpoint = "patents", 
   fields = fields
 )
 #> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_contains%22%3A%7B%22inventors_at_grant.name_last%22%3A%22smith%22%7D%7D&f=[\"patent_number\",\"patent_title\",\"patent_date\",\"patent_type\",\"patent_country\",\"patent_year\",\"patent_abstract\",\"patent_kind\",\"patent_num_foreign_documents_cited\",\"patent_num_us_applications_cited\",\"patent_num_us_patents_cited\",\"patent_num_total_documents_cited\",\"patent_num_times_cited_by_us_patents\",\"patent_earliest_application_date\",\"patent_patent_processing_days\",\"patent_uspc_current_mainclass_average_patent_processing_days\",\"patent_cpc_current_group_average_patent_processing_days\",\"patent_term_extension\",\"patent_detail_desc_length\",\"assignees_at_grant.assignee_id\",\"assignees_at_grant.name_first\",\"assignees_at_grant.name_last\",\"assignees_at_grant.organization\",\"assignees_at_grant.type\",\"assignees_at_grant.city\",\"assignees_at_grant.state\",\"assignees_at_grant.country\",\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"cpc_current.cpc_subsection\",\"cpc_current.cpc_group\",\"cpc_current.cpc_subgroup_id\",\"cpc_current.cpc_group_title\"]&o={\"offset\":0,\"size\":1000}&s="

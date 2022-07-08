@@ -86,7 +86,7 @@ for example.  The R package will display a warning if the plural name is used bu
 
 ```r
 library(patentsview)
-get_fields("patent")
+get_fields("patents")
 #>  [1] "patent_number"                                               
 #>  [2] "patent_title"                                                
 #>  [3] "patent_date"                                                 

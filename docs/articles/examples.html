@@ -181,18 +181,19 @@ the past few years?</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Write the query</span>
 <span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span>
-  <span class="fu">and</span><span class="op">(</span>
+  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html">and</a></span><span class="op">(</span>
     <span class="fu">gte</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2019-07-30"</span><span class="op">)</span>, <span class="co"># Dates are in yyyy-mm-dd format </span>
     <span class="fu">text_phrase</span><span class="op">(</span>assignees_at_grant.organization <span class="op">=</span> <span class="st">"microsoft"</span><span class="op">)</span>
   <span class="op">)</span>
 <span class="op">)</span>
 
 <span class="co"># Create a field list</span>
-<span class="va">inv_fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"patent"</span>, groups <span class="op">=</span> <span class="st">"inventors_at_grant"</span><span class="op">)</span>
+<span class="va">inv_fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"patents"</span>, groups <span class="op">=</span> <span class="st">"inventors_at_grant"</span><span class="op">)</span>
 <span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">inv_fields</span>, <span class="st">"patent_number"</span><span class="op">)</span>
 
 <span class="co"># Pull the data</span>
 <span class="va">pv_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query</span>, fields <span class="op">=</span> <span class="va">fields</span>, all_pages <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&amp;f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&amp;o={\"offset\":0,\"size\":1000}&amp;s="</span>
 <span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&amp;f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&amp;o={\"offset\":0,\"size\":1000}&amp;s="</span>
 <span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&amp;f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&amp;o={\"offset\":1000,\"size\":1000}&amp;s="</span>
 <span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&amp;f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&amp;o={\"offset\":2000,\"size\":1000}&amp;s="</span>
@@ -200,26 +201,25 @@ the past few years?</p>
 <span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&amp;f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&amp;o={\"offset\":4000,\"size\":1000}&amp;s="</span>
 <span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&amp;f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&amp;o={\"offset\":5000,\"size\":1000}&amp;s="</span>
 <span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&amp;f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&amp;o={\"offset\":6000,\"size\":1000}&amp;s="</span>
-<span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&amp;f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&amp;o={\"offset\":7000,\"size\":1000}&amp;s="</span>
 
 <span class="co"># Unnest the inventor list column</span>
 <span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">pv_out</span><span class="op">$</span><span class="va">data</span>, <span class="st">"patent_number"</span><span class="op">)</span>
 <span class="co">#&gt; List of 2</span>
-<span class="co">#&gt;  $ inventors_at_grant:'data.frame':  22801 obs. of  6 variables:</span>
-<span class="co">#&gt;   ..$ patent_number: chr [1:22801] "10733252" ...</span>
-<span class="co">#&gt;   ..$ name_first   : chr [1:22801] "Yongzheng" ...</span>
-<span class="co">#&gt;   ..$ name_last    : chr [1:22801] "Zhang" ...</span>
-<span class="co">#&gt;   ..$ city         : chr [1:22801] "San Jose" ...</span>
-<span class="co">#&gt;   ..$ state        : chr [1:22801] "CA" ...</span>
-<span class="co">#&gt;   ..$ country      : chr [1:22801] "US" ...</span>
-<span class="co">#&gt;  $ patents           :'data.frame':  5703 obs. of  1 variable:</span>
-<span class="co">#&gt;   ..$ patent_number: chr [1:5703] "10733252" ...</span></code></pre></div>
+<span class="co">#&gt;  $ inventors_at_grant:'data.frame':  26710 obs. of  6 variables:</span>
+<span class="co">#&gt;   ..$ patent_number: chr [1:26710] "10364598" ...</span>
+<span class="co">#&gt;   ..$ name_first   : chr [1:26710] "Errol Mark" ...</span>
+<span class="co">#&gt;   ..$ name_last    : chr [1:26710] "Tazbaz" ...</span>
+<span class="co">#&gt;   ..$ city         : chr [1:26710] "Bellevue" ...</span>
+<span class="co">#&gt;   ..$ state        : chr [1:26710] "WA" ...</span>
+<span class="co">#&gt;   ..$ country      : chr [1:26710] "US" ...</span>
+<span class="co">#&gt;  $ patents           :'data.frame':  6703 obs. of  1 variable:</span>
+<span class="co">#&gt;   ..$ patent_number: chr [1:6703] "10364598" ...</span></code></pre></div>
 <p>Which inventors have Chicago, IL listed as their location on at least
 one patent.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span>
   query <span class="op">=</span> <span class="st">'{"_and":[{"_text_phrase": {"inventors_at_grant.city":"Chicago"}},{"_text_phrase": {"inventors_at_grant.state":"IL"}}]}'</span>,
-  endpoint <span class="op">=</span> <span class="st">"patent"</span>
+  endpoint <span class="op">=</span> <span class="st">"patents"</span>
 <span class="op">)</span>
 <span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_text_phrase%22%3A%20%7B%22inventors_at_grant.city%22%3A%22Chicago%22%7D%7D%2C%7B%22_text_phrase%22%3A%20%7B%22inventors_at_grant.state%22%3A%22IL%22%7D%7D%5D%7D&amp;f=&amp;o={\"offset\":0,\"size\":1000}&amp;s="</span>
 <span class="co">#&gt; $data</span>
@@ -242,7 +242,7 @@ one patent.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span>
   query <span class="op">=</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">contains</span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"beer"</span><span class="op">)</span>, 
-  endpoint <span class="op">=</span> <span class="st">"patent"</span>
+  endpoint <span class="op">=</span> <span class="st">"patents"</span>
 <span class="op">)</span>
 <span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_contains%22%3A%7B%22patent_title%22%3A%22beer%22%7D%7D&amp;f=&amp;o={\"offset\":0,\"size\":1000}&amp;s="</span>
 <span class="co">#&gt; $data</span>

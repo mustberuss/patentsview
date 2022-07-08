@@ -7,10 +7,9 @@ test_that("", {
   skip_on_ci()
 
   #eps_no_loc <- eps[eps != "location"]
-  # with the new api we can only search by patent_number on few of the endpoints
+  # with the new version of the api we can only search by patent_number on few 
+  # of the endpoints
   testable_eps = get_patent_num_searchable_endpoints()
-
-  # TODO: do we need other searches for the untested endpoints?
 
   z <- lapply(testable_eps, function(x) {
     Sys.sleep(1)

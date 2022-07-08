@@ -11,19 +11,19 @@ library(devtools)
 print("starting");
 
 endpoints <- c(
-  "application_citation" = "application_citation",
-  "assignee" = "assignee",
-  "cpc_group" = "cpc_group",
-  "cpc_subgroup" = "cpc_subgroup",
-  "cpc_subsection" = "cpc_subsection",
-  "nber_category" = "nber_category",
-  "nber_subcategory" = "nber_subcategory",
-  "uspc_mainclass" = "uspc_mainclass",
-  "uspc_subclass" = "uspc_subclass",
-  "inventor" = "inventor",
-  "location" = "location",
-  "patent_citation" = "patent_citation",
-  "patent" = "patent"
+  "application_citations" = "application_citations",
+  "assignees" = "assignees",
+  "cpc_groups" = "cpc_groups",
+  "cpc_subgroups" = "cpc_subgroups",
+  "cpc_subsections" = "cpc_subsections",
+  "nber_categories" = "nber_categories",
+  "nber_subcategories" = "nber_subcategories",
+  "uspc_mainclasses" = "uspc_mainclasses",
+  "uspc_subclasses" = "uspc_subclasses",
+  "inventors" = "inventors",
+  "locations" = "locations",
+  "patent_citations" = "patent_citations",
+  "patents" = "patents"
 )
 
 all_tabs <- sapply(endpoints, function(x) {

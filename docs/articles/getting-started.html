@@ -132,7 +132,7 @@ function, <code><a href="../reference/search_pv.html">search_pv()</a></code>:</p
 
 <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span>
   query <span class="op">=</span> <span class="st">'{"_gte":{"patent_date":"2007-01-01"}}'</span>,
-  endpoint <span class="op">=</span> <span class="st">"patent"</span>
+  endpoint <span class="op">=</span> <span class="st">"patents"</span>
 <span class="op">)</span>
 <span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_gte%22%3A%7B%22patent_date%22%3A%222007-01-01%22%7D%7D&amp;f=&amp;o={\"offset\":0,\"size\":1000}&amp;s="</span>
 <span class="co">#&gt; $data</span>
@@ -180,7 +180,7 @@ rewrite the query shown above using one of the functions in the DSL,
 <p>More complex queries are also possible:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span>
-  <span class="fu">and</span><span class="op">(</span>
+  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html">and</a></span><span class="op">(</span>
     <span class="fu">gte</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2007-01-01"</span><span class="op">)</span>,
     <span class="fu">text_phrase</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"computer program"</span>, <span class="st">"dog leash"</span><span class="op">)</span><span class="op">)</span>
   <span class="op">)</span>
@@ -222,7 +222,7 @@ default set. You can specify which fields you want using the
 <p>To list all of the retrievable fields for a given endpoint, use
 <code><a href="../reference/get_fields.html">get_fields()</a></code>:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">retrvble_flds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"patent"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">retrvble_flds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"patents"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">retrvble_flds</span><span class="op">)</span>
 <span class="co">#&gt; [1] "patent_number"  "patent_title"   "patent_date"    "patent_type"   </span>
 <span class="co">#&gt; [5] "patent_country" "patent_year"</span></code></pre></div>
@@ -291,20 +291,20 @@ or 10,000 records total):</p>
   all_pages <span class="op">=</span> <span class="cn">TRUE</span>
 <span class="op">)</span>
 <span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_eq%22%3A%7B%22inventors_at_grant.name_last%22%3A%22chambers%22%7D%7D&amp;f=&amp;o={\"offset\":0,\"size\":1000}&amp;s="</span>
+<span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_eq%22%3A%7B%22inventors_at_grant.name_last%22%3A%22chambers%22%7D%7D&amp;f=&amp;o={\"offset\":0,\"size\":1000}&amp;s="</span>
 <span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_eq%22%3A%7B%22inventors_at_grant.name_last%22%3A%22chambers%22%7D%7D&amp;f=&amp;o={\"offset\":1000,\"size\":1000}&amp;s="</span>
 <span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_eq%22%3A%7B%22inventors_at_grant.name_last%22%3A%22chambers%22%7D%7D&amp;f=&amp;o={\"offset\":2000,\"size\":1000}&amp;s="</span>
-<span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_eq%22%3A%7B%22inventors_at_grant.name_last%22%3A%22chambers%22%7D%7D&amp;f=&amp;o={\"offset\":3000,\"size\":1000}&amp;s="</span>
 <span class="co">#&gt; $data</span>
 <span class="co">#&gt; [1] "patents"</span>
 <span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on a patent level:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; List of 1</span>
-<span class="co">#&gt;  $ patents:'data.frame': 1156 obs. of  5 variables:</span>
-<span class="co">#&gt;   ..$ patent_number     : chr [1:1156] "8406383" ...</span>
-<span class="co">#&gt;   ..$ patent_title      : chr [1:1156] "Voice authentication for call control"..</span>
-<span class="co">#&gt;   ..$ patent_date       : chr [1:1156] "2013-03-26" ...</span>
-<span class="co">#&gt;   ..$ assignees_at_grant:List of 1156</span>
-<span class="co">#&gt;   ..$ inventors_at_grant:List of 1156</span>
+<span class="co">#&gt;  $ patents:'data.frame': 2156 obs. of  5 variables:</span>
+<span class="co">#&gt;   ..$ patent_number     : chr [1:2156] "4279524" ...</span>
+<span class="co">#&gt;   ..$ patent_title      : chr [1:2156] "Apparatus for advancing a record medi"..</span>
+<span class="co">#&gt;   ..$ patent_date       : chr [1:2156] "1981-07-21" ...</span>
+<span class="co">#&gt;   ..$ assignees_at_grant:List of 2156</span>
+<span class="co">#&gt;   ..$ inventors_at_grant:List of 2156</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $query_results</span>
 <span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span>
@@ -336,7 +336,7 @@ following two calls differ only in the endpoint that is chosen:</p>
 <span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"patent_number"</span>, <span class="st">"inventors_at_grant.name_last"</span>, <span class="st">"assignees_at_grant.organization"</span><span class="op">)</span>
 
 <span class="co"># Here we are using the patent endpoint:</span>
-<span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query</span>, endpoint <span class="op">=</span> <span class="st">"patent"</span>, fields <span class="op">=</span> <span class="va">fields</span><span class="op">)</span>
+<span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query</span>, endpoint <span class="op">=</span> <span class="st">"patents"</span>, fields <span class="op">=</span> <span class="va">fields</span><span class="op">)</span>
 <span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_eq%22%3A%7B%22inventors_at_grant.name_last%22%3A%22chambers%22%7D%7D&amp;f=[\"patent_number\",\"inventors_at_grant.name_last\",\"assignees_at_grant.organization\"]&amp;o={\"offset\":0,\"size\":1000}&amp;s="</span>
 <span class="co">#&gt; $data</span>
 <span class="co">#&gt; [1] "patents"</span>
@@ -353,9 +353,9 @@ following two calls differ only in the endpoint that is chosen:</p>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; total_hits = 2,156</span></code></pre></div>
 </div>
-<div id="r-this-no-longer-works---these-fields-are-not-available-at-the-assignee-endpont-while-here-we-are-using-the-assignees-endpoint-search_pvquery-endpoint-assignee-fields-fields" class="section level1">
+<div id="r-this-no-longer-works---these-fields-are-not-available-at-the-assignee-endpont-while-here-we-are-using-the-assignees-endpoint-search_pvquery-endpoint-assignees-fields-fields" class="section level1">
 <h1 class="hasAnchor">
-<a href="#r-this-no-longer-works---these-fields-are-not-available-at-the-assignee-endpont-while-here-we-are-using-the-assignees-endpoint-search_pvquery-endpoint-assignee-fields-fields" class="anchor"></a><code>{r} # this no longer works - these fields are not available at the assignee endpont # While here we are using the assignees endpoint: search_pv(query, endpoint = "assignee", fields = fields) #</code>
+<a href="#r-this-no-longer-works---these-fields-are-not-available-at-the-assignee-endpont-while-here-we-are-using-the-assignees-endpoint-search_pvquery-endpoint-assignees-fields-fields" class="anchor"></a><code>{r} # this no longer works - these fields are not available at the assignee endpont # While here we are using the assignees endpoint: search_pv(query, endpoint = "assignees", fields = fields) #</code>
 </h1>
 <p>Your choice of endpoint determines two things:</p>
 <ol style="list-style-type: decimal">
@@ -418,11 +418,11 @@ cast all fields to their preferred R types using
 
 <span class="co"># Use more appropriate data types:</span>
 <span class="fu"><a href="../reference/cast_pv_data.html">cast_pv_data</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">data</span><span class="op">)</span>
-<span class="co">#&gt; [1] "patent"</span>
+<span class="co">#&gt; [1] "patents"</span>
 <span class="co">#&gt; #### A list with a single data frame on a patent level:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; List of 1</span>
-<span class="co">#&gt;  $ patent:'data.frame':  1 obs. of  3 variables:</span>
+<span class="co">#&gt;  $ patents:'data.frame': 1 obs. of  3 variables:</span>
 <span class="co">#&gt;   ..$ patent_title: chr "Anti-inflammatory analgesic patch"</span>
 <span class="co">#&gt;   ..$ patent_date : Date[1:1], format: "1992-05-26"</span>
 <span class="co">#&gt;   ..$ patent_year : logi NA</span></code></pre></div>
@@ -463,14 +463,14 @@ split it into two pieces and make two calls to
 <code><a href="../reference/search_pv.html">search_pv()</a></code>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">query_1a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span>
-  <span class="fu">and</span><span class="op">(</span>
+  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html">and</a></span><span class="op">(</span>
     <span class="fu">text_any</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="st">'tool animal'</span><span class="op">)</span>,
     <span class="fu">lte</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2010-01-01"</span><span class="op">)</span>
   <span class="op">)</span>
 <span class="op">)</span>
 
 <span class="va">query_1b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span>
-  <span class="fu">and</span><span class="op">(</span>
+  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html">and</a></span><span class="op">(</span>
     <span class="fu">text_any</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="st">'tool animal'</span><span class="op">)</span>,
     <span class="fu">gt</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2010-01-01"</span><span class="op">)</span>
   <span class="op">)</span>
@@ -486,12 +486,12 @@ secondary entities (also referred to as subentities): Government
 interests fields are no longer present</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Create field list -</span>
-<span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span><span class="st">"patent"</span><span class="op">)</span>
+<span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span><span class="st">"patents"</span><span class="op">)</span>
 
 <span class="co"># Pull data</span>
 <span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span>
   query <span class="op">=</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">contains</span><span class="op">(</span>inventors_at_grant.name_last <span class="op">=</span> <span class="st">"smith"</span><span class="op">)</span>, 
-  endpoint <span class="op">=</span> <span class="st">"patent"</span>, 
+  endpoint <span class="op">=</span> <span class="st">"patents"</span>, 
   fields <span class="op">=</span> <span class="va">fields</span>
 <span class="op">)</span>
 <span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_contains%22%3A%7B%22inventors_at_grant.name_last%22%3A%22smith%22%7D%7D&amp;f=[\"patent_number\",\"patent_title\",\"patent_date\",\"patent_type\",\"patent_country\",\"patent_year\",\"patent_abstract\",\"patent_kind\",\"patent_num_foreign_documents_cited\",\"patent_num_us_applications_cited\",\"patent_num_us_patents_cited\",\"patent_num_total_documents_cited\",\"patent_num_times_cited_by_us_patents\",\"patent_earliest_application_date\",\"patent_patent_processing_days\",\"patent_uspc_current_mainclass_average_patent_processing_days\",\"patent_cpc_current_group_average_patent_processing_days\",\"patent_term_extension\",\"patent_detail_desc_length\",\"assignees_at_grant.assignee_id\",\"assignees_at_grant.name_first\",\"assignees_at_grant.name_last\",\"assignees_at_grant.organization\",\"assignees_at_grant.type\",\"assignees_at_grant.city\",\"assignees_at_grant.state\",\"assignees_at_grant.country\",\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"cpc_current.cpc_subsection\",\"cpc_current.cpc_group\",\"cpc_current.cpc_subgroup_id\",\"cpc_current.cpc_group_title\"]&amp;o={\"offset\":0,\"size\":1000}&amp;s="</span>

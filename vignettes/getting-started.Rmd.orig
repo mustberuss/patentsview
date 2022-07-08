@@ -23,7 +23,7 @@ library(patentsview)
 
 search_pv(
   query = '{"_gte":{"patent_date":"2007-01-01"}}',
-  endpoint = "patent"
+  endpoint = "patents"
 )
 ```
 
@@ -64,7 +64,7 @@ search_pv(
 To list all of the retrievable fields for a given endpoint, use `get_fields()`:
 
 ```{r}
-retrvble_flds <- get_fields(endpoint = "patent")
+retrvble_flds <- get_fields(endpoint = "patents")
 head(retrvble_flds)
 ```
 
@@ -105,13 +105,13 @@ query <- qry_funs$eq(inventors_at_grant.name_last = "chambers")
 fields <- c("patent_number", "inventors_at_grant.name_last", "assignees_at_grant.organization")
 
 # Here we are using the patent endpoint:
-search_pv(query, endpoint = "patent", fields = fields)
+search_pv(query, endpoint = "patents", fields = fields)
 ```
 
 # ```{r}
 # this no longer works - these fields are not available at the assignee endpont
 # While here we are using the assignees endpoint:
-search_pv(query, endpoint = "assignee", fields = fields)
+search_pv(query, endpoint = "assignees", fields = fields)
 #```
 
 Your choice of endpoint determines two things:
@@ -184,12 +184,12 @@ Government interests fields are no longer present
 
 ```{r}
 # Create field list -
-fields <- get_fields("patent")
+fields <- get_fields("patents")
 
 # Pull data
 res <- search_pv(
   query = qry_funs$contains(inventors_at_grant.name_last = "smith"), 
-  endpoint = "patent", 
+  endpoint = "patents", 
   fields = fields
 )
 res$data

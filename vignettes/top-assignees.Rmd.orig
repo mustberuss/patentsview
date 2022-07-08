@@ -82,6 +82,10 @@ pv_out <- search_pv(query, fields = fields, all_pages = TRUE)
 dl <- unnest_pv_data(pv_out$data, "patent_number")
 dl
 
+# we want to get grant_year into assignees_at_grant (application year or date is not available)
+# dl$assignees_at_grant.grant_year = dl$patents.patent_year where dl$patents.patent_number = dl$assignees_at_grant.patent_number
+# lets see if we can convince dplyr to do that!
+
 # we shouldn't need the filter (we queried for non empty string orginazations) but
 # some are NA somehow
 
@@ -127,7 +131,9 @@ assignee_fields <- c(
 
 # we'll post to the api, the query is pretty large if we use qry_funs$eq
 assignee_out <- search_pv(assignee_query , fields = assignee_fields, all_pages = TRUE, 
-   endpoint = "assignee", method = "POST")
+   endpoint = "assignees", method = "POST")
+
+assignee_counts <- unnest_pv_data(assignee_out$data, "patent_number")
 
 # TODO:
 # now we'd want to mutate in the total counts and do the percentage math in top_asgns 
@@ -162,49 +168,23 @@ IBM is far and away the biggest player in the field. However, we can see that Or
 # The patent endpoint no longer returns application date as this page used originally
 # Instead we will use the patent_year
 # Alarmingly the application date is not available from any endpoint!
+# we'll substitute patent_year (year the patent was granted)
 
-# don't know enough R to do this properly!
-# would really only want to return the patent year if the 
-
-with_grant_years = lapply(pv_out$data$patents, function(y,i) {
-   grant_year = y$patent_year
-   abc = c()
-   lapply(y$assignees_at_grant, function(z,i) {
-      abc = append(abc, grant_year)
-      z
-      }, y$assignees_at_grant)
-   y$assignees_at_grant$grant_year = abc
-   y
-}, y=pv_out$data$patents)
-
-
-# trouble is that this is the years for all assignees, not just the top 75
-# probably need to iterate through top_asgns to figure this out or to 
-# have something we can join to below
-
-# wanting to add grant_year to assignees_at_grant but it's failing
-##pv_out$data$patents$assignees_at_grant$grant_year <- NA
-##pv_out$data$patents$assignees_at_grant$grant_year <- grant_years$patent_year
-# replacement has 6599 rows, data has 6598
-
-# Create a data frame with patent counts by grant year for each assignee
-
+# get the top 5 organizations since slice wasn't working out below
+# we want data to just have data for the top 5 assignees, not all 75 assignees
+top_five <- head(top_asgns, n = 5)
+   
 data <- 
-  top_asgns %>%
-    select(-contains("pats")) %>%
-    slice(1:5) %>%
-    inner_join(dl$assignees_at_grant) %>%
-   # inner_join(dl$applications) %>%
-   mutate(grant_yr = dl$assignees_at_grant$grant_year) %>%
-   group_by(dl$assignees_at_grant.organization, grant_yr) %>%
-   count() 
-
-
+   full_join(dl$assignees_at_grant, dl$patents) %>%
+   group_by(organization, patent_year) %>%
+   summarise(n = n()) %>%
+   inner_join(top_five) %>%
+   select(organization,patent_year,n)
 
 # Plot the data using highchartr:
 hchart(
   data, "line", 
-  hcaes(x = grant_yr, y = n, group = assignee_organization)
+  hcaes(x = patent_year, y = n, group = organization)
 ) %>%
   hc_plotOptions(series = list(marker = list(enabled = FALSE))) %>%
   hc_xAxis(title = list(text = "Grant year")) %>%
@@ -217,7 +197,10 @@ It's hard to see any clear trends in this graph. What is clear is that the top a
 
 4. Finally, let's see how the organizations compare in terms of their citation rates. First, we'll need to normalize the raw citation counts by publication year, so that older patents don't have an unfair advantage over younger patents (i.e., because they have had a longer time to accumulate citations).
 
-```{r}
+# TODO: the rest of the file isn't implemented yet, the start and end{r} lines are commented out
+# trying to see if the builds work
+
+#```{r}
 # Write a ranking function that will be used to rank patents by their citation counts
 percent_rank2 <- function(x)
   (rank(x, ties.method = "average", na.last = "keep") - 1) / (sum(!is.na(x)) - 1)
@@ -225,11 +208,11 @@ percent_rank2 <- function(x)
 # Create a data frame with normalized citation rates and stats from Step 2
 asng_p_dat <-
   dl$patents %>%
-    mutate(patent_yr = substr(patent_date, 1, 4)) %>%
-    group_by(patent_yr) %>%
+  # mutate(patent_yr = substr(patent_date, 1, 4)) %>%
+    group_by(patent_year) %>%
     mutate(perc_cite = percent_rank2(patent_num_cited_by_us_patents)) %>%
     inner_join(dl$assignees) %>%
-    group_by(assignee_organization) %>%
+    group_by(organization) %>%
     summarise(mean_perc = mean(perc_cite)) %>%
     inner_join(top_asgns) %>%
     arrange(desc(ttl_pats)) %>%
@@ -239,11 +222,11 @@ asng_p_dat <-
     as.data.frame()
 
 kable(head(asng_p_dat), row.names = FALSE)
-```
+#```
 
 Now let's visualize the data. Each assignee will be represented by a point/bubble. The x-value of the point will represent the total number of patents the assignee has published in the field of databases (on a log scale), while the y-value will represent its average normalized citation rate. The size of the bubble will be proportional to the percent of the assignee's patents that relate to databases.
 
-```{r}
+#```{r}
 # Adapted from http://jkunst.com/highcharter/showcase.html
 hchart(
   asng_p_dat, "scatter", 
@@ -263,7 +246,7 @@ hchart(
     y = c("{point.db_pats:.0f}","{point.mean_perc:.2f}", "{point.frac_db_pats:.3f}")
   )) %>%
   hc_legend(enabled = FALSE)
-```
+#```
 
 <br>
 

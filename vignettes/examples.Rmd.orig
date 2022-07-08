@@ -53,7 +53,7 @@ query <- with_qfuns(
 )
 
 # Create a field list
-inv_fields <- get_fields(endpoint = "patent", groups = "inventors_at_grant")
+inv_fields <- get_fields(endpoint = "patents", groups = "inventors_at_grant")
 fields <- c(inv_fields, "patent_number")
 
 # Pull the data
@@ -68,7 +68,7 @@ Which inventors have Chicago, IL listed as their location on at least one patent
 ```{r}
 search_pv(
   query = '{"_and":[{"_text_phrase": {"inventors_at_grant.city":"Chicago"}},{"_text_phrase": {"inventors_at_grant.state":"IL"}}]}',
-  endpoint = "patent"
+  endpoint = "patents"
 )
 ```
 
@@ -77,7 +77,7 @@ Which assignees have an interest in beer?
 ```{r}
 search_pv(
   query = qry_funs$contains(patent_title = "beer"), 
-  endpoint = "patent"
+  endpoint = "patents"
 )
 ```
 

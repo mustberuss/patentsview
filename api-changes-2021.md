@@ -67,7 +67,7 @@ Changes in search-pv.R sleep Retry-After seconds then retries the query to hide 
       req_pages
 
 ## Observations
-1. The endpoints are singular now, instead of being plural.  Ex /patents is now /patent
+1. The endpoints are singular now, instead of being plural.  Ex /patents is now /patent  The returned data structure is still plural, ex. patents.  The R package will keep the endpoints plural to match the returned data.
 2. organization (formerly assignee_organization) is now a full text field, formerly it had been a string
 3. The swagger definition (https://search.patentsview.org/static/openapi_v2.yml) does not contain  government interest fields, ipc fields, wipo fields, lawyer fields, foreign_priority fields, examiner fields, pct fields, raw inventor fields, coinventor fields, patent_firstnamed fields or patent_num_claims. Assuming these fields are all going away.
 4. There  seems to be a change in case sensitivity compared to the original api. The original api would return results for q:{"patent_type":"Design"} while the ElasticSearch version does not.
@@ -90,7 +90,7 @@ Please refer to the 200 "Response" section for each endpoint for full list of fi
     ~~~~
 
 ## TODOS
-1. Vignettes and examples need updating, some may not be possible due to the api change, like searching inventors by location.  No errors are thrown by citation-networks.Rmd.orig but there are differences in the output.  Seems to work locally but not by workflow
+1. Vignettes and examples need updating, some may not be possible due to the api change, like searching inventors by location.  No errors are thrown by citation-networks.Rmd.orig but there are differences in the output.  Works if I paste commands into R but but not by workflow
 2. Make sure that all the comments have been updated.
 3. Paging isn't quite right, repeats first request if all_pages = TRUE 
 4. Test throttling- possibly set all_pages = TRUE with a small per_page.  Removed Sys.sleep(3) in search-pv.R

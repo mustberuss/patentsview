@@ -80,7 +80,7 @@ cast_one <- function(one, name, typesdf) UseMethod("cast_one")
 cast_pv_data <- function(data) {
   validate_pv_data(data)
 
-  endpoint <- to_singular(names(data))
+  endpoint <- names(data)
 
   typesdf <- fieldsdf[fieldsdf$endpoint == endpoint, c("field", "data_type")]
 

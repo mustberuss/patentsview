@@ -15,13 +15,13 @@
 #'   can specify for a given endpoint (e.g., the
 #'   \href{https://patentsview.org/apis/api-endpoints/patents}{patents
 #'   endpoint table}), or use the \code{fieldsdf} table
-#'   (e.g., \code{unique(fieldsdf[fieldsdf$endpoint == "patent", "group"])}).
+#'   (e.g., \code{unique(fieldsdf[fieldsdf$endpoint == "patents", "group"])}).
 #'
 #' @return A character vector with field names.
 #'
 #' @examples
 #' # Get all assignee-level fields for the patents endpoint:
-#' fields <- get_fields(endpoint = "patent", groups = "assignees_at_grant")
+#' fields <- get_fields(endpoint = "patents", groups = "assignees_at_grant")
 #'
 #' #...Then pass to search_pv:
 #' \dontrun{
@@ -32,7 +32,7 @@
 #' )
 #'}
 #' # Get all patent and assignee-level fields for the patents endpoint:
-#' fields <- get_fields(endpoint = "patent", groups = c("assignees_at_grant", "patents"))
+#' fields <- get_fields(endpoint = "patents", groups = c("assignees_at_grant", "patents"))
 #'
 #' \dontrun{
 #' #...Then pass to search_pv:
@@ -45,12 +45,6 @@
 #' @export
 get_fields <- function(endpoint, groups = NULL) {
   
-  # check if plural endpoint was passed, convert to singular to ease transition
-  if (is_plural_endpoint(endpoint)) {
-     endpoint = to_singular(endpoint)
-     warning(paste("endpoints are now singular, using",endpoint))
-  }
-
   validate_endpoint(endpoint)
   if (is.null(groups)) {
     fieldsdf[fieldsdf$endpoint == endpoint, "field"]
@@ -68,19 +62,19 @@ get_fields <- function(endpoint, groups = NULL) {
 #' @return A character vector with the names of the 13 endpoints. Those endpoints are:
 #'
 #' \itemize{
-#'    \item assignee
-#'    \item cpc_subsection
-#'    \item cpc_group
-#'    \item cpc_subgroup
+#'    \item assignees
+#'    \item cpc_subsections
+#'    \item cpc_groups
+#'    \item cpc_subgroups
 #'    \item inventors
 #'    \item locations
-#'    \item nber_category
-#'    \item nber_subcategory
-#'    \item patent
-#'    \item uspc_mainclass
-#'    \item uspc_subclass
-#'    \item application_citation
-#'    \item patent_citation
+#'    \item nber_categories
+#'    \item nber_subcategories
+#'    \item patents
+#'    \item uspc_mainclasses
+#'    \item uspc_subclasses
+#'    \item application_citations
+#'    \item patent_citations
 #'  }
 #'
 #' @examples
@@ -88,9 +82,9 @@ get_fields <- function(endpoint, groups = NULL) {
 #' @export
 get_endpoints <- function() {
   c(
-    "assignee", "cpc_subsection", "cpc_group", "cpc_subgroup", "uspc_subclass",
-    "nber_category", "nber_subcategory", "patent", "uspc_mainclass",
-    "application_citation", "patent_citation", "inventor", "location"
+    "assignees", "cpc_subsections", "cpc_groups", "cpc_subgroups", "uspc_subclasses",
+    "nber_category", "nber_subcategories", "patents", "uspc_mainclasses",
+    "application_citations", "patent_citations", "inventors", "locations"
   )
 }
 
@@ -103,9 +97,9 @@ get_endpoints <- function() {
 #' @return A character vector with the names of the 13 endpoints. Those endpoints are:
 #'
 #' \itemize{
-#'    \item patent
-#'    \item application_citation
-#'    \item patent_citation
+#'    \item patents
+#'    \item application_citations
+#'    \item patent_citations
 #'  }
 #'
 #' @examples
@@ -113,6 +107,6 @@ get_endpoints <- function() {
 #' @export
 get_patent_num_searchable_endpoints <- function() {
   c(
-    "patent", "application_citation", "patent_citation"
+    "patents", "application_citations", "patent_citations"
   )
 }
