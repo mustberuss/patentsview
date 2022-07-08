@@ -187,33 +187,36 @@ search-pv.R</p></li>
 <li>/nber_category</li>
 <li>/nber_subcategory</li>
 <li>/uspc_mainclass</li>
-<li>/uspc_subclass Note that cpc_subsection looks like the existing cpc
-endpoint and uspc_mainclass looks like the existing uspc endpoint but
-they will behave quite differently.</li>
+<li>/uspc_subclass<br>
+Note that cpc_subsection looks like the existing cpc endpoint and
+uspc_mainclass looks like the existing uspc endpoint but they behave
+quite differently.</li>
 </ul>
 </li>
 <li>Existing endpoints currently on the test server
 <ul>
-<li>/patents</li>
-<li>/assignees</li>
-<li>/inventors</li>
+<li>/patent</li>
+<li>/assignee</li>
+<li>/inventor</li>
 </ul>
 </li>
 <li>Existing endpoints not currently on the test server
 <ul>
-<li>/locations</li>
+<li>/location</li>
 </ul>
 </li>
 </ol>
-<p>Note that there are new, get-only convience endpoints that take a url
-parameter. The r package can ignore these and just use the ones that do
-posts and gets using q,f,s and o parameters.</p>
+<p>The R package will continue to use the plural endpoints as it matches
+the name of the returned data structure. Going singular caused casting
+problems. Note that there are new, get-only convience endpoints that
+take a url parameter. The r package can ignore these and just use the
+ones that do posts and gets using q,f,s and o parameters.</p>
 </li>
 <li><p>Throttling will be imposed. An http status of 429 “Too many
 requests” will be returned if more than 45 requests are received per
 minute. The Retry-After header will specify the number of seconds to
 wait before sending the next request. Changes in search-pv.R sleep
-Retry-After seconds then retries the query to hide this change from
+Retry-After seconds then retries the query to hide tvhis change from
 package users.</p></li>
 <li><p>The subdomain domain and pattern of the endpoints are changing.
 Corresponding changes made in search-pv.R existing   <a href="https://api.patentsview.org/cpc_subsections/query?q=" class="uri">https://api.patentsview.org/cpc_subsections/query?q=</a> new
@@ -260,9 +263,9 @@ total_patent_count</p>
 <a href="#observations" class="anchor"></a>Observations</h2>
 <ol>
 <li>The endpoints are singular now, instead of being plural. Ex /patents
-is now /patent The returned data structure is still plural, ex. patents.
-The R package will keep the endpoints plural to match the returned
-data.</li>
+is now /patent The returned data structures are still plural, ex.
+patents. The R package will keep using the plural endpoints to match the
+returned data structures.</li>
 <li>organization (formerly assignee_organization) is now a full text
 field, formerly it had been a string</li>
 <li>The swagger definition (<a href="https://search.patentsview.org/static/openapi_v2.yml" class="uri">https://search.patentsview.org/static/openapi_v2.yml</a>)
@@ -334,20 +337,19 @@ shoe_size” print(httr::headers(resp)[[‘X-Status-Reason-Code’]]) [1]
 <a href="#todos" class="anchor"></a>TODOS</h2>
 <ol>
 <li><p>Vignettes and examples need updating, some may not be possible
-due to the api change, like searching inventors by location. No errors
-are thrown by citation-networks.Rmd.orig but there are differences in
-the output. Works if I paste commands into R but but not by
-workflow</p></li>
+due to the api change, like searching inventors by location. I had to
+add dev = “png” to the knitr::opts_chunk$set in
+citation-networks.Rmd.orig to get it to render locally.</p></li>
 <li><p>Make sure that all the comments have been updated.</p></li>
 <li><p>Paging isn’t quite right, repeats first request if all_pages =
 TRUE</p></li>
 <li><p>Test throttling- possibly set all_pages = TRUE with a small
 per_page. Removed Sys.sleep(3) in search-pv.R</p></li>
 <li><p>Check if we need to do anything about JSON on Posts (#6 at the
-top of the page)</p></li>
+top of the page) Posts seem to work so I think we’re ok.</p></li>
 <li><p>Test that what comes back from the api calls matches the
-spreadsheet (singular/plural thing mentioned above) There’s a link to
-the spreadsheet at the bottom of <a href="https://patentsview.org/apis/purpose" class="uri">https://patentsview.org/apis/purpose</a></p></li>
+spreadsheet and/or their Swagger definition (should be ultimate source
+of truth). There’s a link to the spreadsheet at the bottom of <a href="https://patentsview.org/apis/purpose" class="uri">https://patentsview.org/apis/purpose</a></p></li>
 <li><p>Implement the warning mentioned above (second change to the
 options parameter)</p></li>
 <li><p>Check if the location specific error checking is still needed
@@ -358,7 +360,8 @@ API Key is received. The api key must be in the environment at start up,
 so a 403 on a query should only be returned if it is invalid.</p></li>
 <li><p>Maybe instead of having fake documentation, something like
 data-raw/mbr_fieldsdf.R should read the swagger definition to produce
-data-raw/fieldsdf.csv</p></li>
+data-raw/fieldsdf.csv. It might not be able to tell strings from full
+text fields though.</p></li>
 <li><p>mbr_fieldsdf.R probably needs to output group.field where the
 group doesn’t match the endpoint’s name. Ex. for the patent endpoint,
 the group of patents doesn’t need the group to be specified but the

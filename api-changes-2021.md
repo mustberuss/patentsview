@@ -14,19 +14,20 @@ As announced [here](https://patentsview.org/data-in-action/whats-new-patentsview
         * /nber_category
         * /nber_subcategory
         * /uspc_mainclass
-        * /uspc_subclass
-Note that cpc_subsection looks like the existing cpc endpoint and uspc_mainclass looks like the existing uspc endpoint but they will behave quite differently.
+        * /uspc_subclass  
+        Note that cpc_subsection looks like the existing cpc endpoint and uspc_mainclass looks like the existing uspc endpoint but they behave quite differently.
    3. Existing endpoints currently on the test server
-         *  /patents
-         *  /assignees
-         *  /inventors
+         *  /patent
+         *  /assignee
+         *  /inventor
    4. Existing endpoints not currently on the test server
-         *  /locations
-     
+         *  /location
+
+    The R package will continue to use the plural endpoints as it matches the name of the returned data structure. Going singular caused casting problems.
     Note that there are new, get-only convience endpoints that take a url parameter.  The r package can ignore these and just use the ones that do posts and gets using q,f,s and o parameters.
 
 3. Throttling will be imposed. An http status of 429 "Too many requests" will be returned if more than 45 requests are received per minute.  The Retry-After header will specify the number of seconds to wait before sending the next request.
-Changes in search-pv.R sleep Retry-After seconds then retries the query to hide this change from package users. 
+Changes in search-pv.R sleep Retry-After seconds then retries the query to hide tvhis change from package users. 
 4. The subdomain domain and pattern of the endpoints are changing. Corresponding changes made in search-pv.R
   existing
  &emsp; https://api.patentsview.org/cpc_subsections/query?q=
@@ -90,16 +91,16 @@ Please refer to the 200 "Response" section for each endpoint for full list of fi
     ~~~~
 
 ## TODOS
-1. Vignettes and examples need updating, some may not be possible due to the api change, like searching inventors by location.  No errors are thrown by citation-networks.Rmd.orig but there are differences in the output.  Works if I paste commands into R but but not by workflow
+1. Vignettes and examples need updating, some may not be possible due to the api change, like searching inventors by location.  I had to add dev = "png" to the knitr::opts_chunk$set in citation-networks.Rmd.orig to get it to render locally.
 2. Make sure that all the comments have been updated.
 3. Paging isn't quite right, repeats first request if all_pages = TRUE 
 4. Test throttling- possibly set all_pages = TRUE with a small per_page.  Removed Sys.sleep(3) in search-pv.R
-5. Check if we need to do anything about JSON on Posts (#6 at the top of the page)
-6. Test that what comes back from the api calls matches the spreadsheet (singular/plural thing mentioned above) There's a link to the spreadsheet at the bottom of https://patentsview.org/apis/purpose
+5. Check if we need to do anything about JSON on Posts (#6 at the top of the page)  Posts seem to work so I think we're ok.
+6. Test that what comes back from the api calls matches the spreadsheet and/or their Swagger definition (should be ultimate source of truth). There's a link to the spreadsheet at the bottom of https://patentsview.org/apis/purpose
 7. Implement the warning mentioned above (second change to the options parameter)
 8. Check if the location specific error checking is still needed (throw_if_loc_error() in process-error.R). The locations endpoint won't return as many fields as before. 
 9. Add a warning message if the http status 403 Incorrect/Missing API Key is received. The api key must be in the environment at start up, so a 403 on a query should only be returned if it is invalid.
-10. Maybe instead of having fake documentation, something like data-raw/mbr_fieldsdf.R should read the swagger definition to produce data-raw/fieldsdf.csv
+10. Maybe instead of having fake documentation, something like data-raw/mbr_fieldsdf.R should read the swagger definition to produce data-raw/fieldsdf.csv.  It might not be able to tell strings from full text fields though.
 11. mbr_fieldsdf.R probably needs to output group.field where the group doesn't match the endpoint's name.  Ex. for the patent endpoint, the group of patents doesn't need the group to be specified but the other fields would need to be preceded by their group and a dot.  Or change the fields in the fake documentation (to add the group.field where necessary)?
 12. we probably don't need this in process-error.R
 

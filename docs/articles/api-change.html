@@ -236,11 +236,12 @@ field, formerly it had been a string.</p></li>
 <li><p>There are some new convience methods, which take url parameters.
 The api will still respond to GETs and POSTs, so the R package won’t
 need to use these new urls.</p></li>
-<li><p>The endpoints are now singluar, patent for example, where in the
-past they were plural, patents for example. The R package will display a
-warning if the plural name is used but the singular name will be used
-when calling the api. There would be a small chance that an existing
-script would work, once the now-required api key is set up.</p></li>
+<li><p>The api’s endpoints are now singular, instead of being plural. Ex
+/patents is now /patent The returned data structures are still plural,
+ex. patents. The R package will keep using the plural endpoints to match
+the returned data structures. There would be a small chance that an
+existing script would work, once the now-required api key is set
+up.</p></li>
 <li><p>All fields are supposed to be queryable with the new version of
 the api.</p></li>
 <li><p>The subdomain of the api changed from <a href="https://api.patentsview.org/" class="uri">https://api.patentsview.org/</a> to <a href="https://search.patentsview.org" class="uri">https://search.patentsview.org</a>. The patentsview package

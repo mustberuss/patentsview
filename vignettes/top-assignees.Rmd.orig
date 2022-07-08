@@ -18,12 +18,12 @@ knitr::opts_chunk$set(
 
 > Note about the affect of the api change
 >
-> This would be a good example of life under the new api, where we have to make more than one call to get the same data as before.  Maybe even keep the old page around for comparison? If only I could manipulate dataframes!
+> This would be a good example of life under the new api, where we have to make more than one call to get the same data as before.  Maybe even keep the old page around for comparison? 
 >
-> Intention (partially implemented): 
-> application date or year isn't available from any of the new version of the api's endpoints.  Instead we'll use patent_year (the year the patent was granted, already of type integer).  Trouble is that it's at the patent level, not inside the nested assignees_at_grant.  Lacking the skill to get it there.
+> Intention: 
+> Alarmingly, application date or year isn't available from any of the new version of the api's endpoints.  Instead we'll use patent_year (the year the patent was granted, already of type integer).  Trouble is that it's at the patent level, not inside the nested assignees_at_grant.  
 >
-> Remove the hacked Total number of patents and add assignee_id to the top_asgns data frame, make a call to the assignee endpoint to get num_patents (total number of patents) for the top 75 assignees, then if it's not too unRish, remove the assignee_id column and add the total number of patents column and calculate the percentage (or create a new data frame with the columns we want in the datatable).  Then life, and the script, goes on as normal (as the old one did). 
+> We wind up making a call to the assignee endpoint to get num_patents (total number of patents) for the top 75 assignees, then we blend in the num_patents and compute the percentages. Then life, and the script, goes on as normal (as the old one did). 
 
 
 The following is a quick analysis of the top organizations patenting in the field of databases.
@@ -39,7 +39,7 @@ library(knitr)
 library(stringr)
 
 # With the recent api change that limits the overall result set size, we now look
-# for databases (plural) where we used to use the singular database for this example.
+# for databases (plural) where we used to use the singular database for this vignette.
 # We also exclude patents without an assignee organization.
 
 # We first need to write a query. Our query will look for "databases" in either 
@@ -66,7 +66,6 @@ query
 fields <- c(
   "patent_number", "patent_date","patent_year",
   "patent_num_us_patents_cited",
-  "assignees_at_grant.type",  # hack since we don't get the total number of patents by assignee from the endpoint now
   "assignees_at_grant.organization",  # full text field now if used in q:
   "assignees_at_grant.assignee_id"  # this comes back as "assignees_at_grant.assignee
 )
@@ -91,29 +90,22 @@ dl
 # some are NA somehow
 
 # we don't get the assignee_total_num_patents back from the patents endpoint
-# can we calculate it ourselves? using the assignees_at_grant type for the code to work (HACK)
-
-# get the assignee_ids for the top 75 assignees - we'll call the assignee endpoint with them
-# to get the total number of patents
+# we'll have to make a call to the assignee endpoint once we know who the top 75
+# assignees are.
 
 # requested assignees_at_grant.assignee_id comes back in the assignees_at_grant object 
 # with key "assignee" and value of https://search.patentsview.org/api/v1/assignee/35/
 # we want to parse out the assignee_ids (35 in the example value)
 # str_extract(assignee, "(\\d+)(?=/$)")
 
-# would really not want ttl_pats and division yet but we'll leave it for now
-
 # Create a data frame with the top 75 assignees:
 top_asgns <-
   dl$assignees_at_grant %>%
     filter(!is.na(organization)) %>% # some patents are assigned to an inventor (not an org)
-    mutate(ttl_pats = as.numeric(type)) %>%
     mutate(assignee_id = str_extract(assignee, "(\\d+)(?=/$)")) %>%
-    group_by(organization, ttl_pats, assignee_id) %>% 
+    group_by(organization, assignee_id) %>% 
     summarise(db_pats = n()) %>% 
-    mutate(frac_db_pats = round(db_pats / ttl_pats, 3)) %>%
     ungroup() %>%
-    select(c(1, 4, 2, 5, 3)) %>%
     arrange(desc(db_pats)) %>%
     slice(1:75)
 
@@ -136,12 +128,16 @@ assignee_out <- search_pv(assignee_query , fields = assignee_fields, all_pages =
 
 assignee_counts <- unnest_pv_data(assignee_out$data, "assignee_id")
 
-# TODO:
-# now we'd want to mutate in the total counts and do the percentage math in top_asgns 
-# some type of join exceeding my capabilities!
-
-# remove assignee_id column
-top_asgns <-  top_asgns  %>% select (-c(assignee_id))
+# redo top_asgns now that we have all the fields we need
+# we join in the total counts and mutate in the percentage 
+top_asgns <- dl$assignees_at_grant %>%
+   inner_join(assignee_counts$assignees) %>%
+   rename(ttl_pats = num_patents) %>%
+   group_by(organization, ttl_pats) %>%
+   summarise(db_pats = n()) %>% 
+   mutate(frac_db_pats = round(db_pats / ttl_pats, 3)) %>%
+   select(c(1, 3, 2, 4))  %>%
+   arrange(desc(db_pats))
 
 # Create datatable
 datatable(
@@ -167,9 +163,7 @@ IBM is far and away the biggest player in the field. However, we can see that Or
 ```{r}
 
 # The patent endpoint no longer returns application date as this page used originally
-# Instead we will use the patent_year
-# Alarmingly the application date is not available from any endpoint!
-# we'll substitute patent_year (year the patent was granted)
+# Instead we will use the patent_year  (year the patent was granted, returned as an integer)
 
 # get the top 5 organizations since slice wasn't working out below
 # we want data to just have data for the top 5 assignees, not all 75 assignees
