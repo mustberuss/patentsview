@@ -2,10 +2,23 @@
 % Please edit documentation in R/get-fields.R
 \name{get_patent_num_searchable_endpoints}
 \alias{get_patent_num_searchable_endpoints}
-\title{get_endpoints()}
+\title{Get Patent Num Searchable Endpoints}
 \usage{
 get_patent_num_searchable_endpoints()
 }
+\value{
+A character vector with the names of the 13 endpoints. Those endpoints are:
+
+\itemize{
+   \item patents
+   \item application_citations
+   \item patent_citations
+ }
+}
 \description{
+With the api chage, not all endpoints can be searched by patent number
+This function reminds the user which endpoints can be searched by patent number
+}
+\examples{
 get_endpoints()
 }

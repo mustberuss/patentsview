@@ -7,7 +7,7 @@
 search_pv(
   query,
   fields = NULL,
-  endpoint = "patent",
+  endpoint = "patents",
   subent_cnts = FALSE,
   mtchd_subent_only = TRUE,
   page = 1,
@@ -46,10 +46,10 @@ endpoint}) or by viewing the \code{fieldsdf} data frame
 out the fields available for a given endpoint.}
 
 \item{endpoint}{The web service resource you wish to search. \code{endpoint}
-must be one of the following: "patent", "inventor", "assignee",
-"location", "cpc_group", "cpc_subgroup", "cpc_subsection", "uspc_mainclass",  
-"uspc_subclass","nber_category", "nber_subcategory", "application_citation", 
-or "patent_citation"}
+must be one of the following: "patents", "inventors", "assignees",
+"locations", "cpc_groups", "cpc_subgroups", "cpc_subsections", "uspc_mainclasses",  
+"uspc_subclasses","nber_categories", "nber_subcategories", "application_citations", 
+or "patent_citations"}
 
 \item{subent_cnts}{Do you want the total counts of unique subentities to be
 returned? This is equivalent to the \code{include_subentity_total_counts}
@@ -120,7 +120,7 @@ search_pv(query = '{"_gt":{"patent_year":2010}}')
 
 search_pv(
   query = qry_funs$gt(patent_year = 2010),
-  fields = get_fields("patent", c("patents", "assignees_at_grant"))
+  fields = get_fields("patents", c("patents", "assignees_at_grant"))
 )
 
 search_pv(
@@ -132,17 +132,18 @@ search_pv(
 
 search_pv(
   query = qry_funs$eq(name_last = "crew"),
-  endpoint = "inventor",
+  endpoint = "inventors",
   all_pages = TRUE
 )
 
 search_pv(
   query = qry_funs$contains(name_last = "smith"),
-  endpoint = "assignee"
+  endpoint = "assignees"
 )
 
 search_pv(
-  query = qry_funs$contains(name_last = "smith"),
+  query = qry_funs$contains(inventors_at_grant.name_last = "smith"),
+  endpoint = "patents",
   config = httr::timeout(40)
 )
 }

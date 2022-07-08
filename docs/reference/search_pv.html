@@ -168,7 +168,7 @@ the user's query.</p>
     <pre class="usage"><span class='fu'>search_pv</span><span class='op'>(</span>
   <span class='va'>query</span>,
   fields <span class='op'>=</span> <span class='cn'>NULL</span>,
-  endpoint <span class='op'>=</span> <span class='st'>"patent"</span>,
+  endpoint <span class='op'>=</span> <span class='st'>"patents"</span>,
   subent_cnts <span class='op'>=</span> <span class='cn'>FALSE</span>,
   mtchd_subent_only <span class='op'>=</span> <span class='cn'>TRUE</span>,
   page <span class='op'>=</span> <span class='fl'>1</span>,
@@ -212,10 +212,10 @@ out the fields available for a given endpoint.</p></td>
     <tr>
       <th>endpoint</th>
       <td><p>The web service resource you wish to search. <code>endpoint</code>
-must be one of the following: "patent", "inventor", "assignee",
-"location", "cpc_group", "cpc_subgroup", "cpc_subsection", "uspc_mainclass",  
-"uspc_subclass","nber_category", "nber_subcategory", "application_citation", 
-or "patent_citation"</p></td>
+must be one of the following: "patents", "inventors", "assignees",
+"locations", "cpc_groups", "cpc_subgroups", "cpc_subsections", "uspc_mainclasses",  
+"uspc_subclasses","nber_categories", "nber_subcategories", "application_citations", 
+or "patent_citations"</p></td>
     </tr>
     <tr>
       <th>subent_cnts</th>
@@ -304,7 +304,7 @@ your query is very long (say, over 2,000 characters in length).</p></td>
 
 <span class='fu'>search_pv</span><span class='op'>(</span>
   query <span class='op'>=</span> <span class='va'>qry_funs</span><span class='op'>$</span><span class='fu'>gt</span><span class='op'>(</span>patent_year <span class='op'>=</span> <span class='fl'>2010</span><span class='op'>)</span>,
-  fields <span class='op'>=</span> <span class='fu'><a href='get_fields.html'>get_fields</a></span><span class='op'>(</span><span class='st'>"patent"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"patents"</span>, <span class='st'>"assignees_at_grant"</span><span class='op'>)</span><span class='op'>)</span>
+  fields <span class='op'>=</span> <span class='fu'><a href='get_fields.html'>get_fields</a></span><span class='op'>(</span><span class='st'>"patents"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"patents"</span>, <span class='st'>"assignees_at_grant"</span><span class='op'>)</span><span class='op'>)</span>
 <span class='op'>)</span>
 
 <span class='fu'>search_pv</span><span class='op'>(</span>
@@ -316,17 +316,18 @@ your query is very long (say, over 2,000 characters in length).</p></td>
 
 <span class='fu'>search_pv</span><span class='op'>(</span>
   query <span class='op'>=</span> <span class='va'>qry_funs</span><span class='op'>$</span><span class='fu'>eq</span><span class='op'>(</span>name_last <span class='op'>=</span> <span class='st'>"crew"</span><span class='op'>)</span>,
-  endpoint <span class='op'>=</span> <span class='st'>"inventor"</span>,
+  endpoint <span class='op'>=</span> <span class='st'>"inventors"</span>,
   all_pages <span class='op'>=</span> <span class='cn'>TRUE</span>
 <span class='op'>)</span>
 
 <span class='fu'>search_pv</span><span class='op'>(</span>
   query <span class='op'>=</span> <span class='va'>qry_funs</span><span class='op'>$</span><span class='fu'>contains</span><span class='op'>(</span>name_last <span class='op'>=</span> <span class='st'>"smith"</span><span class='op'>)</span>,
-  endpoint <span class='op'>=</span> <span class='st'>"assignee"</span>
+  endpoint <span class='op'>=</span> <span class='st'>"assignees"</span>
 <span class='op'>)</span>
 
 <span class='fu'>search_pv</span><span class='op'>(</span>
-  query <span class='op'>=</span> <span class='va'>qry_funs</span><span class='op'>$</span><span class='fu'>contains</span><span class='op'>(</span>name_last <span class='op'>=</span> <span class='st'>"smith"</span><span class='op'>)</span>,
+  query <span class='op'>=</span> <span class='va'>qry_funs</span><span class='op'>$</span><span class='fu'>contains</span><span class='op'>(</span>inventors_at_grant.name_last <span class='op'>=</span> <span class='st'>"smith"</span><span class='op'>)</span>,
+  endpoint <span class='op'>=</span> <span class='st'>"patents"</span>,
   config <span class='op'>=</span> <span class='fu'>httr</span><span class='fu'>::</span><span class='fu'><a href='https://httr.r-lib.org/reference/timeout.html'>timeout</a></span><span class='op'>(</span><span class='fl'>40</span><span class='op'>)</span>
 <span class='op'>)</span>
 <span class='op'>}</span>

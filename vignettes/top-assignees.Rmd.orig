@@ -133,7 +133,7 @@ assignee_fields <- c(
 assignee_out <- search_pv(assignee_query , fields = assignee_fields, all_pages = TRUE, 
    endpoint = "assignees", method = "POST")
 
-assignee_counts <- unnest_pv_data(assignee_out$data, "patent_number")
+assignee_counts <- unnest_pv_data(assignee_out$data, "assignee_id")
 
 # TODO:
 # now we'd want to mutate in the total counts and do the percentage math in top_asgns 

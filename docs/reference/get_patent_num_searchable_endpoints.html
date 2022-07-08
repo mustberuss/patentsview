@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>get_endpoints() — get_patent_num_searchable_endpoints • patentsview</title>
+<title>Get Patent Num Searchable Endpoints — get_patent_num_searchable_endpoints • patentsview</title>
 
 
 <!-- jquery -->
@@ -41,8 +41,9 @@
   <link href="../extra.css" rel="stylesheet">
   
 
-<meta property="og:title" content="get_endpoints() — get_patent_num_searchable_endpoints" />
-<meta property="og:description" content="get_endpoints()" />
+<meta property="og:title" content="Get Patent Num Searchable Endpoints — get_patent_num_searchable_endpoints" />
+<meta property="og:description" content="With the api chage, not all endpoints can be searched by patent number
+This function reminds the user which endpoints can be searched by patent number" />
 
 
 
@@ -154,19 +155,36 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>get_endpoints()</h1>
+    <h1>Get Patent Num Searchable Endpoints</h1>
     <small class="dont-index">Source: <a href='https://github.com/ropensci/patentsview/blob/master/R/get-fields.R'><code>R/get-fields.R</code></a></small>
     <div class="hidden name"><code>get_patent_num_searchable_endpoints.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>get_endpoints()</p>
+    <p>With the api chage, not all endpoints can be searched by patent number
+This function reminds the user which endpoints can be searched by patent number</p>
     </div>
 
     <pre class="usage"><span class='fu'>get_patent_num_searchable_endpoints</span><span class='op'>(</span><span class='op'>)</span></pre>
 
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
+    <p>A character vector with the names of the 13 endpoints. Those endpoints are:</p>
+<ul>
+<li><p>patents</p></li>
+<li><p>application_citations</p></li>
+<li><p>patent_citations</p></li>
+</ul>
+
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='fu'><a href='get_endpoints.html'>get_endpoints</a></span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;  [1] "assignees"             "cpc_subsections"       "cpc_groups"           
+#&gt;  [4] "cpc_subgroups"         "uspc_subclasses"       "nber_category"        
+#&gt;  [7] "nber_subcategories"    "patents"               "uspc_mainclasses"     
+#&gt; [10] "application_citations" "patent_citations"      "inventors"            
+#&gt; [13] "locations"            </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
