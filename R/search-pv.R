@@ -192,7 +192,7 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, ...) {
 #'
 #' search_pv(
 #'   query = qry_funs$gt(patent_year = 2010),
-#'   fields = get_fields("patent", c("patents", "assignees_at_grant"))
+#'   fields = get_fields("patents", c("patents", "assignees_at_grant"))
 #' )
 #'
 #' search_pv(
@@ -214,7 +214,8 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, ...) {
 #' )
 #'
 #' search_pv(
-#'   query = qry_funs$contains(name_last = "smith"),
+#'   query = qry_funs$contains(inventors_at_grant.name_last = "smith"),
+#'   endpoint = "patents",
 #'   config = httr::timeout(40)
 #' )
 #' }
