@@ -65,6 +65,7 @@ query
 
 fields <- c(
   "patent_number", "patent_date","patent_year",
+  "patent_num_us_patents_cited",
   "assignees_at_grant.type",  # hack since we don't get the total number of patents by assignee from the endpoint now
   "assignees_at_grant.organization",  # full text field now if used in q:
   "assignees_at_grant.assignee_id"  # this comes back as "assignees_at_grant.assignee
@@ -197,10 +198,7 @@ It's hard to see any clear trends in this graph. What is clear is that the top a
 
 4. Finally, let's see how the organizations compare in terms of their citation rates. First, we'll need to normalize the raw citation counts by publication year, so that older patents don't have an unfair advantage over younger patents (i.e., because they have had a longer time to accumulate citations).
 
-# TODO: the rest of the file isn't implemented yet, the start and end{r} lines are commented out
-# trying to see if the builds work
-
-#```{r}
+```{r}
 # Write a ranking function that will be used to rank patents by their citation counts
 percent_rank2 <- function(x)
   (rank(x, ties.method = "average", na.last = "keep") - 1) / (sum(!is.na(x)) - 1)
@@ -210,28 +208,27 @@ asng_p_dat <-
   dl$patents %>%
   # mutate(patent_yr = substr(patent_date, 1, 4)) %>%
     group_by(patent_year) %>%
-    mutate(perc_cite = percent_rank2(patent_num_cited_by_us_patents)) %>%
+    mutate(perc_cite = percent_rank2(patent_num_us_patents_cited)) %>%
     inner_join(dl$assignees) %>%
     group_by(organization) %>%
     summarise(mean_perc = mean(perc_cite)) %>%
     inner_join(top_asgns) %>%
     arrange(desc(ttl_pats)) %>%
-    filter(!is.na(assignee_organization)) %>%
     slice(1:20) %>%
     mutate(color = "#f1c40f") %>%
     as.data.frame()
 
 kable(head(asng_p_dat), row.names = FALSE)
-#```
+```
 
 Now let's visualize the data. Each assignee will be represented by a point/bubble. The x-value of the point will represent the total number of patents the assignee has published in the field of databases (on a log scale), while the y-value will represent its average normalized citation rate. The size of the bubble will be proportional to the percent of the assignee's patents that relate to databases.
 
-#```{r}
+```{r}
 # Adapted from http://jkunst.com/highcharter/showcase.html
 hchart(
   asng_p_dat, "scatter", 
   hcaes(x = db_pats, y = mean_perc, size = frac_db_pats, 
-        group = assignee_organization, color = color)
+        group = organization, color = color)
 ) %>%
   hc_xAxis(
     title = list(text = "DB patents"), type = "logarithmic",
@@ -246,7 +243,7 @@ hchart(
     y = c("{point.db_pats:.0f}","{point.mean_perc:.2f}", "{point.frac_db_pats:.3f}")
   )) %>%
   hc_legend(enabled = FALSE)
-#```
+```
 
 <br>
 

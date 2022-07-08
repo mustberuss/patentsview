@@ -75,8 +75,7 @@ when including them in your query.  Example:  assignee organization is renamed o
 
 * There are some new convience methods, which take url parameters.  The api will still respond to GETs and POSTs, so the R package won't need to use these new urls.
 
-* The endpoints are now singluar, patent for example, where in the past they were plural, patents
-for example.  The R package will display a warning if the plural name is used but the singular name will be used when calling the api.  There would be a small chance that an existing script would work, once the now-required api key is set up.
+* The api's endpoints are now singular, instead of being plural.  Ex /patents is now /patent  The returned data structures are still plural, ex. patents.  The R package will keep using the plural endpoints to match the returned data structures.  There would be a small chance that an existing script would work, once the now-required api key is set up.
 
 * All fields are supposed to be queryable with the new version of the api.
 
