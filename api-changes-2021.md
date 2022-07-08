@@ -67,7 +67,7 @@ Changes in search-pv.R sleep Retry-After seconds then retries the query to hide 
       req_pages
 
 ## Observations
-1. The endpoints are singular now, instead of being plural.  Ex /patents is now /patent  The returned data structure is still plural, ex. patents.  The R package will keep the endpoints plural to match the returned data.
+1. The endpoints are singular now, instead of being plural.  Ex /patents is now /patent  The returned data structures are still plural, ex. patents.  The R package will keep using the plural endpoints to match the returned data structures.
 2. organization (formerly assignee_organization) is now a full text field, formerly it had been a string
 3. The swagger definition (https://search.patentsview.org/static/openapi_v2.yml) does not contain  government interest fields, ipc fields, wipo fields, lawyer fields, foreign_priority fields, examiner fields, pct fields, raw inventor fields, coinventor fields, patent_firstnamed fields or patent_num_claims. Assuming these fields are all going away.
 4. There  seems to be a change in case sensitivity compared to the original api. The original api would return results for q:{"patent_type":"Design"} while the ElasticSearch version does not.
