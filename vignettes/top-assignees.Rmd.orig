@@ -20,11 +20,10 @@ knitr::opts_chunk$set(
 >
 > This would be a good example of life under the new api, where we have to make more than one call to get the same data as before.  Maybe even keep the old page around for comparison? 
 >
-> Intention: 
-> Alarmingly, application date or year isn't available from any of the new version of the api's endpoints.  Instead we'll use patent_year (the year the patent was granted, already of type integer).  Trouble is that it's at the patent level, not inside the nested assignees_at_grant.  
+> Intention  
+> > Alarmingly, application date or year isn't available from any of the new version of the api's endpoints.  Instead we'll use patent_year (the year the patent was granted, already of type integer).  Trouble is that the count is nested inside the patents structure, not inside the nested assignees_at_grant.  Fortunately both nested structures have patent_number as a field so we can join them to get the data we need.
 >
-> We wind up making a call to the assignee endpoint to get num_patents (total number of patents) for the top 75 assignees, then we blend in the num_patents and compute the percentages. Then life, and the script, goes on as normal (as the old one did). 
-
+> We start by calling the patent endpoint to get the patents where "databases" is in the title or abstract and there is an assignee. We make a subsequent call to the assignee endpoint to get num_patents (total number of patents) for the top 75 assignees, then we blend in the num_patents and compute the percentages. Then life, and the script, goes on as normal (as the old one did). 
 
 The following is a quick analysis of the top organizations patenting in the field of databases.
 
@@ -60,14 +59,12 @@ query <- with_qfuns(
 query
 
 # Create a list of the fields we'll need for the analysis
-# using assignee's type since we can't get assignee_total_num_patents from 
-# the patent endpoint
 
 fields <- c(
   "patent_number", "patent_date","patent_year",
   "patent_num_us_patents_cited",
   "assignees_at_grant.organization",  # full text field now if used in q:
-  "assignees_at_grant.assignee_id"  # this comes back as "assignees_at_grant.assignee
+  "assignees_at_grant.assignee_id"  # the assignee fields come back in a nested object
 )
 
 # Send an HTTP request to the PatentsView API to get the data
@@ -82,20 +79,16 @@ pv_out <- search_pv(query, fields = fields, all_pages = TRUE)
 dl <- unnest_pv_data(pv_out$data, "patent_number")
 dl
 
-# we want to get grant_year into assignees_at_grant (application year or date is not available)
-# dl$assignees_at_grant.grant_year = dl$patents.patent_year where dl$patents.patent_number = dl$assignees_at_grant.patent_number
-# lets see if we can convince dplyr to do that!
-
-# we shouldn't need the filter (we queried for non empty string orginazations) but
+# We shouldn't need the filter (we queried for non empty string orginazations) but
 # some are NA somehow
 
-# we don't get the assignee_total_num_patents back from the patents endpoint
-# we'll have to make a call to the assignee endpoint once we know who the top 75
+# We don't get the assignee_total_num_patents back from the patents endpoint any longer.
+# We'll have to make a call to the assignee endpoint once we know who the top 75
 # assignees are.
 
-# requested assignees_at_grant.assignee_id comes back in the assignees_at_grant object 
-# with key "assignee" and value of https://search.patentsview.org/api/v1/assignee/35/
-# we want to parse out the assignee_ids (35 in the example value)
+# Requested assignees_at_grant.assignee_id comes back in the assignees_at_grant object 
+# with key "assignee" and value like https://search.patentsview.org/api/v1/assignee/35/
+# We want to parse out the assignee_ids (35 in the example value)
 # str_extract(assignee, "(\\d+)(?=/$)")
 
 # Create a data frame with the top 75 assignees:
@@ -109,12 +102,12 @@ top_asgns <-
     arrange(desc(db_pats)) %>%
     slice(1:75)
 
-# now that we have the assignee_id's we can call the assignee endpoint to get the
+# Now that we have the assignee_id's we can call the assignee endpoint to get the
 # total number of patents for each of our top_asgns 
 
-# in this case it might be nice to have a qry_funs$in for the api's array eq
+# In this case it might be nice to have a qry_funs$in for the api's array eq,
 # thinking the api might not like 75 or'ed conditions (thought it did work when I tried it)
-#assignee_query =  qry_funs$eq(assignee_id = as.integer(top_asgns$assignee_id))
+# assignee_query =  qry_funs$eq(assignee_id = as.integer(top_asgns$assignee_id))
 s = toString(as.integer(top_asgns$assignee_id))
 assignee_query = paste('{"assignee_id":[',s,']}')
 
@@ -128,8 +121,8 @@ assignee_out <- search_pv(assignee_query , fields = assignee_fields, all_pages =
 
 assignee_counts <- unnest_pv_data(assignee_out$data, "assignee_id")
 
-# redo top_asgns now that we have all the fields we need
-# we join in the total counts and mutate in the percentage 
+# Here we redo top_asgns now that we have all the fields we need.
+# We join in the total counts and mutate in the percentages 
 top_asgns <- dl$assignees_at_grant %>%
    inner_join(assignee_counts$assignees) %>%
    rename(ttl_pats = num_patents) %>%
@@ -165,8 +158,8 @@ IBM is far and away the biggest player in the field. However, we can see that Or
 # The patent endpoint no longer returns application date as this page used originally
 # Instead we will use the patent_year  (year the patent was granted, returned as an integer)
 
-# get the top 5 organizations since slice wasn't working out below
-# we want data to just have data for the top 5 assignees, not all 75 assignees
+# Get the top 5 organizations since slice wasn't working out in the full_join below.
+# We want data to just be the top 5 assignees, not all 75 assignees
 top_five <- head(top_asgns, n = 5)
    
 data <- 

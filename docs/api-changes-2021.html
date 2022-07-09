@@ -216,7 +216,7 @@ ones that do posts and gets using q,f,s and o parameters.</p>
 requests” will be returned if more than 45 requests are received per
 minute. The Retry-After header will specify the number of seconds to
 wait before sending the next request. Changes in search-pv.R sleep
-Retry-After seconds then retries the query to hide tvhis change from
+Retry-After seconds then retries the query to hide this change from
 package users.</p></li>
 <li><p>The subdomain domain and pattern of the endpoints are changing.
 Corresponding changes made in search-pv.R existing   <a href="https://api.patentsview.org/cpc_subsections/query?q=" class="uri">https://api.patentsview.org/cpc_subsections/query?q=</a> new
@@ -343,8 +343,11 @@ citation-networks.Rmd.orig to get it to render locally.</p></li>
 <li><p>Make sure that all the comments have been updated.</p></li>
 <li><p>Paging isn’t quite right, repeats first request if all_pages =
 TRUE</p></li>
-<li><p>Test throttling- possibly set all_pages = TRUE with a small
-per_page. Removed Sys.sleep(3) in search-pv.R</p></li>
+<li><p>For throttling testing the Sys.sleep(3) in search-pv.R was
+removed. A warning was added if the call gets throttled so testthat
+could expect_warning. Wondering if the warning is a good idea! Possibly
+add an optional parameter to search_pv? Then the warning could be
+suppressed by default.</p></li>
 <li><p>Check if we need to do anything about JSON on Posts (#6 at the
 top of the page) Posts seem to work so I think we’re ok.</p></li>
 <li><p>Test that what comes back from the api calls matches the
@@ -382,8 +385,12 @@ fake web pages and rescrape. get_fields would need to add the groups and
 dot when the fields are nested. It’s the one test that fails.</p></li>
 <li><p>casting may only be necessary to convert dates, the new version
 of the api seems to return integers and floats. Exception seems to be
-assignees_at_grant.type, it’s a string that probably should be an int 15
-probably shouldn’t have api-change.Rmd.orig as a vignette</p></li>
+assignees_at_grant.type, it’s a string that probably should be an
+int</p></li>
+<li><p>probably shouldn’t have api-change.Rmd.orig as a
+vignette</p></li>
+<li><p>probably should remove printing of the url in search-pv but it’s
+been so darn useful durning development</p></li>
 </ol>
 </div>
 <div id="try-it-yourself" class="section level2">
@@ -406,19 +413,26 @@ python wrapper <a href="https://github.com/mustberuss/PatentsView-APIWrapper/tre
 <h2 class="hasAnchor">
 <a href="#questions" class="anchor"></a>Questions</h2>
 <ol>
-<li>Are existing sleeps in search-pv.R needed? (If the throttling
-works)</li>
+<li>Should we bump the version number to 1.0.0? The api key alone
+quarantees that the package won’t be backward compatible.</li>
 <li>Are there any other fields changing type? (like assignee
 organization becoming a full text field, formerly it had been a
 string)</li>
 <li>Are there more fields (like the government interests) that went
 away?</li>
 <li>Do we need to set up an api key as a secret? It would be needed if
-there are api calls in the build workflow.</li>
+there are api calls in the workflows. I set one in my repo but I think
+everything has a skip_on_ci(). It’s retrieved in R-CMD-check.yaml which
+might need to be removed.</li>
 <li>It looks like Dates are the only thing that cast-pv-data needs to
 convert. The api seems to return integers etc., not always strings.
 Exception is assignees_at_grant.type, it’s still a string when it should
-be an int    </li>
+be an int Is NEWS.md generated? Add a link to the page explaining the
+api changes?</li>
+<li>How to handle the release? For a while both versions of the api are
+supposed to be around. Have people install the updated R package from a
+branch on ropensci/patentsview? When the original version of the api is
+retired do a CRAN build?    </li>
 </ol>
 </div>
 </div>

@@ -27,7 +27,7 @@ As announced [here](https://patentsview.org/data-in-action/whats-new-patentsview
     Note that there are new, get-only convience endpoints that take a url parameter.  The r package can ignore these and just use the ones that do posts and gets using q,f,s and o parameters.
 
 3. Throttling will be imposed. An http status of 429 "Too many requests" will be returned if more than 45 requests are received per minute.  The Retry-After header will specify the number of seconds to wait before sending the next request.
-Changes in search-pv.R sleep Retry-After seconds then retries the query to hide tvhis change from package users. 
+Changes in search-pv.R sleep Retry-After seconds then retries the query to hide this change from package users. 
 4. The subdomain domain and pattern of the endpoints are changing. Corresponding changes made in search-pv.R
   existing
  &emsp; https://api.patentsview.org/cpc_subsections/query?q=
@@ -94,7 +94,7 @@ Please refer to the 200 "Response" section for each endpoint for full list of fi
 1. Vignettes and examples need updating, some may not be possible due to the api change, like searching inventors by location.  I had to add dev = "png" to the knitr::opts_chunk$set in citation-networks.Rmd.orig to get it to render locally.
 2. Make sure that all the comments have been updated.
 3. Paging isn't quite right, repeats first request if all_pages = TRUE 
-4. Test throttling- possibly set all_pages = TRUE with a small per_page.  Removed Sys.sleep(3) in search-pv.R
+4. For throttling testing the Sys.sleep(3) in search-pv.R was removed.  A warning was added if the call gets throttled so testthat could expect_warning.   Wondering if the warning is a good idea!  Possibly add an optional parameter to search_pv?  Then the warning could be suppressed by default. 
 5. Check if we need to do anything about JSON on Posts (#6 at the top of the page)  Posts seem to work so I think we're ok.
 6. Test that what comes back from the api calls matches the spreadsheet and/or their Swagger definition (should be ultimate source of truth). There's a link to the spreadsheet at the bottom of https://patentsview.org/apis/purpose
 7. Implement the warning mentioned above (second change to the options parameter)
@@ -110,7 +110,8 @@ Please refer to the 200 "Response" section for each endpoint for full list of fi
         "request). Try slimming down your field list and trying again."
 13. problems with cast-pv-data.R  We need the dots when requesting data, ex. assignees_at_grant.state at patent endpoint, but then we don't want the dots when casting.  Probably need to remove the dots from the fake web pages and rescrape.  get_fields would need to add the groups and dot when the fields are nested. It's the one test that fails.
 14. casting may only be necessary to convert dates, the new version of the api seems to return integers and floats.  Exception seems to be assignees_at_grant.type, it's a string that probably should be an int
-15 probably shouldn't have api-change.Rmd.orig as a vignette
+15. probably shouldn't have api-change.Rmd.orig as a vignette
+16. probably should remove printing of the url in search-pv but it's been so darn useful durning development
 
 ## Try it yourself
 Steps to try this out locally
@@ -121,10 +122,12 @@ Steps to try this out locally
 
 The environmental variable's name is the same one I used in the api's python wrapper https://github.com/mustberuss/PatentsView-APIWrapper/tree/api-change-2022
 ## Questions
-1. Are existing sleeps in search-pv.R needed? (If the throttling works)
+1. Should we bump the version number to 1.0.0?  The api key alone quarantees that the package won't be backward compatible.
 2. Are there any other fields changing type?  (like assignee organization becoming a full text field, formerly it had been a string)
 3. Are there more fields (like the government interests) that went away?
-4. Do we need to set up an api key as a secret?  It would be needed if there are api calls in the build workflow.
+4. Do we need to set up an api key as a secret?  It would be needed if there are api calls in the workflows. I set one in my repo but I think everything has a skip_on_ci().  It's retrieved in R-CMD-check.yaml which might need to be removed.
 5. It looks like Dates are the only thing that cast-pv-data needs to convert. The api seems to return integers etc., not always strings.  Exception is assignees_at_grant.type, it's still a string when it should be an int
+Is NEWS.md generated?  Add a link to the page explaining the api changes?
+6. How to handle the release?  For a while both versions of the api are supposed to be around.  Have people install the updated R package from a branch on ropensci/patentsview?  When the original version of the api is retired do a CRAN build?
 &nbsp;
 &nbsp;

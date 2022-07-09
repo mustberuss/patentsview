@@ -55,23 +55,24 @@ one_request <- function(method, query, base_url, arg_list, ...) {
     get_url <- get_get_url(query, base_url, arg_list)
     print(get_url)
     resp <- httr::GET(get_url, httr::add_headers("X-Api-Key" = pview_key()), ua, ...)
-
-    # sleep and retry on a 429 Too many requests
-    if (httr::status_code(resp) == 429) {
-       Sys.sleep(httr::headers(resp)[['Retry-After']])
-       resp <- httr::GET(get_url, httr::add_headers("X-Api-Key" = pview_key()), ua, ...)
-    }
-
   } else {
     body <- get_post_body(query, arg_list)
     # api change, they want a json object, not a string representation of one
     resp <- httr::POST(base_url, httr::add_headers("X-Api-Key" = pview_key(), "Content-Type" = "application/json" ), body = body, ua, ...)
+  }
 
-    # sleep and retry on a 429 Too many requests
-    if (httr::status_code(resp) == 429) {
-       Sys.sleep(httr::headers(resp)[['Retry-After']])
-       resp <- httr::POST(base_url, httr::add_headers("X-Api-Key" = pview_key(), "Content-Type" = "application/json" ), body = body, ua, ...)
-    }
+  # sleep and retry on a 429 Too many requests
+  if (httr::status_code(resp) == 429) {
+     msg <- sprintf("The api's requests per minute limit has been reached.  Pausing for %s seconds before continuing.", httr::headers(resp)[['Retry-After']])
+
+     print(msg)
+     warning(msg)
+     Sys.sleep(httr::headers(resp)[['Retry-After']])
+
+     if (method == "GET")
+        resp <- httr::GET(get_url, httr::add_headers("X-Api-Key" = pview_key()), ua, ...)
+     else
+        resp <- httr::POST(base_url, httr::add_headers("X-Api-Key" = pview_key(), "Content-Type" = "application/json" ), body = body, ua, ...)
   }
 
   if (httr::http_error(resp)) throw_er(resp)
