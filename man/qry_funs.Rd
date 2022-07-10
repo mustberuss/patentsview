@@ -5,7 +5,7 @@
 \alias{qry_funs}
 \title{List of query functions}
 \format{
-An object of class \code{list} of length 14.
+An object of class \code{list} of length 15.
 }
 \usage{
 qry_funs

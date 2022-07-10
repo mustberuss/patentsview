@@ -11,7 +11,7 @@ search_pv(
   subent_cnts = FALSE,
   mtchd_subent_only = TRUE,
   page = 1,
-  per_page = 1000,
+  per_page = 25,
   all_pages = FALSE,
   sort = NULL,
   method = "GET",
