@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 > This would be a good example of life under the new api, where we have to make more than one call to get the same data as before.  Maybe even keep the old page around for comparison? 
 >
 > Intention  
-> > Alarmingly, application date or year isn't available from any of the new version of the api's endpoints.  Instead we'll use patent_year (the year the patent was granted, already of type integer).  Trouble is that the count is nested inside the patents structure, not inside the nested assignees_at_grant.  Fortunately both nested structures have patent_number as a field so we can join them to get the data we need.
+> Alarmingly, application date or year isn't available from any of the new version of the api's endpoints.  Instead we'll use patent_year (the year the patent was granted, already of type integer).  Trouble is that the count is nested inside the patents structure, not inside the nested assignees_at_grant.  Fortunately both nested structures have patent_number as a field so we can join them to get the data we need.
 >
 > We start by calling the patent endpoint to get the patents where "databases" is in the title or abstract and there is an assignee. We make a subsequent call to the assignee endpoint to get num_patents (total number of patents) for the top 75 assignees, then we blend in the num_patents and compute the percentages. Then life, and the script, goes on as normal (as the old one did). 
 

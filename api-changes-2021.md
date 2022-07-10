@@ -99,10 +99,10 @@ Please refer to the 200 "Response" section for each endpoint for full list of fi
 6. Test that what comes back from the api calls matches the spreadsheet and/or their Swagger definition (should be ultimate source of truth). There's a link to the spreadsheet at the bottom of https://patentsview.org/apis/purpose
 7. Implement the warning mentioned above (second change to the options parameter)
 8. Check if the location specific error checking is still needed (throw_if_loc_error() in process-error.R). The locations endpoint won't return as many fields as before. 
-9. Add a warning message if the http status 403 Incorrect/Missing API Key is received. The api key must be in the environment at start up, so a 403 on a query should only be returned if it is invalid.
+9. probably should remove printing of the url to stderr in search-pv but it's been so darn useful durning development
 10. Maybe instead of having fake documentation, something like data-raw/mbr_fieldsdf.R should read the swagger definition to produce data-raw/fieldsdf.csv.  It might not be able to tell strings from full text fields though.
 11. mbr_fieldsdf.R probably needs to output group.field where the group doesn't match the endpoint's name.  Ex. for the patent endpoint, the group of patents doesn't need the group to be specified but the other fields would need to be preceded by their group and a dot.  Or change the fields in the fake documentation (to add the group.field where necessary)?
-12. we probably don't need this in process-error.R
+12. we probably don't need this in process-error.R though the location endpoint is not on the test server yet
 
         "Your request resulted in a 500 error, likely because you have ",
         "requested too many fields in your request (the locations endpoint ",
@@ -110,8 +110,7 @@ Please refer to the 200 "Response" section for each endpoint for full list of fi
         "request). Try slimming down your field list and trying again."
 13. problems with cast-pv-data.R  We need the dots when requesting data, ex. assignees_at_grant.state at patent endpoint, but then we don't want the dots when casting.  Probably need to remove the dots from the fake web pages and rescrape.  get_fields would need to add the groups and dot when the fields are nested. It's the one test that fails.
 14. casting may only be necessary to convert dates, the new version of the api seems to return integers and floats.  Exception seems to be assignees_at_grant.type, it's a string that probably should be an int
-15. probably shouldn't have api-change.Rmd.orig as a vignette
-16. probably should remove printing of the url in search-pv but it's been so darn useful durning development
+15. probably shouldn't have api-change.Rmd.orig as a vignette.
 
 ## Try it yourself
 Steps to try this out locally
@@ -127,7 +126,7 @@ The environmental variable's name is the same one I used in the api's python wra
 3. Are there more fields (like the government interests) that went away?
 4. Do we need to set up an api key as a secret?  It would be needed if there are api calls in the workflows. I set one in my repo but I think everything has a skip_on_ci().  It's retrieved in R-CMD-check.yaml which might need to be removed.
 5. It looks like Dates are the only thing that cast-pv-data needs to convert. The api seems to return integers etc., not always strings.  Exception is assignees_at_grant.type, it's still a string when it should be an int
-Is NEWS.md generated?  Add a link to the page explaining the api changes?
-6. How to handle the release?  For a while both versions of the api are supposed to be around.  Have people install the updated R package from a branch on ropensci/patentsview?  When the original version of the api is retired do a CRAN build?
+6. Is NEWS.md generated?  Add a link to the page explaining the api changes?
+7. How to handle the release?  For a while both versions of the api are supposed to be around.  Have people install the updated R package from a branch on ropensci/patentsview?  When the original version of the api is retired do a CRAN build?
 &nbsp;
 &nbsp;

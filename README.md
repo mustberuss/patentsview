@@ -48,7 +48,7 @@ search_pv(query = '{"_gte":{"patent_date":"2007-01-01"}}')
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_patent_count = 100,000
+#> total_patent_count = 10,000
 ```
 
 ## Learning more

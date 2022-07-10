@@ -115,7 +115,7 @@
       <h1 data-toc-skip>Examples</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/ropensci/patentsview/blob/master/vignettes/examples.Rmd"><code>vignettes/examples.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/ropensci/patentsview/blob/master/vignettes/vignettes/examples.Rmd"><code>vignettes/vignettes/examples.Rmd</code></a></small>
       <div class="hidden name"><code>examples.Rmd</code></div>
 
     </div>
@@ -136,18 +136,17 @@ retrieve data. The other endpoints supply additional information.</p>
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/patentsview/index.html">patentsview</a></span><span class="op">)</span>
 
 <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span>query <span class="op">=</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">gt</span><span class="op">(</span>patent_num_times_cited_by_us_patents <span class="op">=</span> <span class="fl">500</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_gt%22%3A%7B%22patent_num_times_cited_by_us_patents%22%3A500%7D%7D&amp;f=&amp;o={\"offset\":0,\"size\":1000}&amp;s="</span>
 <span class="co">#&gt; $data</span>
 <span class="co">#&gt; [1] "patents"</span>
 <span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on a patent level:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; List of 1</span>
-<span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  5 variables:</span>
-<span class="co">#&gt;   ..$ patent_number     : chr [1:1000] "4278837" ...</span>
-<span class="co">#&gt;   ..$ patent_title      : chr [1:1000] "Crypto microprocessor for executing e"..</span>
-<span class="co">#&gt;   ..$ patent_date       : chr [1:1000] "1981-07-14" ...</span>
-<span class="co">#&gt;   ..$ inventors_at_grant:List of 1000</span>
-<span class="co">#&gt;   ..$ assignees_at_grant:List of 1000</span>
+<span class="co">#&gt;  $ patents:'data.frame': 25 obs. of  5 variables:</span>
+<span class="co">#&gt;   ..$ patent_number     : chr [1:25] "4278837" ...</span>
+<span class="co">#&gt;   ..$ patent_title      : chr [1:25] "Crypto microprocessor for executing enc"..</span>
+<span class="co">#&gt;   ..$ patent_date       : chr [1:25] "1981-07-14" ...</span>
+<span class="co">#&gt;   ..$ inventors_at_grant:List of 25</span>
+<span class="co">#&gt;   ..$ assignees_at_grant:List of 25</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $query_results</span>
 <span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span>
@@ -163,14 +162,13 @@ patents?</p>
   fields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"patent_number"</span>, <span class="st">"inventors_at_grant.inventor"</span><span class="op">)</span>, 
   subent_cnts <span class="op">=</span> <span class="cn">TRUE</span>
 <span class="op">)</span>
-<span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_gt%22%3A%7B%22patent_num_times_cited_by_us_patents%22%3A500%7D%7D&amp;f=[\"patent_number\",\"inventors_at_grant.inventor\"]&amp;o={\"offset\":0,\"size\":1000}&amp;s="</span>
 <span class="co">#&gt; $data</span>
 <span class="co">#&gt; [1] "patents"</span>
 <span class="co">#&gt; #### A list with a single data frame on a patent level:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; List of 1</span>
-<span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  1 variable:</span>
-<span class="co">#&gt;   ..$ patent_number: chr [1:1000] "4278837" ...</span>
+<span class="co">#&gt;  $ patents:'data.frame': 25 obs. of  1 variable:</span>
+<span class="co">#&gt;   ..$ patent_number: chr [1:25] "4278837" ...</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $query_results</span>
 <span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span>
@@ -193,14 +191,6 @@ the past few years?</p>
 
 <span class="co"># Pull the data</span>
 <span class="va">pv_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query</span>, fields <span class="op">=</span> <span class="va">fields</span>, all_pages <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&amp;f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&amp;o={\"offset\":0,\"size\":1000}&amp;s="</span>
-<span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&amp;f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&amp;o={\"offset\":0,\"size\":1000}&amp;s="</span>
-<span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&amp;f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&amp;o={\"offset\":1000,\"size\":1000}&amp;s="</span>
-<span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&amp;f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&amp;o={\"offset\":2000,\"size\":1000}&amp;s="</span>
-<span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&amp;f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&amp;o={\"offset\":3000,\"size\":1000}&amp;s="</span>
-<span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&amp;f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&amp;o={\"offset\":4000,\"size\":1000}&amp;s="</span>
-<span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&amp;f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&amp;o={\"offset\":5000,\"size\":1000}&amp;s="</span>
-<span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222019-07-30%22%7D%7D%2C%7B%22_text_phrase%22%3A%7B%22assignees_at_grant.organization%22%3A%22microsoft%22%7D%7D%5D%7D&amp;f=[\"inventors_at_grant.inventor\",\"inventors_at_grant.name_first\",\"inventors_at_grant.name_last\",\"inventors_at_grant.city\",\"inventors_at_grant.state\",\"inventors_at_grant.country\",\"patent_number\"]&amp;o={\"offset\":6000,\"size\":1000}&amp;s="</span>
 
 <span class="co"># Unnest the inventor list column</span>
 <span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">pv_out</span><span class="op">$</span><span class="va">data</span>, <span class="st">"patent_number"</span><span class="op">)</span>
@@ -221,18 +211,17 @@ one patent.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
   query <span class="op">=</span> <span class="st">'{"_and":[{"_text_phrase": {"inventors_at_grant.city":"Chicago"}},{"_text_phrase": {"inventors_at_grant.state":"IL"}}]}'</span>,
   endpoint <span class="op">=</span> <span class="st">"patents"</span>
 <span class="op">)</span>
-<span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_text_phrase%22%3A%20%7B%22inventors_at_grant.city%22%3A%22Chicago%22%7D%7D%2C%7B%22_text_phrase%22%3A%20%7B%22inventors_at_grant.state%22%3A%22IL%22%7D%7D%5D%7D&amp;f=&amp;o={\"offset\":0,\"size\":1000}&amp;s="</span>
 <span class="co">#&gt; $data</span>
 <span class="co">#&gt; [1] "patents"</span>
 <span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on a patent level:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; List of 1</span>
-<span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  5 variables:</span>
-<span class="co">#&gt;   ..$ patent_number     : chr [1:1000] "4278694" ...</span>
-<span class="co">#&gt;   ..$ patent_title      : chr [1:1000] "Modified liquid smoke compositions an"..</span>
-<span class="co">#&gt;   ..$ patent_date       : chr [1:1000] "1981-07-14" ...</span>
-<span class="co">#&gt;   ..$ assignees_at_grant:List of 1000</span>
-<span class="co">#&gt;   ..$ inventors_at_grant:List of 1000</span>
+<span class="co">#&gt;  $ patents:'data.frame': 25 obs. of  5 variables:</span>
+<span class="co">#&gt;   ..$ patent_number     : chr [1:25] "4278694" ...</span>
+<span class="co">#&gt;   ..$ patent_title      : chr [1:25] "Modified liquid smoke compositions and "..</span>
+<span class="co">#&gt;   ..$ patent_date       : chr [1:25] "1981-07-14" ...</span>
+<span class="co">#&gt;   ..$ assignees_at_grant:List of 25</span>
+<span class="co">#&gt;   ..$ inventors_at_grant:List of 25</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $query_results</span>
 <span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span>
@@ -244,18 +233,17 @@ one patent.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
   query <span class="op">=</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">contains</span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"beer"</span><span class="op">)</span>, 
   endpoint <span class="op">=</span> <span class="st">"patents"</span>
 <span class="op">)</span>
-<span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_contains%22%3A%7B%22patent_title%22%3A%22beer%22%7D%7D&amp;f=&amp;o={\"offset\":0,\"size\":1000}&amp;s="</span>
 <span class="co">#&gt; $data</span>
 <span class="co">#&gt; [1] "patents"</span>
 <span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on a patent level:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; List of 1</span>
-<span class="co">#&gt;  $ patents:'data.frame': 323 obs. of  5 variables:</span>
-<span class="co">#&gt;   ..$ patent_number     : chr [1:323] "4299161" ...</span>
-<span class="co">#&gt;   ..$ patent_title      : chr [1:323] "Ring and snap-on ring for preventing b"..</span>
-<span class="co">#&gt;   ..$ patent_date       : chr [1:323] "1981-11-10" ...</span>
-<span class="co">#&gt;   ..$ assignees_at_grant:List of 323</span>
-<span class="co">#&gt;   ..$ inventors_at_grant:List of 323</span>
+<span class="co">#&gt;  $ patents:'data.frame': 25 obs. of  5 variables:</span>
+<span class="co">#&gt;   ..$ patent_number     : chr [1:25] "4299161" ...</span>
+<span class="co">#&gt;   ..$ patent_title      : chr [1:25] "Ring and snap-on ring for preventing bu"..</span>
+<span class="co">#&gt;   ..$ patent_date       : chr [1:25] "1981-11-10" ...</span>
+<span class="co">#&gt;   ..$ assignees_at_grant:List of 25</span>
+<span class="co">#&gt;   ..$ inventors_at_grant:List of 25</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $query_results</span>
 <span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span>
@@ -265,7 +253,7 @@ one patent.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
 <div class="footnotes footnotes-end-of-document">
 <hr>
 <ol>
-<li id="fn1"><p>Example taken from <a href="http://www.patentsview.org/api/inventor.html" class="uri">http://www.patentsview.org/api/inventor.html</a>.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p>Example taken from <a href="https://patentsview.org/apis/api-endpoints/inventors" class="uri">https://patentsview.org/apis/api-endpoints/inventors</a>.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
   </div>

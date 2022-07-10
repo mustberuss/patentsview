@@ -1,6 +1,7 @@
 #' @noRd
 throw_er <- function(resp) {
   throw_if_loc_error(resp)
+  throw_if_api_key_error(resp)
   xheader_er_or_status(resp)
 }
 
@@ -17,6 +18,17 @@ throw_if_loc_error <- function(resp) {
       )
     }
   }
+}
+
+# the api key must be in the environment at start up so if we get a 403 back
+# it's because the api didn't like the value.
+#' @noRd
+throw_if_api_key_error <- function(resp) {
+   if(httr::status_code(resp) == 403) {
+      stop2(
+         "Your api key was rejected by the patentsview api. Please check its value and try again."
+      )
+   }
 }
 
 #' @noRd

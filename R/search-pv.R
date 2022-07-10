@@ -53,7 +53,7 @@ one_request <- function(method, query, base_url, arg_list, ...) {
 
   if (method == "GET") {
     get_url <- get_get_url(query, base_url, arg_list)
-    print(get_url)
+    write(get_url, stderr())
     resp <- httr::GET(get_url, httr::add_headers("X-Api-Key" = pview_key()), ua, ...)
   } else {
     body <- get_post_body(query, arg_list)
@@ -228,12 +228,24 @@ search_pv <- function(query,
                       subent_cnts = FALSE,
                       mtchd_subent_only = TRUE,
                       page = 1,
-                      per_page = 1000,
+                      per_page = 25,  # for backward compatiblity, api's default is now 1000 
                       all_pages = FALSE,
                       sort = NULL,
                       method = "GET",
                       error_browser = NULL,
                       ...) {
+
+  # check the per_page value, the previous version of the api's max was 10,000 now it's 1,000
+  # if all_pages is FALSE they'd get fewer rows than expected
+  if(per_page > 1000) {
+     warning("the api's per_page limit is now 1000")
+     per_page = 1000
+  }
+ 
+  # assume we want to make as few calls as possible.  
+  # caller could have all_pages=TRUE with the default per_page
+  if(all_pages)
+     per_page = 1000
 
   if (!is.null(error_browser))
     warning("error_browser parameter has been deprecated")

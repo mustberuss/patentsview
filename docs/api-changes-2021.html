@@ -358,9 +358,8 @@ options parameter)</p></li>
 <li><p>Check if the location specific error checking is still needed
 (throw_if_loc_error() in process-error.R). The locations endpoint won’t
 return as many fields as before.</p></li>
-<li><p>Add a warning message if the http status 403 Incorrect/Missing
-API Key is received. The api key must be in the environment at start up,
-so a 403 on a query should only be returned if it is invalid.</p></li>
+<li><p>probably should remove printing of the url to stderr in search-pv
+but it’s been so darn useful durning development</p></li>
 <li><p>Maybe instead of having fake documentation, something like
 data-raw/mbr_fieldsdf.R should read the swagger definition to produce
 data-raw/fieldsdf.csv. It might not be able to tell strings from full
@@ -372,7 +371,8 @@ other fields would need to be preceded by their group and a dot. Or
 change the fields in the fake documentation (to add the group.field
 where necessary)?</p></li>
 <li>
-<p>we probably don’t need this in process-error.R</p>
+<p>we probably don’t need this in process-error.R though the
+location endpoint is not on the test server yet</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="st">"Your request resulted in a 500 error, likely because you have "</span>,</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="st">"requested too many fields in your request (the locations endpoint "</span>,</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="st">"currently has restrictions on the number of fields/groups you can "</span>,</span>
@@ -388,9 +388,7 @@ of the api seems to return integers and floats. Exception seems to be
 assignees_at_grant.type, it’s a string that probably should be an
 int</p></li>
 <li><p>probably shouldn’t have api-change.Rmd.orig as a
-vignette</p></li>
-<li><p>probably should remove printing of the url in search-pv but it’s
-been so darn useful durning development</p></li>
+vignette.</p></li>
 </ol>
 </div>
 <div id="try-it-yourself" class="section level2">
@@ -427,8 +425,9 @@ might need to be removed.</li>
 <li>It looks like Dates are the only thing that cast-pv-data needs to
 convert. The api seems to return integers etc., not always strings.
 Exception is assignees_at_grant.type, it’s still a string when it should
-be an int Is NEWS.md generated? Add a link to the page explaining the
-api changes?</li>
+be an int</li>
+<li>Is NEWS.md generated? Add a link to the page explaining the api
+changes?</li>
 <li>How to handle the release? For a while both versions of the api are
 supposed to be around. Have people install the updated R package from a
 branch on ropensci/patentsview? When the original version of the api is
