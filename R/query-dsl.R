@@ -34,6 +34,28 @@ create_key_fun <- function(fun) {
 }
 
 #' @noRd
+create_in_fun <- function(fun) {
+  force(fun)
+  function(...) {
+    value_p <- list(...)
+    field <- names(value_p)
+    value <- unlist(value_p)
+    names(value) <- NULL
+
+    # from qry_funs$member_of(patent_number=c("10000000","10000006"))
+    # we want
+    # {"patent_number":["10000000","10000006"]}  
+
+    k <- list(value)
+    names(k) <- field
+    z <- k
+
+    structure(z, class = c(class(z), "pv_query"))
+  }
+}
+
+
+#' @noRd
 create_array_fun <- function(fun) {
   force(fun)
   function(...) {
@@ -51,6 +73,26 @@ create_not_fun <- function(fun) {
     k <- list(...)
     names(k) <- paste0("_", fun)
     structure(k, class = c(class(k), "pv_query"))
+  }
+}
+
+#' @noRd
+create_between_fun <- function(fun) {
+  force(fun)
+  function(...) {
+    value_p <- list(...)
+    field <- names(value_p)
+    value <- unlist(value_p)
+    names(value) <- NULL
+
+    # throw an error if the length isn't two
+    asrt(length(value) == 2, fun, " expects a range of exactly two arguments")
+
+    low = create_one_fun(field = field, value = value[1], fun = "gte")
+    high = create_one_fun(field = field, value = value[2], fun = "lte")
+    z <- list(`_and` = list(low, high))
+
+    structure(z, class = c(class(z), "pv_query"))
   }
 }
 
@@ -122,11 +164,14 @@ qry_funs <- c(
   lapply2(
     c(
       "eq", "neq", "gt", "gte", "lt", "lte", "begins", "contains", "text_all",
-      "text_any", "text_phrase"
+      "text_any", "text_phrase", "trees"
     ), create_key_fun
   ),
   lapply2(c("and", "or"), create_array_fun),
-  lapply2("not", create_not_fun)
+  lapply2("not", create_not_fun),
+  lapply2("in_range", create_between_fun),  # "between" may imply exclusive instead of inclusive
+  lapply2("member_of", create_in_fun) # disadvantage: no type check
+
 )
 
 #' With qry_funs
