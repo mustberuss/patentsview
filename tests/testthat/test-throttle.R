@@ -32,7 +32,7 @@ test_that("Throttled requests are automatically retried", {
    # We'll combine the output of the 50 calls
    built_singly <- data.frame()
 
-   expect_warning(
+  expect_warning(
       for(i in 1:length(dl$patents$patent_number))
       {
          query =  qry_funs$eq(patent_number = dl$patents$patent_number[i])
@@ -41,7 +41,8 @@ test_that("Throttled requests are automatically retried", {
             query = query,
             endpoint = "patent_citations",
             fields = c("patent_number","cited_patent_number"),
-            sort = c("cited_patent_number" = "asc")
+            sort = c("cited_patent_number" = "asc"),
+            per_page = 1000  # new maximum
          )
 
          built_singly <- rbind(built_singly, res2$data$patent_citations);
@@ -58,7 +59,9 @@ test_that("Throttled requests are automatically retried", {
        query = query_all,
        fields = c("patent_number","cited_patent_number"),
        endpoint = "patent_citations",
-       sort = c("patent_number" = "asc", "cited_patent_number" = "asc")
+       sort = c("patent_number" = "asc", "cited_patent_number" = "asc"),
+       per_page = 1000,  # new maximum
+       all_pages = TRUE  # would there be more than one page of results?
        )
 
    all <- unnest_pv_data(result_all$data, "patent_number")
