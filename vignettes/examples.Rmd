@@ -52,6 +52,10 @@ search_pv(
   fields = c("patent_number", "inventors_at_grant.inventor"), 
   subent_cnts = TRUE
 )
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 2 seconds before continuing."
+#> Warning in one_request(method, query, base_url, arg_list, ...): The api's
+#> requests per minute limit has been reached. Pausing for 2 seconds before
+#> continuing.
 #> $data
 #> [1] "patents"
 #> #### A list with a single data frame on a patent level:

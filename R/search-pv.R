@@ -63,11 +63,13 @@ one_request <- function(method, query, base_url, arg_list, ...) {
 
   # sleep and retry on a 429 Too many requests
   if (httr::status_code(resp) == 429) {
-     msg <- sprintf("The api's requests per minute limit has been reached.  Pausing for %s seconds before continuing.", httr::headers(resp)[['Retry-After']])
+     seconds <- httr::headers(resp)[['Retry-After']]
+     s <- if(seconds == "1") '' else 's'
+     msg <- sprintf("The api's requests per minute limit has been reached.  Pausing for %s second%s before continuing.", seconds, s)
 
      print(msg)
      warning(msg)
-     Sys.sleep(httr::headers(resp)[['Retry-After']])
+     Sys.sleep(seconds)
 
      if (method == "GET")
         resp <- httr::GET(get_url, httr::add_headers("X-Api-Key" = pview_key()), ua, ...)
@@ -83,7 +85,7 @@ one_request <- function(method, query, base_url, arg_list, ...) {
 #' @noRd
 request_apply <- function(ex_res, method, query, base_url, arg_list, ...) {
 
-  req_pages <- ceiling(ex_res$query_results[[1]] / 1000)
+  req_pages <- ceiling(ex_res$query_results[[1]] / arg_list$opts$size)
 
   if (req_pages < 1) {
     stop(
@@ -95,8 +97,8 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, ...) {
   # this is repeating the first call, could put ex_res in tmp and loop lapply 2:req_pages
   tmp <- lapply(1:req_pages, function(i) {
     # should really be page_size not 1000 so we can test throttling by using a small page size
-    arg_list$opts$size <- 1000
-    arg_list$opts$offset <- (i - 1) * 1000
+  #  arg_list$opts$size <- 1000
+    arg_list$opts$offset <- (i - 1) * arg_list$opts$size
     x <- one_request(method, query, base_url, arg_list, ...)
     x$data[[1]]
   })
@@ -235,17 +237,10 @@ search_pv <- function(query,
                       error_browser = NULL,
                       ...) {
 
-  # check the per_page value, the previous version of the api's max was 10,000 now it's 1,000
-  # if all_pages is FALSE they'd get fewer rows than expected
-  if(per_page > 1000) {
-     warning("the api's per_page limit is now 1000")
-     per_page = 1000
+  # message or warning if all_pages=TRUE with something other than 1000 as the per_page
+  if(all_pages && per_page != 1000) {
+     message("with all_pages = TRUE per_page could be 1000 to minimize api calls")
   }
- 
-  # assume we want to make as few calls as possible.  
-  # caller could have all_pages=TRUE with the default per_page
-  if(all_pages)
-     per_page = 1000
 
   if (!is.null(error_browser))
     warning("error_browser parameter has been deprecated")

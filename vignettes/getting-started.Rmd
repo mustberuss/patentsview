@@ -369,12 +369,6 @@ res$data
 
 ```r
 library(tidyr)
-#> Warning: package 'tidyr' was built under R version 3.6.3
-#> 
-#> Attaching package: 'tidyr'
-#> The following object is masked from 'package:magrittr':
-#> 
-#>     extract
 
 # Get assignee data:
 res$data$patents %>% 

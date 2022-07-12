@@ -64,7 +64,6 @@ fields <- c(
 
 # Send an HTTP request to the PatentsView API to get the data
 pv_out <- search_pv(query, fields = fields, all_pages = TRUE)
-#> [1] "The api's requests per minute limit has been reached.  Pausing for 3 seconds before continuing."
 ```
 
 2. Now let's identify who the top assignees are based on how many patents they have in our data set. We'll also calculate how many total patents these assignees have and what fraction of their total patents relate to databases.
@@ -111,11 +110,13 @@ top_asgns <-
 # Now that we have the assignee_id's we can call the assignee endpoint to get the
 # total number of patents for each of our top_asgns 
 
-# In this case it might be nice to have a qry_funs$in for the api's array eq,
+# Here it might be convenient to have a qry_funs$member_of for the api's array eq,
 # thinking the api might not like 75 or'ed conditions (thought it did work when I tried it)
-# assignee_query =  qry_funs$eq(assignee_id = as.integer(top_asgns$assignee_id))
-s = toString(as.integer(top_asgns$assignee_id))
-assignee_query = paste('{"assignee_id":[',s,']}')
+# The _eq is the safer option.  
+#s = toString(as.integer(top_asgns$assignee_id))
+#assignee_query = paste('{"assignee_id":[',s,']}')
+
+assignee_query =  qry_funs$eq(assignee_id = as.integer(top_asgns$assignee_id))
 
 assignee_fields <- c(
   "assignee_id","organization", "num_patents" 
@@ -126,6 +127,12 @@ assignee_out <- search_pv(assignee_query , fields = assignee_fields, all_pages =
    endpoint = "assignees", method = "POST")
 
 assignee_counts <- unnest_pv_data(assignee_out$data, "assignee_id")
+assignee_counts
+#> List of 1
+#>  $ assignees:'data.frame':	75 obs. of  3 variables:
+#>   ..$ assignee_id : int [1:75] 3 6 ...
+#>   ..$ organization: chr [1:75] "Xerox Corporation" ...
+#>   ..$ num_patents : int [1:75] 23495 80931 ...
 
 # Here we redo top_asgns now that we have all the fields we need.
 # We join in the total counts and mutate in the percentages 

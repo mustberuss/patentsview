@@ -1,0 +1,292 @@
+---
+title: "Converting an Existing Script"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Converting an Existing Script}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+## Necesary Script Changes
+
+If you have a script that worked with the original R package and original version of the api, chances are it will need some possibly substantial changes before it will work with the new version of the R package and sapi.
+
+## The One Required Change
+First off you'll need to request an api key and then set the environmental variable PATENTSVIEW_API_KEY to the value of your api key.  Ex. set PATENTSVIEW_API_KEY=My_api_key  Without a valid api key, all your calls will be rejected by the api.  There would be a small chance that that is all that is needed to convert a simple script to uses the new R package and new version of the api.
+
+## The New Throttling Limit
+Another new thing is a throttling limit. The new version of the api only allows an individual api key to make 45 calls per minute.  The call that exceeds that limit is rejected but does return the number of seconds to wait before calls would be allowed again.  Fortunately, the R package handles this for you!  Your script will be chugging along and if the api should return a throttling response, the R package will sleep for the required number of seconds before automatically resending your query!  The only thing you may notice, besides a warning message, it that the script will pause when throttled before it picks right back up again.
+
+The new versions of the api's endpoints are less Swiss Army Knife-like, where you could get nearly any data field from any endpoint.  Now they have substantially lighter responses and they generally focus on data pertinent to that endpoint.  In other words, you can only get uspc fields from the uspc endpoints.  This may mean you'll have to make multiple calls to different endpoints to get the same data the old version of api used to return in a single call.
+
+Take a look at the top assignees application top-assignees.html It has to blend together information from separate calls that used to be returned by a single call. This may push your dplyr knowlegde to the limit.
+
+## Changed Field Names and Types
+The fields selected in the original stript not be available from the new version's endpoints. Fields like the government interests are no longer available. Also, some attributes have new names, like name_last in the nested inventor object.  Now in the fields parameter it would be specified as "inventor.name_last" where formerly it was "inventor_last_name" when using the patents endpoint.
+
+Also note that some field's types changed, meaning you'll need to use different operators within your query.  Ex. assignee.organization is now a full text field, formerly it was a string.  
+
+
+```r
+
+library(patentsview)
+
+# Before you could do a 
+qry_funs$contains(assignee_organization="Rice University")
+#> {"_contains":{"assignee_organization":"Rice University"}}
+
+# now you would have to do 
+qry_funs$text_phrase(assignees_at_grant.organization="Rice University")
+#> {"_text_phrase":{"assignees_at_grant.organization":"Rice University"}}
+```
+
+## Reduced Query Size
+
+Another thing you are likely to run into is a reduced overall query size, the total number of rows you can get in a fully paged result set.  In the past with all_pages = TRUE, the R package could retrieve 10 pages of 10,000 rows each for you for a total row count of 100,000.  Now the r package can only retrieve a maximum of 10,000 rows by requesting 10 pages of 1,000 rows each.
+
+If you want the same data as before, you'll have to make multiple calls to get around the reduction in overall rows you can get at one time.  The easiest way to do this is to add a date range to your query and make multiple calls and blend the individual call's results together.  Gee that sounds hard or at least annoying, doesn't it?  Well, to answer the question of who is looking out for you, it's us, the R package team!
+
+# Additions to the R Package
+
+
+```r
+# First, there is a new in_range query function
+
+range <- qry_funs$in_range(patent_date=c("1970-01-01","1983-02-28")) 
+
+# which will generate this, so you don't have to do it by hand
+range
+#> {"_and":[{"_gte":{"patent_date":"1970-01-01"}},{"_lte":{"patent_date":"1983-02-28"}}]}
+```
+
+Second, here's a new function that shouly probably be added to the R package.  Given a query that probably shouldn't contain patent_date, it will return a list of start dates and end dates where each date range would return less than the new limit of 10,000 rows.
+
+Do you remember the example of splitting up a call on the original version of the getting-started page?  It had this query
+
+
+```r
+query <- with_qfuns(text_any(patent_abstract = 'tool animal'))
+```
+
+which returns well in excess of 140,000 rows.  The original getting started page showed how to break that up into two calls by _and'ing in a patent date. 
+
+
+```r
+query_1a <- with_qfuns(
+  and(
+    text_any(patent_abstract = 'tool animal'),
+    lte(patent_date = "2010-01-01")
+  )
+)
+
+query_1b <- with_qfuns(
+  and(
+    text_any(patent_abstract = 'tool animal'),
+    gt(patent_date = "2010-01-01")
+  )
+)
+```
+
+That was fine when the overall size limit was 100,000 rows but how about now?
+
+Well, it turns out, we can use the api itself to help us figure out what date ranges we could use!  How cool is that?  (here's the function that should probably become part of the R package)
+
+
+```r
+
+# returns a list of start and end dates that won't exceed the new overall result
+# set size limit.  
+
+# the patentsview database starts with 1976. we'll start lower in case they add earlier data
+# allow a start date to be passed in.  the caller might want to pick up where they
+# left off last time
+
+tell_us <- function(query, start_date = '1970-01-01' ) {
+
+   end_date <- toString(Sys.Date())  # today
+   fields <- c("patent_date")
+   sort <- c("patent_date" = "asc")
+   per_page <- 1000
+   page <- 1
+   date_ranges = list()
+   pos <- 1
+   count <- 0
+
+   repeat{
+
+      date_range <- qry_funs$in_range(patent_date=c(start_date, end_date))
+      combined_query <- qry_funs$and(date_range, query)
+
+      results <- search_pv(query = combined_query, fields = fields, sort = sort,
+                           per_page = per_page, page = 1)
+      
+      count <- count + 1
+
+      # ok, now we look at the total size of this query
+      total_hits = results$query_results$total_hits
+      rows <- length(results$data$patents$patent_date)
+
+      # we're done if the total_hits is 0, if the previous query got the last of the results
+      # probably not even possible?  the previous query would have unknowingly grabbed the
+      # last of the overall data set and we would have backed up one day, assuming there
+      # was more data, beyond the last patent_date we found
+      if(total_hits == 0)
+         break
+
+      # we're done if the total_hit is less than 10,000
+      # the full query using the current start and end date will retrieve the last of
+      # the overall data set
+      if(total_hits < 10000) {
+         date_ranges[[pos]] = c(start_date, end_date)  # add final pair needed
+         break
+      }
+
+      # is this even possible?  we already know that total_hits > 0
+      if(rows == 0)
+         break
+
+      # so we have a full data set still, total_hits = 10000
+      # we need to request the 10th page to get the last patent_date
+      results <- search_pv(query = combined_query, fields = fields, sort = sort,
+                           per_page = per_page, page = 10)
+
+      count <- count + 1
+      # probably has to be 1000 since total_hits = 10000
+      rows <- length(results$data$patents$patent_date)  
+
+      # grab the last patent date, this will become the new start date
+      new_start_date = results$data$patents$patent_date[rows]
+
+      # back up one day to get a safe end date with the current start date
+      # (so the total result size will be less than 10,000)
+
+      safe_end_date = toString(as.Date(new_start_date) - 1)
+      date_ranges[[pos]]  = c(start_date, safe_end_date)
+      pos = pos + 1
+      
+      start_date = new_start_date
+   }
+
+   print(paste("api calls made:", count))
+   date_ranges
+}
+```
+
+And here's the same sample query as before to give it a go.  Spoiler alert, it takes 29 api calls just to determine the date ranges but then, if we choose to, we could fire off the 15 pairs of date range restricted calls (all but the last search_pv call would make 10 api calls when all_pages = TRUE, guaranteeing we'd get throttled!).
+
+
+```r
+query <- with_qfuns(text_any(patent_abstract = 'tool animal'))
+
+the_answer <- tell_us(query)
+#> [1] "api calls made: 29"
+
+the_answer
+#> [[1]]
+#> [1] "1970-01-01" "1983-02-28"
+#> 
+#> [[2]]
+#> [1] "1983-03-01" "1989-02-13"
+#> 
+#> [[3]]
+#> [1] "1989-02-14" "1993-09-06"
+#> 
+#> [[4]]
+#> [1] "1993-09-07" "1998-02-23"
+#> 
+#> [[5]]
+#> [1] "1998-02-24" "2001-01-15"
+#> 
+#> [[6]]
+#> [1] "2001-01-16" "2003-10-13"
+#> 
+#> [[7]]
+#> [1] "2003-10-14" "2006-09-25"
+#> 
+#> [[8]]
+#> [1] "2006-09-26" "2009-12-07"
+#> 
+#> [[9]]
+#> [1] "2009-12-08" "2012-05-28"
+#> 
+#> [[10]]
+#> [1] "2012-05-29" "2014-06-09"
+#> 
+#> [[11]]
+#> [1] "2014-06-10" "2016-05-02"
+#> 
+#> [[12]]
+#> [1] "2016-05-03" "2018-02-26"
+#> 
+#> [[13]]
+#> [1] "2018-02-27" "2019-10-14"
+#> 
+#> [[14]]
+#> [1] "2019-10-15" "2021-04-26"
+#> 
+#> [[15]]
+#> [1] "2021-04-27" "2022-07-12"
+```
+
+And now, since it's fun, we'll go through the motions of calling the api for each date range.  We won't actually request all the data (all_pages defaults to FALSE) but each call's total_hit_count will be displayed, showing the total row count of what would have been retrieved if all_pages was TRUE.  Note that none of date ranges would hit the new limit of 10,000 rows.
+
+
+```r
+
+sort <- c("patent_date" = "asc")
+fields <- c("patent_date")
+
+for (pair in the_answer)
+{
+   date_range <- qry_funs$in_range(patent_date=pair)
+   combined_query <- qry_funs$and(date_range, query)
+
+   # just get one row! (per_page is 1, all_pages is FALSE)
+   results <- search_pv(query = combined_query, fields = fields, sort = sort,
+                all_pages = FALSE, per_page = 1, page = 1)
+
+   total_hits = results$query_results$total_hits
+   print(paste(total_hits,toString(pair)))
+}
+#> [1] "9999 1970-01-01, 1983-02-28"
+#> [1] "9981 1983-03-01, 1989-02-13"
+#> [1] "9967 1989-02-14, 1993-09-06"
+#> [1] "9963 1993-09-07, 1998-02-23"
+#> [1] "9973 1998-02-24, 2001-01-15"
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 35 seconds before continuing."
+#> [1] "9985 2001-01-16, 2003-10-13"
+#> [1] "9976 2003-10-14, 2006-09-25"
+#> [1] "9979 2006-09-26, 2009-12-07"
+#> [1] "9963 2009-12-08, 2012-05-28"
+#> [1] "9930 2012-05-29, 2014-06-09"
+#> [1] "9957 2014-06-10, 2016-05-02"
+#> [1] "9934 2016-05-03, 2018-02-26"
+#> [1] "9918 2018-02-27, 2019-10-14"
+#> [1] "9874 2019-10-15, 2021-04-26"
+#> [1] "3984 2021-04-27, 2022-07-12"
+```
+
+## Conclusion
+
+So there you have it, our attempt at listing what's changed and what to do about it.  Request your api and get going with the new R package for the new version of the api!
+
+> Probably should steer them to the instructions on loading the updated package here.
+> 
+> Possible idea: ask the patentsview people if they could create a separate category for the R package in their forum.  Guessing people may need help with their conversions!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
