@@ -126,40 +126,40 @@
 <h2 class="hasAnchor">
 <a href="#necesary-script-changes" class="anchor"></a>Necesary Script Changes</h2>
 <p>If you have a script that worked with the original R package and
-original version of the api, chances are it will need some possibly
+original version of the API, chances are it will need some possibly
 substantial changes before it will work with the new version of the R
-package and api.</p>
+package and API.</p>
 </div>
 <div id="the-one-required-change" class="section level2">
 <h2 class="hasAnchor">
 <a href="#the-one-required-change" class="anchor"></a>The One Required Change</h2>
-<p>First off you’ll need to <a href="https://patentsview.org/apis/keyrequest">request an api key</a>
+<p>First off you’ll need to <a href="https://patentsview.org/apis/keyrequest">request an API key</a>
 and then set the environmental variable PATENTSVIEW_API_KEY to the value
-of your api key. Ex. set PATENTSVIEW_API_KEY=My_api_key Without a valid
-api key, all your calls will be rejected by the api. There would be a
+of your API key. Ex. set PATENTSVIEW_API_KEY=My_api_key Without a valid
+API key, all your calls will be rejected by the API. There would be a
 small chance that that is all that is needed to convert a simple script
-to use the new R package and new version of the api.</p>
+to use the new R package and new version of the API.</p>
 </div>
 <div id="the-new-throttling-limit" class="section level2">
 <h2 class="hasAnchor">
 <a href="#the-new-throttling-limit" class="anchor"></a>The New Throttling Limit</h2>
-<p>Another new thing is a throttling limit. The new version of the api
-only allows an individual api key to make 45 calls per minute. The call
+<p>Another new thing is a throttling limit. The new version of the API
+only allows an individual API key to make 45 calls per minute. The call
 that exceeds that limit is rejected but does return the number of
 seconds to wait before calls would be allowed again. Fortunately, the R
 package handles this for you! Your script will be chugging along and if
-the api should return a throttling response, the R package will sleep
+the API should return a throttling response, the R package will sleep
 for the required number of seconds before automatically resending your
 query! The only thing you may notice, besides a warning message, it that
 the script will pause when throttled before it picks right back up
 again.</p>
-<p>The new versions of the api’s endpoints are less Swiss Army
+<p>The new versions of the API’s endpoints are less Swiss Army
 Knife-like than before, where you could get nearly any data field from
 any endpoint. Now they have substantially lighter responses and they
 generally focus on data pertinent to that endpoint. In other words, you
 can only get uspc fields from the uspc endpoints. This may mean you’ll
 have to make multiple calls to different endpoints to get the same data
-the old version of api used to return in a single call.</p>
+the old version of API used to return in a single call.</p>
 <p>Take a look at the top <a href="../top-assignees.html">assignees
 application</a>. It has to blend together information from separate
 calls that used to be returned by a single call. This may push your
@@ -170,10 +170,11 @@ dplyr knowlegde to the limit.</p>
 <a href="#changed-field-names-and-types" class="anchor"></a>Changed Field Names and Types</h2>
 <p>The fields selected in the original stript not be available from the
 new version’s endpoints. Fields like the government interests are no
-longer available. Also, some attributes have new names, like name_last
-in the nested inventor object. Now in the fields parameter it would be
-specified as “inventor.name_last” where formerly it was
-“inventor_last_name” when using the patents endpoint.</p>
+longer available (see <a href="https://patentsview.org/data-in-action/whats-new-patentsview-july-2021" class="uri">https://patentsview.org/data-in-action/whats-new-patentsview-july-2021</a>).
+Also, some attributes have new names, like name_last in the nested
+inventor object. Now in the fields parameter it would be specified as
+“inventor.name_last” where formerly it was “inventor_last_name” when
+using the patents endpoint.</p>
 <p>Also note that some field’s types have changed, meaning you’ll need
 to use different operators within your query. Ex. assignee.organization
 is now a full text field, formerly it was a string.</p>
@@ -244,7 +245,7 @@ patent date.</p>
 <span class="op">)</span></code></pre></div>
 <p>That was fine when the overall size limit was 100,000 rows but how
 about now?</p>
-<p>Well, it turns out, we can use the api itself to help us figure out
+<p>Well, it turns out, we can use the API itself to help us figure out
 what date ranges we could use! How cool is that? (here’s the function
 that should probably become part of the R package)</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -322,19 +323,19 @@ that should probably become part of the R package)</p>
       <span class="va">start_date</span> <span class="op">=</span> <span class="va">new_start_date</span>
    <span class="op">}</span>
 
-   <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"api calls made:"</span>, <span class="va">count</span><span class="op">)</span><span class="op">)</span>
+   <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"API calls made:"</span>, <span class="va">count</span><span class="op">)</span><span class="op">)</span>
    <span class="va">date_ranges</span>
 <span class="op">}</span></code></pre></div>
 <p>And here’s the same sample query as before to give it a go. Spoiler
-alert, it takes 29 api calls just to determine the date ranges but then,
+alert, it takes 29 API calls just to determine the date ranges but then,
 if we choose to, we could fire off the 15 pairs of date range restricted
-calls (all but the last search_pv call would make 10 api calls when
+calls (all but the last search_pv call would make 10 API calls when
 all_pages = TRUE, guaranteeing we’d get throttled!).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span><span class="fu">text_any</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="st">'tool animal'</span><span class="op">)</span><span class="op">)</span>
 
 <span class="va">the_answer</span> <span class="op">&lt;-</span> <span class="fu">tell_us</span><span class="op">(</span><span class="va">query</span><span class="op">)</span>
-<span class="co">#&gt; [1] "api calls made: 29"</span>
+<span class="co">#&gt; [1] "API calls made: 29"</span>
 
 <span class="va">the_answer</span>
 <span class="co">#&gt; [[1]]</span>
@@ -380,9 +381,9 @@ all_pages = TRUE, guaranteeing we’d get throttled!).</p>
 <span class="co">#&gt; [1] "2019-10-15" "2021-04-26"</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; [[15]]</span>
-<span class="co">#&gt; [1] "2021-04-27" "2022-07-13"</span></code></pre></div>
+<span class="co">#&gt; [1] "2021-04-27" "2022-07-14"</span></code></pre></div>
 <p>And now, since it’s fun, we’ll go through the motions of calling the
-api for each date range. We won’t actually request all the data
+API for each date range. We won’t actually request all the data
 (all_pages defaults to FALSE) but each call’s total_hit_count will be
 displayed, showing the total row count of what would have been retrieved
 if all_pages was TRUE. Note that none of date ranges would hit the new
@@ -415,18 +416,20 @@ limit of 10,000 rows.</p>
 <span class="co">#&gt; [1] "9979 2006-09-26, 2009-12-07"</span>
 <span class="co">#&gt; [1] "9963 2009-12-08, 2012-05-28"</span>
 <span class="co">#&gt; [1] "9930 2012-05-29, 2014-06-09"</span>
-<span class="co">#&gt; [1] "9957 2014-06-10, 2016-05-02"</span>
 <span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
+<span class="co">#&gt; [1] "9957 2014-06-10, 2016-05-02"</span>
 <span class="co">#&gt; [1] "9934 2016-05-03, 2018-02-26"</span>
 <span class="co">#&gt; [1] "9918 2018-02-27, 2019-10-14"</span>
 <span class="co">#&gt; [1] "9874 2019-10-15, 2021-04-26"</span>
-<span class="co">#&gt; [1] "3984 2021-04-27, 2022-07-13"</span></code></pre></div>
+<span class="co">#&gt; [1] "3984 2021-04-27, 2022-07-14"</span></code></pre></div>
 <div id="conclusion" class="section level2">
 <h2 class="hasAnchor">
 <a href="#conclusion" class="anchor"></a>Conclusion</h2>
 <p>So there you have it, our attempt at listing what’s changed and what
-to do about it. Request your api and get going with the new R package
-for the new version of the api!</p>
+to do about it. <a href="https://patentsview.org/apis/keyrequest">Request</a> an API key
+and get going with the new R package for the new version of the API!
+(The two API versions will coexist for a while but eventually the
+original version of the API will be retired.)</p>
 <blockquote>
 <p>Probably should steer them to the instructions on loading the updated
 package here.</p>

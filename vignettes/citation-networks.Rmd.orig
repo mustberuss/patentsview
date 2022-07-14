@@ -32,7 +32,7 @@ library(webshot2)
 
 # Write a query to pull patents assigned to the CPC code of "Y10S707/933"
 
-# ** the api currently throws a 500 error when searching by CPC codes
+# ** the API currently throws a 500 error when searching by CPC codes
 # query <- qry_funs$contains(cpc_current.cpc_subgroup_id = "Y10S707:933")
 
 # for now we'll pretend it worked
@@ -52,7 +52,7 @@ combined_query <- qry_funs$or(
 citing_query = qry_funs$eq(patent_number = pat_nums)
 cited_query = qry_funs$eq(cited_patent_number = pat_nums)
 
-# mutate results here to mimic the return of the original version of the api??
+# mutate results here to mimic the return of the original version of the API??
 # or can we deal with the new structure directly?
 
 # old structure was
@@ -88,7 +88,7 @@ There are only `r length(pat_nums)` PCA patents. These patents cite `r nrow(res_
 
 ```{r}
 
-# with the api change we wouldn't have titles unless we call the patent endpoint
+# with the API change we wouldn't have titles unless we call the patent endpoint
 # we'll use the patent number as the title for now
 
 pat_title <- function(title, number) {
@@ -97,7 +97,7 @@ pat_title <- function(title, number) {
   paste0('<a href="https://patents.google.com/patent/US', number, '">', i, '</a>')
 }
 
-# using right query results?  check what calling the original api produces
+# using right query results?  check what calling the original API produces
 edges <-
   res_lst$patent_citations %>%
     semi_join(x = ., y = ., by = c("cited_patent_number" = "patent_number" )) %>%
@@ -142,7 +142,7 @@ rel_pats <-
     distinct() %>%
     filter(!is.na(patent_number))
 
-# difference here from the original api's output
+# difference here from the original API's output
 # then: Rows: 537 Columns: 1 $ patent_number
 #  now: Rows: 269 Columns: 1 $ patent_number 
 

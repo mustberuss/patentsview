@@ -11,7 +11,7 @@ vignette: >
 
 ## Recent API Change
 
-With the recent api change, the patent endpoint is the main way to retrieve data. The other 
+With the recent API change, the patent endpoint is the main way to retrieve data. The other 
 endpoints supply additional information.
 
 ## Patents endpoint
@@ -52,9 +52,9 @@ search_pv(
   fields = c("patent_number", "inventors_at_grant.inventor"), 
   subent_cnts = TRUE
 )
-#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 4 seconds before continuing."
 #> Warning in one_request(method, query, base_url, arg_list, ...): The api's
-#> requests per minute limit has been reached. Pausing for 1 second before
+#> requests per minute limit has been reached. Pausing for 4 seconds before
 #> continuing.
 #> $data
 #> [1] "patents"

@@ -31,7 +31,7 @@ This call to `search_pv()` sends our query to the patents endpoint (the default)
 
 ## Writing queries
 
-The PatentsView query syntax is documented on their [query language page](https://patentsview.org/apis/api-query-language#query_string_format) note also the change to the Options parameter for the new version of the api mentioned on that page.[^2] However, it can be difficult to get your query right if you're writing it by hand (i.e., just writing the query in a string like `'{"_gte":{"patent_date":"2007-01-01"}}'`, as we did in the example shown above). The `patentsview` package comes with a simple domain specific language (DSL) to make writing queries a breeze. I recommend using the functions in this DSL for all but the most basic queries, especially if you're encountering errors and don't understand why. To get a feel for how it works, let's rewrite the query shown above using one of the functions in the DSL, `qry_funs$gte()`:
+The PatentsView query syntax is documented on their [query language page](https://patentsview.org/apis/api-query-language#query_string_format) note also the change to the Options parameter for the new version of the API mentioned on that page.[^2] However, it can be difficult to get your query right if you're writing it by hand (i.e., just writing the query in a string like `'{"_gte":{"patent_date":"2007-01-01"}}'`, as we did in the example shown above). The `patentsview` package comes with a simple domain specific language (DSL) to make writing queries a breeze. I recommend using the functions in this DSL for all but the most basic queries, especially if you're encountering errors and don't understand why. To get a feel for how it works, let's rewrite the query shown above using one of the functions in the DSL, `qry_funs$gte()`:
 
 ```{r}
 qry_funs$gte(patent_date = "2007-01-01")
@@ -52,7 +52,7 @@ Check out the [writing queries vignette](https://docs.ropensci.org/patentsview/a
 
 ## Fields
 
-Each endpoint has a different set of _queryable_ and _retrievable_ fields. Queryable fields are those that you can include in your query (e.g., `patent_date` shown in the first example). Retrievable fields are those that you can get data on (i.e., fields returned by `search_pv()`). The new version of the api allows all retrievable fields to be queried. In the first example, we didn't specify which fields we wanted to retrieve so we were given the default set. You can specify which fields you want using the `fields` argument:
+Each endpoint has a different set of _queryable_ and _retrievable_ fields. Queryable fields are those that you can include in your query (e.g., `patent_date` shown in the first example). Retrievable fields are those that you can get data on (i.e., fields returned by `search_pv()`). The new version of the API allows all retrievable fields to be queried. In the first example, we didn't specify which fields we wanted to retrieve so we were given the default set. You can specify which fields you want using the `fields` argument:
 
 ```{r}
 # search_pv defaults the endpoint parameter to "patents" if not specified
@@ -71,7 +71,7 @@ To list all of the retrievable fields for a given endpoint, use `get_fields()`:
 retrvble_flds <- get_fields(endpoint = "patents")
 head(retrvble_flds)
 ```
-**Note: The api documentation has not been updated for the new version of the api** and in the new api version all fields are queryable.  See the [Swagger UI page](https://search.patentsview.org/swagger-ui/) for the new version of the api, the fields returned are listed for each endpoint in the 200 Response body sections
+**Note: The API documentation has not been updated for the new version of the API** and in the new API version all fields are queryable.  See the [Swagger UI page](https://search.patentsview.org/swagger-ui/) for the new version of the API, the fields returned are listed for each endpoint in the 200 Response body sections
 
 You can also visit an endpoint's online documentation page to see a list of its queryable and retrievable fields (e.g., see the [inventor field list table](https://patentsview.org/apis/api-endpoints/inventors#field_list)). Note the "Query" column in this table, which indicates whether the field is both queryable and retrievable (Query = Y), or just retrievable (Query = N). The field tables for all of the endpoints can be found in the `fieldsdf` data frame, which you can load using `data("fieldsdf")` or `View(patentsview::fieldsdf)`.
 
@@ -103,7 +103,7 @@ Our last two calls to `search_pv()` gave the same value for `total_hits`, even t
 
 ## 13 endpoints for 13 entities
 
-With the recent api change, the patents endpoint supplies the basic patent data and the other endponts return more specific data for those patents.
+With the recent API change, the patents endpoint supplies the basic patent data and the other endponts return more specific data for those patents.
 
 ```{r}
 
@@ -145,7 +145,7 @@ res <- search_pv(
   fields = c("patent_date", "patent_title", "patent_year")
 )
 
-# This is not quite true in the new version of the api, dates from strings would be the only one still needed
+# This is not quite true in the new version of the API, dates from strings would be the only one still needed
 # Right now all of the fields are stored as character vectors:
 res
 
@@ -157,17 +157,17 @@ cast_pv_data(res$data)
 
 #### I'm sure my query is well formatted and correct but I keep getting an error. What's the deal?
 
-The API query syntax guidelines do not cover all of the API's behavior. Specifically, there are several things that you cannot do which are not documented on the API's webpage. The [writing queries vignette](https://docs.ropensci.org/patentsview/articles/writing-queries.html) has more details on this. You can also try the string version of your query in the api's [Swagger UI page](https://search.patentsview.org/swagger-ui/).  Its error messages can sometimes help determine the problem.
+The API query syntax guidelines do not cover all of the API's behavior. Specifically, there are several things that you cannot do which are not documented on the API's webpage. The [writing queries vignette](https://docs.ropensci.org/patentsview/articles/writing-queries.html) has more details on this. You can also try the string version of your query in the API's [Swagger UI page](https://search.patentsview.org/swagger-ui/).  Its error messages can sometimes help determine the problem.
 
 #### Does the API have any rate limiting/throttling controls?
 
-Yes, the api currently allows 45 calls per minute for each api key.  If this limit is exceeded the api will return an http status of 429 with a response header Retry-After set to the number of seconds to wait until making subsequent requests.  The R package should handle this for you.
+Yes, the API currently allows 45 calls per minute for each API key.  If this limit is exceeded the API will return an http status of 429 with a response header Retry-After set to the number of seconds to wait until making subsequent requests.  The R package should handle this for you.  You will need to [request an API key](https://patentsview.org/apis/keyrequest) and set the environmental variable PATENTSVIEW_API_KEY to the value of your key.
 
 #### How do I download more than 10,000 records?
 
 Your best bet is to split your query into pieces based on dates, then concatenate the results together. For example, the below query would return more than 10,000 records for the patents endpoint:
 
-** Note that both of these queries exceed the api's new overall result set size of 10,000 rows (it used to allow 100,000 rows).  Using the query as written returns in excess of 140,000 rows.
+** Note that both of these queries exceed the API's new overall result set size of 10,000 rows (it used to allow 100,000 rows).  Using the query as written returns in excess of 140,000 rows.
 
 ```{r}
 query <- with_qfuns(text_any(patent_abstract = 'tool animal'))

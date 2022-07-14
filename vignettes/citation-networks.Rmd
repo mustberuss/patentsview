@@ -25,7 +25,7 @@ library(webshot2)
 
 # Write a query to pull patents assigned to the CPC code of "Y10S707/933"
 
-# ** the api currently throws a 500 error when searching by CPC codes
+# ** the API currently throws a 500 error when searching by CPC codes
 # query <- qry_funs$contains(cpc_current.cpc_subgroup_id = "Y10S707:933")
 
 # for now we'll pretend it worked
@@ -45,7 +45,7 @@ combined_query <- qry_funs$or(
 citing_query = qry_funs$eq(patent_number = pat_nums)
 cited_query = qry_funs$eq(cited_patent_number = pat_nums)
 
-# mutate results here to mimic the return of the original version of the api??
+# mutate results here to mimic the return of the original version of the API??
 # or can we deal with the new structure directly?
 
 # old structure was
@@ -89,7 +89,7 @@ There are only 11 PCA patents. These patents cite 1066 patents and are cited by 
 
 ```r
 
-# with the api change we wouldn't have titles unless we call the patent endpoint
+# with the API change we wouldn't have titles unless we call the patent endpoint
 # we'll use the patent number as the title for now
 
 pat_title <- function(title, number) {
@@ -98,7 +98,7 @@ pat_title <- function(title, number) {
   paste0('<a href="https://patents.google.com/patent/US', number, '">', i, '</a>')
 }
 
-# using right query results?  check what calling the original api produces
+# using right query results?  check what calling the original API produces
 edges <-
   res_lst$patent_citations %>%
     semi_join(x = ., y = ., by = c("cited_patent_number" = "patent_number" )) %>%
@@ -121,8 +121,9 @@ visNetwork(
 ) %>%
   visEdges(arrows = list(to = list(enabled = TRUE))) %>%
   visIgraphLayout()
-#> Error in file(con, "rb"): cannot open the connection
 ```
+
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png)
 
 It looks like several of the patents cite patent number 6,499,026, perhaps indicating that this patent contains technology that is foundational to the field. However, when we hover over the nodes we see that several of the patents have the same title. Clicking on the titles brings us to their full text on Google Patents, which confirms that many of these PCA patents belong to the same patent family.[^1]  Let's choose one of the patents in each family to act as the family's representative. This will reduce the size of the subsequent network, while hopefully retaining its overall structure.
 
@@ -145,7 +146,7 @@ rel_pats <-
     distinct() %>%
     filter(!is.na(patent_number))
 
-# difference here from the original api's output
+# difference here from the original API's output
 # then: Rows: 537 Columns: 1 $ patent_number
 #  now: Rows: 269 Columns: 1 $ patent_number 
 
@@ -250,8 +251,9 @@ visNetwork(
   visEdges(color = list(color = "#343434")) %>%
   visOptions(highlightNearest = list(enabled = TRUE, degree = 1)) %>%
   visIgraphLayout()
-#> Error in file(con, "rb"): cannot open the connection
 ```
+
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
 
 
 [^1]: A patent family is a group of related patents, usually all authored by the same inventor and relating to the same technology.

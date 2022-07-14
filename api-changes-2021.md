@@ -109,9 +109,13 @@ Please refer to the 200 "Response" section for each endpoint for full list of fi
         "currently has restrictions on the number of fields/groups you can ",
         "request). Try slimming down your field list and trying again."
 13. problems with cast-pv-data.R  We need the dots when requesting data, ex. assignees_at_grant.state at patent endpoint, but then we don't want the dots when casting.  Probably need to remove the dots from the fake web pages and rescrape.  get_fields would need to add the groups and dot when the fields are nested. It's the one test that fails.
-14. casting may only be necessary to convert dates, the new version of the api seems to return integers and floats.  Exception seems to be assignees_at_grant.type, it's a string that probably should be an int
+14. casting may only be necessary to convert dates, the new version of the api seems to return integers and floats.  Exceptions seems to be assignees_at_grant.type, 
+
+They're strings that probably should be integers.  In the fake doc they're set as
+type int (which will do the string to integer cast), while type integer will
+be left alone (casts as_is) 
 15. probably shouldn't have api-change.Rmd.orig as a vignette.
-16. When I half render locally citation-networks.Rmd and top-assignees.Rmd have errors like #> Error in file(con, "rb"): cannot open the connection.  I blame Windows.
+
 
 
 ## Try it yourself

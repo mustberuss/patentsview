@@ -166,7 +166,7 @@ parameter.</p>
 <a href="#writing-queries" class="anchor"></a>Writing queries</h2>
 <p>The PatentsView query syntax is documented on their <a href="https://patentsview.org/apis/api-query-language#query_string_format">query
 language page</a> note also the change to the Options parameter for the
-new version of the api mentioned on that page.<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> However, it can be
+new version of the API mentioned on that page.<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> However, it can be
 difficult to get your query right if you’re writing it by hand (i.e.,
 just writing the query in a string like
 <code>'{"_gte":{"patent_date":"2007-01-01"}}'</code>, as we did in the
@@ -198,7 +198,7 @@ queries vignette</a> for more details on using the DSL.</p>
 <em>retrievable</em> fields. Queryable fields are those that you can
 include in your query (e.g., <code>patent_date</code> shown in the first
 example). Retrievable fields are those that you can get data on (i.e.,
-fields returned by <code><a href="../reference/search_pv.html">search_pv()</a></code>). The new version of the api
+fields returned by <code><a href="../reference/search_pv.html">search_pv()</a></code>). The new version of the API
 allows all retrievable fields to be queried. In the first example, we
 didn’t specify which fields we wanted to retrieve so we were given the
 default set. You can specify which fields you want using the
@@ -230,10 +230,10 @@ default set. You can specify which fields you want using the
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">retrvble_flds</span><span class="op">)</span>
 <span class="co">#&gt; [1] "patent_number"  "patent_title"   "patent_date"    "patent_type"   </span>
 <span class="co">#&gt; [5] "patent_country" "patent_year"</span></code></pre></div>
-<p><strong>Note: The api documentation has not been updated for the new
-version of the api</strong> and in the new api version all fields are
+<p><strong>Note: The API documentation has not been updated for the new
+version of the API</strong> and in the new API version all fields are
 queryable. See the <a href="https://search.patentsview.org/swagger-ui/">Swagger UI page</a>
-for the new version of the api, the fields returned are listed for each
+for the new version of the API, the fields returned are listed for each
 endpoint in the 200 Response body sections</p>
 <p>You can also visit an endpoint’s online documentation page to see a
 list of its queryable and retrievable fields (e.g., see the <a href="https://patentsview.org/apis/api-endpoints/inventors#field_list">inventor
@@ -303,65 +303,77 @@ or 10,000 records total):</p>
 <span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
 <span class="co">#&gt; requests per minute limit has been reached. Pausing for 19 seconds before</span>
 <span class="co">#&gt; continuing.</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
+<span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
+<span class="co">#&gt; requests per minute limit has been reached. Pausing for 1 second before</span>
+<span class="co">#&gt; continuing.</span>
 <span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 4 seconds before continuing."</span>
 <span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
 <span class="co">#&gt; requests per minute limit has been reached. Pausing for 4 seconds before</span>
 <span class="co">#&gt; continuing.</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 5 seconds before continuing."</span>
+<span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
+<span class="co">#&gt; requests per minute limit has been reached. Pausing for 5 seconds before</span>
+<span class="co">#&gt; continuing.</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
+<span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
+<span class="co">#&gt; requests per minute limit has been reached. Pausing for 1 second before</span>
+<span class="co">#&gt; continuing.</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
+<span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
+<span class="co">#&gt; requests per minute limit has been reached. Pausing for 1 second before</span>
+<span class="co">#&gt; continuing.</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
+<span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
+<span class="co">#&gt; requests per minute limit has been reached. Pausing for 1 second before</span>
+<span class="co">#&gt; continuing.</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
+<span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
+<span class="co">#&gt; requests per minute limit has been reached. Pausing for 1 second before</span>
+<span class="co">#&gt; continuing.</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
+<span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
+<span class="co">#&gt; requests per minute limit has been reached. Pausing for 1 second before</span>
+<span class="co">#&gt; continuing.</span>
 <span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 6 seconds before continuing."</span>
 <span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
 <span class="co">#&gt; requests per minute limit has been reached. Pausing for 6 seconds before</span>
-<span class="co">#&gt; continuing.</span>
-<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
-<span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
-<span class="co">#&gt; requests per minute limit has been reached. Pausing for 1 second before</span>
-<span class="co">#&gt; continuing.</span>
-<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
-<span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
-<span class="co">#&gt; requests per minute limit has been reached. Pausing for 1 second before</span>
-<span class="co">#&gt; continuing.</span>
-<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
-<span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
-<span class="co">#&gt; requests per minute limit has been reached. Pausing for 1 second before</span>
-<span class="co">#&gt; continuing.</span>
-<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
-<span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
-<span class="co">#&gt; requests per minute limit has been reached. Pausing for 1 second before</span>
-<span class="co">#&gt; continuing.</span>
-<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 7 seconds before continuing."</span>
-<span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
-<span class="co">#&gt; requests per minute limit has been reached. Pausing for 7 seconds before</span>
 <span class="co">#&gt; continuing.</span>
 <span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 20 seconds before continuing."</span>
 <span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
 <span class="co">#&gt; requests per minute limit has been reached. Pausing for 20 seconds before</span>
 <span class="co">#&gt; continuing.</span>
-<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 3 seconds before continuing."</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 4 seconds before continuing."</span>
 <span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
-<span class="co">#&gt; requests per minute limit has been reached. Pausing for 3 seconds before</span>
+<span class="co">#&gt; requests per minute limit has been reached. Pausing for 4 seconds before</span>
+<span class="co">#&gt; continuing.</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 5 seconds before continuing."</span>
+<span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
+<span class="co">#&gt; requests per minute limit has been reached. Pausing for 5 seconds before</span>
+<span class="co">#&gt; continuing.</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
+<span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
+<span class="co">#&gt; requests per minute limit has been reached. Pausing for 1 second before</span>
+<span class="co">#&gt; continuing.</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
+<span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
+<span class="co">#&gt; requests per minute limit has been reached. Pausing for 1 second before</span>
+<span class="co">#&gt; continuing.</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
+<span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
+<span class="co">#&gt; requests per minute limit has been reached. Pausing for 1 second before</span>
+<span class="co">#&gt; continuing.</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
+<span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
+<span class="co">#&gt; requests per minute limit has been reached. Pausing for 1 second before</span>
+<span class="co">#&gt; continuing.</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
+<span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
+<span class="co">#&gt; requests per minute limit has been reached. Pausing for 1 second before</span>
 <span class="co">#&gt; continuing.</span>
 <span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 6 seconds before continuing."</span>
 <span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
 <span class="co">#&gt; requests per minute limit has been reached. Pausing for 6 seconds before</span>
-<span class="co">#&gt; continuing.</span>
-<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
-<span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
-<span class="co">#&gt; requests per minute limit has been reached. Pausing for 1 second before</span>
-<span class="co">#&gt; continuing.</span>
-<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
-<span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
-<span class="co">#&gt; requests per minute limit has been reached. Pausing for 1 second before</span>
-<span class="co">#&gt; continuing.</span>
-<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
-<span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
-<span class="co">#&gt; requests per minute limit has been reached. Pausing for 1 second before</span>
-<span class="co">#&gt; continuing.</span>
-<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
-<span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
-<span class="co">#&gt; requests per minute limit has been reached. Pausing for 1 second before</span>
-<span class="co">#&gt; continuing.</span>
-<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 7 seconds before continuing."</span>
-<span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
-<span class="co">#&gt; requests per minute limit has been reached. Pausing for 7 seconds before</span>
 <span class="co">#&gt; continuing.</span>
 <span class="co">#&gt; $data</span>
 <span class="co">#&gt; [1] "patents"</span>
@@ -398,7 +410,7 @@ such patents. See the FAQs below for details on how to overcome the
 <div id="endpoints-for-13-entities" class="section level2">
 <h2 class="hasAnchor">
 <a href="#endpoints-for-13-entities" class="anchor"></a>13 endpoints for 13 entities</h2>
-<p>With the recent api change, the patents endpoint supplies the basic
+<p>With the recent API change, the patents endpoint supplies the basic
 patent data and the other endponts return more specific data for those
 patents.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
@@ -497,7 +509,7 @@ cast all fields to their preferred R types using
   fields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"patent_date"</span>, <span class="st">"patent_title"</span>, <span class="st">"patent_year"</span><span class="op">)</span>
 <span class="op">)</span>
 
-<span class="co"># This is not quite true in the new version of the api, dates from strings would be the only one still needed</span>
+<span class="co"># This is not quite true in the new version of the API, dates from strings would be the only one still needed</span>
 <span class="co"># Right now all of the fields are stored as character vectors:</span>
 <span class="va">res</span>
 <span class="co">#&gt; $data</span>
@@ -539,17 +551,19 @@ an error. What’s the deal?</h4>
 behavior. Specifically, there are several things that you cannot do
 which are not documented on the API’s webpage. The <a href="https://docs.ropensci.org/patentsview/articles/writing-queries.html">writing
 queries vignette</a> has more details on this. You can also try the
-string version of your query in the api’s <a href="https://search.patentsview.org/swagger-ui/">Swagger UI page</a>.
+string version of your query in the API’s <a href="https://search.patentsview.org/swagger-ui/">Swagger UI page</a>.
 Its error messages can sometimes help determine the problem.</p>
 </div>
 <div id="does-the-api-have-any-rate-limitingthrottling-controls" class="section level4">
 <h4 class="hasAnchor">
 <a href="#does-the-api-have-any-rate-limitingthrottling-controls" class="anchor"></a>Does the API have any rate limiting/throttling controls?</h4>
-<p>Yes, the api currently allows 45 calls per minute for each api key.
-If this limit is exceeded the api will return an http status of 429 with
+<p>Yes, the API currently allows 45 calls per minute for each API key.
+If this limit is exceeded the API will return an http status of 429 with
 a response header Retry-After set to the number of seconds to wait until
-making subsequent requests. The R package should handle this for
-you.</p>
+making subsequent requests. The R package should handle this for you.
+You will need to <a href="https://patentsview.org/apis/keyrequest">request an API key</a>
+and set the environmental variable PATENTSVIEW_API_KEY to the value of
+your key.</p>
 </div>
 <div id="how-do-i-download-more-than-10000-records" class="section level4">
 <h4 class="hasAnchor">
@@ -557,7 +571,7 @@ you.</p>
 <p>Your best bet is to split your query into pieces based on dates, then
 concatenate the results together. For example, the below query would
 return more than 10,000 records for the patents endpoint:</p>
-<p>** Note that both of these queries exceed the api’s new overall
+<p>** Note that both of these queries exceed the API’s new overall
 result set size of 10,000 rows (it used to allow 100,000 rows). Using
 the query as written returns in excess of 140,000 rows.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">

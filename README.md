@@ -25,6 +25,13 @@ if (!"devtools" %in% rownames(installed.packages()))
 devtools::install_github("ropensci/patentsview")
 ```
 
+## Important API Change
+
+The new version of the API requires an api key, or all of your requests will be blocked.  An API key can be optained [here](https://patentsview.org/apis/keyrequest).  The updated R package will look for an environmental variable PATENTSVIEW_API_KEY set to the value of your key. For windows it would be
+```
+set PATENTSVIEW_API_KEY=my_keys_value_without quotes
+```
+
 ## Basic usage
 
 The [PatentsView API](https://patentsview.org/apis/api-endpoints)

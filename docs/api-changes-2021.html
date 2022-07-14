@@ -384,14 +384,14 @@ want the dots when casting. Probably need to remove the dots from the
 fake web pages and rescrape. get_fields would need to add the groups and
 dot when the fields are nested. It’s the one test that fails.</p></li>
 <li><p>casting may only be necessary to convert dates, the new version
-of the api seems to return integers and floats. Exception seems to be
-assignees_at_grant.type, it’s a string that probably should be an
-int</p></li>
-<li><p>probably shouldn’t have api-change.Rmd.orig as a
-vignette.</p></li>
-<li><p>When I half render locally citation-networks.Rmd and
-top-assignees.Rmd have errors like #&gt; Error in file(con, “rb”):
-cannot open the connection. I blame Windows.</p></li>
+of the api seems to return integers and floats. Exceptions seems to be
+assignees_at_grant.type,</p></li>
+</ol>
+<p>They’re strings that probably should be integers. In the fake doc
+they’re set as type int (which will do the string to integer cast),
+while type integer will be left alone (casts as_is)</p>
+<ol>
+<li>probably shouldn’t have api-change.Rmd.orig as a vignette.</li>
 </ol>
 </div>
 <div id="try-it-yourself" class="section level2">

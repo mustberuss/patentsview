@@ -9,12 +9,12 @@ vignette: >
 
 
 
-> Note about the affect of the api change
+> Note about the affect of the API change
 >
-> This would be a good example of life under the new api, where we have to make more than one call to get the same data as before.  Maybe even keep the old page around for comparison? 
+> This would be a good example of life under the new API, where we have to make more than one call to get the same data as before.  Maybe even keep the old page around for comparison? 
 >
 > Intention  
-> Alarmingly, application date or year isn't available from any of the new version of the api's endpoints.  Instead we'll use patent_year (the year the patent was granted, already of type integer).  Trouble is that the count is nested inside the patents structure, not inside the nested assignees_at_grant.  Fortunately both nested structures have patent_number as a field so we can join them to get the data we need.
+> Alarmingly, application date or year isn't available from any of the new version of the API's endpoints.  Instead we'll use patent_year (the year the patent was granted, already of type integer).  Trouble is that the count is nested inside the patents structure, not inside the nested assignees_at_grant.  Fortunately both nested structures have patent_number as a field so we can join them to get the data we need.
 >
 > We start by calling the patent endpoint to get the patents where "databases" is in the title or abstract and there is an assignee. We make a subsequent call to the assignee endpoint to get num_patents (total number of patents) for the top 75 assignees, then we blend in the num_patents and compute the percentages. Then life, and the script, goes on as normal (as the old one did). 
 
@@ -31,7 +31,7 @@ library(DT)
 library(knitr)
 library(stringr)
 
-# With the recent api change that limits the overall result set size, we now look
+# With the recent API change that limits the overall result set size, we now look
 # for databases (plural) where we used to use the singular database for this vignette.
 # We also exclude patents without an assignee organization.
 
@@ -110,8 +110,8 @@ top_asgns <-
 # Now that we have the assignee_id's we can call the assignee endpoint to get the
 # total number of patents for each of our top_asgns 
 
-# Here it might be convenient to have a qry_funs$member_of for the api's array eq,
-# thinking the api might not like 75 or'ed conditions (thought it did work when I tried it)
+# Here it might be convenient to have a qry_funs$member_of for the API's array eq,
+# thinking the API might not like 75 or'ed conditions (thought it did work when I tried it)
 # The _eq is the safer option.  
 #s = toString(as.integer(top_asgns$assignee_id))
 #assignee_query = paste('{"assignee_id":[',s,']}')
@@ -122,7 +122,7 @@ assignee_fields <- c(
   "assignee_id","organization", "num_patents" 
 )
 
-# we'll post to the api, the query is pretty large if we use qry_funs$eq
+# we'll post to the API, the query is pretty large if we use qry_funs$eq
 assignee_out <- search_pv(assignee_query , fields = assignee_fields, all_pages = TRUE, 
    per_page = 1000, endpoint = "assignees", method = "POST")
 
@@ -158,8 +158,9 @@ datatable(
   ),
   options = list(pageLength = 10)
 )
-#> Error in file(con, "rb"): cannot open the connection
 ```
+
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png)
 
 <br>
 
@@ -194,8 +195,9 @@ hchart(
   hc_yAxis(title = list(text = "Patents")) %>%
   hc_title(text = "Top five assignees in 'databases'") %>%
   hc_subtitle(text = "Yearly granted patents over time")
-#> Error in file(con, "rb"): cannot open the connection
 ```
+
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png)
 
 It's hard to see any clear trends in this graph. What is clear is that the top assignees have all been patenting in the field for many years.
 
@@ -259,8 +261,9 @@ hchart(
     y = c("{point.db_pats:.0f}","{point.mean_perc:.2f}", "{point.frac_db_pats:.3f}")
   )) %>%
   hc_legend(enabled = FALSE)
-#> Error in file(con, "rb"): cannot open the connection
 ```
+
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png)
 
 <br>
 
