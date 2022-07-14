@@ -1,7 +1,7 @@
 #' Fields data frame
 #'
 #' A data frame containing the names of retrievable and queryable fields for
-#' each of the 7 API endpoints. A yes/no flag (\code{can_query}) indicates
+#' each of the 13 API endpoints. A yes/no flag (\code{can_query}) indicates
 #' which fields can be included in the user's query. You can also find this
 #' data on the API's online documentation for each endpoint as well (e.g.,
 #' the \href{https://patentsview.org/apis/api-endpoints/patents}{patents
@@ -18,5 +18,6 @@
 #'   \item{group}{The group the field belongs to}
 #'   \item{common_name}{The field's common name}
 #'   \item{description}{A description of the field}
+#'   \item{plain_name}{field without dot parent structure}
 #' }
 "fieldsdf"
