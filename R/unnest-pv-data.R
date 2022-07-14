@@ -31,7 +31,7 @@ get_ok_pk <- function(endpoint) {
   ifelse(
     endpoint %in% names(es_eps),
     es_eps[[endpoint]],
-    gsub("s$", "_id", endpoint)
+    paste0(to_singular(endpoint), "_id")
   )
 }
 
