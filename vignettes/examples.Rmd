@@ -52,9 +52,9 @@ search_pv(
   fields = c("patent_number", "inventors_at_grant.inventor"), 
   subent_cnts = TRUE
 )
-#> [1] "The api's requests per minute limit has been reached.  Pausing for 2 seconds before continuing."
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
 #> Warning in one_request(method, query, base_url, arg_list, ...): The api's
-#> requests per minute limit has been reached. Pausing for 2 seconds before
+#> requests per minute limit has been reached. Pausing for 1 second before
 #> continuing.
 #> $data
 #> [1] "patents"
@@ -87,7 +87,7 @@ inv_fields <- get_fields(endpoint = "patents", groups = "inventors_at_grant")
 fields <- c(inv_fields, "patent_number")
 
 # Pull the data
-pv_out <- search_pv(query, fields = fields, all_pages = TRUE)
+pv_out <- search_pv(query, fields = fields, all_pages = TRUE, per_page = 1000)
 
 # Unnest the inventor list column
 unnest_pv_data(pv_out$data, "patent_number")

@@ -128,17 +128,17 @@
 <p>If you have a script that worked with the original R package and
 original version of the api, chances are it will need some possibly
 substantial changes before it will work with the new version of the R
-package and sapi.</p>
+package and api.</p>
 </div>
 <div id="the-one-required-change" class="section level2">
 <h2 class="hasAnchor">
 <a href="#the-one-required-change" class="anchor"></a>The One Required Change</h2>
-<p>First off you’ll need to request an api key and then set the
-environmental variable PATENTSVIEW_API_KEY to the value of your api key.
-Ex. set PATENTSVIEW_API_KEY=My_api_key Without a valid api key, all your
-calls will be rejected by the api. There would be a small chance that
-that is all that is needed to convert a simple script to uses the new R
-package and new version of the api.</p>
+<p>First off you’ll need to <a href="https://patentsview.org/apis/keyrequest">request an api key</a>
+and then set the environmental variable PATENTSVIEW_API_KEY to the value
+of your api key. Ex. set PATENTSVIEW_API_KEY=My_api_key Without a valid
+api key, all your calls will be rejected by the api. There would be a
+small chance that that is all that is needed to convert a simple script
+to use the new R package and new version of the api.</p>
 </div>
 <div id="the-new-throttling-limit" class="section level2">
 <h2 class="hasAnchor">
@@ -154,16 +154,16 @@ query! The only thing you may notice, besides a warning message, it that
 the script will pause when throttled before it picks right back up
 again.</p>
 <p>The new versions of the api’s endpoints are less Swiss Army
-Knife-like, where you could get nearly any data field from any endpoint.
-Now they have substantially lighter responses and they generally focus
-on data pertinent to that endpoint. In other words, you can only get
-uspc fields from the uspc endpoints. This may mean you’ll have to make
-multiple calls to different endpoints to get the same data the old
-version of api used to return in a single call.</p>
-<p>Take a look at the top assignees application top-assignees.html It
-has to blend together information from separate calls that used to be
-returned by a single call. This may push your dplyr knowlegde to the
-limit.</p>
+Knife-like than before, where you could get nearly any data field from
+any endpoint. Now they have substantially lighter responses and they
+generally focus on data pertinent to that endpoint. In other words, you
+can only get uspc fields from the uspc endpoints. This may mean you’ll
+have to make multiple calls to different endpoints to get the same data
+the old version of api used to return in a single call.</p>
+<p>Take a look at the top <a href="../top-assignees.html">assignees
+application</a>. It has to blend together information from separate
+calls that used to be returned by a single call. This may push your
+dplyr knowlegde to the limit.</p>
 </div>
 <div id="changed-field-names-and-types" class="section level2">
 <h2 class="hasAnchor">
@@ -174,9 +174,9 @@ longer available. Also, some attributes have new names, like name_last
 in the nested inventor object. Now in the fields parameter it would be
 specified as “inventor.name_last” where formerly it was
 “inventor_last_name” when using the patents endpoint.</p>
-<p>Also note that some field’s types changed, meaning you’ll need to use
-different operators within your query. Ex. assignee.organization is now
-a full text field, formerly it was a string.</p>
+<p>Also note that some field’s types have changed, meaning you’ll need
+to use different operators within your query. Ex. assignee.organization
+is now a full text field, formerly it was a string.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/patentsview/index.html">patentsview</a></span><span class="op">)</span>
@@ -380,7 +380,7 @@ all_pages = TRUE, guaranteeing we’d get throttled!).</p>
 <span class="co">#&gt; [1] "2019-10-15" "2021-04-26"</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; [[15]]</span>
-<span class="co">#&gt; [1] "2021-04-27" "2022-07-12"</span></code></pre></div>
+<span class="co">#&gt; [1] "2021-04-27" "2022-07-13"</span></code></pre></div>
 <p>And now, since it’s fun, we’ll go through the motions of calling the
 api for each date range. We won’t actually request all the data
 (all_pages defaults to FALSE) but each call’s total_hit_count will be
@@ -409,17 +409,18 @@ limit of 10,000 rows.</p>
 <span class="co">#&gt; [1] "9967 1989-02-14, 1993-09-06"</span>
 <span class="co">#&gt; [1] "9963 1993-09-07, 1998-02-23"</span>
 <span class="co">#&gt; [1] "9973 1998-02-24, 2001-01-15"</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 25 seconds before continuing."</span>
 <span class="co">#&gt; [1] "9985 2001-01-16, 2003-10-13"</span>
 <span class="co">#&gt; [1] "9976 2003-10-14, 2006-09-25"</span>
 <span class="co">#&gt; [1] "9979 2006-09-26, 2009-12-07"</span>
 <span class="co">#&gt; [1] "9963 2009-12-08, 2012-05-28"</span>
 <span class="co">#&gt; [1] "9930 2012-05-29, 2014-06-09"</span>
-<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 25 seconds before continuing."</span>
 <span class="co">#&gt; [1] "9957 2014-06-10, 2016-05-02"</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
 <span class="co">#&gt; [1] "9934 2016-05-03, 2018-02-26"</span>
 <span class="co">#&gt; [1] "9918 2018-02-27, 2019-10-14"</span>
 <span class="co">#&gt; [1] "9874 2019-10-15, 2021-04-26"</span>
-<span class="co">#&gt; [1] "3984 2021-04-27, 2022-07-12"</span></code></pre></div>
+<span class="co">#&gt; [1] "3984 2021-04-27, 2022-07-13"</span></code></pre></div>
 <div id="conclusion" class="section level2">
 <h2 class="hasAnchor">
 <a href="#conclusion" class="anchor"></a>Conclusion</h2>

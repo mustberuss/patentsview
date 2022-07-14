@@ -63,7 +63,7 @@ fields <- c(
 )
 
 # Send an HTTP request to the PatentsView API to get the data
-pv_out <- search_pv(query, fields = fields, all_pages = TRUE)
+pv_out <- search_pv(query, fields = fields, all_pages = TRUE, per_page = 1000)
 ```
 
 2. Now let's identify who the top assignees are based on how many patents they have in our data set. We'll also calculate how many total patents these assignees have and what fraction of their total patents relate to databases.
@@ -124,7 +124,7 @@ assignee_fields <- c(
 
 # we'll post to the api, the query is pretty large if we use qry_funs$eq
 assignee_out <- search_pv(assignee_query , fields = assignee_fields, all_pages = TRUE, 
-   endpoint = "assignees", method = "POST")
+   per_page = 1000, endpoint = "assignees", method = "POST")
 
 assignee_counts <- unnest_pv_data(assignee_out$data, "assignee_id")
 assignee_counts

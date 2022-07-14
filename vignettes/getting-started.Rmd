@@ -144,6 +144,79 @@ search_pv(
   query = qry_funs$eq(inventors_at_grant.name_last = "chambers"),
   all_pages = TRUE
 )
+#> with all_pages = TRUE per_page could be 1000 to minimize api calls
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 28 seconds before continuing."
+#> Warning in one_request(method, query, base_url, arg_list, ...): The api's
+#> requests per minute limit has been reached. Pausing for 28 seconds before
+#> continuing.
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
+#> Warning in one_request(method, query, base_url, arg_list, ...): The api's
+#> requests per minute limit has been reached. Pausing for 1 second before
+#> continuing.
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
+#> Warning in one_request(method, query, base_url, arg_list, ...): The api's
+#> requests per minute limit has been reached. Pausing for 1 second before
+#> continuing.
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
+#> Warning in one_request(method, query, base_url, arg_list, ...): The api's
+#> requests per minute limit has been reached. Pausing for 1 second before
+#> continuing.
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
+#> Warning in one_request(method, query, base_url, arg_list, ...): The api's
+#> requests per minute limit has been reached. Pausing for 1 second before
+#> continuing.
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
+#> Warning in one_request(method, query, base_url, arg_list, ...): The api's
+#> requests per minute limit has been reached. Pausing for 1 second before
+#> continuing.
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
+#> Warning in one_request(method, query, base_url, arg_list, ...): The api's
+#> requests per minute limit has been reached. Pausing for 1 second before
+#> continuing.
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
+#> Warning in one_request(method, query, base_url, arg_list, ...): The api's
+#> requests per minute limit has been reached. Pausing for 1 second before
+#> continuing.
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 2 seconds before continuing."
+#> Warning in one_request(method, query, base_url, arg_list, ...): The api's
+#> requests per minute limit has been reached. Pausing for 2 seconds before
+#> continuing.
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
+#> Warning in one_request(method, query, base_url, arg_list, ...): The api's
+#> requests per minute limit has been reached. Pausing for 1 second before
+#> continuing.
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 28 seconds before continuing."
+#> Warning in one_request(method, query, base_url, arg_list, ...): The api's
+#> requests per minute limit has been reached. Pausing for 28 seconds before
+#> continuing.
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
+#> Warning in one_request(method, query, base_url, arg_list, ...): The api's
+#> requests per minute limit has been reached. Pausing for 1 second before
+#> continuing.
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
+#> Warning in one_request(method, query, base_url, arg_list, ...): The api's
+#> requests per minute limit has been reached. Pausing for 1 second before
+#> continuing.
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
+#> Warning in one_request(method, query, base_url, arg_list, ...): The api's
+#> requests per minute limit has been reached. Pausing for 1 second before
+#> continuing.
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
+#> Warning in one_request(method, query, base_url, arg_list, ...): The api's
+#> requests per minute limit has been reached. Pausing for 1 second before
+#> continuing.
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
+#> Warning in one_request(method, query, base_url, arg_list, ...): The api's
+#> requests per minute limit has been reached. Pausing for 1 second before
+#> continuing.
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
+#> Warning in one_request(method, query, base_url, arg_list, ...): The api's
+#> requests per minute limit has been reached. Pausing for 1 second before
+#> continuing.
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 2 seconds before continuing."
+#> Warning in one_request(method, query, base_url, arg_list, ...): The api's
+#> requests per minute limit has been reached. Pausing for 2 seconds before
+#> continuing.
 #> $data
 #> [1] "patents"
 #> #### A list with a single data frame (with list column(s) inside) on a patent level:
@@ -247,6 +320,10 @@ res <- search_pv(
   query = "{\"patent_number\":\"5116621\"}", 
   fields = c("patent_date", "patent_title", "patent_year")
 )
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
+#> Warning in one_request(method, query, base_url, arg_list, ...): The api's
+#> requests per minute limit has been reached. Pausing for 1 second before
+#> continuing.
 
 # This is not quite true in the new version of the api, dates from strings would be the only one still needed
 # Right now all of the fields are stored as character vectors:
@@ -268,6 +345,8 @@ res
 
 # Use more appropriate data types:
 cast_pv_data(res$data)
+#> [1] "patent_title!string"
+#> [1] "patent_date!date"
 #> [1] "patents"
 #> #### A list with a single data frame on a patent level:
 #> 
@@ -330,7 +409,7 @@ fields <- get_fields("patents")
 
 # Pull data
 res <- search_pv(
-  query = qry_funs$contains(inventors_at_grant.name_last = "smith"), 
+  query = qry_funs$text_any(inventors_at_grant.name_last = "smith"), 
   endpoint = "patents", 
   fields = fields
 )
@@ -369,6 +448,15 @@ res$data
 
 ```r
 library(tidyr)
+#> Warning: package 'tidyr' was built under R version 3.6.3
+#> 
+#> Attaching package: 'tidyr'
+#> The following object is masked from 'package:magrittr':
+#> 
+#>     extract
+#> The following object is masked from 'package:testthat':
+#> 
+#>     matches
 
 # Get assignee data:
 res$data$patents %>% 
@@ -379,10 +467,10 @@ res$data$patents %>%
 #>   <chr>         <chr>         <chr>       <chr>          <chr>             <int>
 #> 1 4278558       Quick cure c~ utility     US             1981-07-14         1981
 #> 2 4278628       Method for p~ utility     US             1981-07-14         1981
-#> 3 4278947       Precision fr~ utility     US             1981-07-14         1981
-#> 4 4279032       Channel bank~ utility     US             1981-07-14         1981
-#> 5 4279081       Wallboard T-~ utility     US             1981-07-21         1981
-#> 6 4279622       Gas-gas quen~ utility     US             1981-07-21         1981
+#> 3 4279032       Channel bank~ utility     US             1981-07-14         1981
+#> 4 4279081       Wallboard T-~ utility     US             1981-07-21         1981
+#> 5 4279622       Gas-gas quen~ utility     US             1981-07-21         1981
+#> 6 4279644       Recovery of ~ utility     US             1981-07-21         1981
 #> # ... with 21 more variables: patent_abstract <chr>, patent_kind <chr>,
 #> #   patent_cpc_current_group_average_patent_processing_days <lgl>,
 #> #   patent_detail_desc_length <int>, patent_earliest_application_date <lgl>,
@@ -408,13 +496,13 @@ unnest_pv_data(data = res$data, pk = "patent_number")
 #>   ..$ city         : chr [1:22] "Cincinnati" ...
 #>   ..$ state        : chr [1:22] "OH" ...
 #>   ..$ country      : chr [1:22] "US" ...
-#>  $ inventors_at_grant:'data.frame':	55 obs. of  6 variables:
-#>   ..$ patent_number: chr [1:55] "4278558" ...
-#>   ..$ name_first   : chr [1:55] "Donald C." ...
-#>   ..$ name_last    : chr [1:55] "Smith" ...
-#>   ..$ city         : chr [1:55] "Wayne" ...
-#>   ..$ state        : chr [1:55] "IN" ...
-#>   ..$ country      : chr [1:55] "US" ...
+#>  $ inventors_at_grant:'data.frame':	52 obs. of  6 variables:
+#>   ..$ patent_number: chr [1:52] "4278558" ...
+#>   ..$ name_first   : chr [1:52] "Donald C." ...
+#>   ..$ name_last    : chr [1:52] "Smith" ...
+#>   ..$ city         : chr [1:52] "Wayne" ...
+#>   ..$ state        : chr [1:52] "IN" ...
+#>   ..$ country      : chr [1:52] "US" ...
 #>  $ patents           :'data.frame':	25 obs. of  18 variables:
 #>   ..$ patent_number                                               : chr [1:25"..
 #>   ..$ patent_title                                                : chr [1:25"..

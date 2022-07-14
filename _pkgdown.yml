@@ -12,7 +12,6 @@ reference:
     contents:
     - get_endpoints
     - get_fields
-    - get_patent_num_searchable_endpoints
     - fieldsdf
   - title: Writing queries with the DSL
     contents:

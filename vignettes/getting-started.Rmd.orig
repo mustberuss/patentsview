@@ -202,7 +202,7 @@ fields <- get_fields("patents")
 
 # Pull data
 res <- search_pv(
-  query = qry_funs$contains(inventors_at_grant.name_last = "smith"), 
+  query = qry_funs$text_any(inventors_at_grant.name_last = "smith"), 
   endpoint = "patents", 
   fields = fields
 )

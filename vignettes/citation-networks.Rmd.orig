@@ -71,8 +71,8 @@ fields <- c(
 
 # use a post?  the q: parameter is pretty big
 # Send a request to the API
-res <- search_pv(citing_query, fields = fields, all_pages = TRUE, endpoint = "patent_citations", method = "GET")
-res2 <- search_pv(cited_query , fields = fields, all_pages = TRUE, endpoint = "patent_citations", method = "GET")
+res <- search_pv(citing_query, fields = fields, all_pages = TRUE, endpoint = "patent_citations", method = "GET", per_page = 1000)
+res2 <- search_pv(cited_query , fields = fields, all_pages = TRUE, endpoint = "patent_citations", method = "GET", per_page = 1000)
 
 # Unnest the data found in the two lists of columns
 res_lst <- unnest_pv_data(res$data, pk = "patent_number")
@@ -152,7 +152,7 @@ rel_pats <-
 rel_pats_res <- search_pv(
   query = list(patent_number = rel_pats$patent_number),
   fields =  c("cited_patent_number", "patent_number"), 
-  all_pages = TRUE, method = "POST", endpoint = "patent_citations"
+  all_pages = TRUE, per_page = 1000, method = "POST", endpoint = "patent_citations"
 )
 
 rel_pats_lst <- unnest_pv_data(rel_pats_res$data, "patent_number")

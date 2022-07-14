@@ -82,31 +82,9 @@ get_fields <- function(endpoint, groups = NULL) {
 #' @export
 get_endpoints <- function() {
   c(
-    "assignees", "cpc_subsections", "cpc_groups", "cpc_subgroups", "uspc_subclasses",
-    "nber_category", "nber_subcategories", "patents", "uspc_mainclasses",
-    "application_citations", "patent_citations", "inventors", "locations"
-  )
-}
-
-
-#' Get Patent Num Searchable Endpoints 
-#'
-#' With the api chage, not all endpoints can be searched by patent number
-#' This function reminds the user which endpoints can be searched by patent number
-#'
-#' @return A character vector with the names of the 13 endpoints. Those endpoints are:
-#'
-#' \itemize{
-#'    \item patents
-#'    \item application_citations
-#'    \item patent_citations
-#'  }
-#'
-#' @examples
-#' get_endpoints()
-#' @export
-get_patent_num_searchable_endpoints <- function() {
-  c(
-    "patents", "application_citations", "patent_citations"
+    "application_citations", "assignees", "cpc_groups", "cpc_subgroups", 
+    "cpc_subsections", "inventors", "locations", "nber_categories", 
+    "nber_subcategories", "patent_citations", "patents", 
+    "uspc_subclasses", "uspc_mainclasses"
   )
 }
