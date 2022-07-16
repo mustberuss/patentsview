@@ -13,6 +13,10 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
+> Important API Change
+>
+> The new version of the API requires an API key, or all of your requests will be blocked.  See the [API Changes](api-changes.html#an-api-key-is-required-1) page.
+
 
 ## A basic example 
 
@@ -93,7 +97,7 @@ You can download all pages of output in one call by setting `all_pages = TRUE`. 
 ```{r}
 search_pv(
   query = qry_funs$eq(inventors_at_grant.name_last = "chambers"),
-  all_pages = TRUE
+  all_pages = TRUE, per_page = 1000
 )
 ```
 
@@ -109,7 +113,7 @@ With the recent API change, the patents endpoint supplies the basic patent data 
 
 query <- qry_funs$eq(inventors_at_grant.name_last = "chambers")
 
-# Here we'll request patent_number and the inventor fields from the patent endpoint
+# Here we'll request patent_number and the inventor fields from the patents endpoint
 inv_fields <- get_fields(endpoint = "patents", groups ="inventors_at_grant")
 fields <- c(inv_fields, "patent_number")
 

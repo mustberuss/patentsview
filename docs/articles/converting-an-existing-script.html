@@ -38,6 +38,31 @@
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fas fa-flag"></span>
+     
+    API Changes
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li>
+      <a href="../articles/api-changes.html">
+        <span class="fas fa-exclamation"></span>
+         
+        2022 API Changes
+      </a>
+    </li>
+    <li>
+      <a href="../articles/converting-an-existing-script.html">
+        <span class="fas fa-arrows-rotate"></span>
+         
+        Converting an Existing Script
+      </a>
+    </li>
+  </ul>
+</li>
 <li>
   <a href="../articles/getting-started.html">
     <span class="fas fa-play"></span>
@@ -122,9 +147,9 @@
 
     
     
-<div id="necesary-script-changes" class="section level2">
+<div id="necessary-script-changes" class="section level2">
 <h2 class="hasAnchor">
-<a href="#necesary-script-changes" class="anchor"></a>Necesary Script Changes</h2>
+<a href="#necessary-script-changes" class="anchor"></a>Necessary Script Changes</h2>
 <p>If you have a script that worked with the original R package and
 original version of the API, chances are it will need some possibly
 substantial changes before it will work with the new version of the R
@@ -207,9 +232,9 @@ together. Gee that sounds hard or at least annoying, doesn’t it? Well,
 to answer the question of who is looking out for you, it’s us, the R
 package team!</p>
 </div>
-<div id="additions-to-the-r-package" class="section level1">
-<h1 class="hasAnchor">
-<a href="#additions-to-the-r-package" class="anchor"></a>Additions to the R Package</h1>
+<div id="additions-to-the-r-package" class="section level2">
+<h2 class="hasAnchor">
+<a href="#additions-to-the-r-package" class="anchor"></a>Additions to the R Package</h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># First, there is a new in_range query function</span>
 
@@ -381,7 +406,7 @@ all_pages = TRUE, guaranteeing we’d get throttled!).</p>
 <span class="co">#&gt; [1] "2019-10-15" "2021-04-26"</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; [[15]]</span>
-<span class="co">#&gt; [1] "2021-04-27" "2022-07-14"</span></code></pre></div>
+<span class="co">#&gt; [1] "2021-04-27" "2022-07-16"</span></code></pre></div>
 <p>And now, since it’s fun, we’ll go through the motions of calling the
 API for each date range. We won’t actually request all the data
 (all_pages defaults to FALSE) but each call’s total_hit_count will be
@@ -410,7 +435,7 @@ limit of 10,000 rows.</p>
 <span class="co">#&gt; [1] "9967 1989-02-14, 1993-09-06"</span>
 <span class="co">#&gt; [1] "9963 1993-09-07, 1998-02-23"</span>
 <span class="co">#&gt; [1] "9973 1998-02-24, 2001-01-15"</span>
-<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 25 seconds before continuing."</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 26 seconds before continuing."</span>
 <span class="co">#&gt; [1] "9985 2001-01-16, 2003-10-13"</span>
 <span class="co">#&gt; [1] "9976 2003-10-14, 2006-09-25"</span>
 <span class="co">#&gt; [1] "9979 2006-09-26, 2009-12-07"</span>
@@ -421,7 +446,9 @@ limit of 10,000 rows.</p>
 <span class="co">#&gt; [1] "9934 2016-05-03, 2018-02-26"</span>
 <span class="co">#&gt; [1] "9918 2018-02-27, 2019-10-14"</span>
 <span class="co">#&gt; [1] "9874 2019-10-15, 2021-04-26"</span>
-<span class="co">#&gt; [1] "3984 2021-04-27, 2022-07-14"</span></code></pre></div>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
+<span class="co">#&gt; [1] "3984 2021-04-27, 2022-07-16"</span></code></pre></div>
+</div>
 <div id="conclusion" class="section level2">
 <h2 class="hasAnchor">
 <a href="#conclusion" class="anchor"></a>Conclusion</h2>
@@ -437,7 +464,6 @@ package here.</p>
 separate category for the R package in their forum. Guessing people may
 need help with their conversions!</p>
 </blockquote>
-</div>
 </div>
   </div>
 

@@ -6,7 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Unnest PatentsView data — unnest_pv_data • patentsview</title>
+<title>Get Test Query
+ 
+In the new version of the api, only three of the endpoints are searchable 
+by patent number. This function provides a sample query for each 
+endpoint, except for locations, which isn't on the test server yet — get_test_query • patentsview</title>
 
 
 <!-- jquery -->
@@ -41,13 +45,15 @@
   <link href="../extra.css" rel="stylesheet">
   
 
-<meta property="og:title" content="Unnest PatentsView data — unnest_pv_data" />
-<meta property="og:description" content="This function converts a single data frame that has subentity-level list
-columns in it into multiple data frames, one for each entity/subentity.
-The multiple data frames can be merged together using the primary key
-variable specified by the user (see the
-relational data chapter
-in &quot;R for Data Science&quot; for an in-depth introduction to joining tabular data)." />
+<meta property="og:title" content="Get Test Query
+ 
+In the new version of the api, only three of the endpoints are searchable 
+by patent number. This function provides a sample query for each 
+endpoint, except for locations, which isn't on the test server yet — get_test_query" />
+<meta property="og:description" content="Get Test Query 
+In the new version of the api, only three of the endpoints are searchable 
+by patent number. This function provides a sample query for each 
+endpoint, except for locations, which isn't on the test server yet" />
 
 
 
@@ -184,57 +190,47 @@ in &quot;R for Data Science&quot; for an in-depth introduction to joining tabula
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Unnest PatentsView data</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ropensci/patentsview/blob/master/R/unnest-pv-data.R'><code>R/unnest-pv-data.R</code></a></small>
-    <div class="hidden name"><code>unnest_pv_data.Rd</code></div>
+    <h1>Get Test Query
+ 
+In the new version of the api, only three of the endpoints are searchable 
+by patent number. This function provides a sample query for each 
+endpoint, except for locations, which isn't on the test server yet</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ropensci/patentsview/blob/master/R/test-helpers.R'><code>R/test-helpers.R</code></a></small>
+    <div class="hidden name"><code>get_test_query.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function converts a single data frame that has subentity-level list
-columns in it into multiple data frames, one for each entity/subentity.
-The multiple data frames can be merged together using the primary key
-variable specified by the user (see the
-<a href='https://r4ds.had.co.nz/relational-data.html'>relational data</a> chapter
-in "R for Data Science" for an in-depth introduction to joining tabular data).</p>
+    <p>Get Test Query</p> 
+<p>In the new version of the api, only three of the endpoints are searchable 
+by patent number. This function provides a sample query for each 
+endpoint, except for locations, which isn't on the test server yet</p>
     </div>
 
-    <pre class="usage"><span class='fu'>unnest_pv_data</span><span class='op'>(</span><span class='va'>data</span>, pk <span class='op'>=</span> <span class='fu'><a href='get_ok_pk.html'>get_ok_pk</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>data</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>get_test_query</span><span class='op'>(</span><span class='va'>endpoint</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>data</th>
-      <td><p>The data returned by <code><a href='search_pv.html'>search_pv</a></code>. This is the first
-element of the three-element result object you got back from
-<code>search_pv</code>. It should be a list of length 1, with one data frame
-inside it. See examples.</p></td>
-    </tr>
-    <tr>
-      <th>pk</th>
-      <td><p>The column/field name that will link the data frames together. This
-should be the unique identifier for the primary entity. For example, if you
-used the patent endpoint in your call to <code>search_pv</code>, you could
-specify <code>pk = "patent_number"</code>. <strong>This identifier has to have
-been included in your <code>fields</code> vector when you called
-<code>search_pv</code></strong>. You can use <code><a href='get_ok_pk.html'>get_ok_pk</a></code> to suggest a
-potential primary key for your data.</p></td>
+      <th>endpoint</th>
+      <td><p>The web service resource you want a test query for. <code>endpoint</code>
+must be one of the following: "patents", "inventors", "assignees",
+"locations", "cpc_groups", "cpc_subgroups", "cpc_subsections", "uspc_mainclasses",  
+"uspc_subclasses","nber_categories", "nber_subcategories", "application_citations", 
+or "patent_citations"</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list with multiple data frames, one for each entity/subentity.
-  Each data frame will have the <code>pk</code> column in it, so you can link the
-  tables together as needed.</p>
+    <p>a test query for the specified endpoint.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+    <pre class="examples"><div class='input'>
+<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 
-<span class='va'>fields</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"patent_number"</span>, <span class='st'>"patent_title"</span>, <span class='st'>"inventors_at_grant.city"</span>, 
-          <span class='st'>"inventors_at_grant.country"</span><span class='op'>)</span>
-<span class='va'>res</span> <span class='op'>&lt;-</span> <span class='fu'><a href='search_pv.html'>search_pv</a></span><span class='op'>(</span>query <span class='op'>=</span> <span class='st'>'{"_gte":{"patent_year":2015}}'</span>, fields <span class='op'>=</span> <span class='va'>fields</span><span class='op'>)</span>
-<span class='fu'>unnest_pv_data</span><span class='op'>(</span>data <span class='op'>=</span> <span class='va'>res</span><span class='op'>$</span><span class='va'>data</span>, pk <span class='op'>=</span> <span class='st'>"patent_number"</span><span class='op'>)</span>
+  <span class='fu'>get_test_query</span><span class='op'>(</span><span class='st'>"patents"</span><span class='op'>)</span>
+
 <span class='op'>}</span>
 
 </div></pre>

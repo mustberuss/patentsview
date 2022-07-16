@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Necesary Script Changes
+## Necessary Script Changes
 
 If you have a script that worked with the original R package and original version of the API, chances are it will need some possibly substantial changes before it will work with the new version of the R package and API.
 
@@ -53,7 +53,7 @@ Another thing you are likely to run into is a reduced overall query size, the to
 
 If you want the same data as before, you'll have to make multiple calls to get around the reduction in overall rows you can get at one time.  The easiest way to do this is to add a date range to your query and make multiple calls and blend the individual call's results together.  Gee that sounds hard or at least annoying, doesn't it?  Well, to answer the question of who is looking out for you, it's us, the R package team!
 
-# Additions to the R Package
+## Additions to the R Package
 
 ```{r}
 # First, there is a new in_range query function

@@ -7,7 +7,14 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE, 
+  comment = "#>", 
+  warning = FALSE,
+  message = FALSE
+)
+```
 
 ## Summary of the API changes announced in 2021
  
@@ -19,7 +26,7 @@ The Patentsview API team has provided a Swagger UI page for the new version of t
 Perhaps the most important change, without an API key your queries will be rejected.  Request an API key using this link: https://patentsview.org/apis/keyrequest  Once you have one, you'll need to set an environmental variable PATENTSVIEW_API_KEY to the value of your API key for the R package to use.
 
 ## Philosophical Changes
-These changes are likely to break existing code.  Now there are more endpoints and each returns a smaller, more specific data structure pertinent to that endpoint. As an example, previously the inventor endpoint could return assignee information, it no longer does that.  The exception is the patent endpoint.  It now can return assignees_at_grant, inventors_at_grant, cpc_current along with patent specific fields. Note that now subsequent queries would have to be made to the USPC specific endpoints if you are looking for these fields.
+These changes are likely to break existing code.  Now there are more endpoints and each returns a smaller, more specific data structure pertinent to that endpoint. As an example, previously the inventor endpoint could return assignee information, it no longer does that.  The exception is the patents endpoint.  It now can return assignees_at_grant, inventors_at_grant, cpc_current along with patent specific fields. Note that now subsequent queries would have to be made to the USPC specific endpoints if you are looking for these fields.
 
 Now there are 13 endpoints, up from the original 7.  The urls changed slightly but the R package takes care of that for you. 
 1. There are 2 totally new endpoints
@@ -45,7 +52,7 @@ Quite a few fields seem to have gone away, including government interest fields,
 
 
 ## HATEOAS
-Some of the returned fields are links to retrieve more information about that field. Slight funky is the cpc_current's cpc_subgroup, returned by the patent endpoint.  Here the slash in the cpc is turned into a colon.  This is a picularity of two of the new convience urls that shouldn't be noticable in the r package, unless you are trying to infer the uspc and cpc values from the returned urls.
+Some of the returned fields are links to retrieve more information about that field. Slight funky is the cpc_current's cpc_subgroup, returned by the patents endpoint.  Here the slash in the cpc is turned into a colon.  This is a picularity of two of the new convience urls that shouldn't be noticable in the r package, unless you are trying to infer the uspc and cpc values from the returned urls.
 
  "cpc_current": {
      "cpc_subgroup": "https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4865/" 
@@ -81,46 +88,8 @@ when including them in your query.  Example:  assignee organization is renamed o
 
 * The subdomain of the API changed from https://api.patentsview.org/ to https://search.patentsview.org.  The patentsview package takes care of this for you.
 
-* Nested fields seem to need to be fully qualified in the f:parameter. Here are all the patent endpoint's fields:
-
-```r
+* Nested fields seem to need to be fully qualified in the f:parameter. Here are all the patents endpoint's fields:
+```{r}
 library(patentsview)
 get_fields("patents")
-#>  [1] "patent_number"                                               
-#>  [2] "patent_title"                                                
-#>  [3] "patent_date"                                                 
-#>  [4] "patent_type"                                                 
-#>  [5] "patent_country"                                              
-#>  [6] "patent_year"                                                 
-#>  [7] "patent_abstract"                                             
-#>  [8] "patent_kind"                                                 
-#>  [9] "patent_num_foreign_documents_cited"                          
-#> [10] "patent_num_us_applications_cited"                            
-#> [11] "patent_num_us_patents_cited"                                 
-#> [12] "patent_num_total_documents_cited"                            
-#> [13] "patent_num_times_cited_by_us_patents"                        
-#> [14] "patent_earliest_application_date"                            
-#> [15] "patent_patent_processing_days"                               
-#> [16] "patent_uspc_current_mainclass_average_patent_processing_days"
-#> [17] "patent_cpc_current_group_average_patent_processing_days"     
-#> [18] "patent_term_extension"                                       
-#> [19] "patent_detail_desc_length"                                   
-#> [20] "assignees_at_grant.assignee_id"                              
-#> [21] "assignees_at_grant.name_first"                               
-#> [22] "assignees_at_grant.name_last"                                
-#> [23] "assignees_at_grant.organization"                             
-#> [24] "assignees_at_grant.type"                                     
-#> [25] "assignees_at_grant.city"                                     
-#> [26] "assignees_at_grant.state"                                    
-#> [27] "assignees_at_grant.country"                                  
-#> [28] "inventors_at_grant.inventor"                                 
-#> [29] "inventors_at_grant.name_first"                               
-#> [30] "inventors_at_grant.name_last"                                
-#> [31] "inventors_at_grant.city"                                     
-#> [32] "inventors_at_grant.state"                                    
-#> [33] "inventors_at_grant.country"                                  
-#> [34] "cpc_current.cpc_subsection"                                  
-#> [35] "cpc_current.cpc_group"                                       
-#> [36] "cpc_current.cpc_subgroup_id"                                 
-#> [37] "cpc_current.cpc_group_title"
 ```

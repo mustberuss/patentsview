@@ -16,14 +16,16 @@ knitr::opts_chunk$set(
 )
 ```
 
-> Note about the affect of the API change
+> Note about the affects of the [API changes](api-changes.html).
 >
-> This would be a good example of life under the new API, where we have to make more than one call to get the same data as before.  Maybe even keep the old page around for comparison? 
+> This is a good example of life under the new API, where we have to make more than one call to get the same data as before. This assumes that we have already received an API key and have set the environmental variable (see the API Changes page). Maybe even keep the old page around for comparison? 
 >
-> Intention  
-> Alarmingly, application date or year isn't available from any of the new version of the API's endpoints.  Instead we'll use patent_year (the year the patent was granted, already of type integer).  Trouble is that the count is nested inside the patents structure, not inside the nested assignees_at_grant.  Fortunately both nested structures have patent_number as a field so we can join them to get the data we need.
+> Intention:  
+> The original version of this page used the patent's application date in the plot below.  Alarmingly, application date or year isn't available from any of the new version of the API's endpoints.  Instead we'll use patent_year (the year the patent was granted, already of type integer).  Trouble is that the count is nested inside the patents structure, not inside the nested assignees_at_grant.  Fortunately both nested structures have patent_number as a field so we can join them to get the data we need.
 >
-> We start by calling the patent endpoint to get the patents where "databases" is in the title or abstract and there is an assignee. We make a subsequent call to the assignee endpoint to get num_patents (total number of patents) for the top 75 assignees, then we blend in the num_patents and compute the percentages. Then life, and the script, goes on as normal (as the old one did). 
+> Another API change lowered the overall result set size to 10,000, down from 100,000.  In the original version of this page we searched for database (singular) but now that produces a result set of over 10,000 rows.  Instead, we'll search for databases (plural) which will keep our result set under the new limit.  The script would have still "worked" using the singular term, it's just that the overall result set would be silently truncated at 10,000 rows, so our results would be skewed.
+>
+> We start by calling the patents endpoint to get the patents where "databases" is in the title or abstract and there is an assignee. We make a subsequent call to the assignees endpoint to get num_patents (total number of patents) for the top 75 assignees, then we blend in the num_patents and compute the percentages. Then life, and the script, goes on as normal (as the original script did). 
 
 The following is a quick analysis of the top organizations patenting in the field of databases.
 
@@ -105,19 +107,13 @@ top_asgns <-
 # Now that we have the assignee_id's we can call the assignee endpoint to get the
 # total number of patents for each of our top_asgns 
 
-# Here it might be convenient to have a qry_funs$member_of for the API's array eq,
-# thinking the API might not like 75 or'ed conditions (thought it did work when I tried it)
-# The _eq is the safer option.  
-#s = toString(as.integer(top_asgns$assignee_id))
-#assignee_query = paste('{"assignee_id":[',s,']}')
-
 assignee_query =  qry_funs$eq(assignee_id = as.integer(top_asgns$assignee_id))
 
 assignee_fields <- c(
   "assignee_id","organization", "num_patents" 
 )
 
-# we'll post to the API, the query is pretty large if we use qry_funs$eq
+# we'll post to the API, the query is a pretty large string (an "or" of 75 assignee_ids)
 assignee_out <- search_pv(assignee_query , fields = assignee_fields, all_pages = TRUE, 
    per_page = 1000, endpoint = "assignees", method = "POST")
 
@@ -158,7 +154,7 @@ IBM is far and away the biggest player in the field. However, we can see that Or
 
 ```{r}
 
-# The patent endpoint no longer returns application date as this page used originally
+# The patents endpoint no longer returns application date as this page used originally
 # Instead we will use the patent_year  (year the patent was granted, returned as an integer)
 
 # Get the top 5 organizations since slice wasn't working out in the full_join below.

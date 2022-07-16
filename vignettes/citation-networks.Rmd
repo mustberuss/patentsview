@@ -8,6 +8,10 @@ vignette: >
 ---
 
 
+> Important API Change
+> 
+> The new version of the API requires an API key, or all of your requests will be blocked.  See the [API Changes](api-changes.html#an-api-key-is-required-1) page.
+
 
 The following is a brief foray into patent citation networks. The analysis is done on 3 patents that describe patent citation analysis (PCA) themselves. 
 
@@ -31,7 +35,7 @@ library(webshot2)
 # for now we'll pretend it worked
 pat_nums <- c("10095778","9075849","8818996","8504560","8131701","7966328","7797336","7716226","7523126","6499026","6339767")
 
-# we have to go against the patent_citiation endpoint now, these fields are no longer available from the patent endpoint
+# we have to go against the patent_citiation endpoint now, these fields are no longer available from the patents endpoint
 # can we _or the two queries or does that blend the results? ie do we need a cited by query
 # and a separate citing query?
 
@@ -89,7 +93,7 @@ There are only 11 PCA patents. These patents cite 1066 patents and are cited by 
 
 ```r
 
-# with the API change we wouldn't have titles unless we call the patent endpoint
+# with the API change we wouldn't have titles unless we call the patents endpoint
 # we'll use the patent number as the title for now
 
 pat_title <- function(title, number) {
@@ -98,14 +102,13 @@ pat_title <- function(title, number) {
   paste0('<a href="https://patents.google.com/patent/US', number, '">', i, '</a>')
 }
 
-# using right query results?  check what calling the original API produces
 edges <-
   res_lst$patent_citations %>%
     semi_join(x = ., y = ., by = c("cited_patent_number" = "patent_number" )) %>%
     set_colnames(c("from", "to"))
 
-# call the patent endpoint so we can iterate through the data here?
-# or pull unique patent numbers from the first query? 
+# We could call the patents endpoint to get the patent titles but we'll just set
+# the title to the patent number
 nodes <-
   res_lst$patent_citations %>%
   distinct(patent_number) %>%

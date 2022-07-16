@@ -9,7 +9,7 @@ vignette: >
 
 
 
-## Necesary Script Changes
+## Necessary Script Changes
 
 If you have a script that worked with the original R package and original version of the API, chances are it will need some possibly substantial changes before it will work with the new version of the R package and API.
 
@@ -48,7 +48,7 @@ Another thing you are likely to run into is a reduced overall query size, the to
 
 If you want the same data as before, you'll have to make multiple calls to get around the reduction in overall rows you can get at one time.  The easiest way to do this is to add a date range to your query and make multiple calls and blend the individual call's results together.  Gee that sounds hard or at least annoying, doesn't it?  Well, to answer the question of who is looking out for you, it's us, the R package team!
 
-# Additions to the R Package
+## Additions to the R Package
 
 
 ```r
@@ -181,6 +181,10 @@ And here's the same sample query as before to give it a go.  Spoiler alert, it t
 query <- with_qfuns(text_any(patent_abstract = 'tool animal'))
 
 the_answer <- tell_us(query)
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 3 seconds before continuing."
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
 #> [1] "API calls made: 29"
 
 the_answer
@@ -227,7 +231,7 @@ the_answer
 #> [1] "2019-10-15" "2021-04-26"
 #> 
 #> [[15]]
-#> [1] "2021-04-27" "2022-07-14"
+#> [1] "2021-04-27" "2022-07-16"
 ```
 
 And now, since it's fun, we'll go through the motions of calling the API for each date range.  We won't actually request all the data (all_pages defaults to FALSE) but each call's total_hit_count will be displayed, showing the total row count of what would have been retrieved if all_pages was TRUE.  Note that none of date ranges would hit the new limit of 10,000 rows.
@@ -251,24 +255,26 @@ for (pair in the_answer)
    print(paste(total_hits,toString(pair)))
 }
 #> [1] "9999 1970-01-01, 1983-02-28"
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
 #> [1] "9981 1983-03-01, 1989-02-13"
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
 #> [1] "9967 1989-02-14, 1993-09-06"
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 2 seconds before continuing."
 #> [1] "9963 1993-09-07, 1998-02-23"
 #> [1] "9973 1998-02-24, 2001-01-15"
-#> [1] "The api's requests per minute limit has been reached.  Pausing for 16 seconds before continuing."
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 13 seconds before continuing."
 #> [1] "9985 2001-01-16, 2003-10-13"
 #> [1] "9976 2003-10-14, 2006-09-25"
 #> [1] "9979 2006-09-26, 2009-12-07"
 #> [1] "9963 2009-12-08, 2012-05-28"
-#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
 #> [1] "9930 2012-05-29, 2014-06-09"
-#> [1] "The api's requests per minute limit has been reached.  Pausing for 11 seconds before continuing."
+#> [1] "The api's requests per minute limit has been reached.  Pausing for 4 seconds before continuing."
 #> [1] "9957 2014-06-10, 2016-05-02"
 #> [1] "9934 2016-05-03, 2018-02-26"
 #> [1] "9918 2018-02-27, 2019-10-14"
-#> [1] "9874 2019-10-15, 2021-04-26"
 #> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
-#> [1] "3984 2021-04-27, 2022-07-14"
+#> [1] "9874 2019-10-15, 2021-04-26"
+#> [1] "3984 2021-04-27, 2022-07-16"
 ```
 
 ## Conclusion

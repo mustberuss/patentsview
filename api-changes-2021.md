@@ -130,7 +130,7 @@ The environmental variable's name is the same one I used in the api's python wra
 1. Should we bump the version number to 1.0.0?  The api key alone quarantees that the package won't be backward compatible.
 2. Are there any other fields changing type?  (like assignee organization becoming a full text field, formerly it had been a string)
 3. Are there more fields (like the government interests) that went away?
-4. Do we need to set up an api key as a secret?  It would be needed if there are api calls in the workflows. I set one in my repo but I think everything has a skip_on_ci().  It's retrieved in R-CMD-check.yaml which might need to be removed.
+4. Do we need to set up an api key as a secret?  It would be needed if there are api calls in the workflows. I set one in my repo so tests will run and the vignettes can be half rendered etc.  It's retrieved in R-CMD-check.yaml which might need to be removed if we don't need to do this.
 5. It looks like Dates are the only thing that cast-pv-data needs to convert. The api seems to return integers etc., not always strings.  Exception is assignees_at_grant.type, it's still a string when it should be an int
 6. Is NEWS.md generated?  Add a link to the page explaining the api changes?
 7. How to handle the release?  For a while both versions of the api are supposed to be around.  Have people install the updated R package from a branch on ropensci/patentsview?  When the original version of the api is retired do a CRAN build?
