@@ -41,7 +41,8 @@ test_that("Data matches between a paged and non paged response", {
      fields = fields,
      sort = sort,
      per_page = half,
-     all_pages = TRUE
+     all_pages = TRUE,
+     FORCE_PAGING = TRUE
    )
 
    dl2 <- unnest_pv_data(res2$data, "patent_number")

@@ -34,28 +34,6 @@ create_key_fun <- function(fun) {
 }
 
 #' @noRd
-create_in_fun <- function(fun) {
-  force(fun)
-  function(...) {
-    value_p <- list(...)
-    field <- names(value_p)
-    value <- unlist(value_p)
-    names(value) <- NULL
-
-    # from qry_funs$member_of(patent_number=c("10000000","10000006"))
-    # we want
-    # {"patent_number":["10000000","10000006"]}  
-
-    k <- list(value)
-    names(k) <- field
-    z <- k
-
-    structure(z, class = c(class(z), "pv_query"))
-  }
-}
-
-
-#' @noRd
 create_array_fun <- function(fun) {
   force(fun)
   function(...) {
@@ -169,9 +147,7 @@ qry_funs <- c(
   ),
   lapply2(c("and", "or"), create_array_fun),
   lapply2("not", create_not_fun),
-  lapply2("in_range", create_between_fun),  # "between" may imply exclusive instead of inclusive
-  lapply2("member_of", create_in_fun) # disadvantage: no type check
-
+  lapply2("in_range", create_between_fun)  # "between" may imply exclusive instead of inclusive
 )
 
 #' With qry_funs

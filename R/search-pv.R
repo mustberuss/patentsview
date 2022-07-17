@@ -237,11 +237,6 @@ search_pv <- function(query,
                       error_browser = NULL,
                       ...) {
 
-  # message or warning if all_pages=TRUE with something other than 1000 as the per_page
-  if(all_pages && per_page != 1000) {
-     message("with all_pages = TRUE per_page could be 1000 to minimize api calls")
-  }
-
   if (!is.null(error_browser))
     warning("error_browser parameter has been deprecated")
 
@@ -256,6 +251,15 @@ search_pv <- function(query,
     query, fields, endpoint, method, subent_cnts, mtchd_subent_only, page,
     per_page, sort
   )
+
+  # it's too painful to make fewer than the maximum when all_pages is true
+  # but it's nice to have a test case that asserts that paging works
+  # too cheesy to have a secret testing parameter?
+  if(all_pages && per_page != 1000) {
+     args <- list(...)
+     if(!("FORCE_PAGING" %in% names(args)))
+        per_page = 1000
+   }
 
   arg_list <- to_arglist(
     fields, subent_cnts, mtchd_subent_only, page, per_page, sort
