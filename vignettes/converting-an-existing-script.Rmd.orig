@@ -213,12 +213,6 @@ for (pair in the_answer)
 
 So there you have it, our attempt at listing what's changed and what to do about it.  [Request](https://patentsview.org/apis/keyrequest) an API key and get going with the new R package for the new version of the API! (The two API versions will coexist for a while but eventually the original version of the API will be retired.)
 
-> Probably should steer them to the instructions on loading the updated package here.
-> 
-> Possible idea: ask the patentsview people if they could create a separate category for the R package in their forum.  Guessing people may need help with their conversions!
-
-
-
 
 
 
