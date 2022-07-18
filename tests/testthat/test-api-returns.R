@@ -20,7 +20,7 @@ test_that("API returns all requested groups", {
   # can we traverse the return building a list of fields?
   # sort both requested fields and returned ones to see if they are equal
 
-  # TODO: remove the trickery to get this test to pass
+  # TODO: remove the trickery to get this test to pass, once the API is fixed
   eps <-eps[eps != "assignees"]  # currently not getting "assignee_years" back from the api
   eps <-eps[eps != "inventors"]  # currently not getting "inventor_years" back from the api
 
