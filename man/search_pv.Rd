@@ -16,6 +16,7 @@ search_pv(
   sort = NULL,
   method = "GET",
   error_browser = NULL,
+  paging_override = FALSE,
   ...
 )
 }
@@ -84,6 +85,8 @@ Possible values include "GET" or "POST". Use the POST method when
 your query is very long (say, over 2,000 characters in length).}
 
 \item{error_browser}{Deprecated}
+
+\item{paging_override}{boolean to override paging, for test case use}
 
 \item{...}{Arguments passed along to httr's \code{\link[httr]{GET}} or
 \code{\link[httr]{POST}} function.}

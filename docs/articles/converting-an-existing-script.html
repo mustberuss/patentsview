@@ -406,7 +406,7 @@ all_pages = TRUE, guaranteeing we’d get throttled!).</p>
 <span class="co">#&gt; [1] "2019-10-15" "2021-04-26"</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; [[15]]</span>
-<span class="co">#&gt; [1] "2021-04-27" "2022-07-16"</span></code></pre></div>
+<span class="co">#&gt; [1] "2021-04-27" "2022-07-18"</span></code></pre></div>
 <p>And now, since it’s fun, we’ll go through the motions of calling the
 API for each date range. We won’t actually request all the data
 (all_pages defaults to FALSE) but each call’s total_hit_count will be
@@ -447,7 +447,7 @@ limit of 10,000 rows.</p>
 <span class="co">#&gt; [1] "9918 2018-02-27, 2019-10-14"</span>
 <span class="co">#&gt; [1] "9874 2019-10-15, 2021-04-26"</span>
 <span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
-<span class="co">#&gt; [1] "3984 2021-04-27, 2022-07-16"</span></code></pre></div>
+<span class="co">#&gt; [1] "3984 2021-04-27, 2022-07-18"</span></code></pre></div>
 </div>
 <div id="conclusion" class="section level2">
 <h2 class="hasAnchor">
@@ -457,13 +457,6 @@ to do about it. <a href="https://patentsview.org/apis/keyrequest">Request</a> an
 and get going with the new R package for the new version of the API!
 (The two API versions will coexist for a while but eventually the
 original version of the API will be retired.)</p>
-<blockquote>
-<p>Probably should steer them to the instructions on loading the updated
-package here.</p>
-<p>Possible idea: ask the patentsview people if they could create a
-separate category for the R package in their forum. Guessing people may
-need help with their conversions!</p>
-</blockquote>
 </div>
   </div>
 
