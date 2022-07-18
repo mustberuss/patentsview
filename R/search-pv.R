@@ -51,7 +51,13 @@ get_post_body <- function(query, arg_list) {
 one_request <- function(method, query, base_url, arg_list, ...) {
   ua <- httr::user_agent("https://github.com/ropensci/patentsview")
 
-  if (method == "GET") {
+  if(method == "HATEOAS")
+  {
+     get_url <- base_url
+     write(get_url, stderr())
+     resp <- httr::GET(get_url, httr::add_headers("X-Api-Key" = pview_key()), ua, ...)
+  }
+  else if (method == "GET") {
     get_url <- get_get_url(query, base_url, arg_list)
     write(get_url, stderr())
     resp <- httr::GET(get_url, httr::add_headers("X-Api-Key" = pview_key()), ua, ...)
@@ -71,7 +77,7 @@ one_request <- function(method, query, base_url, arg_list, ...) {
      warning(msg)
      Sys.sleep(seconds)
 
-     if (method == "GET")
+     if (method == "GET" || method == "HATEOAS")
         resp <- httr::GET(get_url, httr::add_headers("X-Api-Key" = pview_key()), ua, ...)
      else
         resp <- httr::POST(base_url, httr::add_headers("X-Api-Key" = pview_key(), "Content-Type" = "application/json" ), body = body, ua, ...)
@@ -165,6 +171,7 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, ...) {
 #'  Possible values include "GET" or "POST". Use the POST method when
 #'  your query is very long (say, over 2,000 characters in length).
 #' @param error_browser Deprecated
+#' @param paging_override boolean to override paging, for test case use
 #' @param ... Arguments passed along to httr's \code{\link[httr]{GET}} or
 #'  \code{\link[httr]{POST}} function.
 #'
@@ -230,11 +237,12 @@ search_pv <- function(query,
                       subent_cnts = FALSE,
                       mtchd_subent_only = TRUE,
                       page = 1,
-                      per_page = 25,  # for backward compatiblity, api's default is now 1000 
+                      per_page = 25,  # for backward compatiblity, api's default is now 100 
                       all_pages = FALSE,
                       sort = NULL,
                       method = "GET",
                       error_browser = NULL,
+                      paging_override = FALSE,
                       ...) {
 
   if (!is.null(error_browser))
@@ -252,14 +260,10 @@ search_pv <- function(query,
     per_page, sort
   )
 
-  # it's too painful to make fewer than the maximum when all_pages is true
+  # It's too painful to make fewer than the maximum when all_pages == TRUE
   # but it's nice to have a test case that asserts that paging works
-  # too cheesy to have a secret testing parameter?
-  if(all_pages && per_page != 1000) {
-     args <- list(...)
-     if(!("FORCE_PAGING" %in% names(args)))
-        per_page = 1000
-   }
+  if(all_pages && per_page != 1000 && !paging_override)
+     per_page = 1000
 
   arg_list <- to_arglist(
     fields, subent_cnts, mtchd_subent_only, page, per_page, sort
@@ -277,6 +281,40 @@ search_pv <- function(query,
   res
 }
 
+#' Get HATEOS Data
+#' 
+#' The new version of the api return HATEOAS style links to get more data
+#' ex "inventor": "https://search.patentsview.org/api/v1/inventor/252373/"
+#' They are new, Get only endpoints with no ability to pass f: s: or o: parameters
+#'
+#' @param url The link that was returned by the API on a previous call
+#'
+#' @return A character vector with field names, same as search_pv()
+#' 
+#' @examples
+#'
+#' \dontrun{
+#'
+#' retrieve_linked_data("https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4811/")
+#'
+#' }
+#'
+#' @export
+retrieve_linked_data <- function(url) {
+
+ # Possibly cache the responses for this session?  There would be a chance that the same
+ # data would be wanted again for another patent. same inventor, same cpc etc.
+
+ # We won't make the request / won't sent the API key to somewhere other
+ # than https://*.patentsview.org/
+ if(!grepl("^https://[^/]*\\.*patentsview.org/", url))
+    stop("retrieve_linked_data is only for patentsview.org urls - sends API key")
+
+ # We go through one_request, it would resend on too many requests - off chance of getting it here
+  one_request(method="HATEOAS", base_url = url)
+}
+
+#' @noRd
 pview_key <- function() {
   api_key <- Sys.getenv('PATENTSVIEW_API_KEY')
   if (identical(api_key, "")) {
