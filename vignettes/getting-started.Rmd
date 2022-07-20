@@ -215,7 +215,7 @@ search_pv(query, endpoint = "inventors", fields = fields)
 #> #### A list with a single data frame on an inventor level:
 #> 
 #> List of 1
-#>  $ inventors:'data.frame':	25 obs. of  10 variables:
+#>  $ inventors:'data.frame':	25 obs. of  11 variables:
 #>   ..$ inventor_id      : int [1:25] 25722 64685 ...
 #>   ..$ name_first       : chr [1:25] "Michael" ...
 #>   ..$ name_last        : chr [1:25] "Chambers" ...
@@ -226,6 +226,7 @@ search_pv(query, endpoint = "inventors", fields = fields)
 #>   ..$ lastknown_country: chr [1:25] "US" ...
 #>   ..$ first_seen_date  : chr [1:25] "1982-09-14" ...
 #>   ..$ last_seen_date   : chr [1:25] "2020-11-24" ...
+#>   ..$ years_active     : num [1:25] 38 27 ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
@@ -376,12 +377,6 @@ res$data
 
 ```r
 library(tidyr)
-#> Warning: package 'tidyr' was built under R version 3.6.3
-#> 
-#> Attaching package: 'tidyr'
-#> The following object is masked from 'package:magrittr':
-#> 
-#>     extract
 
 # Get assignee data:
 res$data$patents %>% 

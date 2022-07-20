@@ -1,4 +1,7 @@
-# we could half render a single file  
+# I found it handly to half render a single file during development.
+# I'd edit an Rmd.orig, half render it with this script and then do a 
+# pkgdown::build_site() to see what the html looked like. Much faster 
+# than half rendering everything!
 
 half_render_one <- function() {
   # I want the figures directory that's created when knitr renders the docs to
@@ -10,7 +13,9 @@ half_render_one <- function() {
   #source_files <- list.files(pattern = "\\.Rmd\\.orig$")
   #source_files <- c("converting-an-existing-script.Rmd.orig")
   #source_files <- c("test.Rmd.orig")
-  source_files <- c("top-assignees.Rmd.orig")
+  #source_files <- c("top-assignees.Rmd.orig")
+  #source_files <- c("ropensci_blog.Rmd.orig")
+  source_files <- c("getting-started.Rmd.orig")
 
   for (file in source_files) {
     print(paste("Knitting", file))

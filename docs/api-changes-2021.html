@@ -505,13 +505,24 @@ the concatenated results. Or just wrap the whole thing, user passes in
 the query, we call tell_us and give them back the combined data
 set.</p></li>
 <li>
-<p>we probably don’t need this in process-error.R though the
+<p>We probably don’t need this in process-error.R though the
 location endpoint is not on the test server yet</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="st">"Your request resulted in a 500 error, likely because you have "</span>,</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="st">"requested too many fields in your request (the locations endpoint "</span>,</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="st">"currently has restrictions on the number of fields/groups you can "</span>,</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="st">"request). Try slimming down your field list and trying again."</span></span></code></pre></div>
 </li>
+<li><p>fix ?qry_funs locally. It worked in the original version of the R
+package but not now.</p></li>
+<li><p>If possible, suppress api-changes-2021.md from producing
+docs/api-changes-2021.html</p></li>
+<li><p>Clean up utils.R I hadn’t noticed until writting test-utils.R
+that only to_singular is used by the package. to_plural() and
+is_plural_endpoint() aren’t used, they’re hold overs from a failed
+attempt at making the endpoints singular.</p></li>
+<li><p>A followup is probably in order for <a href="https://ropensci.org/blog/2017/09/19/patentsview/" class="uri">https://ropensci.org/blog/2017/09/19/patentsview/</a>
+There’s an unlinked vignette that reworks the code so it “works” using
+the new version of the api.</p></li>
 </ol>
 </div>
 <div id="questions" class="section level2">
@@ -551,7 +562,8 @@ worth the effort, and it’s not necessarily an improvement! (it’s just an
 observation)</li>
 <li>The screenshot of the highcharter plot in the top-assignees vignette
 is incomplete. The png only shows a little bit of IBM’s yearly patents,
-not the full awesomeness of highcharter’s plot.    </li>
+not the full awesomeness of highcharter’s plot. The line graph in the
+roensci blog looks fine, how was that one done?    </li>
 </ol>
 </div>
 </div>
