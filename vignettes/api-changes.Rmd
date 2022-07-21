@@ -51,8 +51,28 @@ Some of the returned fields are links to retrieve more information about that fi
      "cpc_subgroup": "https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4865/" 
   }
 
+There is a new method in the R package to retrive data from the HATEOAS links.
+
+```r
+retrieve_linked_data("https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4865/")
+#> $data
+#> [1] "cpc_subgroups"
+#> #### A list with a single data frame on a CPC sub group level:
+#> 
+#> List of 1
+#>  $ cpc_subgroups:'data.frame':	1 obs. of  2 variables:
+#>   ..$ cpc_subgroup_id   : chr "G01S7/4865"
+#>   ..$ cpc_subgroup_title: chr "Details of systems according to groups G01S13/"..
+#> 
+#> $query_results
+#> #### Distinct entity counts across all downloadable pages of output:
+#> 
+#> total_hits = 1
+```
+
 Note that you'll get an error if you click on that link as an API key is not sent with as the  
-X-Api-Key header.  The response will be an http 403 Forbidden, instead of a 200.
+X-Api-Key header.  The response will be an http 403 Forbidden, instead of a 200.  The R package has
+a new method 
 
 
 ## Query size changes
@@ -113,16 +133,20 @@ get_fields("patents")
 #> [25] "assignees_at_grant.city"                                     
 #> [26] "assignees_at_grant.state"                                    
 #> [27] "assignees_at_grant.country"                                  
-#> [28] "inventors_at_grant.inventor"                                 
-#> [29] "inventors_at_grant.name_first"                               
-#> [30] "inventors_at_grant.name_last"                                
-#> [31] "inventors_at_grant.city"                                     
-#> [32] "inventors_at_grant.state"                                    
-#> [33] "inventors_at_grant.country"                                  
-#> [34] "cpc_current.sequence"                                        
-#> [35] "cpc_current.section_id"                                      
-#> [36] "cpc_current.subsection_id"                                   
-#> [37] "cpc_current.group_id"                                        
-#> [38] "cpc_current.subgroup_id"                                     
-#> [39] "cpc_current.cpc_group_title"
+#> [28] "assignees_at_grant.latitude"                                 
+#> [29] "assignees_at_grant.longitude"                                
+#> [30] "inventors_at_grant.inventor"                                 
+#> [31] "inventors_at_grant.name_first"                               
+#> [32] "inventors_at_grant.name_last"                                
+#> [33] "inventors_at_grant.city"                                     
+#> [34] "inventors_at_grant.state"                                    
+#> [35] "inventors_at_grant.country"                                  
+#> [36] "inventors_at_grant.latitude"                                 
+#> [37] "inventors_at_grant.longitude"                                
+#> [38] "cpc_current.sequence"                                        
+#> [39] "cpc_current.section_id"                                      
+#> [40] "cpc_current.subsection_id"                                   
+#> [41] "cpc_current.group_id"                                        
+#> [42] "cpc_current.subgroup_id"                                     
+#> [43] "cpc_current.cpc_group_title"
 ```

@@ -65,7 +65,7 @@ range
 
 ```
 
-Second, here's a new function that shouly probably be added to the R package.  Given a query that probably shouldn't contain patent_date, it will return a list of start dates and end dates where each date range would return less than the new limit of 10,000 rows.
+Second, here's a new function that should probably be added to the R package.  Given a query that probably shouldn't contain patent_date, it will return a list of start dates and end dates where each date range would return less than the new limit of 10,000 rows.
 
 Do you remember the example of splitting up a call on the original version of the getting-started page?  It had this query
 
@@ -97,11 +97,11 @@ Well, it turns out, we can use the API itself to help us figure out what date ra
 
 ```{r}
 
-# returns a list of start and end dates that won't exceed the new overall result
+# Returns a list of start and end dates that won't exceed the new overall result
 # set size limit.  
 
-# the patentsview database starts with 1976. we'll start lower in case they add earlier data
-# allow a start date to be passed in.  the caller might want to pick up where they
+# The patentsview database starts with 1976. we'll start lower in case they add earlier data
+# and allow a start date to be passed in.  The caller might want to pick up where they
 # left off last time
 
 tell_us <- function(query, start_date = '1970-01-01' ) {

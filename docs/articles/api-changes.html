@@ -221,10 +221,27 @@ shouldn’t be noticable in the r package, unless you are trying to infer
 the uspc and cpc values from the returned urls.</p>
 <p>“cpc_current”: { “cpc_subgroup”: “<a href="https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4865/" class="uri">https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4865/</a>”
 }</p>
+<p>There is a new method in the R package to retrive data from the
+HATEOAS links.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/retrieve_linked_data.html">retrieve_linked_data</a></span><span class="op">(</span><span class="st">"https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4865/"</span><span class="op">)</span>
+<span class="co">#&gt; $data</span>
+<span class="co">#&gt; [1] "cpc_subgroups"</span>
+<span class="co">#&gt; #### A list with a single data frame on a CPC sub group level:</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; List of 1</span>
+<span class="co">#&gt;  $ cpc_subgroups:'data.frame':   1 obs. of  2 variables:</span>
+<span class="co">#&gt;   ..$ cpc_subgroup_id   : chr "G01S7/4865"</span>
+<span class="co">#&gt;   ..$ cpc_subgroup_title: chr "Details of systems according to groups G01S13/"..</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $query_results</span>
+<span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; total_hits = 1</span></code></pre></div>
 <p>Note that you’ll get an error if you click on that link as an API key
 is not sent with as the<br>
 X-Api-Key header. The response will be an http 403 Forbidden, instead of
-a 200.</p>
+a 200. The R package has a new method</p>
 </div>
 <div id="query-size-changes" class="section level2">
 <h2 class="hasAnchor">
@@ -274,7 +291,7 @@ takes care of this for you.</p></li>
 <li><p>Nested fields seem to need to be fully qualified in the
 f:parameter. Here are all the patents endpoint’s fields:</p></li>
 </ul>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/patentsview/index.html">patentsview</a></span><span class="op">)</span>
 <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span><span class="st">"patents"</span><span class="op">)</span>
 <span class="co">#&gt;  [1] "patent_number"                                               </span>
@@ -304,18 +321,22 @@ f:parameter. Here are all the patents endpoint’s fields:</p></li>
 <span class="co">#&gt; [25] "assignees_at_grant.city"                                     </span>
 <span class="co">#&gt; [26] "assignees_at_grant.state"                                    </span>
 <span class="co">#&gt; [27] "assignees_at_grant.country"                                  </span>
-<span class="co">#&gt; [28] "inventors_at_grant.inventor"                                 </span>
-<span class="co">#&gt; [29] "inventors_at_grant.name_first"                               </span>
-<span class="co">#&gt; [30] "inventors_at_grant.name_last"                                </span>
-<span class="co">#&gt; [31] "inventors_at_grant.city"                                     </span>
-<span class="co">#&gt; [32] "inventors_at_grant.state"                                    </span>
-<span class="co">#&gt; [33] "inventors_at_grant.country"                                  </span>
-<span class="co">#&gt; [34] "cpc_current.sequence"                                        </span>
-<span class="co">#&gt; [35] "cpc_current.section_id"                                      </span>
-<span class="co">#&gt; [36] "cpc_current.subsection_id"                                   </span>
-<span class="co">#&gt; [37] "cpc_current.group_id"                                        </span>
-<span class="co">#&gt; [38] "cpc_current.subgroup_id"                                     </span>
-<span class="co">#&gt; [39] "cpc_current.cpc_group_title"</span></code></pre></div>
+<span class="co">#&gt; [28] "assignees_at_grant.latitude"                                 </span>
+<span class="co">#&gt; [29] "assignees_at_grant.longitude"                                </span>
+<span class="co">#&gt; [30] "inventors_at_grant.inventor"                                 </span>
+<span class="co">#&gt; [31] "inventors_at_grant.name_first"                               </span>
+<span class="co">#&gt; [32] "inventors_at_grant.name_last"                                </span>
+<span class="co">#&gt; [33] "inventors_at_grant.city"                                     </span>
+<span class="co">#&gt; [34] "inventors_at_grant.state"                                    </span>
+<span class="co">#&gt; [35] "inventors_at_grant.country"                                  </span>
+<span class="co">#&gt; [36] "inventors_at_grant.latitude"                                 </span>
+<span class="co">#&gt; [37] "inventors_at_grant.longitude"                                </span>
+<span class="co">#&gt; [38] "cpc_current.sequence"                                        </span>
+<span class="co">#&gt; [39] "cpc_current.section_id"                                      </span>
+<span class="co">#&gt; [40] "cpc_current.subsection_id"                                   </span>
+<span class="co">#&gt; [41] "cpc_current.group_id"                                        </span>
+<span class="co">#&gt; [42] "cpc_current.subgroup_id"                                     </span>
+<span class="co">#&gt; [43] "cpc_current.cpc_group_title"</span></code></pre></div>
 </div>
   </div>
 

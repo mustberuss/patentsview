@@ -512,17 +512,16 @@ location endpoint is not on the test server yet</p>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="st">"currently has restrictions on the number of fields/groups you can "</span>,</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="st">"request). Try slimming down your field list and trying again."</span></span></code></pre></div>
 </li>
-<li><p>fix ?qry_funs locally. It worked in the original version of the R
-package but not now.</p></li>
 <li><p>If possible, suppress api-changes-2021.md from producing
 docs/api-changes-2021.html</p></li>
 <li><p>Clean up utils.R I hadn’t noticed until writting test-utils.R
 that only to_singular is used by the package. to_plural() and
 is_plural_endpoint() aren’t used, they’re hold overs from a failed
 attempt at making the endpoints singular.</p></li>
-<li><p>A followup is probably in order for <a href="https://ropensci.org/blog/2017/09/19/patentsview/" class="uri">https://ropensci.org/blog/2017/09/19/patentsview/</a>
-There’s an unlinked vignette that reworks the code so it “works” using
-the new version of the api.</p></li>
+<li><p>A followup is probably in order for the <a href="https://ropensci.org/blog/2017/09/19/patentsview/">rOpenSci blog
+post</a> There’s an unlinked vignette that reworks the code so it
+“works” using the new version of the api. README.md’s link should be
+changed if there is a new post.</p></li>
 </ol>
 </div>
 <div id="questions" class="section level2">

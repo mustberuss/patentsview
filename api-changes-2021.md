@@ -103,10 +103,9 @@ Steps to try this out locally
         "requested too many fields in your request (the locations endpoint ",
         "currently has restrictions on the number of fields/groups you can ",
         "request). Try slimming down your field list and trying again."
-11. fix ?qry_funs locally.  It worked in the original version of the R package but not now.
-12. If possible, suppress api-changes-2021.md from producing docs/api-changes-2021.html
-13. Clean up utils.R I hadn't noticed until writting test-utils.R that only to_singular is used by the package.  to_plural() and is_plural_endpoint() aren't used, they're hold overs from a failed attempt at making the endpoints singular.
-14. A followup is probably in order for the [rOpenSci blog post](https://ropensci.org/blog/2017/09/19/patentsview/) There's an unlinked vignette that reworks the code so it "works" using the new version of the api. README.md's link should be changed if there is a new post.
+11. If possible, suppress api-changes-2021.md from producing docs/api-changes-2021.html
+12. Clean up utils.R I hadn't noticed until writting test-utils.R that only to_singular is used by the package.  to_plural() and is_plural_endpoint() aren't used, they're hold overs from a failed attempt at making the endpoints singular.
+13. A followup is probably in order for the [rOpenSci blog post](https://ropensci.org/blog/2017/09/19/patentsview/) There's an unlinked vignette that reworks the code so it "works" using the new version of the api. README.md's link should be changed if there is a new post.
 
 
 ## Questions

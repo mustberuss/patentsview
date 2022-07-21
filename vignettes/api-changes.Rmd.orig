@@ -58,8 +58,15 @@ Some of the returned fields are links to retrieve more information about that fi
      "cpc_subgroup": "https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4865/" 
   }
 
+There is a new method in the R package to retrive data from the HATEOAS links.
+```{r}
+retrieve_linked_data("https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4865/")
+
+```
+
 Note that you'll get an error if you click on that link as an API key is not sent with as the  
-X-Api-Key header.  The response will be an http 403 Forbidden, instead of a 200.
+X-Api-Key header.  The response will be an http 403 Forbidden, instead of a 200.  The R package has
+a new method 
 
 
 ## Query size changes

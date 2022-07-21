@@ -19,9 +19,14 @@ knitr::opts_chunk$set(
 
 1. From the original post:  
 
-> The API is free (no credential required) and currently doesn't impose rate limits/bandwidth throttling.
+> * The API is free (no credential required) and currently doesn't impose rate limits/bandwidth throttling.
 
 An API key is now required and throttling is imposed (handled by the new version of the R package) at 45 requests per minute.
+
+> * The project offers [bulk downloads of patent data](https://patentsview.org/download/data-download-tables) on their website (in a flat file format), for those who want to be closest to the data.
+
+2. The next bullet point has a link to the downloads page that's a 404 now, fixed above.
+
 
 2. The first two examples still work form the original blog, though now the maximum result set size is 10,000, down from 100,000 and "total_hits" is returned instead of an endpoint specific count, ex. total_patent_count.
 
@@ -29,7 +34,28 @@ An API key is now required and throttling is imposed (handled by the new version
 library(patentsview)
 ```
 
+> Patents offer a great opportunity for data analysis  
+>   
+> There are two primary reasons for this:  
+>  
+> Patent data is public. In return for the exclusive right to profit off an invention, an individual/company has to publicly disclose the details of their invention to the rest of the world. [Examples of those details](http://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO2&Sect2=HITOFF&p=1&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r=11&f=G&l=50&co1=AND&d=PTXT&s1=dog&OS=dog&RS=dog) include the patent’s title, abstract, technology classification, assigned organizations, etc.  
+
+3. This [press release](https://www.uspto.gov/about-us/news-updates/modern-user-friendly-patent-center-fully-replace-legacy-public-pair-system) says that patft will be going away (url of Examples of those details)  
+
+> [United States Patent and Trademark Office](https://en.wikipedia.org/wiki/United_States_Patent_and_Trademark_Office) (USPTO) [search engine](http://patft.uspto.gov/netahtml/PTO/search-adv.htm), or figure out a way to download, parse, and model huge XML data dumps. Enter PatentsView.
+
+4. Same problem here, the search engine link would be going way
+
+> ## PatentsView and the [patentsview](#patentsview) package
+> [PatentsView](https://datatool.patentsview.org/#viz/relationships) is one of USPTO’s new initiatives intended to increase the usability and value of patent data.
+
+3. The PatentsView link is now in the original post is now a 404, corrected above
+
 [query](#query)
+
+> Your query has to use the [PatentsView query language](https://patentsview.org/apis/api-query-language),   
+
+3. The link in the original post is now a 404, working one above.
 
 ```{r}
 qry_1 <- '{"_gt":{"patent_year":2007}}'
@@ -43,15 +69,15 @@ qry_2 # qry_2 is the same as qry_1
 search_pv(query = qry_2)
 ```
 
-3. From the original blog post:  
+4. From the original blog post:  
 > There are three gotchas to look out for when writing a query:  
 >  
 > 1. **Field is queryable.** The API has 7 endpoints (the default endpoint is “patents”), and each endpoint has its own set of fields that you can filter on. 
 
 
-This needs updating, as now all fields are queryable and there are 13 endpoints (more coming?):
+This needs updating, as now all fields are queryable and there are 13 endpoints (more coming, like /application):
 
-4. The original blog requested inventor_total_num_patents, which we don't get from the patents endpoint in the new version of the API. Now we'd have to call the inventors endpoint to get this field.
+5. The original blog requested inventor_total_num_patents, which we don't get from the patents endpoint in the new version of the API. Now we'd have to call the inventors endpoint to get this field.
 
 > search_pv(
 >  query = qry_funs$gt(patent_year = 2007),
@@ -60,7 +86,7 @@ This needs updating, as now all fields are queryable and there are 13 endpoints 
 
 
 
-5. The original blog's "begins(cpc_subgroup_id = 'H04L63/02')" isn't currently possible,
+6. The original blog's "begins(cpc_subgroup_id = 'H04L63/02')" isn't currently possible,
 the API throws 500 errors when trying to search via cpc fields.  The field may be full text now (some fields switch from string to full text and vise versa) and insanely, it would have to be written 
 ```{r}
 qry_funs$text_phrase("cpc_current.cpc_subgroup" = "H04L63:02") 
@@ -103,7 +129,7 @@ retrieve_linked_data("https://search.patentsview.org/api/v1/cpc_subgroup/H04L63:
 ```
 
 
-6. The next part of the original blog needs changes, both groups have new names.
+7. The next part of the original blog needs changes, both groups have new names.
 
 ```{r}
 # Create a list of fields:
@@ -168,7 +194,7 @@ query <- qry_funs$eq("patent_number" = dat)
 pv_res <- search_pv(query=query, method="POST", fields = fields, all_pages = TRUE)
 
 ```
-7. In the new version of the API we don't get latitude/longitude back from the patents endpoint.
+8. In the new version of the API we don't get latitude/longitude back from the patents endpoint.
 We need to figure out the unique assignee ids and make a call to the assignees endpoint for this data.
 
 A bit of weirdness from the new version of the API here, we asked for "assignee_id" as a field paramter but we get back a HATEOAS link named "assignee" where the assignee_id is the url parameter, the digits at the end, example: 18448 from https://search.patentsview.org/api/v1/assignee/18448/ (clicking on the link won't send an API key and will be rejected with a HTTP 403 Forbidden, there you've been warned.) 
@@ -180,49 +206,28 @@ library(dplyr)
 library(tidyr)
 library(stringr)
 
-assignees <-
-   pv_res$data$patents %>%
-   unnest(assignees_at_grant) %>%
-   mutate(assignee_id = as.integer(str_extract(assignee, "(\\d+)(?=/$)"))) %>%
-   select(assignee_id, patent_number) %>%
-   group_by(assignee_id) %>%
-   mutate(num_pats = n()) %>%
-   ungroup() %>%
-   select(-patent_number) 
-
-# Now we can make the call back to the API for the latitude and longitude and 
-# num_patents (total number of patents the assignee has- below we use the number of
-# patents we retrieved- ones that met the cpc criteria)
-
-assignee_query =  qry_funs$eq(assignee_id = assignees$assignee_id)
-
-assignee_fields <- c(
-  "assignee_id", "organization", "num_patents", "lastknown_latitude", "lastknown_longitude"
-)
-
-# we'll post to the API, the query is a pretty large string (an "or" of a lot of assignee_ids)
-assignee_out <- search_pv(assignee_query , fields = assignee_fields, all_pages = TRUE, 
-   endpoint = "assignees", method = "POST")
-
-# now we'd want to join assignees and the output of the assignee call 
-# making a data structure similar to the return (in a single call) 
-# from the original version of the API
 data <-
-    assignees %>%
-    inner_join(assignee_out$data$assignees) %>% 
+  pv_res$data$patents %>%
+    unnest(assignees_at_grant) %>%
+    mutate(assignee_id = as.integer(str_extract(assignee, "(\\d+)(?=/$)"))) %>%
+    select(assignee_id, organization, patent_number,
+           longitude, latitude) %>%
+    group_by_at(vars(-matches("pat"))) %>%
+    mutate(num_pats = n()) %>%
     ungroup() %>%
-    select(assignee_id, organization, num_pats, num_patents, # both num_pats and num_patents?
-           lastknown_longitude, lastknown_latitude) %>%
-    distinct() %>%  # needed?
+    select(-patent_number) %>%
+    distinct() %>%
     mutate(popup = paste0("<font color='Black'>",
                           htmlEscape(organization), "<br><br>Patents:",
                           num_pats, "</font>")) %>%
+    mutate_at(vars(matches("_l")), as.numeric) %>%
     filter(!is.na(assignee_id))
 
 leaflet(data) %>%
   addProviderTiles(providers$CartoDB.DarkMatterNoLabels) %>%
-  addCircleMarkers(lng = ~lastknown_longitude, lat = ~lastknown_latitude,
+  addCircleMarkers(lng = ~longitude, lat = ~latitude,
                    popup = ~popup, ~sqrt(num_pats), color = "yellow")
+
 
 
 ```

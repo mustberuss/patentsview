@@ -157,20 +157,71 @@ version of the API…</p>
 <li>From the original post:</li>
 </ol>
 <blockquote>
-<p>The API is free (no credential required) and currently doesn’t impose
-rate limits/bandwidth throttling.</p>
+<ul>
+<li>The API is free (no credential required) and currently doesn’t
+impose rate limits/bandwidth throttling.</li>
+</ul>
 </blockquote>
 <p>An API key is now required and throttling is imposed (handled by the
 new version of the R package) at 45 requests per minute.</p>
+<blockquote>
+<ul>
+<li>The project offers <a href="https://patentsview.org/download/data-download-tables">bulk
+downloads of patent data</a> on their website (in a flat file format),
+for those who want to be closest to the data.</li>
+</ul>
+</blockquote>
 <ol start="2" style="list-style-type: decimal">
-<li>The first two examples still work form the original blog, though now
-the maximum result set size is 10,000, down from 100,000 and
+<li><p>The next bullet point has a link to the downloads page that’s a
+404 now, fixed above.</p></li>
+<li><p>The first two examples still work form the original blog, though
+now the maximum result set size is 10,000, down from 100,000 and
 “total_hits” is returned instead of an endpoint specific count, ex.
-total_patent_count.</li>
+total_patent_count.</p></li>
 </ol>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/patentsview/index.html">patentsview</a></span><span class="op">)</span></code></pre></div>
+<blockquote>
+<p>Patents offer a great opportunity for data analysis</p>
+<p>There are two primary reasons for this:</p>
+<p>Patent data is public. In return for the exclusive right to profit
+off an invention, an individual/company has to publicly disclose the
+details of their invention to the rest of the world. <a href="http://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO2&amp;Sect2=HITOFF&amp;p=1&amp;u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&amp;r=11&amp;f=G&amp;l=50&amp;co1=AND&amp;d=PTXT&amp;s1=dog&amp;OS=dog&amp;RS=dog">Examples
+of those details</a> include the patent’s title, abstract, technology
+classification, assigned organizations, etc.</p>
+</blockquote>
+<ol start="3" style="list-style-type: decimal">
+<li>This <a href="https://www.uspto.gov/about-us/news-updates/modern-user-friendly-patent-center-fully-replace-legacy-public-pair-system">press
+release</a> says that patft will be going away (url of Examples of those
+details)</li>
+</ol>
+<blockquote>
+<p><a href="https://en.wikipedia.org/wiki/United_States_Patent_and_Trademark_Office">United
+States Patent and Trademark Office</a> (USPTO) <a href="http://patft.uspto.gov/netahtml/PTO/search-adv.htm">search
+engine</a>, or figure out a way to download, parse, and model huge XML
+data dumps. Enter PatentsView.</p>
+</blockquote>
+<ol start="4" style="list-style-type: decimal">
+<li>Same problem here, the search engine link would be going way</li>
+</ol>
+<blockquote>
+<h2 id="patentsview-and-the-patentsview-package">PatentsView and the <a href="#patentsview">patentsview</a> package</h2>
+<p><a href="https://datatool.patentsview.org/#viz/relationships">PatentsView</a>
+is one of USPTO’s new initiatives intended to increase the usability and
+value of patent data.</p>
+</blockquote>
+<ol start="3" style="list-style-type: decimal">
+<li>The PatentsView link is now in the original post is now a 404,
+corrected above</li>
+</ol>
 <p><a href="#query">query</a></p>
+<blockquote>
+<p>Your query has to use the <a href="https://patentsview.org/apis/api-query-language">PatentsView query
+language</a>,</p>
+</blockquote>
+<ol start="3" style="list-style-type: decimal">
+<li>The link in the original post is now a 404, working one above.</li>
+</ol>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">qry_1</span> <span class="op">&lt;-</span> <span class="st">'{"_gt":{"patent_year":2007}}'</span>
 <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span>query <span class="op">=</span> <span class="va">qry_1</span>, fields <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="co"># This will retrieve a default set of fields</span>
@@ -212,7 +263,7 @@ total_patent_count.</li>
 <span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; total_hits = 10,000</span></code></pre></div>
-<ol start="3" style="list-style-type: decimal">
+<ol start="4" style="list-style-type: decimal">
 <li>From the original blog post:<br>
 &gt; There are three gotchas to look out for when writing a query:<br>
 &gt;<br>
@@ -221,8 +272,8 @@ total_patent_count.</li>
 of fields that you can filter on.</li>
 </ol>
 <p>This needs updating, as now all fields are queryable and there are 13
-endpoints (more coming?):</p>
-<ol start="4" style="list-style-type: decimal">
+endpoints (more coming, like /application):</p>
+<ol start="5" style="list-style-type: decimal">
 <li>The original blog requested inventor_total_num_patents, which we
 don’t get from the patents endpoint in the new version of the API. Now
 we’d have to call the inventors endpoint to get this field.</li>
@@ -232,7 +283,7 @@ we’d have to call the inventors endpoint to get this field.</li>
 c(“patent_abstract”, “patent_average_processing_time”,
 “inventor_first_name”, “inventor_total_num_patents”)</p>
 </blockquote>
-<ol start="5" style="list-style-type: decimal">
+<ol start="6" style="list-style-type: decimal">
 <li>The original blog’s “begins(cpc_subgroup_id = ‘H04L63/02’)” isn’t
 currently possible, the API throws 500 errors when trying to search via
 cpc fields. The field may be full text now (some fields switch from
@@ -288,7 +339,7 @@ HATEOAS links.</p>
 <span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; total_hits = 1</span></code></pre></div>
-<ol start="6" style="list-style-type: decimal">
+<ol start="7" style="list-style-type: decimal">
 <li>The next part of the original blog needs changes, both groups have
 new names.</li>
 </ol>
@@ -305,9 +356,10 @@ new names.</li>
 <span class="co">#&gt;  [5] "assignees_at_grant.name_last"    "assignees_at_grant.organization"</span>
 <span class="co">#&gt;  [7] "assignees_at_grant.type"         "assignees_at_grant.city"        </span>
 <span class="co">#&gt;  [9] "assignees_at_grant.state"        "assignees_at_grant.country"     </span>
-<span class="co">#&gt; [11] "cpc_current.sequence"            "cpc_current.section_id"         </span>
-<span class="co">#&gt; [13] "cpc_current.subsection_id"       "cpc_current.group_id"           </span>
-<span class="co">#&gt; [15] "cpc_current.subgroup_id"         "cpc_current.cpc_group_title"</span></code></pre></div>
+<span class="co">#&gt; [11] "assignees_at_grant.latitude"     "assignees_at_grant.longitude"   </span>
+<span class="co">#&gt; [13] "cpc_current.sequence"            "cpc_current.section_id"         </span>
+<span class="co">#&gt; [15] "cpc_current.subsection_id"       "cpc_current.group_id"           </span>
+<span class="co">#&gt; [17] "cpc_current.subgroup_id"         "cpc_current.cpc_group_title"</span></code></pre></div>
 <p>As mentioned, searching by any of the cpc fields currently throws a
 500 error.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -359,7 +411,7 @@ new names.</li>
 <span class="va">query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span><span class="st">"patent_number"</span> <span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
 
 <span class="va">pv_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span>query<span class="op">=</span><span class="va">query</span>, method<span class="op">=</span><span class="st">"POST"</span>, fields <span class="op">=</span> <span class="va">fields</span>, all_pages <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<ol start="7" style="list-style-type: decimal">
+<ol start="8" style="list-style-type: decimal">
 <li>In the new version of the API we don’t get latitude/longitude back
 from the patents endpoint. We need to figure out the unique assignee ids
 and make a call to the assignees endpoint for this data.</li>
@@ -385,51 +437,28 @@ HTTP 403 Forbidden, there you’ve been warned.)</p>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org">tidyr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://stringr.tidyverse.org">stringr</a></span><span class="op">)</span>
 
-<span class="va">assignees</span> <span class="op">&lt;-</span>
-   <span class="va">pv_res</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span> <span class="op">%&gt;%</span>
-   <span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html">unnest</a></span><span class="op">(</span><span class="va">assignees_at_grant</span><span class="op">)</span> <span class="op">%&gt;%</span>
-   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>assignee_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_extract.html">str_extract</a></span><span class="op">(</span><span class="va">assignee</span>, <span class="st">"(\\d+)(?=/$)"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">assignee_id</span>, <span class="va">patent_number</span><span class="op">)</span> <span class="op">%&gt;%</span>
-   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">assignee_id</span><span class="op">)</span> <span class="op">%&gt;%</span>
-   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>num_pats <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
-   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">patent_number</span><span class="op">)</span> 
-
-<span class="co"># Now we can make the call back to the API for the latitude and longitude and </span>
-<span class="co"># num_patents (total number of patents the assignee has- below we use the number of</span>
-<span class="co"># patents we retrieved- ones that met the cpc criteria)</span>
-
-<span class="va">assignee_query</span> <span class="op">=</span>  <span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span>assignee_id <span class="op">=</span> <span class="va">assignees</span><span class="op">$</span><span class="va">assignee_id</span><span class="op">)</span>
-
-<span class="va">assignee_fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
-  <span class="st">"assignee_id"</span>, <span class="st">"organization"</span>, <span class="st">"num_patents"</span>, <span class="st">"lastknown_latitude"</span>, <span class="st">"lastknown_longitude"</span>
-<span class="op">)</span>
-
-<span class="co"># we'll post to the API, the query is a pretty large string (an "or" of a lot of assignee_ids)</span>
-<span class="va">assignee_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">assignee_query</span> , fields <span class="op">=</span> <span class="va">assignee_fields</span>, all_pages <span class="op">=</span> <span class="cn">TRUE</span>, 
-   endpoint <span class="op">=</span> <span class="st">"assignees"</span>, method <span class="op">=</span> <span class="st">"POST"</span><span class="op">)</span>
-
-<span class="co"># now we'd want to join assignees and the output of the assignee call </span>
-<span class="co"># making a data structure similar to the return (in a single call) </span>
-<span class="co"># from the original version of the API</span>
 <span class="va">data</span> <span class="op">&lt;-</span>
-    <span class="va">assignees</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">inner_join</a></span><span class="op">(</span><span class="va">assignee_out</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">assignees</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="va">pv_res</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html">unnest</a></span><span class="op">(</span><span class="va">assignees_at_grant</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>assignee_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_extract.html">str_extract</a></span><span class="op">(</span><span class="va">assignee</span>, <span class="st">"(\\d+)(?=/$)"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">assignee_id</span>, <span class="va">organization</span>, <span class="va">patent_number</span>,
+           <span class="va">longitude</span>, <span class="va">latitude</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by_all.html">group_by_at</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html">vars</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">matches</a></span><span class="op">(</span><span class="st">"pat"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>num_pats <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">assignee_id</span>, <span class="va">organization</span>, <span class="va">num_pats</span>, <span class="va">num_patents</span>, <span class="co"># both num_pats and num_patents?</span>
-           <span class="va">lastknown_longitude</span>, <span class="va">lastknown_latitude</span><span class="op">)</span> <span class="op">%&gt;%</span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html">distinct</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>  <span class="co"># needed?</span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">patent_number</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html">distinct</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>popup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"&lt;font color='Black'&gt;"</span>,
                           <span class="fu"><a href="https://rdrr.io/pkg/htmltools/man/htmlEscape.html">htmlEscape</a></span><span class="op">(</span><span class="va">organization</span><span class="op">)</span>, <span class="st">"&lt;br&gt;&lt;br&gt;Patents:"</span>,
                           <span class="va">num_pats</span>, <span class="st">"&lt;/font&gt;"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html">mutate_at</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html">vars</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">matches</a></span><span class="op">(</span><span class="st">"_l"</span><span class="op">)</span><span class="op">)</span>, <span class="va">as.numeric</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">assignee_id</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; Joining, by = "assignee_id"</span>
 
 <span class="fu"><a href="https://rdrr.io/pkg/leaflet/man/leaflet.html">leaflet</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://rdrr.io/pkg/leaflet/man/addProviderTiles.html">addProviderTiles</a></span><span class="op">(</span><span class="va">providers</span><span class="op">$</span><span class="va">CartoDB.DarkMatterNoLabels</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/leaflet/man/map-layers.html">addCircleMarkers</a></span><span class="op">(</span>lng <span class="op">=</span> <span class="op">~</span><span class="va">lastknown_longitude</span>, lat <span class="op">=</span> <span class="op">~</span><span class="va">lastknown_latitude</span>,
+  <span class="fu"><a href="https://rdrr.io/pkg/leaflet/man/map-layers.html">addCircleMarkers</a></span><span class="op">(</span>lng <span class="op">=</span> <span class="op">~</span><span class="va">longitude</span>, lat <span class="op">=</span> <span class="op">~</span><span class="va">latitude</span>,
                    popup <span class="op">=</span> <span class="op">~</span><span class="va">popup</span>, <span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="va">num_pats</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"yellow"</span><span class="op">)</span>
-<span class="co">#&gt; Warning in validateCoords(lng, lat, funcName): Data contains 6 rows with either</span>
+<span class="co">#&gt; Warning in validateCoords(lng, lat, funcName): Data contains 2 rows with either</span>
 <span class="co">#&gt; missing or invalid lat/lon values and will be ignored</span></code></pre></div>
 <div class="figure">
 <img src="figure/unnamed-chunk-9-1.png" alt=""><p class="caption">plot of chunk unnamed-chunk-9</p>
