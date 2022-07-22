@@ -12,10 +12,10 @@ half_render_one <- function() {
   setwd("vignettes")
 
   #source_files <- list.files(pattern = "\\.Rmd\\.orig$")
-  #source_files <- c("converting-an-existing-script.Rmd.orig")
+  source_files <- c("converting-an-existing-script.Rmd.orig")
   #source_files <- c("test.Rmd.orig")
   #source_files <- c("top-assignees.Rmd.orig")
-  source_files <- c("ropensci_blog.Rmd.orig","api-changes.Rmd.orig")
+  #source_files <- c("ropensci_blog.Rmd.orig")
   # source_files <- c("getting-started.Rmd.orig")
 
   for (file in source_files) {

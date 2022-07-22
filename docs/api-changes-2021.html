@@ -99,7 +99,7 @@
     </li>
     <li>
       <a href="articles/converting-an-existing-script.html">
-        <span class="fas fa-arrows-rotate"></span>
+        <span class="fas fa-sync"></span>
          
         Converting an Existing Script
       </a>
@@ -197,10 +197,14 @@ a project, in either this repo or its parent’s could be debated, or
 maybe we should find a better way to bicker! (properly discuss the right
 way to change the R package.) Or maybe slug it all out in an epic, one
 for the ages, pull request?</p>
-<div id="important-note" class="section level2">
+<div id="important-notes" class="section level2">
 <h2 class="hasAnchor">
-<a href="#important-note" class="anchor"></a>Important Note</h2>
-<p>The locations endpoint is not on the test server yet.</p>
+<a href="#important-notes" class="anchor"></a>Important Notes</h2>
+<ol>
+<li>The locations endpoint is not on the test server yet.</li>
+<li>More endpoints are coming by the end of the year, rumored to include
+one for applications.</li>
+</ol>
 </div>
 <div id="required-further-reading" class="section level2">
 <h2 class="hasAnchor">
@@ -209,7 +213,7 @@ for the ages, pull request?</p>
 <ol>
 <li>The <a href="https://patentsview.org/data-in-action/whats-new-patentsview-july-2021">announcement</a>
 of the API changes.</li>
-<li>The new and modified vignettes, best viewed when built locally?</li>
+<li>The new and modified vignettes</li>
 <li>The new and modified test cases.</li>
 </ol>
 </div>
@@ -545,14 +549,23 @@ separate category for the R package in their forum? Guessing people may
 need help with their conversions!</li>
 </ol>
 </div>
+<div id="swagger-101" class="section level2">
+<h2 class="hasAnchor">
+<a href="#swagger-101" class="anchor"></a>Swagger 101</h2>
+<p>Download <a href="https://patentsview.historicip.com/swagger/openapi_v2.yml">my
+version</a> of the Swagger object for the new version of the API. Then
+upload it to the <a href="https://editor.swagger.io/">Swagger Editor</a>
+and Generate the R client. That code or something like it could be used
+to generate fieldsdf.csv. (The codegen can be customized.)</p>
+</div>
 <div id="carried-over" class="section level2">
 <h2 class="hasAnchor">
 <a href="#carried-over" class="anchor"></a>Carried Over</h2>
 <p>Observations from the original version of the R package that are
 still true in this version.</p>
 <ol>
-<li>Paging isn’t quite right, it repeats first request if all_pages =
-TRUE, slight improvement opportunity.</li>
+<li>Paging isn’t quite right, it repeats the first request if all_pages
+= TRUE, slight improvement opportunity.</li>
 <li>The search field has to be explicitly specified in the f: parameter
 when a sort field is specified. The API does have default fields that
 could be sorted on, without specifying in the f: parameter. A script

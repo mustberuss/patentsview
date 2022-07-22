@@ -61,7 +61,7 @@ range
 #> {"_and":[{"_gte":{"patent_date":"1970-01-01"}},{"_lte":{"patent_date":"1983-02-28"}}]}
 ```
 
-Second, here's a new function that shouly probably be added to the R package.  Given a query that probably shouldn't contain patent_date, it will return a list of start dates and end dates where each date range would return less than the new limit of 10,000 rows.
+Second, here's a new function that should probably be added to the R package.  Given a query that probably shouldn't contain patent_date, it will return a list of start dates and end dates where each date range would return less than the new limit of 10,000 rows.
 
 Do you remember the example of splitting up a call on the original version of the getting-started page?  It had this query
 
@@ -96,11 +96,11 @@ Well, it turns out, we can use the API itself to help us figure out what date ra
 
 ```r
 
-# returns a list of start and end dates that won't exceed the new overall result
+# Returns a list of start and end dates that won't exceed the new overall result
 # set size limit.  
 
-# the patentsview database starts with 1976. we'll start lower in case they add earlier data
-# allow a start date to be passed in.  the caller might want to pick up where they
+# The patentsview database starts with 1976. we'll start lower in case they add earlier data
+# and allow a start date to be passed in.  The caller might want to pick up where they
 # left off last time
 
 tell_us <- function(query, start_date = '1970-01-01' ) {
@@ -227,7 +227,7 @@ the_answer
 #> [1] "2019-10-15" "2021-04-26"
 #> 
 #> [[15]]
-#> [1] "2021-04-27" "2022-07-18"
+#> [1] "2021-04-27" "2022-07-21"
 ```
 
 And now, since it's fun, we'll go through the motions of calling the API for each date range.  We won't actually request all the data (all_pages defaults to FALSE) but each call's total_hit_count will be displayed, showing the total row count of what would have been retrieved if all_pages was TRUE.  Note that none of date ranges would hit the new limit of 10,000 rows.
@@ -255,20 +255,16 @@ for (pair in the_answer)
 #> [1] "9967 1989-02-14, 1993-09-06"
 #> [1] "9963 1993-09-07, 1998-02-23"
 #> [1] "9973 1998-02-24, 2001-01-15"
-#> [1] "The api's requests per minute limit has been reached.  Pausing for 14 seconds before continuing."
 #> [1] "9985 2001-01-16, 2003-10-13"
 #> [1] "9976 2003-10-14, 2006-09-25"
 #> [1] "9979 2006-09-26, 2009-12-07"
 #> [1] "9963 2009-12-08, 2012-05-28"
-#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
 #> [1] "9930 2012-05-29, 2014-06-09"
-#> [1] "The api's requests per minute limit has been reached.  Pausing for 12 seconds before continuing."
 #> [1] "9957 2014-06-10, 2016-05-02"
 #> [1] "9934 2016-05-03, 2018-02-26"
 #> [1] "9918 2018-02-27, 2019-10-14"
 #> [1] "9874 2019-10-15, 2021-04-26"
-#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
-#> [1] "3984 2021-04-27, 2022-07-18"
+#> [1] "3984 2021-04-27, 2022-07-21"
 ```
 
 ## Conclusion

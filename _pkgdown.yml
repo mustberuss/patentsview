@@ -35,7 +35,7 @@ navbar:
         icon: fa-exclamation
         href: articles/api-changes.html
       - text: "Converting an Existing Script"
-        icon: fa-arrows-rotate
+        icon: fa-sync
         href: articles/converting-an-existing-script.html
   - text: "Getting started"
     icon: fa-play

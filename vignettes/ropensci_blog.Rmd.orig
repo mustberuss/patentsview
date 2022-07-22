@@ -206,6 +206,9 @@ library(dplyr)
 library(tidyr)
 library(stringr)
 
+# my mom was an English teacher, so below we singularize/pluralize Patents
+# or maybe Patents:1 was ok?
+
 data <-
   pv_res$data$patents %>%
     unnest(assignees_at_grant) %>%
@@ -218,10 +221,10 @@ data <-
     select(-patent_number) %>%
     distinct() %>%
     mutate(popup = paste0("<font color='Black'>",
-                          htmlEscape(organization), "<br><br>Patents:",
+                          htmlEscape(organization), "<br><br>Patent",
+                          ifelse(num_pats==1, ":", "s:"), # singular/plural
                           num_pats, "</font>")) %>%
-    mutate_at(vars(matches("_l")), as.numeric) %>%
-    filter(!is.na(assignee_id))
+    filter_at(vars(latitude,longitude),any_vars(!is.na(.)))  # seeing NA lats and longs
 
 leaflet(data) %>%
   addProviderTiles(providers$CartoDB.DarkMatterNoLabels) %>%

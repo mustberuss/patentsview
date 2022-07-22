@@ -5,13 +5,14 @@
     
 I wasn't sure what the githubby way to do this would be but this page chronicles the work done so far, the choices made along the way and what is still outstanding.  Whether some of this could or should be issues or a project, in either this repo or its parent's could be debated, or maybe we should find a better way to bicker! (properly discuss the right way to change the R package.) Or maybe slug it all out in an epic, one for the ages, pull request?
 
-## Important Note
-The locations endpoint is not on the test server yet.
+## Important Notes
+1. The locations endpoint is not on the test server yet.
+2. More endpoints are coming by the end of the year, rumored to include one for applications.
 
 ## Required Further Reading: 
 (Keep reading, they're not prerequisites to reading this page)
 1. The [announcement](https://patentsview.org/data-in-action/whats-new-patentsview-july-2021) of the API changes.
-2. The new and  modified vignettes, best viewed when built locally?
+2. The new and modified vignettes 
 3. The new and modified test cases.
 
 ## Favorable API Changes
@@ -107,7 +108,6 @@ Steps to try this out locally
 12. Clean up utils.R I hadn't noticed until writting test-utils.R that only to_singular is used by the package.  to_plural() and is_plural_endpoint() aren't used, they're hold overs from a failed attempt at making the endpoints singular.
 13. A followup is probably in order for the [rOpenSci blog post](https://ropensci.org/blog/2017/09/19/patentsview/) There's an unlinked vignette that reworks the code so it "works" using the new version of the api. README.md's link should be changed if there is a new post.
 
-
 ## Questions
 1. Should we bump the version number to 1.0.0?  The API key alone quarantees that the package won't be backward compatible.
 2. Are there any other fields changing type?  (like assignee organization becoming a full text field, formerly it had been a string)
@@ -116,10 +116,12 @@ Steps to try this out locally
 5. How to handle the release?  For a while both versions of the API are supposed to be around.  Have people install the updated R package from a branch on ropensci/patentsview?  When the original version of the API is retired do a CRAN build?
 6. Possible idea: ask the patentsview people if they could create a separate category for the R package in their forum?  Guessing people may need help with their conversions!
 
+## Swagger 101
+Download [my version](https://patentsview.historicip.com/swagger/openapi_v2.yml) of the Swagger object for the new version of the API. Then upload it to the [Swagger Editor](https://editor.swagger.io/) and Generate the R client.  That code or something like it could be used to generate fieldsdf.csv.  (The codegen can be customized.)
 
 ## Carried Over
 Observations from the original version of the R package that are still true in this version.
-1. Paging isn't quite right, it repeats first request if all_pages = TRUE, slight improvement opportunity.
+1. Paging isn't quite right, it repeats the first request if all_pages = TRUE, slight improvement opportunity.
 2. The search field has to be explicitly specified in the f: parameter when a sort field is specified.  The API does have default fields that could be sorted on, without specifying in the f: parameter.  A script could  make API calls to see what the default fields are.   Probably isn't worth the effort, and it's not necessarily an improvement! (it's just an observation)
 3. The screenshot of the highcharter plot in the top-assignees vignette is incomplete.  The png only shows a little bit of IBM's yearly patents, not the full awesomeness of highcharter's plot.  The line graph in the roensci blog looks fine, how was that one done?
 &nbsp;
