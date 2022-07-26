@@ -45,51 +45,28 @@ validate_pv_data <- function(data) {
 }
 
 #' @noRd
-to_singular <- function(data) {
+to_singular <- function(plural) {
 
-   data_to_endpoint <- c(
-      "application_citations" = "application_citation",
-      "assignees" = "assignee",
-      "cpc_groups" = "cpc_group",
-      "cpc_subgroups" = "cpc_subgroup",
-      "cpc_subsections" = "cpc_subsection",
-      "inventors" = "inventor",
-      "locations" = "location",
-      "nber_categories" = "nber_category",
-      "nber_subcategories" = "nber_subcategory",
-      "patents" = "patent",
-      "patent_citations" = "patent_citation",
-      "uspc_mainclasses" = "uspc_mainclass",
-      "uspc_subclasses" = "uspc_subclass")
+      # assignees is an exception, singular isn't assigne
 
-   if(data %in% names(data_to_endpoint))
-      data_to_endpoint[[data]]
-   else
-      NA
+      if(endsWith(plural,'ies'))
+         singular <- sub('ies$', 'y', plural)
+      else if(endsWith(plural,'es') && !endsWith(plural,'ees'))
+         singular <- sub('es$', '', plural)
+      else
+         singular <- sub('s$', '', plural)
 }
 
+
 #' @noRd
-to_plural <- function(data) {
+to_plural <- function(singular) {
 
-   endpoint_to_data <- c(
-      "application_citation" = "application_citations",
-      "assignee" = "assignees",
-      "cpc_group" = "cpc_groups",
-      "cpc_subgroup" = "cpc_subgroups",
-      "cpc_subsection" = "cpc_subsections",
-      "inventor" = "inventors",
-      "location" = "locations",
-      "nber_category" = "nber_categories",
-      "nber_subcategory" = "nber_subcategories",
-      "patent" = "patents",
-      "patent_citation" = "patent_citations",
-      "uspc_mainclass" = "uspc_mainclasses",
-      "uspc_subclass" = "uspc_subclasses")
-
-   if(data %in% names(endpoint_to_data))
-      endpoint_to_data[[data]]
-   else
-      NA
+      if(endsWith(singular,'y'))
+         plural <- sub('y$', 'ies', singular)
+      else if(endsWith(singular,'s'))
+         plural <- paste0(singular,"es")
+      else
+         plural <- paste0(singular,"s")
 }
 
 #' @noRd
