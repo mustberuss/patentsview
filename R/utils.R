@@ -69,10 +69,3 @@ to_plural <- function(singular) {
          plural <- paste0(singular,"s")
 }
 
-#' @noRd
-is_plural_endpoint <- function(data) {
-  
-   x = to_singular(data)
-   !is.na(to_singular(data))
-}
-
