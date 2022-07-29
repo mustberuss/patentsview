@@ -360,6 +360,8 @@ all_pages = TRUE, guaranteeing we’d get throttled!).</p>
 <code class="sourceCode R"><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span><span class="fu">text_any</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="st">'tool animal'</span><span class="op">)</span><span class="op">)</span>
 
 <span class="va">the_answer</span> <span class="op">&lt;-</span> <span class="fu">tell_us</span><span class="op">(</span><span class="va">query</span><span class="op">)</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 5 seconds before continuing."</span>
 <span class="co">#&gt; [1] "API calls made: 29"</span>
 
 <span class="va">the_answer</span>
@@ -406,7 +408,7 @@ all_pages = TRUE, guaranteeing we’d get throttled!).</p>
 <span class="co">#&gt; [1] "2019-10-15" "2021-04-26"</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; [[15]]</span>
-<span class="co">#&gt; [1] "2021-04-27" "2022-07-21"</span></code></pre></div>
+<span class="co">#&gt; [1] "2021-04-27" "2022-07-27"</span></code></pre></div>
 <p>And now, since it’s fun, we’ll go through the motions of calling the
 API for each date range. We won’t actually request all the data
 (all_pages defaults to FALSE) but each call’s total_hit_count will be
@@ -432,19 +434,26 @@ limit of 10,000 rows.</p>
 <span class="op">}</span>
 <span class="co">#&gt; [1] "9999 1970-01-01, 1983-02-28"</span>
 <span class="co">#&gt; [1] "9981 1983-03-01, 1989-02-13"</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
 <span class="co">#&gt; [1] "9967 1989-02-14, 1993-09-06"</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 3 seconds before continuing."</span>
 <span class="co">#&gt; [1] "9963 1993-09-07, 1998-02-23"</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 4 seconds before continuing."</span>
 <span class="co">#&gt; [1] "9973 1998-02-24, 2001-01-15"</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
 <span class="co">#&gt; [1] "9985 2001-01-16, 2003-10-13"</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
 <span class="co">#&gt; [1] "9976 2003-10-14, 2006-09-25"</span>
 <span class="co">#&gt; [1] "9979 2006-09-26, 2009-12-07"</span>
 <span class="co">#&gt; [1] "9963 2009-12-08, 2012-05-28"</span>
 <span class="co">#&gt; [1] "9930 2012-05-29, 2014-06-09"</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 11 seconds before continuing."</span>
 <span class="co">#&gt; [1] "9957 2014-06-10, 2016-05-02"</span>
 <span class="co">#&gt; [1] "9934 2016-05-03, 2018-02-26"</span>
 <span class="co">#&gt; [1] "9918 2018-02-27, 2019-10-14"</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."</span>
 <span class="co">#&gt; [1] "9874 2019-10-15, 2021-04-26"</span>
-<span class="co">#&gt; [1] "3984 2021-04-27, 2022-07-21"</span></code></pre></div>
+<span class="co">#&gt; [1] "3984 2021-04-27, 2022-07-27"</span></code></pre></div>
 </div>
 <div id="conclusion" class="section level2">
 <h2 class="hasAnchor">

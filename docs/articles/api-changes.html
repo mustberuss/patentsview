@@ -157,10 +157,11 @@ code.</p>
 <p>The Patentsview API team has provided a Swagger UI page for the new
 version of the API at <a href="https://search.patentsview.org/swagger-ui/" class="uri">https://search.patentsview.org/swagger-ui/</a>. It shows all
 the available endpoints and their responses. Each field in the 200
-response sections could be requested in the f: parameter and each field
-is supposed to be queryable. The Swagger UI page can be used to make
-requests, if you have an API key to enter in the authorization screen,
-more about the new API key below. The Swagger UI definition at <a href="https://patentsview.historicip.com/swagger/openapi_v2.yml" class="uri">https://patentsview.historicip.com/swagger/openapi_v2.yml</a>
+response sections could be requested in the fields/f: parameter and each
+field is supposed to be queryable (usable in the query/q: parameter).
+The Swagger UI page can be used to make requests, if you have an API key
+to enter in the authorization screen, more about the new API key below.
+The Swagger UI definition at <a href="https://patentsview.historicip.com/swagger/openapi_v2.yml" class="uri">https://patentsview.historicip.com/swagger/openapi_v2.yml</a>
 can be imported into Postman to give you a nicely loaded collection for
 the changed API. You’ll just need to set a global variable PVIEW_KEY and
 set the authorization’s value to {{PVIEW_KEY}} to your API key. (The
@@ -187,18 +188,49 @@ exception is the patents endpoint. It now can return assignees_at_grant,
 inventors_at_grant, cpc_current along with patent specific fields. Note
 that now subsequent queries would have to be made to the USPC specific
 endpoints if you are looking for these fields.</p>
-<p>Now there are 13 endpoints, up from the original 7. The urls changed
-slightly but the R package takes care of that for you. 1. There are 2
-totally new endpoints * /api/v1/patent_citation/ *
-/api/v1/application_citation/ 2. 7 of the original api’s endpoints have
-singular names but lighter responses and fewer queryable fields as
-mentioned above. * /api/v1/assignee/ * /api/v1/inventor/ *
-/api/v1/location/ (not currently on the test server) * /api/v1/patent/ *
-/api/v1/cpc_subsection/ * /api/v1/nber_subcategory/ *
-/api/v1/uspc_subclass/ 3. There are an additional 4 new endpoints which
-are subdivisions of the original classification endpoints *
-/api/v1/cpc_group/ * /api/v1/cpc_subgroup/ * /api/v1/nber_category/ *
-/api/v1/uspc_mainclass/</p>
+<p>Currently there are 13 endpoints, up from the original 7. The urls
+changed slightly but the R package takes care of that for you.</p>
+<ol style="list-style-type: decimal">
+<li>There are 2 totally new endpoints
+<ul>
+<li>/api/v1/patent_citation/<br>
+</li>
+<li>/api/v1/application_citation/<br>
+</li>
+</ul>
+</li>
+<li>7 of the original api’s endpoints have singular names but lighter
+responses and fewer queryable fields as mentioned above.
+<ul>
+<li>/api/v1/assignee/<br>
+</li>
+<li>/api/v1/inventor/<br>
+</li>
+<li>/api/v1/location/ (not currently on the test server)<br>
+</li>
+<li>/api/v1/patent/<br>
+</li>
+<li>/api/v1/cpc_subsection/<br>
+</li>
+<li>/api/v1/nber_subcategory/<br>
+</li>
+<li>/api/v1/uspc_subclass/<br>
+</li>
+</ul>
+</li>
+<li>There are an additional 4 new endpoints which are subdivisions of
+the original classification endpoints.
+<ul>
+<li>/api/v1/cpc_group/<br>
+</li>
+<li>/api/v1/cpc_subgroup/<br>
+</li>
+<li>/api/v1/nber_category/<br>
+</li>
+<li>/api/v1/uspc_mainclass/</li>
+</ul>
+</li>
+</ol>
 </div>
 <div id="data-reduction" class="section level2">
 <h2 class="hasAnchor">
@@ -208,23 +240,32 @@ interest fields, ipc fields, wipo fields, lawyer fields,
 foreign_priority fields, examiner fields, pct fields, raw inventor
 fields, coinventor fields, patent_firstnamed fields or
 patent_num_claims. There’s a link to a spreadsheet of the fields
-returned by endpoint at the bottom of <a href="https://patentsview.org/apis/purpose" class="uri">https://patentsview.org/apis/purpose</a></p>
+returned by endpoint at the bottom of <a href="https://patentsview.org/apis/purpose" class="uri">https://patentsview.org/apis/purpose</a> though the Swagger
+UI page should be more current.</p>
 </div>
 <div id="hateoas" class="section level2">
 <h2 class="hasAnchor">
 <a href="#hateoas" class="anchor"></a>HATEOAS</h2>
-<p>Some of the returned fields are links to retrieve more information
-about that field. Slight funky is the cpc_current’s cpc_subgroup,
-returned by the patents endpoint. Here the slash in the cpc is turned
-into a colon. This is a picularity of two of the new convience urls that
-shouldn’t be noticable in the r package, unless you are trying to infer
-the uspc and cpc values from the returned urls.</p>
-<p>“cpc_current”: { “cpc_subgroup”: “<a href="https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4865/" class="uri">https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4865/</a>”
-}</p>
+<p>Some of the returned fields are HATEOAS (Hypermedia as the Engine of
+Application State) links to retrieve more information about that field.
+Slight funky is the cpc_current’s cpc_subgroup, returned by the patents
+endpoint. Here the slash in the cpc is turned into a colon. This is a
+peculiarity of two of the new convience urls that shouldn’t be noticable
+in the r package, unless you are trying to infer the uspc and cpc values
+from the returned urls, without actually calling back for this data.</p>
+<p>Example link returned by the patents endpoint</p>
+<pre><code> "cpc_current": {
+     "cpc_subgroup": "https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4865/"  
+  }</code></pre>
+<p>Note that going to that link in a browser will result in a 403
+Unauthorized, as no API key is sent.</p>
 <p>There is a new method in the R package to retrive data from the
-HATEOAS links.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/retrieve_linked_data.html">retrieve_linked_data</a></span><span class="op">(</span><span class="st">"https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4865/"</span><span class="op">)</span>
+HATEOAS links, just pass the returned link and the R package will
+retrieve the data for you.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/patentsview/index.html">patentsview</a></span><span class="op">)</span>
+
+<span class="fu"><a href="../reference/retrieve_linked_data.html">retrieve_linked_data</a></span><span class="op">(</span><span class="st">"https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4865/"</span><span class="op">)</span>
 <span class="co">#&gt; $data</span>
 <span class="co">#&gt; [1] "cpc_subgroups"</span>
 <span class="co">#&gt; #### A list with a single data frame on a CPC sub group level:</span>
@@ -238,16 +279,11 @@ HATEOAS links.</p>
 <span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; total_hits = 1</span></code></pre></div>
-<p>Note that you’ll get an error if you click on that link as an API key
-is not sent with as the<br>
-X-Api-Key header. The response will be an http 403 Forbidden, instead of
-a 200. The R package has a new method</p>
 </div>
 <div id="query-size-changes" class="section level2">
 <h2 class="hasAnchor">
 <a href="#query-size-changes" class="anchor"></a>Query size changes</h2>
 <ol style="list-style-type: decimal">
-<li>The default result set size is now 100, originally it was 25.</li>
 <li>The maximum rows that can be requested at one time is now 1,000,
 down from 10,000</li>
 <li>The overall paged result set size limit is now 10,000 rows, down
@@ -255,45 +291,47 @@ from the original 100,000</li>
 </ol>
 <p>The R package should take care of these changes, though you may have
 to make additional queries to get around the new overall paged result
-set size of 10,000 rows.</p>
+set size of 10,000 rows. See the <a href="converting-an-existing-script.html#reduced-query-size-1">Converting
+an Existing Script</a> vignette for more on this.</p>
 </div>
 <div id="throttling" class="section level2">
 <h2 class="hasAnchor">
 <a href="#throttling" class="anchor"></a>Throttling</h2>
 <p>The API will now allow 45 requests per minute, making more requests
 will anger the API. It will send back an error code with a header
-indicating how many seconds to wait before repeating the query. The R
-package should take care of this for you.</p>
+indicating how many seconds to wait before sending more queries. The R
+package will take care of this for you. It will sleep for the required
+number of seconds before resubmitting your query, seemlessly to your
+script.</p>
 </div>
-<div id="miscellaneous-changes" class="section level2">
+<div id="other-changes" class="section level2">
 <h2 class="hasAnchor">
-<a href="#miscellaneous-changes" class="anchor"></a>Miscellaneous Changes</h2>
+<a href="#other-changes" class="anchor"></a>Other Changes</h2>
 <ul>
 <li><p>Some of the fields names changed. assignee_last_name is now
 name_last in the assignees data structure.</p></li>
-<li><p>Some string fields are now full text fields, meaning you need to
-use different methods when including them in your query. Example:
-assignee organization is renamed organization and is now a full text
-field, formerly it had been a string.</p></li>
-<li><p>There are some new convience methods, which take url parameters.
-The API will still respond to GETs and POSTs, so the R package won’t
-need to use these new urls.</p></li>
+<li><p>Some fields’ types have changed, some strings in the original
+version of the API have become a full text field and some full text
+fields have becomes strings. This means you’ll need to use different
+methods when including them in your query. Example: assignee
+organization is renamed organization and is now a full text field,
+formerly it had been a string.</p></li>
 <li><p>The API’s endpoints are now singular, instead of being plural. Ex
 /patents is now /patent The returned data structures are still plural,
-ex. patents. The R package will keep using the plural endpoints to match
-the returned data structures. There would be a small chance that an
-existing script would work, once the now-required API key is set
+ex. patents. The R package will keep using the plural endpoint names to
+match the returned data structures. When calling the API, the R package
+will request the singular endpoints. There would be a small chance that
+an existing script would work, once the now-required API key is set
 up.</p></li>
 <li><p>All fields are supposed to be queryable with the new version of
 the API.</p></li>
-<li><p>The subdomain of the API changed from <a href="https://api.patentsview.org/" class="uri">https://api.patentsview.org/</a> to <a href="https://search.patentsview.org" class="uri">https://search.patentsview.org</a>. The patentsview package
-takes care of this for you.</p></li>
+<li><p>The subdomain of the API changed from <a href="https://api.patentsview.org/" class="uri">https://api.patentsview.org/</a> to <a href="https://search.patentsview.org" class="uri">https://search.patentsview.org</a>. The R package takes care
+of this for you.</p></li>
 <li><p>Nested fields seem to need to be fully qualified in the
 f:parameter. Here are all the patents endpoint’s fields:</p></li>
 </ul>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/patentsview/index.html">patentsview</a></span><span class="op">)</span>
-<span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span><span class="st">"patents"</span><span class="op">)</span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span><span class="st">"patents"</span><span class="op">)</span>
 <span class="co">#&gt;  [1] "patent_number"                                               </span>
 <span class="co">#&gt;  [2] "patent_title"                                                </span>
 <span class="co">#&gt;  [3] "patent_date"                                                 </span>

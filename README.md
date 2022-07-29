@@ -31,7 +31,7 @@ The new version of the API requires an api key, or all of your requests will be 
 ```
 set PATENTSVIEW_API_KEY=my_keys_value_without quotes
 ```
-See [this page](articles/api-changes.html) about the change. The navigation there will get you to the updated vignettes and reference pages.
+See [this page](https://mustberuss.github.io/patentsview/api-changes-2021.html) about the change. The navigation there will get you to the updated vignettes and reference pages.
 
 ## Basic usage
 

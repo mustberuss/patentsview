@@ -189,9 +189,9 @@ patents?</p>
   fields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"patent_number"</span>, <span class="st">"inventors_at_grant.inventor"</span><span class="op">)</span>, 
   subent_cnts <span class="op">=</span> <span class="cn">TRUE</span>
 <span class="op">)</span>
-<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 6 seconds before continuing."</span>
+<span class="co">#&gt; [1] "The api's requests per minute limit has been reached.  Pausing for 5 seconds before continuing."</span>
 <span class="co">#&gt; Warning in one_request(method, query, base_url, arg_list, ...): The api's</span>
-<span class="co">#&gt; requests per minute limit has been reached. Pausing for 6 seconds before</span>
+<span class="co">#&gt; requests per minute limit has been reached. Pausing for 5 seconds before</span>
 <span class="co">#&gt; continuing.</span>
 <span class="co">#&gt; $data</span>
 <span class="co">#&gt; [1] "patents"</span>
@@ -226,13 +226,15 @@ the past few years?</p>
 <span class="co"># Unnest the inventor list column</span>
 <span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">pv_out</span><span class="op">$</span><span class="va">data</span>, <span class="st">"patent_number"</span><span class="op">)</span>
 <span class="co">#&gt; List of 2</span>
-<span class="co">#&gt;  $ inventors_at_grant:'data.frame':  26710 obs. of  6 variables:</span>
+<span class="co">#&gt;  $ inventors_at_grant:'data.frame':  26710 obs. of  8 variables:</span>
 <span class="co">#&gt;   ..$ patent_number: chr [1:26710] "10364598" ...</span>
 <span class="co">#&gt;   ..$ name_first   : chr [1:26710] "Errol Mark" ...</span>
 <span class="co">#&gt;   ..$ name_last    : chr [1:26710] "Tazbaz" ...</span>
 <span class="co">#&gt;   ..$ city         : chr [1:26710] "Bellevue" ...</span>
 <span class="co">#&gt;   ..$ state        : chr [1:26710] "WA" ...</span>
 <span class="co">#&gt;   ..$ country      : chr [1:26710] "US" ...</span>
+<span class="co">#&gt;   ..$ latitude     : num [1:26710] 47.6 ...</span>
+<span class="co">#&gt;   ..$ longitude    : num [1:26710] -122 ...</span>
 <span class="co">#&gt;  $ patents           :'data.frame':  6703 obs. of  1 variable:</span>
 <span class="co">#&gt;   ..$ patent_number: chr [1:6703] "10364598" ...</span></code></pre></div>
 <p>Which inventors have Chicago, IL listed as their location on at least

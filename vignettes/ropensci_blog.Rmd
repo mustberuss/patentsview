@@ -259,14 +259,6 @@ A bit of weirdness from the new version of the API here, we asked for "assignee_
 library(leaflet)
 library(htmltools)
 library(dplyr)
-#> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
 library(tidyr)
 library(stringr)
 
