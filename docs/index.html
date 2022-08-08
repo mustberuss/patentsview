@@ -139,9 +139,9 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="patentsview" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#patentsview" class="anchor"></a>patentsview</h1></div>
+
+<hr>
+<p>title: “patentsview” output: github_document —</p>
 <blockquote>
 <p>An R client to the PatentsView API</p>
 </blockquote>
@@ -167,7 +167,12 @@ requests will be blocked. An API key can be optained <a href="https://patentsvie
 package will look for an environmental variable PATENTSVIEW_API_KEY set
 to the value of your key. For windows it would be</p>
 <pre><code>set PATENTSVIEW_API_KEY=my_keys_value_without quotes</code></pre>
-<p>See <a href="https://mustberuss.github.io/patentsview/api-changes-2021.html">this
+<p>The updated R package for the new version of the API can be installed
+from this branch:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"devtools"</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html">installed.packages</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> 
+  <span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"mustberuss/patentsview@api-change-2021"</span><span class="op">)</span></code></pre></div>
+<p>See <a href="https://mustberuss.github.io/patentsview/articles/api-changes.html">this
 page</a> about the change. The navigation there will get you to the
 updated vignettes and reference pages.</p>
 </div>
@@ -178,23 +183,26 @@ updated vignettes and reference pages.</p>
 API</a> provides an interface to a disambiguated version of USPTO. The
 <code>patentsview</code> R package provides one main function,
 <code><a href="reference/search_pv.html">search_pv()</a></code>, to make it easy to interact with the API:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/patentsview/index.html">patentsview</a></span><span class="op">)</span>
 
 <span class="fu"><a href="reference/search_pv.html">search_pv</a></span><span class="op">(</span>query <span class="op">=</span> <span class="st">'{"_gte":{"patent_date":"2007-01-01"}}'</span><span class="op">)</span>
 <span class="co">#&gt; $data</span>
-<span class="co">#&gt; #### A list with a single data frame on a patent level:</span>
+<span class="co">#&gt; [1] "patents"</span>
+<span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on a patent level:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; List of 1</span>
-<span class="co">#&gt;  $ patents:'data.frame': 25 obs. of  3 variables:</span>
-<span class="co">#&gt;   ..$ patent_id    : chr [1:25] "10000000" ...</span>
-<span class="co">#&gt;   ..$ patent_number: chr [1:25] "10000000" ...</span>
-<span class="co">#&gt;   ..$ patent_title : chr [1:25] "Coherent LADAR using intra-pixel quadrature "..</span>
+<span class="co">#&gt;  $ patents:'data.frame': 25 obs. of  5 variables:</span>
+<span class="co">#&gt;   ..$ patent_number     : chr [1:25] "10000000" ...</span>
+<span class="co">#&gt;   ..$ patent_title      : chr [1:25] "Coherent LADAR using intra-pixel quadra"..</span>
+<span class="co">#&gt;   ..$ patent_date       : chr [1:25] "2018-06-19" ...</span>
+<span class="co">#&gt;   ..$ assignees_at_grant:List of 25</span>
+<span class="co">#&gt;   ..$ inventors_at_grant:List of 25</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $query_results</span>
 <span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; total_patent_count = 10,000</span></code></pre></div>
+<span class="co">#&gt; total_hits = 10,000</span></code></pre></div>
 </div>
 <div id="learning-more" class="section level2">
 <h2 class="hasAnchor">
@@ -213,11 +221,10 @@ queries</a>
 examples</a>
 </li>
 <li>Two examples of data applications (e.g., a brief analysis of the <a href="https://docs.ropensci.org/patentsview/articles/top-assignees.html">top
-assignees</a> in the field of databases) <a href="https://ropensci.org"><img src="http://ropensci.org/public_images/github_footer.png" alt="ropensci_footer"></a>
-</li>
+assignees</a> in the field of databases)</li>
 </ul>
 </div>
-</div>
+
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

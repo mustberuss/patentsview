@@ -1,3 +1,7 @@
+------------------------------------------------------------------------
+
+title: "API Changes" output: github_document ---
+
 # Affects on the R package of the Patentsview API changes announced in 2021
 (This is [api-changes-2021.md](https://github.com/mustberuss/patentsview/blob/api-change-2021/api-changes-2021.md) with navigation to the updated vignettes and reference pages.)
 
@@ -57,7 +61,7 @@ The villagers may revolt over some of these API changes... &nbsp;&nbsp; &nbsp; O
    10. The API now returns a few HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more information, example "inventor": "https://search.patentsview.org/api/v1/inventor/252373/" (Clicking the link will result in a 403 Unauthorized - no API key is sent by a browser) Added [retrieve_linked_data()](reference/retrieve_linked_data.html) to retrieve this data for the user, they'd pass the full url.
 2. **General Choices**
    1. Now there are new, get-only convience endpoints that take a url parameter.  The R package ignores these and just uses the ones that do posts and gets using q,f,s and o parameters, as the original version of the API did.
-   2. The online documentation is lagging.  The two new endpoints are documented on https://patentsview.org/data-in-action/whats-new-patentsview-july-2021 but they're missing the Query column (all fields queryable now).  Pages for the other endpoint haven't been changed yet. I created fake pages for data-raw/mbr_fieldsdf.R to consume.  They're on a site I control https://patentsview.historicip.com/api/. In the fake pages, "integer" fields get cast as_is while "int" fields (integers still sent as strings) get cast as.integer. 
+   2. The online documentation is lagging.  The two new endpoints are documented on https://patentsview.org/data-in-action/whats-new-patentsview-july-2021 but they're missing the Query column (all fields queryable now).  Pages for the other endpoint haven't been changed yet. I created fake pages for data-raw/mbr_fieldsdf.R to consume.  They're on a site I control https://patentsview.historicip.com/api/. In the fake pages, "integer" fields get cast as_is while "int" fields (integers still sent as strings) get cast as.integer. _Update:_ The documentation has been updated but the fields are in an image.  Ex https://patentsview.org/apis/api-endpoints/patentsbeta
    3. As an alternative to scraping the fake pages just mentioned, I created data-raw/yml_extract.R to try to create the csv by parsing the API's Swagger definition.
    4. Now only 3 of the 13 endpoints are searchable by patent number, which affected a few of the test cases.  I wound up adding R/test-helpers.R to generate a test query per endpoint.  Initially I had it as tests/testthat/helper-queries.R but I thought that caused the ubuntu-20.04 build failure.
    5. I set my API key as asecret in my repo so tests will run and the vignettes can be half rendered etc.  It's retrieved in R-CMD-check.yaml which might need to be removed if we don't need to do this.
@@ -109,7 +113,7 @@ Steps to try this out locally
         "request). Try slimming down your field list and trying again."
 10. If possible, suppress api-changes-2021.md from producing docs/api-changes-2021.html
 11. Clean up utils.R I hadn't noticed until writting test-utils.R that only to_singular is used by the package.  to_plural() isn't used, it's a hold over from a failed attempt at making the endpoints singular.
-12. A followup is probably in order for the [rOpenSci blog post](https://ropensci.org/blog/2017/09/19/patentsview/) There's an unlinked vignette that reworks the code so it "works" using the new version of the api. README.md's link should be changed if there is a new post.
+12. A followup is probably in order for the [rOpenSci blog post](https://ropensci.org/blog/2017/09/19/patentsview/) There's an unlinked [vignette](articles/ropensci_blog.html) that reworks the code so it "works" using the new version of the api. README.Rmd's link should be changed if there is a new post.
 
 ## Questions
 1. Should we bump the version number to 0.4.0 or 1.0.0?  The API key alone quarantees that the package won't be backward compatible.

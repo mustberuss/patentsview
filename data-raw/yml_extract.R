@@ -1,10 +1,20 @@
-
+library(usethis)
+library(devtools)
 library(rapiclient)
 library(stringr)
 
-# Here we generate generated_fieldsdf by reading the API's Swagger UI object!
-# The API team's one has errors so we'll use my corrected one for now.
 
+# Here we generate generated_fieldsdf by reading the API's Swagger UI object!
+
+# We don't have anything directly applicable to the csv's description column.
+# Instead, we'll pull the examples from the Swagger definition. There isn't a way
+# to distinguish strings from full text fields in a Swagger definition.
+# It matters to the patentsview api in that it defines which operators
+# can be used on a field.  If we capture the example something could be written
+# to retrieve string fields using both _equals and _text_any to see which one
+# returns results.
+
+# The API team's Swagger object has errors so we'll use my corrected one for now.
 # We don't be able to make API calls using rapiclient with the replacement, but we 
 # can use its method to read the API's swagger file.  It'll throw  a warning, but it's ok:  
 # "Missing Swagger Specification version".  (It's expecting a Swagger 2 object
@@ -132,6 +142,19 @@ enames <- sapply(enames, function(ename) {
 lookup = enames;
 names(lookup) <- entities;
 
+string_fields <- c("patents.patent_number", "patents.patent_title", "patents.patent_type",
+"patents.patent_kind", 
+"patent_citations.patent_number","patent_citations.cited_patent_number",
+"cpc_subsections.cpc_section_id", "cpc_subsections.cpc_subsection_id",
+"application_citations.citation_category",
+"application_citations.cited_application_number",
+"patent_citations.citation_category",
+"uspc_mainclasses.uspc_mainclass_id","nber_categories.nber_category_id","nber_subcategories.nber_subcategory_id")
+
+
+# It seems like most strings in the Swagger definition are actually full text  fields
+# here are the ones that are actually strings
+
 csv_data <- 
    lapply(entities, function(entity) {
 
@@ -159,16 +182,25 @@ csv_data <-
 
              inner = lapply(names(pview_api$components$schemas[[nested]]$properties), function(z, subgroup, obj) {
                 # do the type thingie
-                type = ifelse(obj[[z]]$type == "number", "float", obj[[z]]$type)
+                type <- ifelse(obj[[z]]$type == "number", "float", obj[[z]]$type)
 
                 # look for type string and format "date" or at least the date part!
                if(!is.null(obj[[z]]$format) && obj[[z]]$format == "date")
-                  type = "date";
+                  type <- "date";
+
+               if(type == 'string') {
+                  key <- paste(x,z,sep='.')
+              #   print(key)
+                  if(! key %in% string_fields)
+                     type <- "full text"
+               }
+
+               description <- ifelse(is.null(obj[[z]]$example), "", toString(obj[[z]]$example))
 
                data.frame(endpoint=plural_endpoint, 
                   field=paste0(subgroup,'.',z), data_type=type, 
-                  can_query='Y', group=subgroup, common_name="common_name",
-                  description="description", plain_name=z)
+                  can_query='y', group=subgroup, common_name="common_name",
+                  description=description, plain_name=z)
 
              }, subgroup=x, obj=pview_api$components$schemas[[nested]]$properties)
              do.call(rbind, inner)
@@ -181,14 +213,23 @@ csv_data <-
 
             # look for type string and format "date" or at least the date part!
             if(!is.null(obj[[x]]$format) && obj[[x]]$format == "date")
-               type = "date";
+               type <- "date";
+
+            if(type == 'string') {
+               key <- paste(plural_endpoint,x,sep='.')
+               print(key)
+               if(! key %in% string_fields)
+                  type <- "full text"
+            }
 
             # csv headers:
             # "endpoint","field","data_type","can_query","group","common_name","description","plain_name"
+            description <- ifelse(is.null(obj[[x]]$example), "", toString(obj[[x]]$example))
+
 
             data.frame(endpoint=plural_endpoint, field=x, data_type=type, 
-               can_query='Y', group=group, common_name="common_name",
-               description="description", plain_name=x)
+               can_query='y', group=group, common_name="common_name",
+               description=description, plain_name=x)
 
           }
 
@@ -199,4 +240,9 @@ csv_data <-
 csv_data <- do.call(rbind, csv_data)
 
 write.csv(csv_data, "data-raw/generated_fieldsdf.csv", row.names = FALSE)
+write.csv(csv_data, "data-raw/fieldsdf.csv", row.names = FALSE)
 
+fieldsdf <- csv_data
+
+use_data(fieldsdf, internal = FALSE, overwrite = TRUE)
+use_data(fieldsdf, internal = TRUE, overwrite = TRUE)

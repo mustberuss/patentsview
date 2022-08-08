@@ -45,7 +45,7 @@ library(patentsview)
 > ## PatentsView and the [patentsview](#patentsview) package
 > [PatentsView](https://datatool.patentsview.org/#viz/relationships) is one of USPTO’s new initiatives intended to increase the usability and value of patent data.
 
-3. The PatentsView link is now in the original post is now a 404, corrected above
+3. The [PatentsView](https://datatool.patentsview.org/#viz/relationships) link in the original post is now a 404, corrected here and above
 
 [query](#query)
 
@@ -118,7 +118,7 @@ This needs updating, as now all fields are queryable and there are 13 endpoints 
 
 
 6. The original blog's "begins(cpc_subgroup_id = 'H04L63/02')" isn't currently possible,
-the API throws 500 errors when trying to search via cpc fields.  The field may be full text now (some fields switch from string to full text and vise versa) and insanely, it would have to be written 
+the API throws 500 errors when trying to search via cpc fields.  The field may be full text now (some fields switch from string to full text and vice versa) and insanely, it would have to be written 
 
 ```r
 qry_funs$text_phrase("cpc_current.cpc_subgroup" = "H04L63:02") 
@@ -259,6 +259,14 @@ A bit of weirdness from the new version of the API here, we asked for "assignee_
 library(leaflet)
 library(htmltools)
 library(dplyr)
+#> 
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
 library(tidyr)
 library(stringr)
 

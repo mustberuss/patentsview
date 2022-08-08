@@ -184,6 +184,9 @@
 2021</h1>
     </div>
 
+
+<hr>
+<p>title: “API Changes” output: github_document —</p>
 <div id="affects-on-the-r-package-of-the-patentsview-api-changes-announced-in-2021" class="section level1">
 
 <p>(This is <a href="https://github.com/mustberuss/patentsview/blob/api-change-2021/api-changes-2021.md">api-changes-2021.md</a>
@@ -384,7 +387,8 @@ but they’re missing the Query column (all fields queryable now). Pages
 for the other endpoint haven’t been changed yet. I created fake pages
 for data-raw/mbr_fieldsdf.R to consume. They’re on a site I control <a href="https://patentsview.historicip.com/api/" class="uri">https://patentsview.historicip.com/api/</a>. In the fake
 pages, “integer” fields get cast as_is while “int” fields (integers
-still sent as strings) get cast as.integer.</p></li>
+still sent as strings) get cast as.integer. <em>Update:</em> The
+documentation has been updated but the fields are in an image. Ex <a href="https://patentsview.org/apis/api-endpoints/patentsbeta" class="uri">https://patentsview.org/apis/api-endpoints/patentsbeta</a></p></li>
 <li><p>As an alternative to scraping the fake pages just mentioned, I
 created data-raw/yml_extract.R to try to create the csv by parsing the
 API’s Swagger definition.</p></li>
@@ -523,8 +527,8 @@ that only to_singular is used by the package. to_plural() isn’t used,
 it’s a hold over from a failed attempt at making the endpoints
 singular.</p></li>
 <li><p>A followup is probably in order for the <a href="https://ropensci.org/blog/2017/09/19/patentsview/">rOpenSci blog
-post</a> There’s an unlinked vignette that reworks the code so it
-“works” using the new version of the api. README.md’s link should be
+post</a> There’s an unlinked <a href="articles/ropensci_blog.html">vignette</a> that reworks the code so
+it “works” using the new version of the api. README.Rmd’s link should be
 changed if there is a new post.</p></li>
 </ol>
 </div>
@@ -586,6 +590,7 @@ roensci blog looks fine, how was that one done?    </li>
 </ol>
 </div>
 </div>
+
 
   </div>
 

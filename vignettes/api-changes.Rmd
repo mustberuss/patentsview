@@ -47,6 +47,7 @@ Quite a few fields seem to have gone away, including government interest fields,
 
 ## HATEOAS
 Some of the returned fields are HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more information about that field. Slight funky is the cpc_current's cpc_subgroup, returned by the patents endpoint.  Here the slash in the cpc is turned into a colon.  This is a peculiarity of two of the new convience urls that shouldn't be noticable in the r package, unless you are trying to infer the uspc and cpc values from the returned urls, without actually calling back for this data.
+There is something slightly funky with these fields.  They have an _id when in the q:/query and f:/fields parameters but they are returned without the _id.  Example: cpc_subgroup_id is returned as the HATEOAS link cpc_subgroup. 
 
 Example link returned by the patents endpoint
 ```
@@ -88,6 +89,111 @@ queries to get around the new overall paged result set size of 10,000 rows.  See
 ## Throttling
 The API will now allow 45 requests per minute, making more requests will anger the API.  It will send back an error code with a header indicating how many seconds to wait before sending more queries.  The R package will take care of this for you.  It will sleep for the required number of seconds before resubmitting your query, seemlessly to your script.
 
+## Alpha Fields
+
+fieldsdf will show you the field types, names and endpoints in the new version of the API.  There are different operators for string and full text fields.
+
+```r
+library(knitr)
+library(dplyr)
+
+string_fields <-
+   fieldsdf %>%
+      filter(data_type == "string")  %>%
+      select(endpoint, field, data_type) %>%
+      arrange(`endpoint`, `field`)  
+ 
+kable(string_fields,  row.names = FALSE, caption = 'String Fields')
+```
+
+
+
+|endpoint              |field                    |data_type |
+|:---------------------|:------------------------|:---------|
+|patents               |patent_number            |string    |
+|patents               |patent_title             |string    |
+|patents               |patent_type              |string    |
+|patents               |patent_kind              |string    |
+|patent_citations      |patent_number            |string    |
+|patent_citations      |cited_patent_number      |string    |
+|patent_citations      |citation_category        |string    |
+|application_citations |citation_category        |string    |
+|application_citations |cited_application_number |string    |
+|cpc_subsections       |cpc_section_id           |string    |
+|cpc_subsections       |cpc_subsection_id        |string    |
+|uspc_mainclasses      |uspc_mainclass_id        |string    |
+|nber_categories       |nber_category_id         |string    |
+|nber_subcategories    |nber_subcategory_id      |string    |
+
+```r
+
+fulltext_fields <-
+   fieldsdf %>%
+      filter(data_type == "full text")  %>%
+      select(endpoint, field, data_type) %>%
+      arrange(endpoint, field)  
+ 
+kable(fulltext_fields ,  row.names = FALSE, caption = 'Full Text Fields')
+```
+
+
+
+|endpoint              |field                                                        |data_type |
+|:---------------------|:------------------------------------------------------------|:---------|
+|patents               |patent_country                                               |full text |
+|patents               |patent_abstract                                              |full text |
+|patents               |patent_uspc_current_mainclass_average_patent_processing_days |full text |
+|patents               |assignees_at_grant.assignee_id                               |full text |
+|patents               |assignees_at_grant.name_first                                |full text |
+|patents               |assignees_at_grant.name_last                                 |full text |
+|patents               |assignees_at_grant.organization                              |full text |
+|patents               |assignees_at_grant.type                                      |full text |
+|patents               |assignees_at_grant.city                                      |full text |
+|patents               |assignees_at_grant.state                                     |full text |
+|patents               |assignees_at_grant.country                                   |full text |
+|patents               |inventors_at_grant.inventor_id                               |full text |
+|patents               |inventors_at_grant.name_first                                |full text |
+|patents               |inventors_at_grant.name_last                                 |full text |
+|patents               |inventors_at_grant.city                                      |full text |
+|patents               |inventors_at_grant.state                                     |full text |
+|patents               |inventors_at_grant.country                                   |full text |
+|patents               |cpc_current.cpc_section_id                                   |full text |
+|patents               |cpc_current.cpc_subsection                                   |full text |
+|patents               |cpc_current.cpc_group                                        |full text |
+|patents               |cpc_current.cpc_subgroup_id                                  |full text |
+|patents               |cpc_current.cpc_subgroup_title                               |full text |
+|assignees             |lastknown_city                                               |full text |
+|assignees             |lastknown_country                                            |full text |
+|assignees             |lastknown_state                                              |full text |
+|assignees             |name_first                                                   |full text |
+|assignees             |name_last                                                    |full text |
+|assignees             |num_inventors                                                |full text |
+|assignees             |num_patents                                                  |full text |
+|assignees             |organization                                                 |full text |
+|inventors             |lastknown_city                                               |full text |
+|inventors             |lastknown_country                                            |full text |
+|inventors             |lastknown_state                                              |full text |
+|inventors             |name_first                                                   |full text |
+|inventors             |name_last                                                    |full text |
+|inventors             |num_patents                                                  |full text |
+|inventors             |inventor_id                                                  |full text |
+|inventors             |num_assignees                                                |full text |
+|application_citations |patent_number                                                |full text |
+|cpc_subsections       |cpc_subsection_title                                         |full text |
+|cpc_groups            |cpc_subsection_id                                            |full text |
+|cpc_groups            |cpc_group_id                                                 |full text |
+|cpc_groups            |cpc_group_title                                              |full text |
+|cpc_subgroups         |cpc_subsection_id                                            |full text |
+|cpc_subgroups         |cpc_group_id                                                 |full text |
+|cpc_subgroups         |cpc_subgroup_id                                              |full text |
+|cpc_subgroups         |cpc_subgroup_title                                           |full text |
+|uspc_mainclasses      |uspc_mainclass_title                                         |full text |
+|uspc_subclasses       |uspc_mainclass_id                                            |full text |
+|uspc_subclasses       |uspc_subclass_id                                             |full text |
+|uspc_subclasses       |uspc_subclass_title                                          |full text |
+|nber_categories       |nber_category_title                                          |full text |
+|nber_subcategories    |nber_subcategory_title                                       |full text |
+
 ## Other Changes
 
 * Some of the fields names changed.  assignee_last_name is now name_last in the assignees data structure.
@@ -105,47 +211,48 @@ when including them in your query.  Example: assignee organization is renamed or
 
 ```r
 get_fields("patents")
-#>  [1] "patent_number"                                               
-#>  [2] "patent_title"                                                
-#>  [3] "patent_date"                                                 
-#>  [4] "patent_type"                                                 
-#>  [5] "patent_country"                                              
-#>  [6] "patent_year"                                                 
-#>  [7] "patent_abstract"                                             
-#>  [8] "patent_kind"                                                 
-#>  [9] "patent_num_foreign_documents_cited"                          
-#> [10] "patent_num_us_applications_cited"                            
-#> [11] "patent_num_us_patents_cited"                                 
-#> [12] "patent_num_total_documents_cited"                            
-#> [13] "patent_num_times_cited_by_us_patents"                        
-#> [14] "patent_earliest_application_date"                            
-#> [15] "patent_patent_processing_days"                               
-#> [16] "patent_uspc_current_mainclass_average_patent_processing_days"
-#> [17] "patent_cpc_current_group_average_patent_processing_days"     
-#> [18] "patent_term_extension"                                       
-#> [19] "patent_detail_desc_length"                                   
-#> [20] "assignees_at_grant.assignee_id"                              
-#> [21] "assignees_at_grant.name_first"                               
-#> [22] "assignees_at_grant.name_last"                                
-#> [23] "assignees_at_grant.organization"                             
-#> [24] "assignees_at_grant.type"                                     
-#> [25] "assignees_at_grant.city"                                     
-#> [26] "assignees_at_grant.state"                                    
-#> [27] "assignees_at_grant.country"                                  
-#> [28] "assignees_at_grant.latitude"                                 
-#> [29] "assignees_at_grant.longitude"                                
-#> [30] "inventors_at_grant.inventor"                                 
-#> [31] "inventors_at_grant.name_first"                               
-#> [32] "inventors_at_grant.name_last"                                
-#> [33] "inventors_at_grant.city"                                     
-#> [34] "inventors_at_grant.state"                                    
-#> [35] "inventors_at_grant.country"                                  
-#> [36] "inventors_at_grant.latitude"                                 
-#> [37] "inventors_at_grant.longitude"                                
-#> [38] "cpc_current.sequence"                                        
-#> [39] "cpc_current.section_id"                                      
-#> [40] "cpc_current.subsection_id"                                   
-#> [41] "cpc_current.group_id"                                        
-#> [42] "cpc_current.subgroup_id"                                     
-#> [43] "cpc_current.cpc_group_title"
+#>  [1] patent_number                                               
+#>  [2] patent_title                                                
+#>  [3] patent_date                                                 
+#>  [4] patent_type                                                 
+#>  [5] patent_country                                              
+#>  [6] patent_year                                                 
+#>  [7] patent_abstract                                             
+#>  [8] patent_kind                                                 
+#>  [9] patent_num_foreign_documents_cited                          
+#> [10] patent_num_us_applications_cited                            
+#> [11] patent_num_us_patents_cited                                 
+#> [12] patent_num_total_documents_cited                            
+#> [13] patent_num_times_cited_by_us_patents                        
+#> [14] patent_earliest_application_date                            
+#> [15] patent_patent_processing_days                               
+#> [16] patent_uspc_current_mainclass_average_patent_processing_days
+#> [17] patent_cpc_current_group_average_patent_processing_days     
+#> [18] patent_term_extension                                       
+#> [19] patent_detail_desc_length                                   
+#> [20] assignees_at_grant.assignee_id                              
+#> [21] assignees_at_grant.name_first                               
+#> [22] assignees_at_grant.name_last                                
+#> [23] assignees_at_grant.organization                             
+#> [24] assignees_at_grant.type                                     
+#> [25] assignees_at_grant.city                                     
+#> [26] assignees_at_grant.state                                    
+#> [27] assignees_at_grant.country                                  
+#> [28] assignees_at_grant.latitude                                 
+#> [29] assignees_at_grant.longitude                                
+#> [30] inventors_at_grant.inventor_id                              
+#> [31] inventors_at_grant.name_first                               
+#> [32] inventors_at_grant.name_last                                
+#> [33] inventors_at_grant.city                                     
+#> [34] inventors_at_grant.state                                    
+#> [35] inventors_at_grant.country                                  
+#> [36] inventors_at_grant.latitude                                 
+#> [37] inventors_at_grant.longitude                                
+#> [38] cpc_current.sequence                                        
+#> [39] cpc_current.cpc_section_id                                  
+#> [40] cpc_current.cpc_subsection                                  
+#> [41] cpc_current.cpc_group                                       
+#> [42] cpc_current.cpc_subgroup_id                                 
+#> [43] cpc_current.cpc_subgroup_title                              
+#> 108 Levels: patent_number patent_title patent_date ... nber_subcategory_years_active
 ```

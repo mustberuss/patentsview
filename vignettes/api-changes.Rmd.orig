@@ -54,6 +54,7 @@ Quite a few fields seem to have gone away, including government interest fields,
 
 ## HATEOAS
 Some of the returned fields are HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more information about that field. Slight funky is the cpc_current's cpc_subgroup, returned by the patents endpoint.  Here the slash in the cpc is turned into a colon.  This is a peculiarity of two of the new convience urls that shouldn't be noticable in the r package, unless you are trying to infer the uspc and cpc values from the returned urls, without actually calling back for this data.
+There is something slightly funky with these fields.  They have an _id when in the q:/query and f:/fields parameters but they are returned without the _id.  Example: cpc_subgroup_id is returned as the HATEOAS link cpc_subgroup. 
 
 Example link returned by the patents endpoint
 ```
@@ -81,6 +82,31 @@ queries to get around the new overall paged result set size of 10,000 rows.  See
 
 ## Throttling
 The API will now allow 45 requests per minute, making more requests will anger the API.  It will send back an error code with a header indicating how many seconds to wait before sending more queries.  The R package will take care of this for you.  It will sleep for the required number of seconds before resubmitting your query, seemlessly to your script.
+
+## Alpha Fields
+
+fieldsdf will show you the field types, names and endpoints in the new version of the API.  There are different operators for string and full text fields.
+```{r}
+library(knitr)
+library(dplyr)
+
+string_fields <-
+   fieldsdf %>%
+      filter(data_type == "string")  %>%
+      select(endpoint, field, data_type) %>%
+      arrange(`endpoint`, `field`)  
+ 
+kable(string_fields,  row.names = FALSE, caption = 'String Fields')
+
+fulltext_fields <-
+   fieldsdf %>%
+      filter(data_type == "full text")  %>%
+      select(endpoint, field, data_type) %>%
+      arrange(endpoint, field)  
+ 
+kable(fulltext_fields ,  row.names = FALSE, caption = 'Full Text Fields')
+
+```
 
 ## Other Changes
 
