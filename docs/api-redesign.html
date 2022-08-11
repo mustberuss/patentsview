@@ -189,7 +189,7 @@
 <p>title: “API Changes” output: github_document —</p>
 <div id="affects-on-the-r-package-of-the-patentsview-api-changes-announced-in-2021" class="section level1">
 
-<p>(This is <a href="https://github.com/mustberuss/patentsview/blob/api-change-2021/api-changes-2021.md">api-changes-2021.md</a>
+<p>(This is <a href="https://github.com/mustberuss/patentsview/blob/api-redesign/api-redesign.md">api-redesign.md</a>
 with navigation to the updated vignettes and reference pages.)</p>
 <blockquote>
 <p>   “Let’s not bicker and argue about who killed who”.<br>
@@ -219,7 +219,7 @@ for application data.</li>
 <li>The <a href="https://patentsview.org/data-in-action/whats-new-patentsview-july-2021">announcement</a>
 of the API changes.</li>
 <li>The new and modified vignettes (use the nav above).</li>
-<li>The new and modified <a href="https://github.com/mustberuss/patentsview/tree/api-change-2021/tests/testthat">test
+<li>The new and modified <a href="https://github.com/mustberuss/patentsview/tree/api-redesign/tests/testthat">test
 cases</a>.</li>
 </ol>
 </div>
@@ -444,9 +444,8 @@ size.</p></li>
 <li>Set the environmental variable PATENTSVIEW_API_KEY value to your
 key.<br>
 ex: set PATENTSVIEW_API_KEY=your_key_here (Windows)</li>
-<li>Install the patentsview package from mustberuss’ api-change-2021
-branch
-<code><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">devtools::install_github("mustberuss/patentsview@api-change-2021")</a></code>
+<li>Install the patentsview package from mustberuss’ api-redesign branch
+<code><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">devtools::install_github("mustberuss/patentsview@api-redesign")</a></code>
 </li>
 </ol>
 </div>
@@ -538,8 +537,8 @@ location endpoint is not on the test server yet</p>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a> <span class="st">"currently has restrictions on the number of fields/groups you can "</span>,</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a> <span class="st">"request). Try slimming down your field list and trying again."</span></span></code></pre></div>
 </li>
-<li><p>If possible, suppress api-changes-2021.md from producing
-docs/api-changes-2021.html</p></li>
+<li><p>If possible, suppress api-redesign.md from producing
+docs/api-redesign.html</p></li>
 <li><p>Clean up utils.R I hadn’t noticed until writting test-utils.R
 that only to_singular is used by the package. to_plural() isn’t used,
 it’s a hold over from a failed attempt at making the endpoints

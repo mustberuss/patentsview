@@ -3,7 +3,7 @@
 title: "API Changes" output: github_document ---
 
 # Affects on the R package of the Patentsview API changes announced in 2021
-(This is [api-changes-2021.md](https://github.com/mustberuss/patentsview/blob/api-change-2021/api-changes-2021.md) with navigation to the updated vignettes and reference pages.)
+(This is [api-redesign.md](https://github.com/mustberuss/patentsview/blob/api-redesign/api-redesign.md) with navigation to the updated vignettes and reference pages.)
 
 
 > &nbsp;&nbsp;&nbsp;"Let's not bicker and argue about who killed who".  
@@ -19,7 +19,7 @@ I wasn't sure what the githubby way to do this would be but this page chronicles
 (Keep reading, they're not prerequisites to reading this page)
 1. The [announcement](https://patentsview.org/data-in-action/whats-new-patentsview-july-2021) of the API changes.
 2. The new and modified vignettes (use the nav above).
-3. The new and modified [test cases](https://github.com/mustberuss/patentsview/tree/api-change-2021/tests/testthat).
+3. The new and modified [test cases](https://github.com/mustberuss/patentsview/tree/api-redesign/tests/testthat).
 
 ## Favorable API Changes
 1. The API team has produced a [Swagger UI page](https://search.patentsview.org/swagger-ui/) for the new version of the API!  It has flaws but it's a start and is something I've been lobbying for since the launch of the API. If you aren't familiar with Swagger UI, it's like an online version of Postman, preloaded to use a particular API.  The underlying Swagger/OpenAPI object should comprehensively specify everything that the API is capable of doing, its verbs, inputs, outputs and errors. In other words, its the whole shebang if done properly.  The underlying object can even be imported into Postman or used as input to other opensource projects, as mentioned [below](#swagger-101-1).
@@ -93,7 +93,7 @@ Steps to try this out locally
 1. Request an API key from the patentsview team https://patentsview.org/apis/keyrequest
 2. Set the environmental variable PATENTSVIEW_API_KEY value to your key.     
  ex: set PATENTSVIEW_API_KEY=your_key_here (Windows)
-3. Install the patentsview package from mustberuss' api-change-2021 branch ```devtools::install_github("mustberuss/patentsview@api-change-2021")```
+3. Install the patentsview package from mustberuss' api-redesign branch ```devtools::install_github("mustberuss/patentsview@api-redesign")```
 
 ## Notes
 1. https://patentsview.historicip.com/swagger/openapi.json (was https://patentsview.historicip.com/swagger/openapi_v2.yml) can be imported into Postman to give you a nicely loaded collection for the changed API.  You'll just need to set a global variable PVIEW_KEY and set the authorization's value to {{PVIEW_KEY}}.  The patentview team's Swagger definition has reported errors that make importing it problematic.
@@ -124,7 +124,7 @@ Steps to try this out locally
         "requested too many fields in your request (the locations endpoint ",
         "currently has restrictions on the number of fields/groups you can ",
         "request). Try slimming down your field list and trying again."
-10. If possible, suppress api-changes-2021.md from producing docs/api-changes-2021.html
+10. If possible, suppress api-redesign.md from producing docs/api-redesign.html
 11. Clean up utils.R I hadn't noticed until writting test-utils.R that only to_singular is used by the package.  to_plural() isn't used, it's a hold over from a failed attempt at making the endpoints singular.
 12. A followup is probably in order for the [rOpenSci blog post](https://ropensci.org/blog/2017/09/19/patentsview/) There's an unlinked [vignette](articles/ropensci_blog.html) that reworks the code so it "works" using the new version of the api. README.Rmd's link should be changed if there is a new post.
 13. Follow tidyverse style
