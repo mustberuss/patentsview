@@ -148,6 +148,7 @@ string_fields <- c("patents.patent_number", "patents.patent_title", "patents.pat
 "cpc_subsections.cpc_section_id", "cpc_subsections.cpc_subsection_id",
 "application_citations.citation_category",
 "application_citations.cited_application_number",
+"application_citations.citation_kind",
 "patent_citations.citation_category",
 "uspc_mainclasses.uspc_mainclass_id","nber_categories.nber_category_id","nber_subcategories.nber_subcategory_id")
 

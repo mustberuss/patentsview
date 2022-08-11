@@ -371,9 +371,24 @@ Application State) links to retrieve more information, example
 “inventor”: “<a href="https://search.patentsview.org/api/v1/inventor/252373/" class="uri">https://search.patentsview.org/api/v1/inventor/252373/</a>”
 (Clicking the link will result in a 403 Unauthorized - no API key is
 sent by a browser) Added <a href="reference/retrieve_linked_data.html">retrieve_linked_data()</a> to
-retrieve this data for the user, they’d pass the full url.</li>
+retrieve this data for the user, they’d pass the full url. One odd
+thing, in the q:/query and f:/fields paramters the HATEOAS field names
+ends with an _id but it is returned without it, example: patents
+endpoint query:</li>
 </ol>
 </li>
+</ol>
+<pre class="{r}"><code><a href="https://docs.ropensci.org/patentsview/index.html">library(patentsview)
+
+query &lt;- qry_funs$eq(assignees_at_grant.assignee_id = "35")
+example &lt;-search_pv(query=query, fields=c("assignees_at_grant.assignee_id"))
+
+head(example$data$patents$assignees_at_grant, 1)
+# [[1]]
+#                                            assignee
+# 1 https://search.patentsview.org/api/v1/assignee/35/
+</a></code></pre>
+<ol>
 <li>
 <strong>General Choices</strong>
 <ol>
@@ -391,7 +406,8 @@ still sent as strings) get cast as.integer. <em>Update:</em> The
 documentation has been updated but the fields are in an image. Ex <a href="https://patentsview.org/apis/api-endpoints/patentsbeta" class="uri">https://patentsview.org/apis/api-endpoints/patentsbeta</a></p></li>
 <li><p>As an alternative to scraping the fake pages just mentioned, I
 created data-raw/yml_extract.R to try to create the csv by parsing the
-API’s Swagger definition.</p></li>
+API’s Swagger definition. <em>Update:</em> data-raw/definition_extract.R
+parses the new json Swagger definition.</p></li>
 <li><p>Now only 3 of the 13 endpoints are searchable by patent number,
 which affected a few of the test cases. I wound up adding
 R/test-helpers.R to generate a test query per endpoint. Initially I had
@@ -413,8 +429,8 @@ whatever the R equivalent is to a pythonic python programmer…</p></li>
 for users to break up queries, due to the decrease in overall request
 size.</p></li>
 </ol>
-<pre><code>qry_funs$in_range("patent_date"=c("2000-01-07","2000-01-28")
-{"_and":[{"_gte":{"patent_date":"2000-01-07"}},{"_lte":{"patent_date":"2000-01-28"}}]}</code></pre>
+<pre class="{r}"><code>qry_funs$in_range("patent_date"=c("2000-01-07","2000-01-28"))
+# {"_and":[{"_gte":{"patent_date":"2000-01-07"}},{"_lte":{"patent_date":"2000-01-28"}}]}&gt;</code></pre>
 </li>
 </ol>
 </div>
@@ -438,7 +454,8 @@ branch
 <h2 class="hasAnchor">
 <a href="#notes" class="anchor"></a>Notes</h2>
 <ol>
-<li><p><a href="https://patentsview.historicip.com/swagger/openapi_v2.yml" class="uri">https://patentsview.historicip.com/swagger/openapi_v2.yml</a>
+<li><p><a href="https://patentsview.historicip.com/swagger/openapi.json" class="uri">https://patentsview.historicip.com/swagger/openapi.json</a>
+(was <a href="https://patentsview.historicip.com/swagger/openapi_v2.yml" class="uri">https://patentsview.historicip.com/swagger/openapi_v2.yml</a>)
 can be imported into Postman to give you a nicely loaded collection for
 the changed API. You’ll just need to set a global variable PVIEW_KEY and
 set the authorization’s value to {{PVIEW_KEY}}. The patentview team’s
@@ -480,12 +497,12 @@ will break, like the ones lists on <a href="https://docs.ropensci.org/patentsvie
 searching inventors by location. (locations endpoint is not on the test
 server yet.) There a bogus locations test in test-search-pv.R that
 should be reworked or removed.</p></li>
-<li><p>Have a search-pv option to automatically retrieve these HATEOAS
-links if all_pages is FALSE? Would be closer to the original version of
-the API if this data was added automatically. (Would need to check the
-data to see if this would be useful.)</p></li>
-<li><p>Or in cast-pv-data offer an option to strip off the HATEOAS
-links? Is this meaningful to the user: “cpc_subgroup”: “<a href="https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4811/" class="uri">https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4811/</a>”
+<li><p>(future feature?) Have a search-pv option to automatically
+retrieve these HATEOAS links if all_pages is FALSE? Would be closer to
+the original version of the API if this data was added automatically.
+(Would need to check the data to see if this would be useful.)</p></li>
+<li><p>(future feature?) Or in cast-pv-data offer an option to strip off
+the HATEOAS links? Is this meaningful to the user: “cpc_subgroup”: “<a href="https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4811/" class="uri">https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4811/</a>”
 (Clicking the link will result in a 403 Unauthorized - no API key is
 sent by a browser) or do they just want the value G01S7:4811 or even
 G01S7/4811?</p></li>
@@ -504,7 +521,8 @@ right.</p></li>
 searchability of string/full text fields. In other words, to we have the
 types right in the fake documentation? Confirm that we can do a
 _text_any on all the fields we think are full text and _contains on all
-the ones we think are strings.</p></li>
+the ones we think are strings. <em>Update</em>: test-alpha-types.R does
+this if either of the Swagger parsers was run.</p></li>
 <li><p>We probably should remove printing of the url to stderr in
 search-pv but it’s been so darn useful durning development</p></li>
 <li><p>Add a method that would iterate through the data ranges generated
@@ -515,10 +533,10 @@ back the combined data set.</p></li>
 <li>
 <p>We probably don’t need this in process-error.R though the
 location endpoint is not on the test server yet</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a> <span class="st">"Your request resulted in a 500 error, likely because you have "</span>,</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a> <span class="st">"requested too many fields in your request (the locations endpoint "</span>,</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a> <span class="st">"currently has restrictions on the number of fields/groups you can "</span>,</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a> <span class="st">"request). Try slimming down your field list and trying again."</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a> <span class="st">"Your request resulted in a 500 error, likely because you have "</span>,</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a> <span class="st">"requested too many fields in your request (the locations endpoint "</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a> <span class="st">"currently has restrictions on the number of fields/groups you can "</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a> <span class="st">"request). Try slimming down your field list and trying again."</span></span></code></pre></div>
 </li>
 <li><p>If possible, suppress api-changes-2021.md from producing
 docs/api-changes-2021.html</p></li>
@@ -530,6 +548,7 @@ singular.</p></li>
 post</a> There’s an unlinked <a href="articles/ropensci_blog.html">vignette</a> that reworks the code so
 it “works” using the new version of the api. README.Rmd’s link should be
 changed if there is a new post.</p></li>
+<li><p>Follow tidyverse style</p></li>
 </ol>
 </div>
 <div id="questions" class="section level2">

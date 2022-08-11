@@ -58,11 +58,24 @@ The villagers may revolt over some of these API changes... &nbsp;&nbsp; &nbsp; O
     while it used to be  
        ```data, count, total_<endpoint>_count```   
    Also note that total_hits comes back from all endpoints, previously there was an endpoint specific return, like total_patent_count
-   10. The API now returns a few HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more information, example "inventor": "https://search.patentsview.org/api/v1/inventor/252373/" (Clicking the link will result in a 403 Unauthorized - no API key is sent by a browser) Added [retrieve_linked_data()](reference/retrieve_linked_data.html) to retrieve this data for the user, they'd pass the full url.
+   10. The API now returns a few HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more information, example "inventor": "https://search.patentsview.org/api/v1/inventor/252373/" (Clicking the link will result in a 403 Unauthorized - no API key is sent by a browser) Added [retrieve_linked_data()](reference/retrieve_linked_data.html) to retrieve this data for the user, they'd pass the full url.  One odd thing, in the q:/query and f:/fields paramters the HATEOAS field names ends with an _id but it is returned without it, example: patents endpoint query: 
+
+```{r}
+library(patentsview)
+
+query <- qry_funs$eq(assignees_at_grant.assignee_id = "35")
+example <-search_pv(query=query, fields=c("assignees_at_grant.assignee_id"))
+
+head(example$data$patents$assignees_at_grant, 1)
+# [[1]]
+#                                            assignee
+# 1 https://search.patentsview.org/api/v1/assignee/35/
+
+```
 2. **General Choices**
    1. Now there are new, get-only convience endpoints that take a url parameter.  The R package ignores these and just uses the ones that do posts and gets using q,f,s and o parameters, as the original version of the API did.
    2. The online documentation is lagging.  The two new endpoints are documented on https://patentsview.org/data-in-action/whats-new-patentsview-july-2021 but they're missing the Query column (all fields queryable now).  Pages for the other endpoint haven't been changed yet. I created fake pages for data-raw/mbr_fieldsdf.R to consume.  They're on a site I control https://patentsview.historicip.com/api/. In the fake pages, "integer" fields get cast as_is while "int" fields (integers still sent as strings) get cast as.integer. _Update:_ The documentation has been updated but the fields are in an image.  Ex https://patentsview.org/apis/api-endpoints/patentsbeta
-   3. As an alternative to scraping the fake pages just mentioned, I created data-raw/yml_extract.R to try to create the csv by parsing the API's Swagger definition.
+   3. As an alternative to scraping the fake pages just mentioned, I created data-raw/yml_extract.R to try to create the csv by parsing the API's Swagger definition.  _Update:_ data-raw/definition_extract.R parses the new json Swagger definition.
    4. Now only 3 of the 13 endpoints are searchable by patent number, which affected a few of the test cases.  I wound up adding R/test-helpers.R to generate a test query per endpoint.  Initially I had it as tests/testthat/helper-queries.R but I thought that caused the ubuntu-20.04 build failure.
    5. I set my API key as asecret in my repo so tests will run and the vignettes can be half rendered etc.  It's retrieved in R-CMD-check.yaml which might need to be removed if we don't need to do this.
    6. I had to add dev = "png" to the knitr::opts_chunk$set in citation-networks.Rmd.orig to get it to render locally.
@@ -70,9 +83,9 @@ The villagers may revolt over some of these API changes... &nbsp;&nbsp; &nbsp; O
    8. Because of the singular endpoint name change, I added the following to utils.R to_plural() and to_singular() Not saying I'm whatever the R equivalent is to a pythonic python programmer...
 
    9. I added an inclusive qry_funs$in_range() to try to make it easier for users to break up queries, due to the decrease in overall request size.
-```
-   qry_funs$in_range("patent_date"=c("2000-01-07","2000-01-28")
-   {"_and":[{"_gte":{"patent_date":"2000-01-07"}},{"_lte":{"patent_date":"2000-01-28"}}]}
+```{r}
+   qry_funs$in_range("patent_date"=c("2000-01-07","2000-01-28"))
+# {"_and":[{"_gte":{"patent_date":"2000-01-07"}},{"_lte":{"patent_date":"2000-01-28"}}]}>
 ```
 
 ## Try it out for yourself
@@ -83,7 +96,7 @@ Steps to try this out locally
 3. Install the patentsview package from mustberuss' api-change-2021 branch ```devtools::install_github("mustberuss/patentsview@api-change-2021")```
 
 ## Notes
-1. https://patentsview.historicip.com/swagger/openapi_v2.yml can be imported into Postman to give you a nicely loaded collection for the changed API.  You'll just need to set a global variable PVIEW_KEY and set the authorization's value to {{PVIEW_KEY}}.  The patentview team's Swagger definition has reported errors that make importing it problematic.
+1. https://patentsview.historicip.com/swagger/openapi.json (was https://patentsview.historicip.com/swagger/openapi_v2.yml) can be imported into Postman to give you a nicely loaded collection for the changed API.  You'll just need to set a global variable PVIEW_KEY and set the authorization's value to {{PVIEW_KEY}}.  The patentview team's Swagger definition has reported errors that make importing it problematic.
 2. The swagger definition shows a X-Status-Reason-Code in addition to the existing X-Status-Reason. Not sure it matters to or would be useful for the r package.  It doesn't seem to add anything useful.
     ~~~~
     > print(httr::headers(resp)[['X-Status-Reason']])
@@ -98,11 +111,11 @@ Steps to try this out locally
 
 ## TODOS
 1. Some exampes may not be possible due to the API change, like searching inventors by location. (locations endpoint is not on the test server yet.)  There a bogus locations test in test-search-pv.R that should be reworked or removed.
-2. Have a search-pv option to automatically retrieve these HATEOAS links if all_pages is FALSE?  Would be closer to the original version of the API if this data was added automatically. (Would need to check the data to see if this would be useful.)
-3. Or in cast-pv-data offer an option to strip off the HATEOAS links?  Is this meaningful to the user: "cpc_subgroup": "https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4811/" (Clicking the link will result in a 403 Unauthorized - no API key is sent by a browser) or do they just want the value G01S7:4811 or even G01S7/4811?
+2. (future feature?) Have a search-pv option to automatically retrieve these HATEOAS links if all_pages is FALSE?  Would be closer to the original version of the API if this data was added automatically. (Would need to check the data to see if this would be useful.)
+3. (future feature?) Or in cast-pv-data offer an option to strip off the HATEOAS links?  Is this meaningful to the user: "cpc_subgroup": "https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4811/" (Clicking the link will result in a 403 Unauthorized - no API key is sent by a browser) or do they just want the value G01S7:4811 or even G01S7/4811?
 4. Test that what comes back from the API calls matches the spreadsheet and/or their Swagger definition (should be ultimate source of truth). There's a "API Update Table" link to the fields spreadsheet at the very bottom of https://patentsview.org/apis/purpose  test-api-returns.R currently checks that all the groups come back, it could be extended to include all fields.
 5. Check if the location specific error checking is still needed (throw_if_loc_error() in process-error.R). The locations endpoint won't return as many fields as before but it's not on the test server yet.  The locations tab in the spreadsheet just mentiomend don't look right.
-6. It would be helpful if a test could be written to test the searchability of string/full text fields.  In other words, to we have the types right in the fake documentation?  Confirm that we can do a _text_any on all the fields we think are full text and _contains on all the ones we think are strings.
+6. It would be helpful if a test could be written to test the searchability of string/full text fields.  In other words, to we have the types right in the fake documentation?  Confirm that we can do a _text_any on all the fields we think are full text and _contains on all the ones we think are strings. _Update_: test-alpha-types.R does this if either of the Swagger parsers was run.
 7. We probably should remove printing of the url to stderr in search-pv but it's been so darn useful durning development
 8. Add a method that would iterate through the data ranges generated by tell_us (in the [converting-an-existing-script vignette](articles/converting-an-existing-script.html)) and return the concatenated results.  Or just wrap the whole thing, user passes in the query, we call tell_us and give them back the combined data set.
 9. We probably don't need this in process-error.R though the location endpoint is not on the test server yet
@@ -114,6 +127,7 @@ Steps to try this out locally
 10. If possible, suppress api-changes-2021.md from producing docs/api-changes-2021.html
 11. Clean up utils.R I hadn't noticed until writting test-utils.R that only to_singular is used by the package.  to_plural() isn't used, it's a hold over from a failed attempt at making the endpoints singular.
 12. A followup is probably in order for the [rOpenSci blog post](https://ropensci.org/blog/2017/09/19/patentsview/) There's an unlinked [vignette](articles/ropensci_blog.html) that reworks the code so it "works" using the new version of the api. README.Rmd's link should be changed if there is a new post.
+13. Follow tidyverse style
 
 ## Questions
 1. Should we bump the version number to 0.4.0 or 1.0.0?  The API key alone quarantees that the package won't be backward compatible.
