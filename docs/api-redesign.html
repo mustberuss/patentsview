@@ -393,9 +393,9 @@ head(example$data$patents$assignees_at_grant, 1)
 <strong>General Choices</strong>
 <ol>
 <li><p>Now there are new, get-only convience endpoints that take a url
-parameter. The R package ignores these and just uses the ones that do
-posts and gets using q,f,s and o parameters, as the original version of
-the API did.</p></li>
+parameter (what the HATEOAS links hit). The R package ignores these and
+just uses the ones that do posts and gets using q,f,s and o parameters,
+as the original version of the API did.</p></li>
 <li><p>The online documentation is lagging. The two new endpoints are
 documented on <a href="https://patentsview.org/data-in-action/whats-new-patentsview-july-2021" class="uri">https://patentsview.org/data-in-action/whats-new-patentsview-july-2021</a>
 but they’re missing the Query column (all fields queryable now). Pages
@@ -414,8 +414,8 @@ R/test-helpers.R to generate a test query per endpoint. Initially I had
 it as tests/testthat/helper-queries.R but I thought that caused the
 ubuntu-20.04 build failure.</p></li>
 <li><p>I set my API key as asecret in my repo so tests will run and the
-vignettes can be half rendered etc. It’s retrieved in R-CMD-check.yaml
-which might need to be removed if we don’t need to do this.</p></li>
+vignettes can be half rendered etc. It’s retrieved in
+R-CMD-check.yaml.</p></li>
 <li><p>I had to add dev = “png” to the knitr::opts_chunk$set in
 citation-networks.Rmd.orig to get it to render locally.</p></li>
 <li><p>See the new vignette <a href="articles/converting-an-existing-script.html#additions-to-the-r-package-1">converting-an-existing-script.html#additions-to-the-r-package-1</a>
@@ -548,6 +548,8 @@ post</a> There’s an unlinked <a href="articles/ropensci_blog.html">vignette</a
 it “works” using the new version of the api. README.Rmd’s link should be
 changed if there is a new post.</p></li>
 <li><p>Follow tidyverse style</p></li>
+<li><p>Refactor the code and tests so the x.R and test-x.R pattern isn’t
+broken</p></li>
 </ol>
 </div>
 <div id="questions" class="section level2">
@@ -568,6 +570,9 @@ retired do a CRAN build?</li>
 <li>Possible idea: ask the patentsview people if they could create a
 separate category for the R package in their forum? Guessing people may
 need help with their conversions!</li>
+<li>Add the
+<a href="articles/converting-an-existing-script.html#additions-to-the-r-package-1">date
+range finder</a> to the package?</li>
 </ol>
 </div>
 <div id="swagger-101" class="section level2">
@@ -584,8 +589,8 @@ gotcha, it expects the input file to be the older Swagger 2.0 format. It
 works but throws a warning. It looks like what we really need is an R
 port of this python project <a href="https://github.com/cyprieng/swagger-parser" class="uri">https://github.com/cyprieng/swagger-parser</a>! Oops, that’s
 reading Swagger 2 files. All that to say that there isn’t something to
-generate fieldsdf.csv from the Swagger definition, we’ll have to do some
-heavy lifting ourselves.</p>
+generate fieldsdf.csv from the Swagger definition, we may have to do
+some heavy lifting ourselves.</p>
 </div>
 <div id="carried-over" class="section level2">
 <h2 class="hasAnchor">

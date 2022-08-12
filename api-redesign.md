@@ -73,11 +73,11 @@ head(example$data$patents$assignees_at_grant, 1)
 
 ```
 2. **General Choices**
-   1. Now there are new, get-only convience endpoints that take a url parameter.  The R package ignores these and just uses the ones that do posts and gets using q,f,s and o parameters, as the original version of the API did.
+   1. Now there are new, get-only convience endpoints that take a url parameter (what the HATEOAS links hit).  The R package ignores these and just uses the ones that do posts and gets using q,f,s and o parameters, as the original version of the API did.
    2. The online documentation is lagging.  The two new endpoints are documented on https://patentsview.org/data-in-action/whats-new-patentsview-july-2021 but they're missing the Query column (all fields queryable now).  Pages for the other endpoint haven't been changed yet. I created fake pages for data-raw/mbr_fieldsdf.R to consume.  They're on a site I control https://patentsview.historicip.com/api/. In the fake pages, "integer" fields get cast as_is while "int" fields (integers still sent as strings) get cast as.integer. _Update:_ The documentation has been updated but the fields are in an image.  Ex https://patentsview.org/apis/api-endpoints/patentsbeta
    3. As an alternative to scraping the fake pages just mentioned, I created data-raw/yml_extract.R to try to create the csv by parsing the API's Swagger definition.  _Update:_ data-raw/definition_extract.R parses the new json Swagger definition.
    4. Now only 3 of the 13 endpoints are searchable by patent number, which affected a few of the test cases.  I wound up adding R/test-helpers.R to generate a test query per endpoint.  Initially I had it as tests/testthat/helper-queries.R but I thought that caused the ubuntu-20.04 build failure.
-   5. I set my API key as asecret in my repo so tests will run and the vignettes can be half rendered etc.  It's retrieved in R-CMD-check.yaml which might need to be removed if we don't need to do this.
+   5. I set my API key as asecret in my repo so tests will run and the vignettes can be half rendered etc.  It's retrieved in R-CMD-check.yaml.
    6. I had to add dev = "png" to the knitr::opts_chunk$set in citation-networks.Rmd.orig to get it to render locally.
    7. See the new vignette [converting-an-existing-script.html#additions-to-the-r-package-1](articles/converting-an-existing-script.html#additions-to-the-r-package-1)  I wrote a function that uses the API to determine date ranges for a query returning more than 10,000 rows.  I think it should be added to the R package, but I wasn't sure if it's a good idea..
    8. Because of the singular endpoint name change, I added the following to utils.R to_plural() and to_singular() Not saying I'm whatever the R equivalent is to a pythonic python programmer...
@@ -128,6 +128,7 @@ Steps to try this out locally
 11. Clean up utils.R I hadn't noticed until writting test-utils.R that only to_singular is used by the package.  to_plural() isn't used, it's a hold over from a failed attempt at making the endpoints singular.
 12. A followup is probably in order for the [rOpenSci blog post](https://ropensci.org/blog/2017/09/19/patentsview/) There's an unlinked [vignette](articles/ropensci_blog.html) that reworks the code so it "works" using the new version of the api. README.Rmd's link should be changed if there is a new post.
 13. Follow tidyverse style
+14. Refactor the code and tests so the x.R and test-x.R pattern isn't broken
 
 ## Questions
 1. Should we bump the version number to 0.4.0 or 1.0.0?  The API key alone quarantees that the package won't be backward compatible.
@@ -135,9 +136,10 @@ Steps to try this out locally
 3. Are there more fields (like the government interests) that went away?
 4. How to handle the release?  For a while both versions of the API are supposed to be around.  Have people install the updated R package from a branch on ropensci/patentsview?  When the original version of the API is retired do a CRAN build?
 5. Possible idea: ask the patentsview people if they could create a separate category for the R package in their forum?  Guessing people may need help with their conversions!
+6. Add the <a href="articles/converting-an-existing-script.html#additions-to-the-r-package-1">date range finder</a> to the package?  
 
 ## Swagger 101
-Open my version of the Swagger object for the new version of the API in the [Swagger Editor](https://editor.swagger.io/?url=https://patentsview.historicip.com/swagger/openapi_v2.yml) then "Generate Client-r" or one of html ones. Pretty powerful huh? There are also numerous tools [here](https://openapi.tools/) that will do fun things with a Swagger object as input but nothing seems to be R based. I did find this that looks promising on [cran](https://cran.r-project.org/web/packages/rapiclient/rapiclient.pdf) or [github](https://github.com/bergant/rapiclient).  One gotcha, it expects the input file to be the older Swagger 2.0 format.  It works but throws a warning. It looks like what we really need is an R port of this python project https://github.com/cyprieng/swagger-parser!  Oops, that's reading Swagger 2 files.  All that to say that there isn't something to generate fieldsdf.csv from the Swagger definition, we'll have to do some heavy lifting ourselves.
+Open my version of the Swagger object for the new version of the API in the [Swagger Editor](https://editor.swagger.io/?url=https://patentsview.historicip.com/swagger/openapi_v2.yml) then "Generate Client-r" or one of html ones. Pretty powerful huh? There are also numerous tools [here](https://openapi.tools/) that will do fun things with a Swagger object as input but nothing seems to be R based. I did find this that looks promising on [cran](https://cran.r-project.org/web/packages/rapiclient/rapiclient.pdf) or [github](https://github.com/bergant/rapiclient).  One gotcha, it expects the input file to be the older Swagger 2.0 format.  It works but throws a warning. It looks like what we really need is an R port of this python project https://github.com/cyprieng/swagger-parser!  Oops, that's reading Swagger 2 files.  All that to say that there isn't something to generate fieldsdf.csv from the Swagger definition, we may have to do some heavy lifting ourselves.
 
 ## Carried Over
 Observations from the original version of the R package that are still true in this version.
