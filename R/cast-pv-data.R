@@ -11,13 +11,12 @@ get_cast_fun <- function(data_type) {
   # Some fields aren't documented, so we don't know what their data type is. Use
   # string type for these.
   if (length(data_type) != 1) data_type <- "string"
-  switch(
-    data_type,
+  switch(data_type,
     "string" = as_is,
     "date" = as.Date,
     "float" = as.numeric,
     "integer" = as_is,
-    "int" = as.integer,  # only used on problematic /patents assignees_at_grant.type
+    "int" = as.integer, # only used on problematic /patents assignees_at_grant.type
     "fulltext" = as_is
   )
 }
@@ -28,7 +27,7 @@ lookup_cast_fun <- function(name, typesdf) {
   # typesdf$field has the qualified name if it's a nested field, we use plain_name now
   # (new column added to the csv file)
   data_type <- typesdf[typesdf$plain_name == name, "data_type"]
-  print(paste(name,data_type,sep = "!"))
+  print(paste(name, data_type, sep = "!"))
   get_cast_fun(data_type = data_type)
 }
 

@@ -5,33 +5,39 @@ swap_null_nms <- function(obj) {
 }
 
 #' @noRd
-is_int <- function(x)
-  if (is.numeric(x)) abs(x - round(x)) < .Machine$double.eps^ 0.5 else FALSE
+is_int <- function(x) {
+  if (is.numeric(x)) abs(x - round(x)) < .Machine$double.eps^0.5 else FALSE
+}
 
 #' @noRd
-is_date <- function(x)
+is_date <- function(x) {
   grepl("[12][[:digit:]]{3}-[01][[:digit:]]-[0-3][[:digit:]]", x)
+}
 
 #' @noRd
 one_check <- function(operator, field, value, f1) {
-
-  if (nrow(f1) == 0)
+  if (nrow(f1) == 0) {
     stop2(field, " is not a valid field to query for your endpoint")
-  if (f1$data_type == "date" && !is_date(value))
+  }
+  if (f1$data_type == "date" && !is_date(value)) {
     stop2("Bad date: ", value, ". Date must be in the format of yyyy-mm-dd")
-  if (f1$data_type %in% c("string", "fulltext") && !is.character(value))
+  }
+  if (f1$data_type %in% c("string", "fulltext") && !is.character(value)) {
     stop2(value, " must be of type character")
-  if (f1$data_type == "integer" && !is_int(value))
+  }
+  if (f1$data_type == "integer" && !is_int(value)) {
     stop2(value, " must be an integer")
+  }
 
   if (
     (operator %in% c("_begins", "_contains") && !(f1$data_type == "string")) ||
-    (operator %in% c("_text_all", "_text_any", "_text_phrase") &&
-     !(f1$data_type == "fulltext")) ||
-    (f1$data_type %in% c("string", "fulltext") &&
-      operator %in% c("_gt", "_gte", "_lt", "_lte"))
-  )
+      (operator %in% c("_text_all", "_text_any", "_text_phrase") &&
+        !(f1$data_type == "fulltext")) ||
+      (f1$data_type %in% c("string", "fulltext") &&
+        operator %in% c("_gt", "_gte", "_lt", "_lte"))
+  ) {
     stop2("You cannot use the operator ", operator, " with the field ", field)
+  }
 }
 
 #' @noRd

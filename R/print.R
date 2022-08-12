@@ -18,12 +18,12 @@ print.pv_data_result <- function(x, ...) {
   dat_level <- c(
     assignees = "an assignee",
     application_citations = "an application citation",
-    cpc_groups = "a CPC group", 
-    cpc_subgroups = "a CPC sub group", 
-    cpc_subsections = "a CPC subsection", 
-    inventors = "an inventor", 
+    cpc_groups = "a CPC group",
+    cpc_subgroups = "a CPC sub group",
+    cpc_subsections = "a CPC subsection",
+    inventors = "an inventor",
     locations = "a location",
-    nber_categories = "a NBER category", 
+    nber_categories = "a NBER category",
     nber_subcategories = "a NBER subcategory",
     patents = "a patent",
     patent_citations = "a patent citation",
@@ -41,14 +41,16 @@ print.pv_data_result <- function(x, ...) {
   )
 
   utils::str(
-    x, vec.len = 1, max.level = 2, give.attr = FALSE, strict.width = "cut"
+    x,
+    vec.len = 1, max.level = 2, give.attr = FALSE, strict.width = "cut"
   )
 }
 
 #' @export
 print.pv_relay_db <- function(x, ...) {
   utils::str(
-    x, vec.len = 1, max.level = 2, give.attr = FALSE, strict.width = "cut"
+    x,
+    vec.len = 1, max.level = 2, give.attr = FALSE, strict.width = "cut"
   )
 }
 

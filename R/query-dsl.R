@@ -22,8 +22,9 @@ create_key_fun <- function(fun) {
     names(value) <- NULL
     if (length(value) > 1) {
       z <- lapply(
-        value, function(value)
+        value, function(value) {
           create_one_fun(field = field, value = value, fun = fun)
+        }
       )
       z <- list(`_or` = z)
     } else {
@@ -66,8 +67,8 @@ create_between_fun <- function(fun) {
     # throw an error if the length isn't two
     asrt(length(value) == 2, fun, " expects a range of exactly two arguments")
 
-    low = create_one_fun(field = field, value = value[1], fun = "gte")
-    high = create_one_fun(field = field, value = value[2], fun = "lte")
+    low <- create_one_fun(field = field, value = value[1], fun = "gte")
+    high <- create_one_fun(field = field, value = value[2], fun = "lte")
     z <- list(`_and` = list(low, high))
 
     structure(z, class = c(class(z), "pv_query"))
@@ -147,7 +148,7 @@ qry_funs <- c(
   ),
   lapply2(c("and", "or"), create_array_fun),
   lapply2("not", create_not_fun),
-  lapply2("in_range", create_between_fun)  # "between" may imply exclusive instead of inclusive
+  lapply2("in_range", create_between_fun) # "between" may imply exclusive instead of inclusive
 )
 
 #' With qry_funs
@@ -175,16 +176,16 @@ qry_funs <- c(
 #'   )
 #' )
 #'
-#' #...With it, this becomes:
+#' # ...With it, this becomes:
 #' with_qfuns(
-#'  and(
-#'    gte(patent_date = "2007-01-01"),
-#'    text_phrase(patent_abstract = c("computer program")),
-#'    or(
-#'      eq(inventor_last_name = "ihaka"),
-#'      eq(inventor_first_name = "chris")
-#'    )
-#'  )
+#'   and(
+#'     gte(patent_date = "2007-01-01"),
+#'     text_phrase(patent_abstract = c("computer program")),
+#'     or(
+#'       eq(inventor_last_name = "ihaka"),
+#'       eq(inventor_first_name = "chris")
+#'     )
+#'   )
 #' )
 #'
 #' @export

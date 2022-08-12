@@ -1,7 +1,6 @@
 #' @noRd
 validate_misc_args <- function(query, fields, endpoint, method, subent_cnts,
                                mtchd_subent_only, page, per_page, sort) {
-
   ok_meth <- c("GET", "POST")
   asrt(
     all(method %in% ok_meth, length(method) == 1),
@@ -26,14 +25,16 @@ validate_misc_args <- function(query, fields, endpoint, method, subent_cnts,
     "per_page must be a numeric value less than or equal to 1,000"
   )
 
-  if (!is.null(sort))
+  if (!is.null(sort)) {
     asrt(
       all(
         all(names(sort) %in% fields), all(sort %in% c("asc", "desc")),
-          !is.list(sort)),
+        !is.list(sort)
+      ),
       "sort has to be a named character vector and each name has to be ",
       "specified in the field argument. See examples"
     )
+  }
 
   flds_flt <- fieldsdf[fieldsdf$endpoint == endpoint, "field"]
   asrt(

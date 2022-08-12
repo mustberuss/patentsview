@@ -23,19 +23,19 @@
 #' # Get all assignee-level fields for the patents endpoint:
 #' fields <- get_fields(endpoint = "patents", groups = "assignees_at_grant")
 #'
-#' #...Then pass to search_pv:
+#' # ...Then pass to search_pv:
 #' \dontrun{
 #'
 #' search_pv(
 #'   query = '{"_gte":{"patent_date":"2007-01-04"}}',
 #'   fields = fields
 #' )
-#'}
+#' }
 #' # Get all patent and assignee-level fields for the patents endpoint:
 #' fields <- get_fields(endpoint = "patents", groups = c("assignees_at_grant", "patents"))
 #'
 #' \dontrun{
-#' #...Then pass to search_pv:
+#' # ...Then pass to search_pv:
 #' search_pv(
 #'   query = '{"_gte":{"patent_date":"2007-01-04"}}',
 #'   fields = fields
@@ -44,7 +44,6 @@
 #'
 #' @export
 get_fields <- function(endpoint, groups = NULL) {
-  
   validate_endpoint(endpoint)
   if (is.null(groups)) {
     fieldsdf[fieldsdf$endpoint == endpoint, "field"]
@@ -82,9 +81,9 @@ get_fields <- function(endpoint, groups = NULL) {
 #' @export
 get_endpoints <- function() {
   c(
-    "application_citations", "assignees", "cpc_groups", "cpc_subgroups", 
-    "cpc_subsections", "inventors", "locations", "nber_categories", 
-    "nber_subcategories", "patent_citations", "patents", 
+    "application_citations", "assignees", "cpc_groups", "cpc_subgroups",
+    "cpc_subsections", "inventors", "locations", "nber_categories",
+    "nber_subcategories", "patent_citations", "patents",
     "uspc_subclasses", "uspc_mainclasses"
   )
 }

@@ -1,11 +1,11 @@
 context("unnest_pv_data")
 
-# In the new version of the api, only three of the endpoints are searchable 
-# by patent number.  get_test_query() provides a sample query for each 
+# In the new version of the api, only three of the endpoints are searchable
+# by patent number.  get_test_query() provides a sample query for each
 # endpoint, except for locations, which isn't on the test server yet
 
 eps <- (get_endpoints())
-eps <-eps[eps != "locations"]
+eps <- eps[eps != "locations"]
 
 test_that("api return can be unnested", {
   skip_on_cran()

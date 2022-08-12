@@ -1,6 +1,7 @@
 #' @noRd
-get_base <- function(endpoint)
+get_base <- function(endpoint) {
   sprintf("https://search.patentsview.org/api/v1/%s/", to_singular(endpoint))
+}
 
 #' @noRd
 tojson_2 <- function(x, ...) {
@@ -16,7 +17,7 @@ to_arglist <- function(fields, subent_cnts, mtchd_subent_only,
     fields = fields,
     sort = list(as.list(sort)),
     opts = list(
-      offset = (page-1) * per_page,
+      offset = (page - 1) * per_page,
       size = per_page
     )
   )
@@ -51,36 +52,35 @@ get_post_body <- function(query, arg_list) {
 one_request <- function(method, query, base_url, arg_list, ...) {
   ua <- httr::user_agent("https://github.com/ropensci/patentsview")
 
-  if(method == "HATEOAS")
-  {
-     get_url <- base_url
-     write(get_url, stderr())
-     resp <- httr::GET(get_url, httr::add_headers("X-Api-Key" = pview_key()), ua, ...)
-  }
-  else if (method == "GET") {
+  if (method == "HATEOAS") {
+    get_url <- base_url
+    write(get_url, stderr())
+    resp <- httr::GET(get_url, httr::add_headers("X-Api-Key" = pview_key()), ua, ...)
+  } else if (method == "GET") {
     get_url <- get_get_url(query, base_url, arg_list)
     write(get_url, stderr())
     resp <- httr::GET(get_url, httr::add_headers("X-Api-Key" = pview_key()), ua, ...)
   } else {
     body <- get_post_body(query, arg_list)
     # api change, they want a json object, not a string representation of one
-    resp <- httr::POST(base_url, httr::add_headers("X-Api-Key" = pview_key(), "Content-Type" = "application/json" ), body = body, ua, ...)
+    resp <- httr::POST(base_url, httr::add_headers("X-Api-Key" = pview_key(), "Content-Type" = "application/json"), body = body, ua, ...)
   }
 
   # sleep and retry on a 429 Too many requests
   if (httr::status_code(resp) == 429) {
-     seconds <- httr::headers(resp)[['Retry-After']]
-     s <- if(seconds == "1") '' else 's'
-     msg <- sprintf("The api's requests per minute limit has been reached.  Pausing for %s second%s before continuing.", seconds, s)
+    seconds <- httr::headers(resp)[["Retry-After"]]
+    s <- if (seconds == "1") "" else "s"
+    msg <- sprintf("The api's requests per minute limit has been reached.  Pausing for %s second%s before continuing.", seconds, s)
 
-     print(msg)
-     warning(msg)
-     Sys.sleep(seconds)
+    print(msg)
+    warning(msg)
+    Sys.sleep(seconds)
 
-     if (method == "GET" || method == "HATEOAS")
-        resp <- httr::GET(get_url, httr::add_headers("X-Api-Key" = pview_key()), ua, ...)
-     else
-        resp <- httr::POST(base_url, httr::add_headers("X-Api-Key" = pview_key(), "Content-Type" = "application/json" ), body = body, ua, ...)
+    if (method == "GET" || method == "HATEOAS") {
+      resp <- httr::GET(get_url, httr::add_headers("X-Api-Key" = pview_key()), ua, ...)
+    } else {
+      resp <- httr::POST(base_url, httr::add_headers("X-Api-Key" = pview_key(), "Content-Type" = "application/json"), body = body, ua, ...)
+    }
   }
 
   if (httr::http_error(resp)) throw_er(resp)
@@ -90,7 +90,6 @@ one_request <- function(method, query, base_url, arg_list, ...) {
 
 #' @noRd
 request_apply <- function(ex_res, method, query, base_url, arg_list, ...) {
-
   req_pages <- ceiling(ex_res$query_results[[1]] / arg_list$opts$size)
 
   if (req_pages < 1) {
@@ -103,7 +102,7 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, ...) {
   # this is repeating the first call, could put ex_res in tmp and loop lapply 2:req_pages
   tmp <- lapply(1:req_pages, function(i) {
     # should really be page_size not 1000 so we can test throttling by using a small page size
-  #  arg_list$opts$size <- 1000
+    #  arg_list$opts$size <- 1000
     arg_list$opts$offset <- (i - 1) * arg_list$opts$size
     x <- one_request(method, query, base_url, arg_list, ...)
     x$data[[1]]
@@ -142,8 +141,8 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, ...) {
 #'  out the fields available for a given endpoint.
 #' @param endpoint The web service resource you wish to search. \code{endpoint}
 #'  must be one of the following: "patents", "inventors", "assignees",
-#'  "locations", "cpc_groups", "cpc_subgroups", "cpc_subsections", "uspc_mainclasses",  
-#'  "uspc_subclasses","nber_categories", "nber_subcategories", "application_citations", 
+#'  "locations", "cpc_groups", "cpc_subgroups", "cpc_subsections", "uspc_mainclasses",
+#'  "uspc_subclasses","nber_categories", "nber_subcategories", "application_citations",
 #'  or "patent_citations"
 #' @param subent_cnts Do you want the total counts of unique subentities to be
 #'  returned? This is equivalent to the \code{include_subentity_total_counts}
@@ -195,7 +194,6 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, ...) {
 #'  }
 #'
 #' @examples
-#'
 #' \dontrun{
 #'
 #' search_pv(query = '{"_gt":{"patent_year":2010}}')
@@ -237,16 +235,16 @@ search_pv <- function(query,
                       subent_cnts = FALSE,
                       mtchd_subent_only = TRUE,
                       page = 1,
-                      per_page = 25,  # for backward compatiblity, api's default is now 100 
+                      per_page = 25, # for backward compatiblity, api's default is now 100
                       all_pages = FALSE,
                       sort = NULL,
                       method = "GET",
                       error_browser = NULL,
                       paging_override = FALSE,
                       ...) {
-
-  if (!is.null(error_browser))
+  if (!is.null(error_browser)) {
     warning("error_browser parameter has been deprecated")
+  }
 
   validate_endpoint(endpoint)
 
@@ -262,8 +260,9 @@ search_pv <- function(query,
 
   # It's too painful to make fewer than the maximum when all_pages == TRUE
   # but it's nice to have a test case that asserts that paging works
-  if(all_pages && per_page != 1000 && !paging_override)
-     per_page = 1000
+  if (all_pages && per_page != 1000 && !paging_override) {
+    per_page <- 1000
+  }
 
   arg_list <- to_arglist(
     fields, subent_cnts, mtchd_subent_only, page, per_page, sort
@@ -273,7 +272,9 @@ search_pv <- function(query,
 
   res <- one_request(method, query, base_url, arg_list, ...)
 
-  if (!all_pages) return(res)
+  if (!all_pages) {
+    return(res)
+  }
 
   full_data <- request_apply(res, method, query, base_url, arg_list, ...)
   res$data[[1]] <- full_data
@@ -282,7 +283,7 @@ search_pv <- function(query,
 }
 
 #' Get HATEOS Data
-#' 
+#'
 #' The new version of the api return HATEOAS style links to get more data
 #' ex "inventor": "https://search.patentsview.org/api/v1/inventor/252373/"
 #' They are new, Get only endpoints with no ability to pass f: s: or o: parameters
@@ -290,36 +291,35 @@ search_pv <- function(query,
 #' @param url The link that was returned by the API on a previous call
 #'
 #' @return A character vector with field names, same as search_pv()
-#' 
-#' @examples
 #'
+#' @examples
 #' \dontrun{
 #'
 #' retrieve_linked_data("https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4811/")
-#'
 #' }
 #'
 #' @export
 retrieve_linked_data <- function(url) {
+  # Possibly cache the responses for this session?  There would be a chance that the same
+  # data would be wanted again for another patent. same inventor, same cpc etc.
 
- # Possibly cache the responses for this session?  There would be a chance that the same
- # data would be wanted again for another patent. same inventor, same cpc etc.
-
- # We won't make the request / won't sent the API key to somewhere other
- # than https://*.patentsview.org/
- if(!grepl("^https://[^/]*\\.*patentsview.org/", url))
+  # We won't make the request / won't sent the API key to somewhere other
+  # than https://*.patentsview.org/
+  if (!grepl("^https://[^/]*\\.*patentsview.org/", url)) {
     stop("retrieve_linked_data is only for patentsview.org urls - sends API key")
+  }
 
- # We go through one_request, it would resend on too many requests - off chance of getting it here
-  one_request(method="HATEOAS", base_url = url)
+  # We go through one_request, it would resend on too many requests - off chance of getting it here
+  one_request(method = "HATEOAS", base_url = url)
 }
 
 #' @noRd
 pview_key <- function() {
-  api_key <- Sys.getenv('PATENTSVIEW_API_KEY')
+  api_key <- Sys.getenv("PATENTSVIEW_API_KEY")
   if (identical(api_key, "")) {
     stop("Please set env var PATENTSVIEW_API_KEY to your patentsview api key",
-      call. = FALSE)
+      call. = FALSE
+    )
   }
   api_key
 }

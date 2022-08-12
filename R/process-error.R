@@ -24,11 +24,11 @@ throw_if_loc_error <- function(resp) {
 # it's because the api didn't like the value.
 #' @noRd
 throw_if_api_key_error <- function(resp) {
-   if(httr::status_code(resp) == 403) {
-      stop2(
-         "Your api key was rejected by the patentsview api. Please check its value and try again."
-      )
-   }
+  if (httr::status_code(resp) == 403) {
+    stop2(
+      "Your api key was rejected by the patentsview api. Please check its value and try again."
+    )
+  }
 }
 
 #' @noRd
@@ -45,20 +45,18 @@ get_num_groups <- function(url) {
   prsd_json_filds <- gsub(".*&f=([^&]*).*", "\\1", utils::URLdecode(url))
   fields <- jsonlite::fromJSON(prsd_json_filds)
   grps <- fieldsdf[fieldsdf$endpoint == "location" &
-                     fieldsdf$field %in% fields, "group"]
+    fieldsdf$field %in% fields, "group"]
   length(unique(grps))
 }
 
 #' @noRd
 xheader_er_or_status <- function(resp) {
-
   # look for the api's ultra-helpful X-Status-Reason header
-  xhdr <- httr::headers(resp)['X-Status-Reason']
+  xhdr <- httr::headers(resp)["X-Status-Reason"]
 
-  if (length(xhdr) != 1)
+  if (length(xhdr) != 1) {
     httr::stop_for_status(resp)
-  else
+  } else {
     stop(xhdr[[1]], call. = FALSE)
+  }
 }
-
-

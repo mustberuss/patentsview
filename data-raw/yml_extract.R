@@ -15,12 +15,12 @@ library(stringr)
 # returns results.
 
 # The API team's Swagger object has errors so we'll use my corrected one for now.
-# We don't be able to make API calls using rapiclient with the replacement, but we 
-# can use its method to read the API's swagger file.  It'll throw  a warning, but it's ok:  
+# We don't be able to make API calls using rapiclient with the replacement, but we
+# can use its method to read the API's swagger file.  It'll throw  a warning, but it's ok:
 # "Missing Swagger Specification version".  (It's expecting a Swagger 2 object
 # but the patentsview API team more correctly created a OpenAPI/Swagger 3 object)
 
-# Maybe use a different library?  We're abusing rapiclient, only using it 
+# Maybe use a different library?  We're abusing rapiclient, only using it
 # to read the Swagger UI object. It would be nice if there was a package that
 # resolved the reference links for us.  I couldn't find another R package to use though.
 
@@ -78,18 +78,24 @@ pview_api <- get_api(url = "https://patentsview.historicip.com/swagger/openapi_v
 # (it would work if we use the API team's swagger object, see
 # https://github.com/bergant/rapiclient/issues/17#issuecomment-1193196626)
 
-pview_ops <- get_operations(pview_api,  handle_response = content_or_stop, 
-   .headers = c("X-Api-Key" = Sys.getenv("PATENTSVIEW_API_KEY"), 
-                "User-Agent" = "https://github.com/bergant/rapiclient"))
+pview_ops <- get_operations(pview_api,
+  handle_response = content_or_stop,
+  .headers = c(
+    "X-Api-Key" = Sys.getenv("PATENTSVIEW_API_KEY"),
+    "User-Agent" = "https://github.com/bergant/rapiclient"
+  )
+)
 
-client <- list(operations = pview_ops, schemas = get_schemas(pview_api),
-   paths = pview_api$paths)
+client <- list(
+  operations = pview_ops, schemas = get_schemas(pview_api),
+  paths = pview_api$paths
+)
 
 endpoints <- names(client$paths)
 #  [1] "/api/v1/patent/"                  we want this one, it uses q: s: f: o:
 #  [2] "/api/v1/patent/{patent_number}/"  not this one, it uses url parameters (get only)
 
-# We want to exclude paths with just a url parameter, like [2]. 
+# We want to exclude paths with just a url parameter, like [2].
 # They're get only with no f: q: s: or o: parameters
 endpoints <- endpoints[!grepl("\\{", endpoints)]
 
@@ -101,142 +107,144 @@ endpoints <- endpoints[!grepl("\\{", endpoints)]
 # plain_name is always the field without a group name
 
 # Would want to iterate over endpoints looking for the returned structure's reference
-# We'd need this to find the nested array that gets returned 
+# We'd need this to find the nested array that gets returned
 # client$paths["/api/v1/assignee/"]$`/api/v1/assignee/`$post$responses$`200`$content$`application/json`$schema$`$ref`
 # [1] "#/components/schemas/AssigneeSuccessResponse"
 
-responses <- 
-lapply(endpoints, function(y, obj) {
-   obj[y][1][[y]]$get$responses$`200`$content$`application/json`$schema$`$ref`
-}, obj=client$paths)
+responses <-
+  lapply(endpoints, function(y, obj) {
+    obj[y][1][[y]]$get$responses$`200`$content$`application/json`$schema$`$ref`
+  }, obj = client$paths)
 
-entities <- str_extract(responses, "(\\w+)(SuccessResponse)")  
-entities <- sub("SuccessResponse","", entities)
+entities <- str_extract(responses, "(\\w+)(SuccessResponse)")
+entities <- sub("SuccessResponse", "", entities)
 
-# Slight cheat here, instead of resolving the actual entities, we're 
+# Slight cheat here, instead of resolving the actual entities, we're
 # assuming we can remove "SuccessResponse" to get to the nested object.
 # It currently works but could break if the API team doesn't always follow this rule.
 
 # ex resolve NBERSubCategorySuccessResponse or just assume NBERSubCategory?
-# NBERSubCategorySuccessResponse is the error_boolean, count in this request, 
+# NBERSubCategorySuccessResponse is the error_boolean, count in this request,
 # total_hits and array of NBERSubCategory (what we actually want)
 
-# We'll need a lookup for the endpoint names from the entities in a bit, 
-# tolower works on some, like Patents to patents but not all  
+# We'll need a lookup for the endpoint names from the entities in a bit,
+# tolower works on some, like Patents to patents but not all
 # Ex: endpoint for entity USApplicationCitation is  application_citations
 
-enames <- str_extract(endpoints, "(\\w+)/$")  
-enames <- sub("/","", enames)
+enames <- str_extract(endpoints, "(\\w+)/$")
+enames <- sub("/", "", enames)
 
 # last piece of monkey buisness, we need the enames to be plural
 enames <- sapply(enames, function(ename) {
-      if(endsWith(ename,'y'))
-         plural <- sub('y$', 'ies', ename )
-      else if(endsWith(ename ,'s'))
-         plural <- paste0(ename,"es")
-      else
-         plural <- paste0(ename,"s")
-},USE.NAMES = FALSE)
+  if (endsWith(ename, "y")) {
+    plural <- sub("y$", "ies", ename)
+  } else if (endsWith(ename, "s")) {
+    plural <- paste0(ename, "es")
+  } else {
+    plural <- paste0(ename, "s")
+  }
+}, USE.NAMES = FALSE)
 
 # enames and entities are in the same order
-lookup = enames;
-names(lookup) <- entities;
-
-string_fields <- c("patents.patent_number", "patents.patent_title", "patents.patent_type",
-"patents.patent_kind", 
-"patent_citations.patent_number","patent_citations.cited_patent_number",
-"cpc_subsections.cpc_section_id", "cpc_subsections.cpc_subsection_id",
-"application_citations.citation_category",
-"application_citations.cited_application_number",
-"application_citations.citation_kind",
-"patent_citations.citation_category",
-"uspc_mainclasses.uspc_mainclass_id","nber_categories.nber_category_id","nber_subcategories.nber_subcategory_id")
+lookup <- enames
+names(lookup) <- entities
+string_fields <- c(
+  "patents.patent_number", "patents.patent_title", "patents.patent_type",
+  "patents.patent_kind",
+  "patent_citations.patent_number", "patent_citations.cited_patent_number",
+  "cpc_subsections.cpc_section_id", "cpc_subsections.cpc_subsection_id",
+  "application_citations.citation_category",
+  "application_citations.cited_application_number",
+  "application_citations.citation_kind",
+  "patent_citations.citation_category",
+  "uspc_mainclasses.uspc_mainclass_id", "nber_categories.nber_category_id", "nber_subcategories.nber_subcategory_id"
+)
 
 
 # It seems like most strings in the Swagger definition are actually full text  fields
 # here are the ones that are actually strings
 
-csv_data <- 
-   lapply(entities, function(entity) {
-
-   outer <-
+csv_data <-
+  lapply(entities, function(entity) {
+    outer <-
       lapply(names(pview_api$components$schemas[[entity]]$properties), function(x, obj) {
+        plural_endpoint <- lookup[[entity]]
+        group <- plural_endpoint
 
-         plural_endpoint <- lookup[[entity]]
-         group <- plural_endpoint 
+        # see if this is a nested object - fortunately the patentsview API only nests
+        # one level
+        if (!is.null(obj[[x]]$items$`$ref`)) {
+          # $assignee_years$items
+          # $assignee_years$items$`$ref`
+          # [1] "#/components/schemas/YearlyPatents"
 
-         # see if this is a nested object - fortunately the patentsview API only nests
-         # one level
-         if(!is.null(obj[[x]]$items$`$ref`)) {
+          group <- x # attribute name becomes the group name and the nested fields would be x.z
+          # example "#/components/schemas/YearlyPatents"
+          nested <- str_extract(obj[[x]]$items$`$ref`, "(\\w+)$")
 
-             # $assignee_years$items
-             # $assignee_years$items$`$ref`
-             # [1] "#/components/schemas/YearlyPatents"
+          # we want to lapply here ...
+          # where x would become the group in the lapply and the fields would be nested
+          # as x.nestd_fields
 
-             group <- x  # attribute name becomes the group name and the nested fields would be x.z
-             # example "#/components/schemas/YearlyPatents"
-             nested <-  str_extract( obj[[x]]$items$`$ref`, "(\\w+)$")
-
-             # we want to lapply here ...
-             # where x would become the group in the lapply and the fields would be nested
-             # as x.nestd_fields
-
-             inner = lapply(names(pview_api$components$schemas[[nested]]$properties), function(z, subgroup, obj) {
-                # do the type thingie
-                type <- ifelse(obj[[z]]$type == "number", "float", obj[[z]]$type)
-
-                # look for type string and format "date" or at least the date part!
-               if(!is.null(obj[[z]]$format) && obj[[z]]$format == "date")
-                  type <- "date";
-
-               if(type == 'string') {
-                  key <- paste(x,z,sep='.')
-              #   print(key)
-                  if(! key %in% string_fields)
-                     type <- "full text"
-               }
-
-               description <- ifelse(is.null(obj[[z]]$example), "", toString(obj[[z]]$example))
-
-               data.frame(endpoint=plural_endpoint, 
-                  field=paste0(subgroup,'.',z), data_type=type, 
-                  can_query='y', group=subgroup, common_name="common_name",
-                  description=description, plain_name=z)
-
-             }, subgroup=x, obj=pview_api$components$schemas[[nested]]$properties)
-             do.call(rbind, inner)
-         }
-         else
-         {
-            # want "number" written as "float"
-            # write example as the description?
-            type = ifelse(obj[[x]]$type == "number", "float", obj[[x]]$type)
+          inner <- lapply(names(pview_api$components$schemas[[nested]]$properties), function(z, subgroup, obj) {
+            # do the type thingie
+            type <- ifelse(obj[[z]]$type == "number", "float", obj[[z]]$type)
 
             # look for type string and format "date" or at least the date part!
-            if(!is.null(obj[[x]]$format) && obj[[x]]$format == "date")
-               type <- "date";
-
-            if(type == 'string') {
-               key <- paste(plural_endpoint,x,sep='.')
-               print(key)
-               if(! key %in% string_fields)
-                  type <- "full text"
+            if (!is.null(obj[[z]]$format) && obj[[z]]$format == "date") {
+              type <- "date"
             }
 
-            # csv headers:
-            # "endpoint","field","data_type","can_query","group","common_name","description","plain_name"
-            description <- ifelse(is.null(obj[[x]]$example), "", toString(obj[[x]]$example))
+            if (type == "string") {
+              key <- paste(x, z, sep = ".")
+              #   print(key)
+              if (!key %in% string_fields) {
+                type <- "full text"
+              }
+            }
 
+            description <- ifelse(is.null(obj[[z]]$example), "", toString(obj[[z]]$example))
 
-            data.frame(endpoint=plural_endpoint, field=x, data_type=type, 
-               can_query='y', group=group, common_name="common_name",
-               description=description, plain_name=x)
+            data.frame(
+              endpoint = plural_endpoint,
+              field = paste0(subgroup, ".", z), data_type = type,
+              can_query = "y", group = subgroup, common_name = "common_name",
+              description = description, plain_name = z
+            )
+          }, subgroup = x, obj = pview_api$components$schemas[[nested]]$properties)
+          do.call(rbind, inner)
+        } else {
+          # want "number" written as "float"
+          # write example as the description?
+          type <- ifelse(obj[[x]]$type == "number", "float", obj[[x]]$type)
 
+          # look for type string and format "date" or at least the date part!
+          if (!is.null(obj[[x]]$format) && obj[[x]]$format == "date") {
+            type <- "date"
           }
 
-      }, obj=pview_api$components$schemas[[entity]]$properties)
-      do.call(rbind, outer)
-})
+          if (type == "string") {
+            key <- paste(plural_endpoint, x, sep = ".")
+            print(key)
+            if (!key %in% string_fields) {
+              type <- "full text"
+            }
+          }
+
+          # csv headers:
+          # "endpoint","field","data_type","can_query","group","common_name","description","plain_name"
+          description <- ifelse(is.null(obj[[x]]$example), "", toString(obj[[x]]$example))
+
+
+          data.frame(
+            endpoint = plural_endpoint, field = x, data_type = type,
+            can_query = "y", group = group, common_name = "common_name",
+            description = description, plain_name = x
+          )
+        }
+      }, obj = pview_api$components$schemas[[entity]]$properties)
+    do.call(rbind, outer)
+  })
 
 csv_data <- do.call(rbind, csv_data)
 

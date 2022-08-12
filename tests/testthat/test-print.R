@@ -16,6 +16,4 @@ test_that("We can print the returns from all endpoints ", {
   })
 
   expect_true(TRUE)
-
 })
-

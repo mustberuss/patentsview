@@ -5,8 +5,9 @@ get_request <- function(resp) {
     class = c("list", "pv_request")
   )
 
-  if (gp$method == "POST")
+  if (gp$method == "POST") {
     gp$body <- rawToChar(resp$req$options$postfields)
+  }
 
   gp
 }

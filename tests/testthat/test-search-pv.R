@@ -1,14 +1,14 @@
 context("search_pv")
 
-# In the new version of the api, only three of the endpoints are searchable 
-# by patent number.  get_test_query() provides a sample query for each 
+# In the new version of the api, only three of the endpoints are searchable
+# by patent number.  get_test_query() provides a sample query for each
 # endpoint, except for locations, which isn't on the test server yet
 
 # TODO: add a test to see if all the requested fields come back - to test the new
 # version of the api more than to test the r packge!
 
 eps <- (get_endpoints())
-eps <-eps[eps != "locations"]
+eps <- eps[eps != "locations"]
 
 test_that("API returns expected df names for all endpoints", {
   skip_on_cran()
@@ -104,18 +104,18 @@ test_that("search_pv can pull all fields by group for the locations endpoint", {
   z <- lapply(groups, function(x) {
     Sys.sleep(2)
 
-    # the locations endpoint isn't on the test server yet and probably won't be 
+    # the locations endpoint isn't on the test server yet and probably won't be
     # queryable by patent number
     expect_error(
-       search_pv(
-         '{"patent_number":"5116621"}',
-         endpoint = "inventors",
-         fields = get_fields("inventors", x)
-       )
+      search_pv(
+        '{"patent_number":"5116621"}',
+        endpoint = "inventors",
+        fields = get_fields("inventors", x)
+      )
     )
   })
 
-#   expect_true(TRUE)
+  #   expect_true(TRUE)
 })
 
 test_that("search_pv properly encodes queries", {
