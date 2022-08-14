@@ -166,8 +166,22 @@ string_fields <- c(
 )
 
 
-# It seems like most strings in the Swagger definition are actually full text  fields
-# here are the ones that are actually strings
+# It seems like most strings in the Swagger definition are actually full text fields
+# string_fields are the ones that are actually strings
+
+# The floats (latitudes and longitudes) all come back as their native type and don't need to be cast.
+# The API returns native integers on most integer fields but a handful that should be integers come back as strings.
+# cast-pv-data.R looks for a type of "int" to identify them, they'd be in the Swagger definition as strings.
+# a data_type of integer will not need to be cast.
+
+int_fields <- c(
+  "assignees.type",
+  "inventors.num_assignees",
+  "inventors.num_patents",
+  "nber_categories.nber_category_id",
+  "nber_subcategories.nber_category_id",
+  "patents.assignees_at_grant.type"
+)
 
 csv_data <-
   lapply(entities, function(entity) {
@@ -203,7 +217,11 @@ csv_data <-
             if (type == "string") {
               key <- paste(x, z, sep = ".")
               #   print(key)
-              if (!key %in% string_fields) {
+              if (key %in% string_fields) {
+                type <- "string"
+              } else if (key %in% int_fields) {
+                type <- "int"
+              } else {
                 type <- "full text"
               }
             }
@@ -253,7 +271,6 @@ csv_data <-
 
 csv_data <- do.call(rbind, csv_data)
 
-write.csv(csv_data, "data-raw/generated_fieldsdf.csv", row.names = FALSE)
 write.csv(csv_data, "data-raw/fieldsdf.csv", row.names = FALSE)
 
 fieldsdf <- csv_data
