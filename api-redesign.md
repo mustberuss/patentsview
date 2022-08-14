@@ -1,7 +1,3 @@
-------------------------------------------------------------------------
-
-title: "API Changes" output: github_document ---
-
 # Affects on the R package of the Patentsview API changes announced in 2021
 (This is [api-redesign.md](https://github.com/mustberuss/patentsview/blob/api-redesign/api-redesign.md) with navigation to the updated vignettes and reference pages.)
 
@@ -36,8 +32,8 @@ The villagers may revolt over some of these API changes... &nbsp;&nbsp; &nbsp; O
     > Owing to de-normalized and split API design, sub-entity information is not available directly via each endpoint. As a consequence, "matched_subentity" option parameters are not valid. 
 5. Some attributes have new names, like name_last in the nested inventor object returned from the patents endpoint. Now in the fields parameter it would be specified as “inventor.name_last” where formerly it was “inventor_last_name” when using the patents endpoint and name_last when hitting the assignees endpoint (where it comes back at the top level, not within an nested object).
 6. There are type changes in some of the attributes, affecting which query methods are used, contains vs test_any etc.  organization (formerly the string assignee_organization) is now a full text field.  I need to confirm this, but it seems that most fields are now full text.  Exceptions seem to be in the patents endpoint.  
-7. The uspc and nber fields do not currently come back from the patents endpoint.  Now there is no real point to call the uspc or nber endpoints.  This means there is no way to search for patents using the uspc or nber fields.
-8. The cited_patent and citedby_patent fields no longer can come back from the patents endpoint, instead the new patent_citations endpoint needs to be called.  Similarily, the appcit_app fields come only from the new application_citation endpoint. 
+7. The uspc and nber fields do not currently come back from the patents endpoint.  Now there is no real point to call the uspc or nber endpoints.  This means there is no way to search for patents using the uspc or nber fields.  This is especially bad for plant, design and ressued patents.  The bulk cpc file only contains assignments for utility patents so plant, design and reissued patents cannot be searched by any classification system.  The ipc and wipo fields seem to have gone away in the new version of the API.
+8. The cited_patent and citedby_patent fields no longer can come back from the patents endpoint, instead the new patent_citation endpoint needs to be called.  Similarily, the appcit_app fields come only from the new application_citation endpoint. 
 
 ## R Package Design Choices
 1. **Changes made in search-pv.R**
@@ -80,7 +76,7 @@ head(example$data$patents$assignees_at_grant, 1)
    5. I set my API key as asecret in my repo so tests will run and the vignettes can be half rendered etc.  It's retrieved in R-CMD-check.yaml.
    6. I had to add dev = "png" to the knitr::opts_chunk$set in citation-networks.Rmd.orig to get it to render locally.
    7. See the new vignette [converting-an-existing-script.html#additions-to-the-r-package-1](articles/converting-an-existing-script.html#additions-to-the-r-package-1)  I wrote a function that uses the API to determine date ranges for a query returning more than 10,000 rows.  I think it should be added to the R package, but I wasn't sure if it's a good idea..
-   8. Because of the singular endpoint name change, I added the following to utils.R to_plural() and to_singular() Not saying I'm whatever the R equivalent is to a pythonic python programmer...
+   8. Because of the singular endpoint name change, I added the following to utils.R to_plural() and to_singular() 
 
    9. I added an inclusive qry_funs$in_range() to try to make it easier for users to break up queries, due to the decrease in overall request size.
 ```{r}
@@ -115,9 +111,9 @@ Steps to try this out locally
 3. (future feature?) Or in cast-pv-data offer an option to strip off the HATEOAS links?  Is this meaningful to the user: "cpc_subgroup": "https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4811/" (Clicking the link will result in a 403 Unauthorized - no API key is sent by a browser) or do they just want the value G01S7:4811 or even G01S7/4811?
 4. Test that what comes back from the API calls matches the spreadsheet and/or their Swagger definition (should be ultimate source of truth). There's a "API Update Table" link to the fields spreadsheet at the very bottom of https://patentsview.org/apis/purpose  test-api-returns.R currently checks that all the groups come back, it could be extended to include all fields.
 5. Check if the location specific error checking is still needed (throw_if_loc_error() in process-error.R). The locations endpoint won't return as many fields as before but it's not on the test server yet.  The locations tab in the spreadsheet just mentiomend don't look right.
-6. It would be helpful if a test could be written to test the searchability of string/full text fields.  In other words, to we have the types right in the fake documentation?  Confirm that we can do a _text_any on all the fields we think are full text and _contains on all the ones we think are strings. _Update_: test-alpha-types.R does this if either of the Swagger parsers was run.
+6. It would be helpful if a test could be written to test the searchability of string/full text fields.  In other words, to we have the types right in the fake documentation?  Confirm that we can do a _text_any on all the fields we think are full text and _contains on all the ones we think are strings. _Update_: test-alpha-types.R does this if either of the Swagger parsers was run.  The API does not throw an error if the wrong set of operators is used, which would have made writing a test case easier.  On a lot of fields it doesn't seem to matter.  These both return results {"_text_phrase":{"patent_title":"world"}} {"_contains":{"patent_title":"world"}}  The only field that seems to matter is patent_abstract.
 7. We probably should remove printing of the url to stderr in search-pv but it's been so darn useful durning development
-8. Add a method that would iterate through the data ranges generated by tell_us (in the [converting-an-existing-script vignette](articles/converting-an-existing-script.html)) and return the concatenated results.  Or just wrap the whole thing, user passes in the query, we call tell_us and give them back the combined data set.
+8. (future feature?) Add a method that would iterate through the data ranges generated by tell_us (in the [converting-an-existing-script vignette](articles/converting-an-existing-script.html)) and return the concatenated results.  Or just wrap the whole thing, user passes in the query, we call tell_us and give them back the combined data set.
 9. We probably don't need this in process-error.R though the location endpoint is not on the test server yet
 
         "Your request resulted in a 500 error, likely because you have ",
@@ -128,7 +124,6 @@ Steps to try this out locally
 11. Clean up utils.R I hadn't noticed until writting test-utils.R that only to_singular is used by the package.  to_plural() isn't used, it's a hold over from a failed attempt at making the endpoints singular.
 12. A followup is probably in order for the [rOpenSci blog post](https://ropensci.org/blog/2017/09/19/patentsview/) There's an unlinked [vignette](articles/ropensci_blog.html) that reworks the code so it "works" using the new version of the api. README.Rmd's link should be changed if there is a new post.
 13. Follow tidyverse style
-14. Refactor the code and tests so the x.R and test-x.R pattern isn't broken
 
 ## Questions
 1. Should we bump the version number to 0.4.0 or 1.0.0?  The API key alone quarantees that the package won't be backward compatible.
@@ -137,9 +132,11 @@ Steps to try this out locally
 4. How to handle the release?  For a while both versions of the API are supposed to be around.  Have people install the updated R package from a branch on ropensci/patentsview?  When the original version of the API is retired do a CRAN build?
 5. Possible idea: ask the patentsview people if they could create a separate category for the R package in their forum?  Guessing people may need help with their conversions!
 6. Add the <a href="articles/converting-an-existing-script.html#additions-to-the-r-package-1">date range finder</a> to the package?  
+7. Refactor the code and tests so the x.R and test-x.R pattern isn't broken?
+8. Add a CONTRIBUTING.md?  Have info on setting up an API key in a forked repo etc.  Maybe include rendering vignettes locally.
 
 ## Swagger 101
-Open my version of the Swagger object for the new version of the API in the [Swagger Editor](https://editor.swagger.io/?url=https://patentsview.historicip.com/swagger/openapi_v2.yml) then "Generate Client-r" or one of html ones. Pretty powerful huh? There are also numerous tools [here](https://openapi.tools/) that will do fun things with a Swagger object as input but nothing seems to be R based. I did find this that looks promising on [cran](https://cran.r-project.org/web/packages/rapiclient/rapiclient.pdf) or [github](https://github.com/bergant/rapiclient).  One gotcha, it expects the input file to be the older Swagger 2.0 format.  It works but throws a warning. It looks like what we really need is an R port of this python project https://github.com/cyprieng/swagger-parser!  Oops, that's reading Swagger 2 files.  All that to say that there isn't something to generate fieldsdf.csv from the Swagger definition, we may have to do some heavy lifting ourselves.
+Open my version of the Swagger object for the new version of the API in the [Swagger Editor](https://editor.swagger.io/?url=https://patentsview.historicip.com/swagger/openapi.json) then "Generate Client-r" or one of html ones. Pretty powerful huh? There are also numerous tools [here](https://openapi.tools/) that will do fun things with a Swagger object as input but nothing seems to be R based. I did find this that looks promising on [cran](https://cran.r-project.org/web/packages/rapiclient/rapiclient.pdf) or [github](https://github.com/bergant/rapiclient).  One gotcha, it expects the input file to be the older Swagger 2.0 format.  It works but throws a warning. It looks like what we really need is an R port of this python project https://github.com/cyprieng/swagger-parser!  Oops, that's reading Swagger 2 files.  All that to say that there isn't something to generate fieldsdf.csv from the Swagger definition, we may have to do some heavy lifting ourselves.
 
 ## Carried Over
 Observations from the original version of the R package that are still true in this version.
