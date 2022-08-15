@@ -3,7 +3,7 @@ as_is <- function(x) x
 
 # now the api does return integer fields, so integer are cast as_is
 # int is used (until an api fix) for fields returned as strings that should be returned
-# as integers, so we'll be case as.integer
+# as integers, so we'll be cast as.integer
 
 #' @noRd
 get_cast_fun <- function(data_type) {
@@ -14,9 +14,9 @@ get_cast_fun <- function(data_type) {
   switch(data_type,
     "string" = as_is,
     "date" = as.Date,
-    "float" = as.numeric,
+    "float" = as_is,
     "integer" = as_is,
-    "int" = as.integer, # only used on problematic /patents assignees_at_grant.type
+    "int" = as.integer,
     "fulltext" = as_is
   )
 }
@@ -27,12 +27,18 @@ lookup_cast_fun <- function(name, typesdf) {
   # typesdf$field has the qualified name if it's a nested field, we use plain_name now
   # (new column added to the csv file)
   data_type <- typesdf[typesdf$plain_name == name, "data_type"]
-  print(paste(name, data_type, sep = "!"))
+  # print(paste(name, data_type, sep = "!"))
   get_cast_fun(data_type = data_type)
 }
 
 #' @noRd
 cast_one.character <- function(one, name, typesdf) {
+  cast_fun <- lookup_cast_fun(name, typesdf)
+  cast_fun(one)
+}
+
+#' @noRd
+cast_one.integer <- function(one, name, typesdf) {
   cast_fun <- lookup_cast_fun(name, typesdf)
   cast_fun(one)
 }
