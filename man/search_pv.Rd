@@ -48,8 +48,8 @@ out the fields available for a given endpoint.}
 
 \item{endpoint}{The web service resource you wish to search. \code{endpoint}
 must be one of the following: "patents", "inventors", "assignees",
-"locations", "cpc_groups", "cpc_subgroups", "cpc_subsections", "uspc_mainclasses",  
-"uspc_subclasses","nber_categories", "nber_subcategories", "application_citations", 
+"locations", "cpc_groups", "cpc_subgroups", "cpc_subsections", "uspc_mainclasses",
+"uspc_subclasses","nber_categories", "nber_subcategories", "application_citations",
 or "patent_citations"}
 
 \item{subent_cnts}{Do you want the total counts of unique subentities to be
@@ -116,7 +116,6 @@ This function makes an HTTP request to the PatentsView API for data matching
 the user's query.
 }
 \examples{
-
 \dontrun{
 
 search_pv(query = '{"_gt":{"patent_year":2010}}')

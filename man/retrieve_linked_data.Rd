@@ -18,11 +18,9 @@ ex "inventor": "https://search.patentsview.org/api/v1/inventor/252373/"
 They are new, Get only endpoints with no ability to pass f: s: or o: parameters
 }
 \examples{
-
 \dontrun{
 
 retrieve_linked_data("https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4811/")
-
 }
 
 }

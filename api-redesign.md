@@ -54,7 +54,7 @@ The villagers may revolt over some of these API changes... &nbsp;&nbsp; &nbsp; O
     while it used to be  
        ```data, count, total_<endpoint>_count```   
    Also note that total_hits comes back from all endpoints, previously there was an endpoint specific return, like total_patent_count
-   10. The API now returns a few HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more information, example "inventor": "https://search.patentsview.org/api/v1/inventor/252373/" (Clicking the link will result in a 403 Unauthorized - no API key is sent by a browser) Added [retrieve_linked_data()](reference/retrieve_linked_data.html) to retrieve this data for the user, they'd pass the full url.  One odd thing, in the q:/query and f:/fields paramters the HATEOAS field names ends with an _id but it is returned without it, example: patents endpoint query: 
+   10. The API now returns a few HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more information, example "inventor": "https://search.patentsview.org/api/v1/inventor/252373/" (Clicking the link will result in a 403 Unauthorized - no API key is sent by a browser) Added [retrieve_linked_data()](reference/retrieve_linked_data.html) to retrieve this data for the user, they'd pass the full url.  One odd thing, in the q:/query and f:/fields paramters the HATEOAS field names end with an _id but it is returned without it, example: patents endpoint query: 
 
 ```{r}
 library(patentsview)
@@ -104,6 +104,16 @@ Steps to try this out locally
 3. There  seems to be a change in case sensitivity compared to the original API. The original API would return results for q:{"patent_type":"Design"} while the ElasticSearch version does not.
 4. It probably won't not matter to the R package but the slash in the url parameters of /api/v1/uspc_subclass/{uspc_subclass_id}/ and /api/v1/cpc_subgroup/{cpc_subgroup_id}/ need to be changed to colons, ex. 100:1 for 100/1 and A01B1:00 for A01B1/00 and respectively.  This can be seen in the return from the patent endpoint's cpc_current.cpc_subgroup, example  "https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4865/" (Clicking the link will result in a 403 Unauthorized - no API key is sent by a browser.) It's a HATEOAS style link that conatins a colon instead of a slash.
 5. The API seems like it will become less useful.  A lot of use cases will break, like the ones lists on https://docs.ropensci.org/patentsview/articles/examples.html 
+6. The API returns null as the value of some fields rather than not returning an attribute.  It might matter to cast-pv-data.R
+```
+      "assignees_at_grant": [
+        {
+          "name_first": null,
+          "name_last": null,
+          "organization": "INTERNATIONAL BUSINESS MACHINES CORPORATION",
+        }
+      ]
+```
 
 ## TODOS
 1. Some exampes may not be possible due to the API change, like searching inventors by location. (locations endpoint is not on the test server yet.)  There a bogus locations test in test-search-pv.R that should be reworked or removed.

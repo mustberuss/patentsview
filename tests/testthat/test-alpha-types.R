@@ -3,7 +3,7 @@ context("test_alpha_types")
 library(dplyr)
 
 # in the patentsview API the set of operators that can be used on an alpha field
-# vary depending on whether the field is a string or full text.  Here we will
+# vary depending on whether the field is a string or fulltext.  Here we will
 # test that we have pulled them from the Swagger definition properly.
 
 # There is a hard coded list of string fields in yml_extract.R
@@ -38,7 +38,7 @@ test_that("all string fields have an example", {
   expect_true(count(need_examples) == 0)
 })
 
-test_that("all full text fields have an example", {
+test_that("all fulltext fields have an example", {
   skip_on_cran()
   skip_on_ci()
 
@@ -46,7 +46,7 @@ test_that("all full text fields have an example", {
 
   need_examples <-
     fieldsdf %>%
-    filter(data_type == "full text" & description == "") %>%
+    filter(data_type == "fulltext" & description == "") %>%
     select(endpoint, field, data_type, description) %>%
     arrange(endpoint, field)
 
@@ -82,13 +82,13 @@ test_that("string fields behave properly", {
   expect_true(all(returned_counts > 0))
 })
 
-test_that("full text fields behave properly", {
+test_that("fulltext fields behave properly", {
   skip_on_cran()
   skip_on_ci()
 
   skip_if(!can_run, "We don't have sample values")
 
-  # get the sample queries for full text fields
+  # get the sample queries for fulltext fields
 
   # TODO: remove this when the api is fixed!
   # temporarily want to exclude the cpc_current fields from the patents endpoint
@@ -97,7 +97,7 @@ test_that("full text fields behave properly", {
   # is a string field and is always null.  We'll filter it until the API is fixed
 
   fulltext_fields <- fieldsdf %>%
-    filter(data_type == "full text" & description != "") %>% # keep
+    filter(data_type == "fulltext" & description != "") %>% # keep
     filter(!(endpoint == "patents" & group == "cpc_current")) %>% # remove
     filter(!(endpoint == "patents" & # remove
       field == "patent_uspc_current_mainclass_average_patent_processing_days")) %>%

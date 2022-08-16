@@ -13,9 +13,8 @@ test_that("cast_pv_data casts patent fields as expected", {
   date <- !is.character(dat$patents$patent_date)
   # dat$patents$patent_detail_desc_length isn't being set?
 
-  # num <- is.numeric(dat$patents$patent_detail_desc_length)
-  # now we don't get latitude from the patents endpoint
-  # num <- is.numeric(dat$patents$assignees_at_grant[[1]]$latitude[1])
+  num <- is.numeric(dat$patents$patent_detail_desc_length)
+  lat <- is.numeric(dat$patents$assignees_at_grant[[1]]$latitude[1])
 
   # assignee.type behaves oddly, it can be requested as a string or integer
   # and is returned as a string.  I've raised it as an error - it should be
@@ -29,7 +28,7 @@ test_that("cast_pv_data casts patent fields as expected", {
   # (we'll cast the string to an integer now)
   assignee_type <- is.integer(dat$patents$assignees_at_grant[[1]]$type[1])
 
-  expect_true(date && assignee_type)
+  expect_true(num && lat && date && assignee_type)
 })
 
 test_that("cast_pv_data casts assignee fields as expected", {

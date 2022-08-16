@@ -252,7 +252,11 @@ Slight funky is the cpc_current’s cpc_subgroup, returned by the patents
 endpoint. Here the slash in the cpc is turned into a colon. This is a
 peculiarity of two of the new convience urls that shouldn’t be noticable
 in the r package, unless you are trying to infer the uspc and cpc values
-from the returned urls, without actually calling back for this data.</p>
+from the returned urls, without actually calling back for this data.
+There is something slightly funky with these fields. They have an _id
+when in the q:/query and f:/fields parameters but they are returned
+without the _id. Example: cpc_subgroup_id is returned as the HATEOAS
+link cpc_subgroup.</p>
 <p>Example link returned by the patents endpoint</p>
 <pre><code> "cpc_current": {
      "cpc_subgroup": "https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4865/"  
@@ -318,7 +322,7 @@ full text fields.</p>
    <span class="va">fieldsdf</span> <span class="op">%&gt;%</span>
       <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">data_type</span> <span class="op">==</span> <span class="st">"string"</span><span class="op">)</span>  <span class="op">%&gt;%</span>
       <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">endpoint</span>, <span class="va">field</span>, <span class="va">data_type</span><span class="op">)</span> <span class="op">%&gt;%</span>
-      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">endpoint</span>, <span class="va">field</span><span class="op">)</span>  
+      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">`endpoint`</span>, <span class="va">`field`</span><span class="op">)</span>  
  
 <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">string_fields</span>,  row.names <span class="op">=</span> <span class="cn">FALSE</span>, caption <span class="op">=</span> <span class="st">'String Fields'</span><span class="op">)</span></code></pre></div>
 <table class="table">
@@ -374,26 +378,31 @@ full text fields.</p>
 <td align="left">string</td>
 </tr>
 <tr class="even">
+<td align="left">application_citations</td>
+<td align="left">citation_kind</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
 <td align="left">cpc_subsections</td>
 <td align="left">cpc_section_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">cpc_subsections</td>
 <td align="left">cpc_subsection_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">uspc_mainclasses</td>
 <td align="left">uspc_mainclass_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">nber_categories</td>
 <td align="left">nber_category_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">nber_subcategories</td>
 <td align="left">nber_subcategory_id</td>
 <td align="left">string</td>
@@ -404,7 +413,7 @@ full text fields.</p>
 <code class="sourceCode R">
 <span class="va">fulltext_fields</span> <span class="op">&lt;-</span>
    <span class="va">fieldsdf</span> <span class="op">%&gt;%</span>
-      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">data_type</span> <span class="op">==</span> <span class="st">"full text"</span><span class="op">)</span>  <span class="op">%&gt;%</span>
+      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">data_type</span> <span class="op">==</span> <span class="st">"fulltext"</span><span class="op">)</span>  <span class="op">%&gt;%</span>
       <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">endpoint</span>, <span class="va">field</span>, <span class="va">data_type</span><span class="op">)</span> <span class="op">%&gt;%</span>
       <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">endpoint</span>, <span class="va">field</span><span class="op">)</span>  
  
@@ -424,267 +433,272 @@ full text fields.</p>
 <tr class="odd">
 <td align="left">patents</td>
 <td align="left">patent_country</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="even">
 <td align="left">patents</td>
 <td align="left">patent_abstract</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="odd">
 <td align="left">patents</td>
 <td align="left">patent_uspc_current_mainclass_average_patent_processing_days</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="even">
 <td align="left">patents</td>
 <td align="left">assignees_at_grant.assignee_id</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="odd">
 <td align="left">patents</td>
 <td align="left">assignees_at_grant.name_first</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="even">
 <td align="left">patents</td>
 <td align="left">assignees_at_grant.name_last</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="odd">
 <td align="left">patents</td>
 <td align="left">assignees_at_grant.organization</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="even">
 <td align="left">patents</td>
 <td align="left">assignees_at_grant.type</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="odd">
 <td align="left">patents</td>
 <td align="left">assignees_at_grant.city</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="even">
 <td align="left">patents</td>
 <td align="left">assignees_at_grant.state</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="odd">
 <td align="left">patents</td>
 <td align="left">assignees_at_grant.country</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="even">
 <td align="left">patents</td>
 <td align="left">inventors_at_grant.inventor_id</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="odd">
 <td align="left">patents</td>
 <td align="left">inventors_at_grant.name_first</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="even">
 <td align="left">patents</td>
 <td align="left">inventors_at_grant.name_last</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="odd">
 <td align="left">patents</td>
 <td align="left">inventors_at_grant.city</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="even">
 <td align="left">patents</td>
 <td align="left">inventors_at_grant.state</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="odd">
 <td align="left">patents</td>
 <td align="left">inventors_at_grant.country</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="even">
 <td align="left">patents</td>
-<td align="left">cpc_current.cpc_section_id</td>
-<td align="left">full text</td>
+<td align="left">cpc_current.section_id</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="odd">
 <td align="left">patents</td>
-<td align="left">cpc_current.cpc_subsection</td>
-<td align="left">full text</td>
+<td align="left">cpc_current.subsection_id</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="even">
 <td align="left">patents</td>
-<td align="left">cpc_current.cpc_group</td>
-<td align="left">full text</td>
+<td align="left">cpc_current.group_id</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="odd">
 <td align="left">patents</td>
-<td align="left">cpc_current.cpc_subgroup_id</td>
-<td align="left">full text</td>
+<td align="left">cpc_current.subgroup_id</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="even">
 <td align="left">patents</td>
 <td align="left">cpc_current.cpc_subgroup_title</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="odd">
 <td align="left">assignees</td>
 <td align="left">lastknown_city</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="even">
 <td align="left">assignees</td>
 <td align="left">lastknown_country</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="odd">
 <td align="left">assignees</td>
 <td align="left">lastknown_state</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="even">
 <td align="left">assignees</td>
 <td align="left">name_first</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="odd">
 <td align="left">assignees</td>
 <td align="left">name_last</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="even">
 <td align="left">assignees</td>
 <td align="left">num_inventors</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="odd">
 <td align="left">assignees</td>
 <td align="left">num_patents</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="even">
 <td align="left">assignees</td>
 <td align="left">organization</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="odd">
+<td align="left">assignees</td>
+<td align="left">type</td>
+<td align="left">fulltext</td>
+</tr>
+<tr class="even">
 <td align="left">inventors</td>
 <td align="left">lastknown_city</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">inventors</td>
 <td align="left">lastknown_country</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">inventors</td>
 <td align="left">lastknown_state</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">inventors</td>
 <td align="left">name_first</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">inventors</td>
 <td align="left">name_last</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">inventors</td>
 <td align="left">num_patents</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">inventors</td>
 <td align="left">inventor_id</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">inventors</td>
 <td align="left">num_assignees</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">application_citations</td>
 <td align="left">patent_number</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">cpc_subsections</td>
 <td align="left">cpc_subsection_title</td>
-<td align="left">full text</td>
-</tr>
-<tr class="odd">
-<td align="left">cpc_groups</td>
-<td align="left">cpc_subsection_id</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="even">
 <td align="left">cpc_groups</td>
-<td align="left">cpc_group_id</td>
-<td align="left">full text</td>
+<td align="left">cpc_subsection_id</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="odd">
+<td align="left">cpc_groups</td>
+<td align="left">cpc_group_id</td>
+<td align="left">fulltext</td>
+</tr>
+<tr class="even">
 <td align="left">cpc_groups</td>
 <td align="left">cpc_group_title</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">cpc_subgroups</td>
 <td align="left">cpc_subsection_id</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">cpc_subgroups</td>
 <td align="left">cpc_group_id</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">cpc_subgroups</td>
 <td align="left">cpc_subgroup_id</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">cpc_subgroups</td>
 <td align="left">cpc_subgroup_title</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">uspc_mainclasses</td>
 <td align="left">uspc_mainclass_title</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">uspc_subclasses</td>
 <td align="left">uspc_mainclass_id</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">uspc_subclasses</td>
 <td align="left">uspc_subclass_id</td>
-<td align="left">full text</td>
-</tr>
-<tr class="odd">
-<td align="left">uspc_subclasses</td>
-<td align="left">uspc_subclass_title</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="even">
-<td align="left">nber_categories</td>
-<td align="left">nber_category_title</td>
-<td align="left">full text</td>
+<td align="left">uspc_subclasses</td>
+<td align="left">uspc_subclass_title</td>
+<td align="left">fulltext</td>
 </tr>
 <tr class="odd">
+<td align="left">nber_categories</td>
+<td align="left">nber_category_title</td>
+<td align="left">fulltext</td>
+</tr>
+<tr class="even">
 <td align="left">nber_subcategories</td>
 <td align="left">nber_subcategory_title</td>
-<td align="left">full text</td>
+<td align="left">fulltext</td>
 </tr>
 </tbody>
 </table>
@@ -755,12 +769,12 @@ f:parameter. Here are all the patents endpoint’s fields:</p></li>
 <span class="co">#&gt; [36] inventors_at_grant.latitude                                 </span>
 <span class="co">#&gt; [37] inventors_at_grant.longitude                                </span>
 <span class="co">#&gt; [38] cpc_current.sequence                                        </span>
-<span class="co">#&gt; [39] cpc_current.cpc_section_id                                  </span>
-<span class="co">#&gt; [40] cpc_current.cpc_subsection                                  </span>
-<span class="co">#&gt; [41] cpc_current.cpc_group                                       </span>
-<span class="co">#&gt; [42] cpc_current.cpc_subgroup_id                                 </span>
+<span class="co">#&gt; [39] cpc_current.section_id                                      </span>
+<span class="co">#&gt; [40] cpc_current.subsection_id                                   </span>
+<span class="co">#&gt; [41] cpc_current.group_id                                        </span>
+<span class="co">#&gt; [42] cpc_current.subgroup_id                                     </span>
 <span class="co">#&gt; [43] cpc_current.cpc_subgroup_title                              </span>
-<span class="co">#&gt; 108 Levels: patent_number patent_title patent_date ... nber_subcategory_years_active</span></code></pre></div>
+<span class="co">#&gt; 109 Levels: patent_number patent_title patent_date ... nber_subcategory_years_active</span></code></pre></div>
 </div>
   </div>
 

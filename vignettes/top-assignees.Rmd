@@ -60,7 +60,7 @@ query
 fields <- c(
   "patent_number", "patent_date","patent_year",
   "patent_num_us_patents_cited",
-  "assignees_at_grant.organization",  # full text field now if used in q:
+  "assignees_at_grant.organization",  # fulltext field now if used in q:
   "assignees_at_grant.assignee_id"  # the assignee fields come back in a nested object
 )
 

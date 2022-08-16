@@ -374,8 +374,8 @@ Application State) links to retrieve more information, example
 sent by a browser) Added <a href="reference/retrieve_linked_data.html">retrieve_linked_data()</a> to
 retrieve this data for the user, they’d pass the full url. One odd
 thing, in the q:/query and f:/fields paramters the HATEOAS field names
-ends with an _id but it is returned without it, example: patents
-endpoint query:</li>
+end with an _id but it is returned without it, example: patents endpoint
+query:</li>
 </ol>
 </li>
 </ol>
@@ -486,7 +486,16 @@ sent by a browser.) It’s a HATEOAS style link that conatins a colon
 instead of a slash.</p></li>
 <li><p>The API seems like it will become less useful. A lot of use cases
 will break, like the ones lists on <a href="https://docs.ropensci.org/patentsview/articles/examples.html" class="uri">https://docs.ropensci.org/patentsview/articles/examples.html</a></p></li>
+<li><p>The API returns null as the value of some fields rather than not
+returning an attribute. It might matter to cast-pv-data.R</p></li>
 </ol>
+<pre><code>      "assignees_at_grant": [
+        {
+          "name_first": null,
+          "name_last": null,
+          "organization": "INTERNATIONAL BUSINESS MACHINES CORPORATION",
+        }
+      ]</code></pre>
 </div>
 <div id="todos" class="section level2">
 <h2 class="hasAnchor">
@@ -538,10 +547,10 @@ back the combined data set.</p></li>
 <li>
 <p>We probably don’t need this in process-error.R though the
 location endpoint is not on the test server yet</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a> <span class="st">"Your request resulted in a 500 error, likely because you have "</span>,</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a> <span class="st">"requested too many fields in your request (the locations endpoint "</span>,</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a> <span class="st">"currently has restrictions on the number of fields/groups you can "</span>,</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a> <span class="st">"request). Try slimming down your field list and trying again."</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a> <span class="st">"Your request resulted in a 500 error, likely because you have "</span>,</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a> <span class="st">"requested too many fields in your request (the locations endpoint "</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a> <span class="st">"currently has restrictions on the number of fields/groups you can "</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a> <span class="st">"request). Try slimming down your field list and trying again."</span></span></code></pre></div>
 </li>
 <li><p>If possible, suppress api-redesign.md from producing
 docs/api-redesign.html</p></li>
@@ -580,6 +589,8 @@ range finder</a> to the package?<br>
 </li>
 <li>Refactor the code and tests so the x.R and test-x.R pattern isn’t
 broken?</li>
+<li>Add a CONTRIBUTING.md? Have info on setting up an API key in a
+forked repo etc. Maybe include rendering vignettes locally.</li>
 </ol>
 </div>
 <div id="swagger-101" class="section level2">

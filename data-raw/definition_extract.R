@@ -11,7 +11,7 @@ library(stringr)
 
 # We don't have anything directly applicable to the csv's description column.
 # Instead, we'll pull the examples from the Swagger definition. There isn't a way
-# to distinguish strings from full text fields in a Swagger definition.
+# to distinguish strings from fulltext fields in a Swagger definition.
 # It matters to the patentsview api in that it defines which operators
 # can be used on a field.  If we capture the example something could be written
 # to retrieve string fields using both _equals and _text_any to see which one
@@ -26,6 +26,9 @@ library(stringr)
 # Maybe use a different library?  We're abusing rapiclient, only using it
 # to read the Swagger UI object. It would be nice if there was a package that
 # resolved the reference links for us.  I couldn't find another R package to use though.
+# just grab rapiclient's file opening code?
+
+# TODO: probably should w rename the description column to something like sample_value
 
 # OpenAPI/Swagger 3 highlights
 
@@ -48,8 +51,8 @@ library(stringr)
 #  ..$ example: num -73.9
 
 # 4. Strings and integers are as expected.  Caveat with this API, I don't think we can tell
-# the difference between a string and a full text field (which matters to which operators are used).
-# We might need to assume full text (more are full text now) and have a hardcoded list of exclusions
+# the difference between a string and a fulltext field (which matters to which operators are used).
+# We might need to assume fulltext (more are fulltext now) and have a hardcoded list of exclusions
 
 # $ nber_subcategory_title          :List of 3
 #  ..$ type     : chr "string"
@@ -105,7 +108,7 @@ endpoints <- names(client$paths)
 endpoints <- endpoints[!grepl("\\{", endpoints)]
 
 # ultimately, we want these columns in the csv
-# "endpoint","field","data_type","can_query","group","common_name","description","plain_name"
+# "endpoint","field","data_type","can_query","group","description","plain_name","cast_as"
 
 # Maybe use examples in the Swagger definition for the csv description fielld?
 # "field" would be group.field in a nested object (where group != endpoint)
@@ -166,7 +169,7 @@ string_fields <- c(
 )
 
 
-# It seems like most strings in the Swagger definition are actually full text fields
+# It seems like most strings in the Swagger definition are actually fulltext fields
 # string_fields are the ones that are actually strings
 
 # The floats (latitudes and longitudes) all come back as their native type and don't need to be cast.
@@ -179,7 +182,7 @@ int_fields <- c(
   "inventors.num_assignees",
   "inventors.num_patents",
   "nber_categories.nber_category_id",
-  "nber_subcategories.nber_category_id",
+  "nber_subcategories.nber_subcategory_id",
   "patents.assignees_at_grant.type"
 )
 
@@ -214,16 +217,18 @@ csv_data <-
               type <- "date"
             }
 
+            cast_as <- type
             if (type == "string") {
-              key <- paste(x, z, sep = ".")
-              #   print(key)
-              if (key %in% string_fields) {
-                type <- "string"
-              } else if (key %in% int_fields) {
-                type <- "int"
-              } else {
-                type <- "full text"
+              key <- paste(plural_endpoint, subgroup, z, sep = ".")
+              print(key)
+              if (!key %in% string_fields) {
+                type <- "fulltext"
+                cast_as <- "fulltext"
               }
+              if (key %in% int_fields) cast_as <- "int" # override cast as
+            } else {
+              key <- paste(plural_endpoint, x, sep = ".")
+              print(paste(key, type))
             }
 
             description <- ifelse(is.null(obj[[z]]$example), "", toString(obj[[z]]$example))
@@ -231,8 +236,8 @@ csv_data <-
             data.frame(
               endpoint = plural_endpoint,
               field = paste0(subgroup, ".", z), data_type = type,
-              can_query = "y", group = subgroup, common_name = "common_name",
-              description = description, plain_name = z
+              can_query = "y", group = subgroup,
+              description = description, plain_name = z, cast_as = cast_as
             )
           }, subgroup = x, obj = pview_api$components$schemas[[nested]]$properties)
           do.call(rbind, inner)
@@ -246,23 +251,22 @@ csv_data <-
             type <- "date"
           }
 
+          cast_as <- type
           if (type == "string") {
             key <- paste(plural_endpoint, x, sep = ".")
-            print(key)
             if (!key %in% string_fields) {
-              type <- "full text"
+              type <- "fulltext"
+              cast_as <- "fulltext"
             }
+            if (key %in% int_fields) cast_as <- "int" # override cast as
           }
 
-          # csv headers:
-          # "endpoint","field","data_type","can_query","group","common_name","description","plain_name"
           description <- ifelse(is.null(obj[[x]]$example), "", toString(obj[[x]]$example))
-
 
           data.frame(
             endpoint = plural_endpoint, field = x, data_type = type,
-            can_query = "y", group = group, common_name = "common_name",
-            description = description, plain_name = x
+            can_query = "y", group = group,
+            description = description, plain_name = x, cast_as = cast_as
           )
         }
       }, obj = pview_api$components$schemas[[entity]]$properties)

@@ -33,16 +33,16 @@ qry_funs$and(
   )
 )
 
-#...With it, this becomes:
+# ...With it, this becomes:
 with_qfuns(
- and(
-   gte(patent_date = "2007-01-01"),
-   text_phrase(patent_abstract = c("computer program")),
-   or(
-     eq(inventor_last_name = "ihaka"),
-     eq(inventor_first_name = "chris")
-   )
- )
+  and(
+    gte(patent_date = "2007-01-01"),
+    text_phrase(patent_abstract = c("computer program")),
+    or(
+      eq(inventor_last_name = "ihaka"),
+      eq(inventor_first_name = "chris")
+    )
+  )
 )
 
 }

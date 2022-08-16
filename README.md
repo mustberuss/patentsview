@@ -24,8 +24,9 @@ Or the development version from GitHub:
 
 
 ```r
-if (!"devtools" %in% rownames(installed.packages())) 
+if (!"devtools" %in% rownames(installed.packages())) {
   install.packages("devtools")
+}
 
 devtools::install_github("ropensci/patentsview")
 ```
@@ -41,8 +42,9 @@ The updated R package for the new version of the API can be installed from this 
 
 
 ```r
-if (!"devtools" %in% rownames(installed.packages())) 
+if (!"devtools" %in% rownames(installed.packages())) {
   devtools::install_github("mustberuss/patentsview@api-redesign")
+}
 ```
 
 See [this page](https://mustberuss.github.io/patentsview/articles/api-changes.html) about the change. The navigation there will get you to the updated vignettes and reference pages.

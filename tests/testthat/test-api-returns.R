@@ -5,13 +5,8 @@ context("api-returns")
 # get the df names back, here we're checking that all the groups and eventually
 # all the fields come back properly
 
-# is this what blows up the ubuntu-20.04 build??
-
 eps <- (get_endpoints())
 eps <- eps[eps != "locations"]
-
-# need to figure out how to match names
-# names(dl$assignees_at_grant)# could check plain_names in fieldsdf for this group and endpoint
 
 test_that("API returns all requested groups", {
   skip_on_cran()
@@ -35,13 +30,10 @@ test_that("API returns all requested groups", {
 
     dl <- unnest_pv_data(res$data)
 
-    actual_groups <- sort(names(dl))
-    expected_groups <- sort(unique(fieldsdf[fieldsdf$endpoint == x, "group"]))
+    actual_groups <- names(dl)
+    expected_groups <- unique(fieldsdf[fieldsdf$endpoint == x, "group"])
 
-    if (length(actual_groups) != length(expected_groups)) {
-      print(paste("trouble", x))
-    }
+    expect_setequal(actual_groups, expected_groups)
 
-    expect_equal(expected_groups, actual_groups)
   })
 })

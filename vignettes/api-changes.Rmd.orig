@@ -100,7 +100,7 @@ kable(string_fields,  row.names = FALSE, caption = 'String Fields')
 
 fulltext_fields <-
    fieldsdf %>%
-      filter(data_type == "full text")  %>%
+      filter(data_type == "fulltext")  %>%
       select(endpoint, field, data_type) %>%
       arrange(endpoint, field)  
  
