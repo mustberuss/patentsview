@@ -5,15 +5,17 @@ output: github_document
 
 
 
+# pkgdown <img src="man/figures/logo.png" align="right" height="134.5" />
 > An R client to the PatentsView API
 
 [![](http://badges.ropensci.org/112_status.svg)](https://github.com/ropensci/software-review/issues/112)
 [![R-CMD-check](https://github.com/ropensci/patentsview/workflows/R-CMD-check/badge.svg)](https://github.com/ropensci/patentsview/actions)
 [![CRAN version](http://www.r-pkg.org/badges/version/patentsview)](https://cran.r-project.org/package=patentsview)
+[![](https://mustberuss.r-universe.dev/badges/patentsview)](https://mustberuss.r-universe.dev/ui#package:patentsview)
 
 ## Installation
 
-You can get the stable version from CRAN:
+You can get the stable version for the original version of the API from CRAN:
 
 
 ```r
@@ -30,7 +32,22 @@ if (!"devtools" %in% rownames(installed.packages())) {
 
 devtools::install_github("ropensci/patentsview")
 ```
+Or the R package for the new version of the API from github:
+```
+if (!"devtools" %in% rownames(installed.packages())) {
+  devtools::install_github("mustberuss/patentsview@api-redesign")
+}
+```
+Or the R package for the new version of the API from the r-universe:
 
+
+```r
+options(repos = c(
+   patentsview = 'https://mustberuss.r-universe.dev/',
+   CRAN = 'https://cloud.r-project.org'))
+
+install.packages('patentsview')
+```
 ## Important API Change
 
 The new version of the API requires an api key, or all of your requests will be blocked.  An API key can be optained [here](https://patentsview.org/apis/keyrequest).  The updated R package will look for an environmental variable PATENTSVIEW_API_KEY set to the value of your key. For windows it would be
@@ -38,17 +55,7 @@ The new version of the API requires an api key, or all of your requests will be 
 set PATENTSVIEW_API_KEY=my_keys_value_without quotes
 ```
 
-The updated R package for the new version of the API can be installed from this branch:
-
-
-```r
-if (!"devtools" %in% rownames(installed.packages())) {
-  devtools::install_github("mustberuss/patentsview@api-redesign")
-}
-```
-
 See [this page](https://mustberuss.github.io/patentsview/articles/api-changes.html) about the change. The navigation there will get you to the updated vignettes and reference pages.
-
 
 ## Basic usage
 
@@ -74,7 +81,7 @@ search_pv(query = '{"_gte":{"patent_date":"2007-01-01"}}')
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 10,000
+#> total_hits = 4,019,907
 ```
 
 ## Learning more

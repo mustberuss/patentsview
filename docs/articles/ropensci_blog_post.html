@@ -5,15 +5,22 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Patentsview Follow Up Blog • patentsview</title>
+<title>Accessing patent data with the patentsview package • patentsview</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/united/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Patentsview Follow Up Blog">
+<meta property="og:title" content="Accessing patent data with the patentsview package">
 <meta property="og:description" content="patentsview">
+<meta property="og:image" content="/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -134,96 +141,142 @@
 
       
 
-      </header><script src="ropensci_blog_files/header-attrs-2.8/header-attrs.js"></script><div class="row">
+      </header><script src="ropensci_blog_post_files/header-attrs-2.8/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Patentsview Follow Up Blog</h1>
-            
+      <h1 data-toc-skip>Accessing patent data with the patentsview
+package</h1>
+                        <h4 class="author">Chris Baker</h4>
+                        
+            <h4 class="date">2017-09-12</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/ropensci/patentsview/blob/master/vignettes/ropensci_blog.Rmd"><code>vignettes/ropensci_blog.Rmd</code></a></small>
-      <div class="hidden name"><code>ropensci_blog.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/ropensci/patentsview/blob/master/vignettes/ropensci_blog_post.Rmd"><code>vignettes/ropensci_blog_post.Rmd</code></a></small>
+      <div class="hidden name"><code>ropensci_blog_post.Rmd</code></div>
 
     </div>
 
     
     
 <blockquote>
-<p>Here we rework sections of the <a href="https://ropensci.org/blog/2017/09/19/patentsview/">ropensci
-post</a> from the launch of the patentsview R package, in case a follow
-up post is needed. Things are a wee bit different now with the new
-version of the API…</p>
+<p>This is the ropensci <a href="https://ropensci.org/blog/2017/09/19/patentsview/">blog post</a>
+from 2017-09-12 that announced the creation of the original patentsview
+package, edited to work with the new version of the R package and
+API.</p>
 </blockquote>
-<ol style="list-style-type: decimal">
-<li>From the original post:</li>
-</ol>
-<blockquote>
-<ul>
-<li>The API is free (no credential required) and currently doesn’t
-impose rate limits/bandwidth throttling.</li>
-</ul>
-</blockquote>
-<p>An API key is now required and throttling is imposed (handled by the
-new version of the R package) at 45 requests per minute.</p>
-<blockquote>
-<ul>
-<li>The project offers <a href="https://patentsview.org/download/data-download-tables">bulk
-downloads of patent data</a> on their website (in a flat file format),
-for those who want to be closest to the data.</li>
-</ul>
-</blockquote>
-<ol start="2" style="list-style-type: decimal">
-<li><p>The next bullet point has a link to the downloads page that’s a
-404 now, fixed above.</p></li>
-<li><p>The first two examples still work form the original blog, though
-now the maximum result set size is 10,000, down from 100,000 and
-“total_hits” is returned instead of an endpoint specific count, ex.
-total_patent_count.</p></li>
-</ol>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/patentsview/index.html">patentsview</a></span><span class="op">)</span></code></pre></div>
-<blockquote>
-<p>Patents offer a great opportunity for data analysis</p>
+<div id="why-care-about-patents" class="section level2">
+<h2 class="hasAnchor">
+<a href="#why-care-about-patents" class="anchor"></a>Why care about patents?</h2>
+<p><strong>1. Patents play a critical role in incentivizing innovation,
+without which we wouldn’t have much of the technology we rely on
+everyday</strong></p>
+<p>What does your iPhone, Google’s PageRank algorithm, and a butter
+substitute called Smart Balance all have in common?</p>
+<p><span>
+<!-- These are open source images taken from: https://pixabay.com/ -->
+<img src="../reference/figures/2017-09-12-patentsview-iphone.png" width="15%"><img src="../man/figures/2017-09-12-patentsview-google.jpg" width="25%"><img src="../man/figures/2017-09-12-patentsview-butter.png" width="25%"></span></p>
+<p>…They all probably wouldn’t be here if not for patents. A patent
+provides its owner with the ability to make money off of something that
+they invented, without having to worry about someone else copying their
+technology. Think Apple would spend millions of dollars developing the
+iPhone if Samsung could just come along and <a href="http://www.reuters.com/article/us-apple-samsung-elec-appeal-idUSKCN1271LF">rip
+it off</a>? Probably not.</p>
+<p><strong>2. Patents offer a great opportunity for data
+analysis</strong></p>
 <p>There are two primary reasons for this:</p>
-<p>Patent data is public. In return for the exclusive right to profit
-off an invention, an individual/company has to publicly disclose the
-details of their invention to the rest of the world. <a href="http://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO2&amp;Sect2=HITOFF&amp;p=1&amp;u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&amp;r=11&amp;f=G&amp;l=50&amp;co1=AND&amp;d=PTXT&amp;s1=dog&amp;OS=dog&amp;RS=dog">Examples
+<ul>
+<li>
+<strong>Patent data is public</strong>. In return for the exclusive
+right to profit off an invention, an individual/company has to publicly
+disclose the details of their invention to the rest of the world. <a href="http://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO2&amp;Sect2=HITOFF&amp;p=1&amp;u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&amp;r=11&amp;f=G&amp;l=50&amp;co1=AND&amp;d=PTXT&amp;s1=dog&amp;OS=dog&amp;RS=dog">Examples
 of those details</a> include the patent’s title, abstract, technology
-classification, assigned organizations, etc.</p>
-</blockquote>
-<ol start="3" style="list-style-type: decimal">
-<li>This <a href="https://www.uspto.gov/about-us/news-updates/modern-user-friendly-patent-center-fully-replace-legacy-public-pair-system">press
-release</a> says that patft will be going away (url of Examples of those
-details)</li>
-</ol>
-<blockquote>
-<p><a href="https://en.wikipedia.org/wiki/United_States_Patent_and_Trademark_Office">United
+classification, assigned organizations, etc.</li>
+<li>
+<strong>Patent data can answer questions that people care
+about</strong>. Companies (especially big ones like IBM and Google) have
+a vested interest in extracting insights from patents, and spend a lot
+of time/resources trying figure out how to best manage their
+intellectual property (IP) rights. They’re plagued by questions like
+“who should I sell my underperforming patents to,” “which technology
+areas are open to new innovations,” “what’s going to be the next big
+thing in the world of buttery spreads,” etc. Patents offer a way to
+provide data-driven answers to these questions.</li>
+</ul>
+<p>Combined, these two things make patents a prime target for data
+analysis. However, until recently it was hard to get at the data inside
+these documents. One had to either collect it manually using the
+official <a href="https://en.wikipedia.org/wiki/United_States_Patent_and_Trademark_Office">United
 States Patent and Trademark Office</a> (USPTO) <a href="http://patft.uspto.gov/netahtml/PTO/search-adv.htm">search
 engine</a>, or figure out a way to download, parse, and model huge XML
 data dumps. Enter PatentsView.</p>
-</blockquote>
-<ol start="4" style="list-style-type: decimal">
-<li>Same problem here, the search engine link would be going way</li>
-</ol>
-<blockquote>
-<h2 id="patentsview-and-the-patentsview-package">PatentsView and the <a href="#patentsview">patentsview</a> package</h2>
+</div>
+<div id="patentsview-and-the-patentsview-package" class="section level2">
+<h2 class="hasAnchor">
+<a href="#patentsview-and-the-patentsview-package" class="anchor"></a>PatentsView and the <code>patentsview</code> package</h2>
 <p><a href="https://datatool.patentsview.org/#viz/relationships">PatentsView</a>
 is one of USPTO’s new initiatives intended to increase the usability and
-value of patent data.</p>
-</blockquote>
-<ol start="3" style="list-style-type: decimal">
-<li>The <a href="https://datatool.patentsview.org/#viz/relationships">PatentsView</a>
-link in the original post is now a 404, corrected here and above</li>
-</ol>
-<p><a href="#query">query</a></p>
-<blockquote>
-<p>Your query has to use the <a href="https://patentsview.org/apis/api-query-language">PatentsView query
-language</a>,</p>
-</blockquote>
-<ol start="3" style="list-style-type: decimal">
-<li>The link in the original post is now a 404, working one above.</li>
-</ol>
+value of patent data. One feature of this project is a publicly
+accessible API that makes it easy to programmatically interact with the
+data. A few of the reasons why I like the API (and PatentsView more
+generally):</p>
+<ul>
+<li><del>The API is free (no credential required) and currently doesn’t
+impose rate limits/bandwidth throttling.</del></li>
+<li>An API key is now required (request one <a href="https://patentsview.org/apis/keyrequest">here</a>) and throttling
+is imposed (handled by the new version of the R package) at 45 requests
+per minute.</li>
+<li>The project offers <a href="https://patentsview.org/download/data-download-tables">bulk
+downloads of patent data</a> on their website (in a flat file format),
+for those who want to be closest to the data.</li>
+<li>Both the API and the bulk download data contain disambiguated
+entities such as inventors, assignees, organizations, etc. In other
+words, the API will tell you whether it thinks that John Smith on patent
+X is the same person as John Smith on patent Y.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>
+</li>
+</ul>
+<p>The <code>patentsview</code> R package is a wrapper around the
+PatentsView API. It contains a function that acts as a client to the API
+(<code><a href="../reference/search_pv.html">search_pv()</a></code>) as well as several supporting functions. Full
+documentation of the package can be found on its <a href="https://ropensci.github.io/patentsview/index.html">website</a>.</p>
+</div>
+<div id="installation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#installation" class="anchor"></a>Installation</h2>
+<p>You can install the stable version of <code>patentsview</code> from
+r-universe:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
+   patentsview <span class="op">=</span> <span class="st">'https://mustberuss.r-universe.dev/'</span>,
+   CRAN <span class="op">=</span> <span class="st">'https://cloud.r-project.org'</span><span class="op">)</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">'patentsview'</span><span class="op">)</span></code></pre></div>
+<p>Or from GitHub:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">qry_1</span> <span class="op">&lt;-</span> <span class="st">'{"_gt":{"patent_year":2007}}'</span>
+<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-lib/devtools">devtools</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
+
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"mustberuss/patentsview@api-redesign"</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="getting-started" class="section level2">
+<h2 class="hasAnchor">
+<a href="#getting-started" class="anchor"></a>Getting started</h2>
+<p>The package has one main function, <code><a href="../reference/search_pv.html">search_pv()</a></code>, that
+makes it easy to send requests to the API. There are two parameters to
+<code><a href="../reference/search_pv.html">search_pv()</a></code> that you’re going to want to think about just
+about every time you call it - <code>query</code> and
+<code>fields</code>. You tell the API how you want to filter the patent
+data with <code>query</code>, and which fields you want to retrieve with
+<code>fields</code>.<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></p>
+<div id="query" class="section level3">
+<h3 class="hasAnchor">
+<a href="#query" class="anchor"></a><code>query</code>
+</h3>
+<p>Your query has to use the <a href="https://patentsview.org/apis/api-query-language">PatentsView query
+language</a>, which is a JSON-based syntax that is similar to the one
+used by Lucene. You can write the query directly and pass it as a string
+to <code><a href="../reference/search_pv.html">search_pv()</a></code>:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span>
+
+<span class="va">qry_1</span> <span class="op">&lt;-</span> <span class="st">'{"_gt":{"patent_year":2007}}'</span>
 <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span>query <span class="op">=</span> <span class="va">qry_1</span>, fields <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="co"># This will retrieve a default set of fields</span>
 <span class="co">#&gt; $data</span>
 <span class="co">#&gt; [1] "patents"</span>
@@ -240,8 +293,10 @@ language</a>,</p>
 <span class="co">#&gt; $query_results</span>
 <span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; total_hits = 10,000</span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<span class="co">#&gt; total_hits = 3,862,627</span></code></pre></div>
+<p>…Or you can use the domain specific language (DSL) provided in the
+<code>patentsview</code> package to help you write the query:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">qry_2</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">gt</span><span class="op">(</span>patent_year <span class="op">=</span> <span class="fl">2007</span><span class="op">)</span> <span class="co"># All DSL functions are in the qry_funs list</span>
 <span class="va">qry_2</span> <span class="co"># qry_2 is the same as qry_1</span>
 <span class="co">#&gt; {"_gt":{"patent_year":2007}}</span>
@@ -262,113 +317,116 @@ language</a>,</p>
 <span class="co">#&gt; $query_results</span>
 <span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; total_hits = 10,000</span></code></pre></div>
-<ol start="4" style="list-style-type: decimal">
-<li>From the original blog post:<br>
-&gt; There are three gotchas to look out for when writing a query:<br>
-&gt;<br>
-&gt; 1. <strong>Field is queryable.</strong> The API has 7 endpoints
-(the default endpoint is “patents”), and each endpoint has its own set
-of fields that you can filter on.</li>
+<span class="co">#&gt; total_hits = 3,862,627</span></code></pre></div>
+<p><code>qry_1</code> and <code>qry_2</code> will result in the same
+HTTP call to the API. Both queries search for patents in USPTO that were
+published after 2007. There are three gotchas to look out for when
+writing a query:</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>All Fields are now queryable.</strong> The API has 12
+endpoints (the default endpoint is “patents”), and each endpoint has its
+own set of fields that you can filter on.</li>
+<li>
+<strong>Correct data type for field.</strong> If you’re filtering on
+a field in your query, you have to make sure that the value you are
+filtering on is consistent with the field’s data type. For example,
+<code>patent_year</code> has type “integer,” so if you pass 2007 as a
+string then you’re going to get an error
+(<code>patent_year = 2007</code> is good,
+<code>patent_year = "2007"</code> is no good). You can find a field’s
+data type in the <code>fieldsdf</code> data frame.</li>
+<li>
+<strong>Comparison function works with field’s data type.</strong>
+The comparison function(s) that you use (e.g., the greater-than function
+shown above, <code>qry_funs$gt()</code>) must be consistent with the
+field’s data type. For example, you can’t use the “contains” function on
+fields of type “integer”
+(<code>qry_funs$contains(patent_year = 2007)</code> will throw an
+error). See <code><a href="../reference/qry_funs.html">?qry_funs</a></code> for more details.</li>
 </ol>
-<p>This needs updating, as now all fields are queryable and there are 13
-endpoints (more coming, like /application):</p>
-<ol start="5" style="list-style-type: decimal">
-<li>The original blog requested inventor_total_num_patents, which we
-don’t get from the patents endpoint in the new version of the API. Now
-we’d have to call the inventors endpoint to get this field.</li>
-</ol>
-<blockquote>
-<p>search_pv( query = qry_funs$gt(patent_year = 2007), fields =
-c(“patent_abstract”, “patent_average_processing_time”,
-“inventor_first_name”, “inventor_total_num_patents”)</p>
-</blockquote>
-<ol start="6" style="list-style-type: decimal">
-<li>The original blog’s “begins(cpc_subgroup_id = ‘H04L63/02’)” isn’t
-currently possible, the API throws 500 errors when trying to search via
-cpc fields. The field may be full text now (some fields switch from
-string to full text and vice versa) and insanely, it would have to be
-written</li>
-</ol>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">qry_funs</span><span class="op">$</span><span class="fu">text_phrase</span><span class="op">(</span><span class="st">"cpc_current.cpc_subgroup"</span> <span class="op">=</span> <span class="st">"H04L63:02"</span><span class="op">)</span> 
-<span class="co">#&gt; {"_text_phrase":{"cpc_current.cpc_subgroup":"H04L63:02"}}</span></code></pre></div>
-<p>where a colon is substituted for the slash. HATEOAS links come back
-in some of the fields now like these cpc ones:</p>
-<pre><code>        {
-          "sequence": 18,
-          "section_id": "H",
-          "cpc_subsection": "https://search.patentsview.org/api/v1/cpc_subsection/H04/",
-          "cpc_group": "https://search.patentsview.org/api/v1/cpc_group/H04L/",
-          "cpc_subgroup": "https://search.patentsview.org/api/v1/cpc_subgroup/H04L63:02/"
-        },</code></pre>
-<p>Note the lack of an _id on the cpc fields, cpc_subgroup instead of
-cpc_subgroup_id, which will become important below. These links are Get
-only with just a url parameter, there is no mechanism to pass the s:, f:
-or o: parameters (no need to pannic, the friendly/familiar endpoints
-from the initial version of the API are still present.)</p>
-<p>Following the “cpc_subgroup” link returns:</p>
-<pre><code>{
-  "error": false,
-  "count": 1,
-  "total_hits": 1,
-  "cpc_subgroups": [
-    {
-      "cpc_subgroup_id": "H04L63/02",
-      "cpc_subgroup_title": "Network architectures or network communication protocols for network security -for separating internal from external traffic, e.g. firewalls"
-    }
-  ]
-}</code></pre>
-<p>Apparently the API team didn’t want to have two url parameters, so in
-the HATEOAS link the slash is changed to a colon, though the
-cpc_subgroup_id comes back with the slash in place.</p>
-<p>There is a new method in the R package to retrive data from the
-HATEOAS links.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/retrieve_linked_data.html">retrieve_linked_data</a></span><span class="op">(</span><span class="st">"https://search.patentsview.org/api/v1/cpc_subgroup/H04L63:02/"</span><span class="op">)</span>
+<p>In short, use the <code>fieldsdf</code> data frame when you write a
+query and you should be fine. Check out the <a href="https://ropensci.github.io/patentsview/articles/writing-queries.html">writing
+queries vignette</a> for more details.</p>
+</div>
+<div id="fields" class="section level3">
+<h3 class="hasAnchor">
+<a href="#fields" class="anchor"></a><code>fields</code>
+</h3>
+<p>Up until now we have been using the default value for
+<code>fields</code>. This results in the API giving us some small set of
+default fields. Let’s see about retrieving some more fields:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span>
+  query <span class="op">=</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">gt</span><span class="op">(</span>patent_year <span class="op">=</span> <span class="fl">2007</span><span class="op">)</span>,
+  fields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"patent_abstract"</span>, <span class="st">"patent_average_processing_time"</span>,
+             <span class="st">"inventor_first_name"</span>, <span class="st">"inventor_total_num_patents"</span><span class="op">)</span>
+<span class="op">)</span>
+<span class="co">#&gt; Error: Bad field(s): patent_average_processing_time, inventor_first_name, inventor_total_num_patents</span></code></pre></div>
+<p>The fields that you can retrieve depends on the endpoint that you are
+hitting. We’ve been using the “patents” endpoint thus far, so all of
+these are retrievable:
+<code>fieldsdf[fieldsdf$endpoint == "patents", "field"]</code>. You can
+also use <code><a href="../reference/get_fields.html">get_fields()</a></code> to list the retrievable fields for a
+given endpoint:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span>
+  query <span class="op">=</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">gt</span><span class="op">(</span>patent_year <span class="op">=</span> <span class="fl">2007</span><span class="op">)</span>,
+  fields <span class="op">=</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"patents"</span>, groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"patents"</span>, <span class="st">"inventors_at_grant"</span><span class="op">)</span><span class="op">)</span>
+<span class="op">)</span>
 <span class="co">#&gt; $data</span>
-<span class="co">#&gt; [1] "cpc_subgroups"</span>
-<span class="co">#&gt; #### A list with a single data frame on a CPC sub group level:</span>
+<span class="co">#&gt; [1] "patents"</span>
+<span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on a patent level:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; List of 1</span>
-<span class="co">#&gt;  $ cpc_subgroups:'data.frame':   1 obs. of  2 variables:</span>
-<span class="co">#&gt;   ..$ cpc_subgroup_id   : chr "H04L63/02"</span>
-<span class="co">#&gt;   ..$ cpc_subgroup_title: chr "Network architectures or network communication"..</span>
+<span class="co">#&gt;  $ patents:'data.frame': 25 obs. of  19 variables:</span>
+<span class="co">#&gt;   ..$ patent_number                                               : chr [1:25"..</span>
+<span class="co">#&gt;   ..$ patent_title                                                : chr [1:25"..</span>
+<span class="co">#&gt;   ..$ patent_type                                                 : chr [1:25"..</span>
+<span class="co">#&gt;   ..$ patent_country                                              : chr [1:25"..</span>
+<span class="co">#&gt;   ..$ patent_date                                                 : chr [1:25"..</span>
+<span class="co">#&gt;   ..$ patent_year                                                 : int [1:25]..</span>
+<span class="co">#&gt;   ..$ patent_abstract                                             : chr [1:25"..</span>
+<span class="co">#&gt;   ..$ patent_kind                                                 : chr [1:25"..</span>
+<span class="co">#&gt;   ..$ patent_cpc_current_group_average_patent_processing_days     : logi [1:25..</span>
+<span class="co">#&gt;   ..$ patent_detail_desc_length                                   : int [1:25]..</span>
+<span class="co">#&gt;   ..$ patent_earliest_application_date                            : logi [1:25..</span>
+<span class="co">#&gt;   ..$ patent_num_foreign_documents_cited                          : int [1:25]..</span>
+<span class="co">#&gt;   ..$ patent_num_times_cited_by_us_patents                        : int [1:25]..</span>
+<span class="co">#&gt;   ..$ patent_num_total_documents_cited                            : int [1:25]..</span>
+<span class="co">#&gt;   ..$ patent_num_us_applications_cited                            : int [1:25]..</span>
+<span class="co">#&gt;   ..$ patent_num_us_patents_cited                                 : int [1:25]..</span>
+<span class="co">#&gt;   ..$ patent_term_extension                                       : int [1:25]..</span>
+<span class="co">#&gt;   ..$ patent_uspc_current_mainclass_average_patent_processing_days: logi [1:25..</span>
+<span class="co">#&gt;   ..$ inventors_at_grant                                          :List of 25</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $query_results</span>
 <span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; total_hits = 1</span></code></pre></div>
-<ol start="7" style="list-style-type: decimal">
-<li>The next part of the original blog needs changes, both groups have
-new names.</li>
+<span class="co">#&gt; total_hits = 3,862,627</span></code></pre></div>
+</div>
+</div>
+<div id="example" class="section level2">
+<h2 class="hasAnchor">
+<a href="#example" class="anchor"></a>Example</h2>
+<p>Let’s look at a quick example of pulling and analyzing patent data.
+We’ll look at patents from the last ten years that are classified below
+the <a href="https://worldwide.espacenet.com/classification#!/CPC=H04L63/02">H04L63/00
+CPC code</a>. Patents in this area relate to “network architectures or
+network communication protocols for separating internal from external
+traffic.”<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> CPC codes offer a quick and dirty way to
+find patents of interest, though getting a sense of their hierarchy can
+be tricky.</p>
+<ol style="list-style-type: decimal">
+<li>Download the data</li>
 </ol>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Create a list of fields:</span>
-<span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"patent_number"</span>, <span class="st">"patent_year"</span><span class="op">)</span>,
-  <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"patents"</span>, groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"assignees_at_grant"</span>, <span class="st">"cpc_current"</span><span class="op">)</span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="va">fields</span>
-<span class="co">#&gt;  [1] "patent_number"                   "patent_year"                    </span>
-<span class="co">#&gt;  [3] "assignees_at_grant.assignee_id"  "assignees_at_grant.name_first"  </span>
-<span class="co">#&gt;  [5] "assignees_at_grant.name_last"    "assignees_at_grant.organization"</span>
-<span class="co">#&gt;  [7] "assignees_at_grant.type"         "assignees_at_grant.city"        </span>
-<span class="co">#&gt;  [9] "assignees_at_grant.state"        "assignees_at_grant.country"     </span>
-<span class="co">#&gt; [11] "assignees_at_grant.latitude"     "assignees_at_grant.longitude"   </span>
-<span class="co">#&gt; [13] "cpc_current.sequence"            "cpc_current.section_id"         </span>
-<span class="co">#&gt; [15] "cpc_current.subsection_id"       "cpc_current.group_id"           </span>
-<span class="co">#&gt; [17] "cpc_current.subgroup_id"         "cpc_current.cpc_group_title"</span></code></pre></div>
-<p>As mentioned, searching by any of the cpc fields currently throws a
-500 error.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span>
 
 <span class="co"># Write a query:</span>
 <span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span> <span class="co"># with_qfuns is basically just: with(qry_funs, ...)</span>
   <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html">and</a></span><span class="op">(</span>
-    <span class="fu">text_any</span><span class="op">(</span>cpc_current.cpc_subgroup_id <span class="op">=</span> <span class="st">'H04L63/02'</span><span class="op">)</span>,
+    <span class="fu">begins</span><span class="op">(</span>cpc_current.cpc_subgroup_id <span class="op">=</span> <span class="st">'H04L63/02'</span><span class="op">)</span>,
     <span class="fu">gte</span><span class="op">(</span>patent_year <span class="op">=</span> <span class="fl">2007</span><span class="op">)</span>
   <span class="op">)</span>
 <span class="op">)</span>
@@ -379,13 +437,14 @@ new names.</li>
   <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"patents"</span>, groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"assignees_at_grant"</span>, <span class="st">"cpc_current"</span><span class="op">)</span><span class="op">)</span>
 <span class="op">)</span>
 
-<span class="co"># Here we won't actually send the request to the server, it would result in a 500</span>
-<span class="co"># Send HTTP request to API's server:</span>
-<span class="co">#pv_res &lt;- search_pv(query = query, fields = fields, all_pages = TRUE)</span>
+<span class="co"># TODO: fix this</span>
+<span class="co"># the above didn't work - get_fields() didn't return a vector of strings?</span>
+<span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span><span class="st">"patents"</span><span class="op">)</span>
 
-<span class="co"># Instead, we'll query for 300 patent numbers returned from the original API</span>
-<span class="co"># that matched begins(cpc_subgroup_id = 'H04L63/02')  The sort was by patent_title,</span>
-<span class="co"># hoping that will give a random distribution of patent_years (does that matter?)</span>
+<span class="co"># The API currently throws a 500 error when searching by anyb of the CPC fields so we won't send the query to the API.   Instead, we'll query for 300 patent numbers returned from the original API that matched begins(cpc_subgroup_id = 'H04L63/02')  The sort was by patent_title, hoping that will give a random distribution of patent_years (does that matter?)</span>
+
+<span class="co"># Send HTTP request to API's server:   </span>
+<span class="co"># pv_res &lt;- search_pv(query = query, fields = fields, all_pages = TRUE)</span>
 
 <span class="co"># When the API is fixed, we'll remove this and make the commented out query above.</span>
 <span class="co"># This just lets us move on to see what other changes we have to make to live</span>
@@ -411,29 +470,13 @@ new names.</li>
 <span class="va">query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span><span class="st">"patent_number"</span> <span class="op">=</span> <span class="va">dat</span><span class="op">)</span>
 
 <span class="va">pv_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span>query<span class="op">=</span><span class="va">query</span>, method<span class="op">=</span><span class="st">"POST"</span>, fields <span class="op">=</span> <span class="va">fields</span>, all_pages <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<ol start="8" style="list-style-type: decimal">
-<li>In the new version of the API we don’t get latitude/longitude back
-from the patents endpoint. We need to figure out the unique assignee ids
-and make a call to the assignees endpoint for this data.</li>
+<ol start="2" style="list-style-type: decimal">
+<li>See where the patents are coming from (geographically)</li>
 </ol>
-<p>A bit of weirdness from the new version of the API here, we asked for
-“assignee_id” as a field paramter but we get back a HATEOAS link named
-“assignee” where the assignee_id is the url parameter, the digits at the
-end, example: 18448 from <a href="https://search.patentsview.org/api/v1/assignee/18448/" class="uri">https://search.patentsview.org/api/v1/assignee/18448/</a>
-(clicking on the link won’t send an API key and will be rejected with a
-HTTP 403 Forbidden, there you’ve been warned.)</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/leaflet/">leaflet</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rstudio/htmltools">htmltools</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Attaching package: 'dplyr'</span>
-<span class="co">#&gt; The following objects are masked from 'package:stats':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     filter, lag</span>
-<span class="co">#&gt; The following objects are masked from 'package:base':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     intersect, setdiff, setequal, union</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org">tidyr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://stringr.tidyverse.org">stringr</a></span><span class="op">)</span>
 
@@ -464,18 +507,19 @@ HTTP 403 Forbidden, there you’ve been warned.)</p>
 <div class="figure">
 <img src="figure/unnamed-chunk-9-1.png" alt=""><p class="caption">plot of chunk unnamed-chunk-9</p>
 </div>
-<ol style="list-style-type: decimal">
+<p><br></p>
+<ol start="3" style="list-style-type: decimal">
 <li>Plot the growth of the field’s topics over time</li>
 </ol>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">RColorBrewer</span><span class="op">)</span>
 
 <span class="co"># In the new version of the API, we don't get the title back from the patents endpoint</span>
 <span class="co"># we have to call, you guessed it, the cpc_subgroup endpoint now</span>
-<span class="va">qry</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">begins</span><span class="op">(</span>cpc_subgroup_id <span class="op">=</span> <span class="st">'H04L63/02'</span><span class="op">)</span>
+<span class="va">qry</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">text_any</span><span class="op">(</span>cpc_subgroup_id <span class="op">=</span> <span class="st">'H04L63/02'</span><span class="op">)</span>
 <span class="va">qry</span>
-<span class="co">#&gt; {"_begins":{"cpc_subgroup_id":"H04L63/02"}}</span>
+<span class="co">#&gt; {"_text_any":{"cpc_subgroup_id":"H04L63/02"}}</span>
 
 <span class="va">cpc_info</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span>query<span class="op">=</span><span class="va">qry</span>, fields <span class="op">=</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span><span class="st">"cpc_subgroups"</span><span class="op">)</span>, endpoint <span class="op">=</span> <span class="st">"cpc_subgroups"</span><span class="op">)</span>
 
@@ -521,22 +565,55 @@ HTTP 403 Forbidden, there you’ve been warned.)</p>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span><span class="st">"Patents\n"</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">25</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_colour_manual</a></span><span class="op">(</span><span class="st">""</span>, values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/RColorBrewer/man/ColorBrewer.html">brewer.pal</a></span><span class="op">(</span><span class="fl">5</span>, <span class="st">"Set2"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="co"># theme inspired by https://hrbrmstr.github.io/hrbrthemes/</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>panel.border <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span>, axis.ticks <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; `geom_smooth()` using method = 'loess' and formula 'y ~ x'</span>
-<span class="co">#&gt; Warning: Removed 41 rows containing non-finite values (stat_smooth).</span></code></pre></div>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>panel.border <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span>, axis.ticks <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <div class="figure">
 <img src="figure/unnamed-chunk-10-1.png" alt=""><p class="caption">plot of chunk unnamed-chunk-10</p>
 </div>
-<p>Somehow the ggplot winds up in the html properly. In the top
-assignees vignette, the hchart only shows a little bit of IBM’s
-patents.</p>
-<p>Man, I’m thinking I’ll make good money helping people convert their R
-scripts!</p>
+</div>
+<div id="learning-more" class="section level2">
+<h2 class="hasAnchor">
+<a href="#learning-more" class="anchor"></a>Learning more</h2>
+<p>For analysis examples that go into a little more depth, check out the
+<a href="https://ropensci.github.io/patentsview/articles/citation-networks.html">data
+applications vignettes</a> on the package’s website. If you’re just
+interested in <code><a href="../reference/search_pv.html">search_pv()</a></code>, there are <a href="https://ropensci.github.io/patentsview/articles/examples.html">examples</a>
+on the site for that as well. To contribute to the package or report an
+issue, check out the <a href="https://github.com/ropensci/patentsview/issues">issues page on
+GitHub</a>.</p>
+</div>
+<div id="acknowledgments" class="section level2">
+<h2 class="hasAnchor">
+<a href="#acknowledgments" class="anchor"></a>Acknowledgments</h2>
+<p>I’d like to thank the package’s two reviewers, <a href="https://github.com/poldham">Paul Oldham</a> and <a href="http://blog.haunschmid.name/">Verena Haunschmid</a>, for taking
+the time to review the package and providing helpful feedback. I’d also
+like to thank <a href="http://www.masalmon.eu/">Maëlle Salmon</a> for
+shepherding the package along the rOpenSci review process, as well <a href="https://scottchamberlain.info/">Scott Chamberlain</a> and <a href="https://twitter.com/stefaniebutland">Stefanie Butland</a> for
+their miscellaneous help.</p>
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr>
+<ol>
+<li id="fn1"><p>This is both good and bad, as there are errors in the
+disambiguation. The algorithm that is responsible for the disambiguation
+was created by the winner of the <a href="http://www.patentsview.org/workshop/">PatentsView Inventor
+Disambiguation Technical Workshop</a>.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>These two parameters end up getting translated into a
+MySQL query by the API’s server, which then gets sent to a back-end
+database. <code>query</code> and <code>fields</code> are used to create
+the query’s <code>WHERE</code> and <code>SELECT</code> clauses,
+respectively.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p>There is a slightly more in-depth definition that says
+that these are patents “related to the (logical) separation of
+traffic/(sub-) networks to achieve protection.”<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-      </div>
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
+</div>
 
 </div>
 

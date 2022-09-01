@@ -7,8 +7,9 @@ articles:
   converting-an-existing-script: converting-an-existing-script.html
   examples: examples.html
   getting-started: getting-started.html
-  ropensci_blog: ropensci_blog.html
+  ropensci_blog_post: ropensci_blog_post.html
+  ropensci_tech_note: ropensci_tech_note.html
   top-assignees: top-assignees.html
   writing-queries: writing-queries.html
-last_built: 2022-07-28T03:24Z
+last_built: 2022-09-01T18:06Z
 

@@ -132,14 +132,16 @@ Steps to try this out locally
         "request). Try slimming down your field list and trying again."
 10. If possible, suppress api-redesign.md from producing docs/api-redesign.html
 11. Clean up utils.R I hadn't noticed until writting test-utils.R that only to_singular is used by the package.  to_plural() isn't used, it's a hold over from a failed attempt at making the endpoints singular.
-12. A followup is probably in order for the [rOpenSci blog post](https://ropensci.org/blog/2017/09/19/patentsview/) There's an unlinked [vignette](articles/ropensci_blog.html) that reworks the code so it "works" using the new version of the api. README.Rmd's link should be changed if there is a new post.
-13. Follow tidyverse style
+12. A tech note is probably in order to announce the new version of the package.  There's an unlinked [vignette](articles/ropensci_tech_note.html) as a potential starting point
+13. The original [rOpenSci blog post](https://ropensci.org/blog/2017/09/19/patentsview/) is also reworked as a new, unlinked [vignette](articles/ropensci_blog_post.html)  It needs some work, the ggplot stopped working
+14. README.Rmd's link should be changed if there is a new post or tech note.
+15. Follow tidyverse style
 
 ## Questions
 1. Should we bump the version number to 0.4.0 or 1.0.0?  The API key alone quarantees that the package won't be backward compatible.
 2. Are there any other fields changing type?  (like assignee organization becoming a full text field, formerly it had been a string)
 3. Are there more fields (like the government interests) that went away?
-4. How to handle the release?  For a while both versions of the API are supposed to be around.  Have people install the updated R package from a branch on ropensci/patentsview?  When the original version of the API is retired do a CRAN build?
+4. How to handle the release?  For a while both versions of the API are supposed to be around.  Have people install the updated R package from a branch on ropensci/patentsview?  When the original version of the API is retired do a CRAN build?  The r-universe would be a possibility see https://mustberuss.r-universe.dev/ui#package:patentsview
 5. Possible idea: ask the patentsview people if they could create a separate category for the R package in their forum?  Guessing people may need help with their conversions!
 6. Add the <a href="articles/converting-an-existing-script.html#additions-to-the-r-package-1">date range finder</a> to the package?  
 7. Refactor the code and tests so the x.R and test-x.R pattern isn't broken?

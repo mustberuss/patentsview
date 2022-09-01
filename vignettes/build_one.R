@@ -12,6 +12,7 @@ half_render_one <- function() {
   on.exit(setwd(cur_dir))
   setwd("vignettes")
 
+  # really what it could do is look for newer .Rmd.orig than .Rmd
   #source_files <- list.files(pattern = "\\.Rmd\\.orig$")
   #source_files <- c("converting-an-existing-script.Rmd.orig")
   #source_files <- c("test.Rmd.orig")
@@ -19,7 +20,9 @@ half_render_one <- function() {
   #source_files <- c("ropensci_blog.Rmd.orig")
   #source_files <- c("getting-started.Rmd.orig")
   #source_files <- c("api-changes.Rmd.orig")
-  source_files <- c("writing-queries.Rmd.orig")
+  #source_files <- c("writing-queries.Rmd.orig")
+  # source_files <- c("ropensci_tech_note.Rmd.orig")
+  source_files <- c("ropensci_blog_post.Rmd.orig")
 
   for (file in source_files) {
     print(paste("Knitting", file))

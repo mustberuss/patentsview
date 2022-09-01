@@ -8,6 +8,13 @@
 
 <title>Get list of retrievable fields — get_fields • patentsview</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -47,6 +54,7 @@ API endpoint (i.e., the fields you can pass to the fields argument in
 search_pv). You can limit these fields to only cover certain
 entity group(s) as well (which is recommended, given the large number of
 possible fields for each endpoint)." />
+<meta property="og:image" content="/logo.png" />
 
 
 
@@ -227,7 +235,7 @@ endpoint table</a>), or use the <code>fieldsdf</code> table
     <pre class="examples"><div class='input'><span class='co'># Get all assignee-level fields for the patents endpoint:</span>
 <span class='va'>fields</span> <span class='op'>&lt;-</span> <span class='fu'>get_fields</span><span class='op'>(</span>endpoint <span class='op'>=</span> <span class='st'>"patents"</span>, groups <span class='op'>=</span> <span class='st'>"assignees_at_grant"</span><span class='op'>)</span>
 
-<span class='co'>#...Then pass to search_pv:</span>
+<span class='co'># ...Then pass to search_pv:</span>
 <span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 
 <span class='fu'><a href='search_pv.html'>search_pv</a></span><span class='op'>(</span>
@@ -239,7 +247,7 @@ endpoint table</a>), or use the <code>fieldsdf</code> table
 <span class='va'>fields</span> <span class='op'>&lt;-</span> <span class='fu'>get_fields</span><span class='op'>(</span>endpoint <span class='op'>=</span> <span class='st'>"patents"</span>, groups <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"assignees_at_grant"</span>, <span class='st'>"patents"</span><span class='op'>)</span><span class='op'>)</span>
 
 <span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='co'>#...Then pass to search_pv:</span>
+<span class='co'># ...Then pass to search_pv:</span>
 <span class='fu'><a href='search_pv.html'>search_pv</a></span><span class='op'>(</span>
   query <span class='op'>=</span> <span class='st'>'{"_gte":{"patent_date":"2007-01-04"}}'</span>,
   fields <span class='op'>=</span> <span class='va'>fields</span>

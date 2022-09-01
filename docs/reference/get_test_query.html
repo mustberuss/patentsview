@@ -6,12 +6,15 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get Test Query
- 
-In the new version of the api, only three of the endpoints are searchable 
-by patent number. This function provides a sample query for each 
-endpoint, except for locations, which isn't on the test server yet — get_test_query • patentsview</title>
+<title>Get Test Query — get_test_query • patentsview</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -45,15 +48,11 @@ endpoint, except for locations, which isn't on the test server yet — get_test_
   <link href="../extra.css" rel="stylesheet">
   
 
-<meta property="og:title" content="Get Test Query
- 
-In the new version of the api, only three of the endpoints are searchable 
-by patent number. This function provides a sample query for each 
-endpoint, except for locations, which isn't on the test server yet — get_test_query" />
-<meta property="og:description" content="Get Test Query 
-In the new version of the api, only three of the endpoints are searchable 
-by patent number. This function provides a sample query for each 
+<meta property="og:title" content="Get Test Query — get_test_query" />
+<meta property="og:description" content="In the new version of the api, only three of the endpoints are searchable
+by patent number. This function provides a sample query for each
 endpoint, except for locations, which isn't on the test server yet" />
+<meta property="og:image" content="/logo.png" />
 
 
 
@@ -190,19 +189,14 @@ endpoint, except for locations, which isn't on the test server yet" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get Test Query
- 
-In the new version of the api, only three of the endpoints are searchable 
-by patent number. This function provides a sample query for each 
-endpoint, except for locations, which isn't on the test server yet</h1>
+    <h1>Get Test Query</h1>
     <small class="dont-index">Source: <a href='https://github.com/ropensci/patentsview/blob/master/R/test-helpers.R'><code>R/test-helpers.R</code></a></small>
     <div class="hidden name"><code>get_test_query.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Get Test Query</p> 
-<p>In the new version of the api, only three of the endpoints are searchable 
-by patent number. This function provides a sample query for each 
+    <p>In the new version of the api, only three of the endpoints are searchable
+by patent number. This function provides a sample query for each
 endpoint, except for locations, which isn't on the test server yet</p>
     </div>
 
@@ -215,8 +209,8 @@ endpoint, except for locations, which isn't on the test server yet</p>
       <th>endpoint</th>
       <td><p>The web service resource you want a test query for. <code>endpoint</code>
 must be one of the following: "patents", "inventors", "assignees",
-"locations", "cpc_groups", "cpc_subgroups", "cpc_subsections", "uspc_mainclasses",  
-"uspc_subclasses","nber_categories", "nber_subcategories", "application_citations", 
+"locations", "cpc_groups", "cpc_subgroups", "cpc_subsections", "uspc_mainclasses",
+"uspc_subclasses","nber_categories", "nber_subcategories", "application_citations",
 or "patent_citations"</p></td>
     </tr>
     </table>
@@ -226,11 +220,9 @@ or "patent_citations"</p></td>
     <p>a test query for the specified endpoint.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
 
-  <span class='fu'>get_test_query</span><span class='op'>(</span><span class='st'>"patents"</span><span class='op'>)</span>
-
+<span class='fu'>get_test_query</span><span class='op'>(</span><span class='st'>"patents"</span><span class='op'>)</span>
 <span class='op'>}</span>
 
 </div></pre>

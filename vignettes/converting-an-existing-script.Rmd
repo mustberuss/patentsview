@@ -99,13 +99,15 @@ Well, it turns out, we can use the API itself to help us figure out what date ra
 # Returns a list of start and end dates that won't exceed the new overall result
 # set size limit.  
 
-# The patentsview database starts with 1976. we'll start lower in case they add earlier data
-# and allow a start date to be passed in.  The caller might want to pick up where they
-# left off last time
+# The patentsview database starts with 1976 though we'll allow a start date and end date to be passed in.  
+# The caller might want to pick up where they left off last time etc.
+# (Should they be R dates instead? Though we are returning string dates)
 
-tell_us <- function(query, start_date = '1970-01-01' ) {
+# Enforce that patent_date isn't in the query?
+# They'll also need to have patent_date as the primary sort
 
-   end_date <- toString(Sys.Date())  # today
+safe_date_ranges <- function(query, start_date = '1976-01-01', end_date <- toString(Sys.Date())  # today ) {
+
    fields <- c("patent_date")
    sort <- c("patent_date" = "asc")
    per_page <- 1000
@@ -172,6 +174,10 @@ tell_us <- function(query, start_date = '1970-01-01' ) {
    print(paste("API calls made:", count))
    date_ranges
 }
+#> Error: <text>:12:73: unexpected assignment
+#> 11: 
+#> 12: safe_date_ranges <- function(query, start_date = '1976-01-01', end_date <-
+#>                                                                             ^
 ```
 
 And here's the same sample query as before to give it a go.  Spoiler alert, it takes 29 API calls just to determine the date ranges but then, if we choose to, we could fire off the 15 pairs of date range restricted calls (all but the last search_pv call would make 10 API calls when all_pages = TRUE, guaranteeing we'd get throttled!).
@@ -180,56 +186,11 @@ And here's the same sample query as before to give it a go.  Spoiler alert, it t
 ```r
 query <- with_qfuns(text_any(patent_abstract = 'tool animal'))
 
-the_answer <- tell_us(query)
-#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
-#> [1] "The api's requests per minute limit has been reached.  Pausing for 5 seconds before continuing."
-#> [1] "API calls made: 29"
+the_answer <- safe_date_ranges(query)
+#> Error in safe_date_ranges(query): could not find function "safe_date_ranges"
 
 the_answer
-#> [[1]]
-#> [1] "1970-01-01" "1983-02-28"
-#> 
-#> [[2]]
-#> [1] "1983-03-01" "1989-02-13"
-#> 
-#> [[3]]
-#> [1] "1989-02-14" "1993-09-06"
-#> 
-#> [[4]]
-#> [1] "1993-09-07" "1998-02-23"
-#> 
-#> [[5]]
-#> [1] "1998-02-24" "2001-01-15"
-#> 
-#> [[6]]
-#> [1] "2001-01-16" "2003-10-13"
-#> 
-#> [[7]]
-#> [1] "2003-10-14" "2006-09-25"
-#> 
-#> [[8]]
-#> [1] "2006-09-26" "2009-12-07"
-#> 
-#> [[9]]
-#> [1] "2009-12-08" "2012-05-28"
-#> 
-#> [[10]]
-#> [1] "2012-05-29" "2014-06-09"
-#> 
-#> [[11]]
-#> [1] "2014-06-10" "2016-05-02"
-#> 
-#> [[12]]
-#> [1] "2016-05-03" "2018-02-26"
-#> 
-#> [[13]]
-#> [1] "2018-02-27" "2019-10-14"
-#> 
-#> [[14]]
-#> [1] "2019-10-15" "2021-04-26"
-#> 
-#> [[15]]
-#> [1] "2021-04-27" "2022-07-27"
+#> Error in eval(expr, envir, enclos): object 'the_answer' not found
 ```
 
 And now, since it's fun, we'll go through the motions of calling the API for each date range.  We won't actually request all the data (all_pages defaults to FALSE) but each call's total_hit_count will be displayed, showing the total row count of what would have been retrieved if all_pages was TRUE.  Note that none of date ranges would hit the new limit of 10,000 rows.
@@ -252,28 +213,7 @@ for (pair in the_answer)
    total_hits = results$query_results$total_hits
    print(paste(total_hits,toString(pair)))
 }
-#> [1] "9999 1970-01-01, 1983-02-28"
-#> [1] "9981 1983-03-01, 1989-02-13"
-#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
-#> [1] "9967 1989-02-14, 1993-09-06"
-#> [1] "The api's requests per minute limit has been reached.  Pausing for 3 seconds before continuing."
-#> [1] "9963 1993-09-07, 1998-02-23"
-#> [1] "The api's requests per minute limit has been reached.  Pausing for 4 seconds before continuing."
-#> [1] "9973 1998-02-24, 2001-01-15"
-#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
-#> [1] "9985 2001-01-16, 2003-10-13"
-#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
-#> [1] "9976 2003-10-14, 2006-09-25"
-#> [1] "9979 2006-09-26, 2009-12-07"
-#> [1] "9963 2009-12-08, 2012-05-28"
-#> [1] "9930 2012-05-29, 2014-06-09"
-#> [1] "The api's requests per minute limit has been reached.  Pausing for 11 seconds before continuing."
-#> [1] "9957 2014-06-10, 2016-05-02"
-#> [1] "9934 2016-05-03, 2018-02-26"
-#> [1] "9918 2018-02-27, 2019-10-14"
-#> [1] "The api's requests per minute limit has been reached.  Pausing for 1 second before continuing."
-#> [1] "9874 2019-10-15, 2021-04-26"
-#> [1] "3984 2021-04-27, 2022-07-27"
+#> Error in eval(expr, envir, enclos): object 'the_answer' not found
 ```
 
 ## Conclusion

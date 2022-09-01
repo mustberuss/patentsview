@@ -100,13 +100,15 @@ Well, it turns out, we can use the API itself to help us figure out what date ra
 # Returns a list of start and end dates that won't exceed the new overall result
 # set size limit.  
 
-# The patentsview database starts with 1976. we'll start lower in case they add earlier data
-# and allow a start date to be passed in.  The caller might want to pick up where they
-# left off last time
+# The patentsview database starts with 1976 though we'll allow a start date and end date to be passed in.  
+# The caller might want to pick up where they left off last time etc.
+# (Should they be R dates instead? Though we are returning string dates)
 
-tell_us <- function(query, start_date = '1970-01-01' ) {
+# Enforce that patent_date isn't in the query?
+# They'll also need to have patent_date as the primary sort
 
-   end_date <- toString(Sys.Date())  # today
+safe_date_ranges <- function(query, start_date = '1976-01-01', end_date <- toString(Sys.Date())  # today ) {
+
    fields <- c("patent_date")
    sort <- c("patent_date" = "asc")
    per_page <- 1000
@@ -181,7 +183,7 @@ And here's the same sample query as before to give it a go.  Spoiler alert, it t
 ```{r}
 query <- with_qfuns(text_any(patent_abstract = 'tool animal'))
 
-the_answer <- tell_us(query)
+the_answer <- safe_date_ranges(query)
 
 the_answer
 

@@ -9,6 +9,13 @@
 <title>Affects on the R package of the Patentsview API changes announced in
 2021 • patentsview</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -44,6 +51,7 @@
 
 <meta property="og:title" content="Affects on the R package of the Patentsview API changes announced in
 2021" />
+<meta property="og:image" content="/logo.png" />
 
 
 
@@ -379,7 +387,7 @@ query:</li>
 </ol>
 </li>
 </ol>
-<pre class="{r}"><code><a href="https://docs.ropensci.org/patentsview/index.html">library(patentsview)
+<pre class="{r}"><code><a href="https://mustberuss.github.io/patentsview/index.html">library(patentsview)
 
 query &lt;- qry_funs$eq(assignees_at_grant.assignee_id = "35")
 example &lt;-search_pv(query=query, fields=c("assignees_at_grant.assignee_id"))
@@ -558,10 +566,14 @@ docs/api-redesign.html</p></li>
 that only to_singular is used by the package. to_plural() isn’t used,
 it’s a hold over from a failed attempt at making the endpoints
 singular.</p></li>
-<li><p>A followup is probably in order for the <a href="https://ropensci.org/blog/2017/09/19/patentsview/">rOpenSci blog
-post</a> There’s an unlinked <a href="articles/ropensci_blog.html">vignette</a> that reworks the code so
-it “works” using the new version of the api. README.Rmd’s link should be
-changed if there is a new post.</p></li>
+<li><p>A tech note is probably in order to announce the new version of
+the package. There’s an unlinked <a href="articles/ropensci_tech_note.html">vignette</a> as a potential
+starting point</p></li>
+<li><p>The original <a href="https://ropensci.org/blog/2017/09/19/patentsview/">rOpenSci blog
+post</a> is also reworked as a new, unlinked <a href="articles/ropensci_blog_post.html">vignette</a> It needs some work,
+the ggplot stopped working</p></li>
+<li><p>README.Rmd’s link should be changed if there is a new post or
+tech note.</p></li>
 <li><p>Follow tidyverse style</p></li>
 </ol>
 </div>
@@ -579,7 +591,8 @@ away?</li>
 <li>How to handle the release? For a while both versions of the API are
 supposed to be around. Have people install the updated R package from a
 branch on ropensci/patentsview? When the original version of the API is
-retired do a CRAN build?</li>
+retired do a CRAN build? The r-universe would be a possibility see <a href="https://mustberuss.r-universe.dev/ui#package:patentsview" class="uri">https://mustberuss.r-universe.dev/ui#package:patentsview</a>
+</li>
 <li>Possible idea: ask the patentsview people if they could create a
 separate category for the R package in their forum? Guessing people may
 need help with their conversions!</li>
