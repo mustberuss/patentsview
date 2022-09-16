@@ -100,14 +100,15 @@ Well, it turns out, we can use the API itself to help us figure out what date ra
 # Returns a list of start and end dates that won't exceed the new overall result
 # set size limit.  
 
-# The patentsview database starts with 1976 though we'll allow a start date and end date to be passed in.  
-# The caller might want to pick up where they left off last time etc.
+# The patentsview database starts with 1976 though we'll allow a start date and 
+# end date to be passed in.  The caller might want to pick up where they left off 
+# last time etc.
 # (Should they be R dates instead? Though we are returning string dates)
 
 # Enforce that patent_date isn't in the query?
 # They'll also need to have patent_date as the primary sort
 
-safe_date_ranges <- function(query, start_date = '1976-01-01', end_date <- toString(Sys.Date())  # today ) {
+safe_date_ranges <- function(query, start_date = '1976-01-01', end_date = toString(Sys.Date()))  {
 
    fields <- c("patent_date")
    sort <- c("patent_date" = "asc")
@@ -213,7 +214,7 @@ for (pair in the_answer)
 
 ## Conclusion
 
-So there you have it, our attempt at listing what's changed and what to do about it.  [Request](https://patentsview.org/apis/keyrequest) an API key and get going with the new R package for the new version of the API! (The two API versions will coexist for a while but eventually the original version of the API will be retired.)
+So there you have it, our attempt at listing what's changed and what to do about it.  [Request](https://patentsview.org/apis/keyrequest) an API key and get going with the new version of the R package! The two API versions will coexist for a while but API team plans to shutdown the original version of the API at the end of 2022.
 
 
 
