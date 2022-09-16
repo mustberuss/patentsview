@@ -21,8 +21,8 @@ half_render_one <- function() {
   #source_files <- c("getting-started.Rmd.orig")
   #source_files <- c("api-changes.Rmd.orig")
   #source_files <- c("writing-queries.Rmd.orig")
-  # source_files <- c("ropensci_tech_note.Rmd.orig")
-  source_files <- c("ropensci_blog_post.Rmd.orig")
+  source_files <- c("ropensci_tech_note.Rmd.orig")
+  #source_files <- c("ropensci_blog_post.Rmd.orig")
 
   for (file in source_files) {
     print(paste("Knitting", file))

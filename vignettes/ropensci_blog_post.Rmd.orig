@@ -58,7 +58,6 @@ Combined, these two things make patents a prime target for data analysis. Howeve
 
 [PatentsView](https://datatool.patentsview.org/#viz/relationships) is one of USPTO's new initiatives intended to increase the usability and value of patent data. One feature of this project is a publicly accessible API that makes it easy to programmatically interact with the data. A few of the reasons why I like the API (and PatentsView more generally):
 
-* ~~The API is free (no credential required) and currently doesn't impose rate limits/bandwidth throttling.~~
 * An API key is now required (request one [here](https://patentsview.org/apis/keyrequest)) and throttling is imposed (handled by the new version of the R package) at 45 requests per minute.
 * The project offers [bulk downloads of patent data](https://patentsview.org/download/data-download-tables) on their website (in a flat file format), for those who want to be closest to the data. 
 * Both the API and the bulk download data contain disambiguated entities such as inventors, assignees, organizations, etc. In other words, the API will tell you whether it thinks that John Smith on patent X is the same person as John Smith on patent Y.[^1]  
@@ -122,11 +121,12 @@ In short, use the `fieldsdf` data frame when you write a query and you should be
 
 Up until now we have been using the default value for `fields`. This results in the API giving us some small set of default fields. Let's see about retrieving some more fields:
 
+With the original verison of the API we requested patent_average_processing_time and inventor_total_num_patents.  These fields are no longer available from the patents endpoint.
+
 ```{r}
 search_pv(
   query = qry_funs$gt(patent_year = 2007),
-  fields = c("patent_abstract", "patent_average_processing_time",
-             "inventor_first_name", "inventor_total_num_patents")
+  fields = c("patent_abstract", "inventors_at_grant.name_first")
 )
 ```
 
@@ -247,6 +247,9 @@ library(RColorBrewer)
 qry <- qry_funs$text_any(cpc_subgroup_id = 'H04L63/02')
 qry
 
+# TODO: fix the mapping - seems we want to use _begins here
+qry <- '{"_begins":{"cpc_subgroup_id":"H04L63/02"}}'
+
 cpc_info <- search_pv(query=qry, fields = get_fields("cpc_subgroups"), endpoint = "cpc_subgroups")
 
 # More API craziness, in the HATEAS link from the patents endpoint, the separator is 
@@ -281,8 +284,6 @@ data <-
 
 # Here the line graph looks a bit anemic since our data set was only 300 patents and
 # the y scale was limits = c(0, 700)).
-
-# TODO: something broke- nothing gets plotted now
 
 ggplot(data = data) +
   geom_smooth(aes(x = patent_year, y = n, colour = title), se = FALSE) +
