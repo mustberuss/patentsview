@@ -422,7 +422,9 @@ API for each date range. We won’t actually request all the data
 (all_pages defaults to FALSE) but each call’s total_hit_count will be
 displayed, showing the total row count of what would have been retrieved
 if all_pages was TRUE. Note that none of date ranges would hit the new
-limit of 10,000 rows.</p>
+limit of 10,000 rows.<br>
+[Asserting that none of the ranges exceeds 10,000 rows could become the
+test if safe_date_ranges is added to the R package.]</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">sort</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"patent_date"</span> <span class="op">=</span> <span class="st">"asc"</span><span class="op">)</span>

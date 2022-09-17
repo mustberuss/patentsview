@@ -1,32 +1,22 @@
 context("search_pv")
 
-# In the new version of the api, only three of the endpoints are searchable
-# by patent number.  get_test_query() provides a sample query for each
-# endpoint, except for locations, which isn't on the test server yet
+# TODO: add a test to see if all the requested fields come back
 
-# TODO: add a test to see if all the requested fields come back - to test the new
-# version of the api more than to test the r packge!
-
-eps <- (get_endpoints())
-eps <- eps[eps != "locations"]
+endpoints <- get_endpoints()
 
 test_that("API returns expected df names for all endpoints", {
   skip_on_cran()
-  skip_on_ci()
 
-  z <- vapply(eps, function(x) {
-    Sys.sleep(2)
-    j <- search_pv(query = get_test_query(x), endpoint = x)
-    names(j[[1]])
-    print(names(j[[1]]))
+  df_names <- vapply(endpoints, function(x) {
+    out <- search_pv(query = TEST_QUERIES[[x]], endpoint = x)
+    names(out[[1]])
   }, FUN.VALUE = character(1), USE.NAMES = FALSE)
 
-  expect_equal(eps, z)
+  expect_equal(endpoints, df_names)
 })
 
 test_that("DSL-based query returns expected results", {
   skip_on_cran()
-  skip_on_ci()
 
   query <- with_qfuns(
     and(
@@ -37,98 +27,90 @@ test_that("DSL-based query returns expected results", {
       text_phrase(patent_abstract = c("computer program", "dog leash"))
     )
   )
-
   out <- search_pv(query)
-
   expect_gt(out$query_results$total_hits, 1000)
+})
+
+test_that("You can download up to 9,000+ records", {
+  skip_on_cran()
+
+  # Should return 9,000+ rows
+  query <- with_qfuns(
+    and(
+        gte(patent_date = "2021-12-13"),
+        lte(patent_date = "2021-12-24")
+    )
+  )
+  out <- search_pv(query, per_page = 1000, all_pages = TRUE)
+  expect_gt(out$query_results$total_hits, 9000)
 })
 
 test_that("search_pv can pull all fields for all endpoints", {
   skip_on_cran()
-  skip_on_ci()
 
-  z <- lapply(eps, function(x) {
-    Sys.sleep(2)
-    print(x)
+  dev_null <- lapply(endpoints, function(x) {
     search_pv(
-      query = get_test_query(x),
+      query = TEST_QUERIES[[x]],
       endpoint = x,
       fields = get_fields(x)
     )
   })
-
   expect_true(TRUE)
-})
-
-# TODO: rework or remove this, subent_cnts aren't in the new version of the api
-# what did the old test do?
-test_that("search_pv can return subent_cnts", {
-  # ...Though note this issue: https://github.com/CSSIP-AIR/PatentsView-API/issues/26
-  skip_on_cran()
-  skip_on_ci()
-
-  out_spv <- search_pv(
-    "{\"patent_number\":\"5116621\"}",
-    fields = get_fields("patents", c("patents", "inventors")),
-    subent_cnts = TRUE
-  )
-  expect_true(out_spv$query_results == 1)
 })
 
 test_that("Sort option works as expected", {
   skip_on_cran()
-  skip_on_ci()
 
-  # now only the assignee endpoint has lastknown_latitude
-
-  out_spv <- search_pv(
+  out <- search_pv(
     qry_funs$neq(assignee_id = 1),
     fields = get_fields("assignees"),
     endpoint = "assignees",
     sort = c("lastknown_latitude" = "desc"),
     per_page = 100
   )
-
-  lat <- as.numeric(out_spv$data$assignees$lastknown_latitude)
-
+  lat <- as.numeric(out$data$assignees$lastknown_latitude)
   expect_true(lat[1] >= lat[100])
 })
 
-# TODO: remove / rework this test - locations endpoint isn't on the test server
-test_that("search_pv can pull all fields by group for the locations endpoint", {
+test_that("search_pv properly URL encodes queries", {
   skip_on_cran()
-  skip_on_ci()
-
-  groups <- unique(fieldsdf[fieldsdf$endpoint == "locations", "group"])
-
-  z <- lapply(groups, function(x) {
-    Sys.sleep(2)
-
-    # the locations endpoint isn't on the test server yet and probably won't be
-    # queryable by patent number
-    expect_error(
-      search_pv(
-        '{"patent_number":"5116621"}',
-        endpoint = "inventors",
-        fields = get_fields("inventors", x)
-      )
-    )
-  })
-
-  #   expect_true(TRUE)
-})
-
-test_that("search_pv properly encodes queries", {
-  skip_on_cran()
-  skip_on_ci()
 
   # Covers https://github.com/ropensci/patentsview/issues/24
   # need to use the assignee endpoint now and the field is full_text
-  result <- search_pv(
-    query = with_qfuns(
-      text_phrase(organization = "Johnson & Johnson")
-    ), endpoint = "assignees"
-  )
-
+  ampersand_query <- with_qfuns(text_phrase(organization = "Johnson & Johnson"))
+  dev_null <- search_pv(ampersand_query, endpoint = "assignees")
   expect_true(TRUE)
+})
+
+# Below we request the same data in built_singly and result_all, with the only
+# difference being that we intentionally get throttled in built_singly by
+# sending one request per patent number (instead of all requests at once). If
+# the two responses match, then we've correctly handled throttling errors.
+test_that("Throttled requests are automatically retried", {
+  skip_on_cran()
+
+  res <- search_pv('{"_gte":{"patent_date":"2007-01-04"}}', per_page = 50)
+  patent_numbers <- res$data$patents$patent_number
+
+  built_singly <- lapply(patent_numbers, function(patent_number) {
+    search_pv(
+      query = qry_funs$eq(patent_number = patent_number),
+      endpoint = "patent_citations",
+      fields = c("patent_number", "cited_patent_number"),
+      sort = c("cited_patent_number" = "asc")
+    )[["data"]][["patent_citations"]]
+  })
+  built_singly <- do.call(rbind, built_singly)
+
+  result_all <- search_pv(
+    query = qry_funs$eq(patent_number = patent_numbers),
+    endpoint = "patent_citations",
+    fields = c("patent_number", "cited_patent_number"),
+    sort = c("patent_number" = "asc", "cited_patent_number" = "asc"),
+    per_page = 1000,
+    all_pages = TRUE
+  )
+  result_all <- result_all$data$patent_citations
+
+  expect_identical(built_singly, result_all)
 })

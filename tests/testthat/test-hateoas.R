@@ -17,9 +17,9 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
   skip_on_cran()
   skip_on_ci()
 
-  # call the new, Get only endpoints that don't accept s:, o:, f:, parameters
-  # the links are returned fully qualified, like below, from some of the endpoints
-  # these queries retrieve 1 specific row
+  # Call the new, Get only endpoints that don't accept q: s:, o:, f:, parameters
+  # The links are returned fully qualified, like below, from some of the endpoints
+  # These queries retrieve one specific row
   single_item_queries <- c(
     "https://search.patentsview.org/api/v1/assignee/10/",
     "https://search.patentsview.org/api/v1/cpc_group/A01B/",
@@ -33,7 +33,7 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
     "https://search.patentsview.org/api/v1/uspc_subclass/30:100/"
   )
 
-  # these queries can return more than a single row
+  # These queries can return more than a single row
   multi_item_queries <- c(
     "https://search.patentsview.org/api/v1/application_citation/10966293/",
     "https://search.patentsview.org/api/v1/patent_citation/10966293/"

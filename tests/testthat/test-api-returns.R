@@ -6,7 +6,6 @@ context("api-returns")
 # all the fields come back properly
 
 eps <- (get_endpoints())
-eps <- eps[eps != "locations"]
 
 test_that("API returns all requested groups", {
   skip_on_cran()
@@ -23,7 +22,7 @@ test_that("API returns all requested groups", {
     Sys.sleep(1)
     print(x)
     res <- search_pv(
-      query = get_test_query(x),
+      query = TEST_QUERIES[[x]],
       endpoint = x,
       fields = get_fields(x)
     )

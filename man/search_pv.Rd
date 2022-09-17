@@ -9,14 +9,14 @@ search_pv(
   fields = NULL,
   endpoint = "patents",
   subent_cnts = FALSE,
-  mtchd_subent_only = TRUE,
+  mtchd_subent_only = lifecycle::deprecated(),
   page = 1,
-  per_page = 25,
+  per_page = 1000,
   all_pages = FALSE,
   sort = NULL,
   method = "GET",
   error_browser = NULL,
-  paging_override = FALSE,
+  api_key = Sys.getenv("PATENTSVIEW_API_KEY"),
   ...
 )
 }
@@ -46,17 +46,13 @@ endpoint}) or by viewing the \code{fieldsdf} data frame
 (\code{View(fieldsdf)}). You can also use \code{\link{get_fields}} to list
 out the fields available for a given endpoint.}
 
-\item{endpoint}{The web service resource you wish to search. \code{endpoint}
-must be one of the following: "patents", "inventors", "assignees",
-"locations", "cpc_groups", "cpc_subgroups", "cpc_subsections", "uspc_mainclasses",
-"uspc_subclasses","nber_categories", "nber_subcategories", "application_citations",
-or "patent_citations"}
+\item{endpoint}{The web service resource you wish to search. Use
+\code{get_endpoints()} to list the available endpoints.}
 
-\item{subent_cnts}{Do you want the total counts of unique subentities to be
-returned? This is equivalent to the \code{include_subentity_total_counts}
-parameter found \href{https://patentsview.org/apis/api-query-language}{here}.}
+\item{subent_cnts}{`r lifecycle::badge("deprecated")` Non-matched subentities
+will always be returned under the new version of the API}
 
-\item{mtchd_subent_only}{Do you want only the subentities that match your
+\item{mtchd_subent_only}{`r lifecycle::badge("deprecated")` Do you want only the subentities that match your
 query to be returned? A value of \code{TRUE} indicates that the subentity
 has to meet your query's requirements in order for it to be returned, while
 a value of \code{FALSE} indicates that all subentity data will be returned,
@@ -67,7 +63,7 @@ equivalent to the \code{matched_subentities_only} parameter found
 \item{page}{The page number of the results that should be returned.}
 
 \item{per_page}{The number of records that should be returned per page. This
-value can be as high as 10,000 (e.g., \code{per_page = 1000}).}
+value can be as high as 1,000 (e.g., \code{per_page = 1000}).}
 
 \item{all_pages}{Do you want to download all possible pages of output? If
 \code{all_pages = TRUE}, the values of \code{page} and \code{per_page} are
@@ -84,9 +80,10 @@ You must include any fields that you wish to sort by in \code{fields}.}
 Possible values include "GET" or "POST". Use the POST method when
 your query is very long (say, over 2,000 characters in length).}
 
-\item{error_browser}{Deprecated}
+\item{error_browser}{`r lifecycle::badge("deprecated")`}
 
-\item{paging_override}{boolean to override paging, for test case use}
+\item{api_key}{API key. See \href{https://patentsview.org/apis/keyrequest}{
+Here} for info on creating a key.}
 
 \item{...}{Arguments passed along to httr's \code{\link[httr]{GET}} or
 \code{\link[httr]{POST}} function.}
@@ -102,8 +99,7 @@ A list with the following three elements:
    the assignee-level would be returned in list columns.}
 
    \item{query_results}{Entity counts across all pages of output (not just
-   the page returned to you). If you set \code{subent_cnts = TRUE}, you will
-   be returned both the counts of the primary entities and the subentities.}
+   the page returned to you).}
 
    \item{request}{Details of the HTTP request that was sent to the server.
    When you set \code{all_pages = TRUE}, you will only get a sample request.

@@ -2,25 +2,29 @@
 % Please edit documentation in R/search-pv.R
 \name{retrieve_linked_data}
 \alias{retrieve_linked_data}
-\title{Get HATEOS Data}
+\title{Get Linked Data}
 \usage{
-retrieve_linked_data(url)
+retrieve_linked_data(url, api_key = Sys.getenv("PATENTSVIEW_API_KEY"))
 }
 \arguments{
 \item{url}{The link that was returned by the API on a previous call}
+
+\item{api_key}{API key. See \href{https://patentsview.org/apis/keyrequest}{
+Here} for info on creating a key.}
 }
 \value{
 A character vector with field names, same as search_pv()
 }
 \description{
-The new version of the api return HATEOAS style links to get more data
+Some of the endpoints now returns HATEOAS style links to get more data.
 ex "inventor": "https://search.patentsview.org/api/v1/inventor/252373/"
-They are new, Get only endpoints with no ability to pass f: s: or o: parameters
 }
 \examples{
 \dontrun{
 
-retrieve_linked_data("https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4811/")
+retrieve_linked_data(
+  "https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4811/"
+ )
 }
 
 }

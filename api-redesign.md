@@ -7,6 +7,29 @@
     
 I wasn't sure what the githubby way to do this would be but this page chronicles the work done so far, the choices made along the way and what is still outstanding.  Whether some of this could or should be issues or a project, in either this repo or its parent's could be debated, or maybe we should find a better way to bicker! (properly discuss the right way to change the R package.) Or maybe slug it all out in an epic, one for the ages, pull request?
 
+## Outstanding
+The changes comprising an MVP have been masterfully merged onto ropensci by crew102. Here's what's left:
+1. add retrieve_linked_data() to search-pv to retrieve data from the HATOAS links now returned by the API
+2. Update vignettes, all of them changed.  The original ropensci blog post has been updated and could be added
+as a vignette.  There is a new one about converting an existing script and another new one about the api
+changes.  They might be pushing the definition of vignette slightly.
+
+## Questions:
+1. Should the new stuff mentioned [here](https://mustberuss.github.io/patentsview/articles/converting-an-existing-script.html#additions-to-the-r-package-1) be added to the package?
+2. Should we update the version number? Maybe to 1.0.0 since it's not backward compatible.
+3. Should we use r-universe for the distribution until the original API version is retired? (It could then
+be submitted to CRAN).  There is an unauthorized badge and installation instructions [here](https://mustberuss.github.io/patentsview/)  We'd really use <https://ropensci.r-universe.dev/ui#package:patentsview>
+4. Should we post a tech note to ropensci when the new version of the package is ready?  
+A potential posting is [here](https://mustberuss.github.io/patentsview/articles/ropensci_tech_note.html)  (the stuff about the
+badge could be dropped)
+5. Should we add a CONTRIBUTING.md and an issue template? The [best practices page](https://devguide.ropensci.org/package-development-security-best-practices.html#secrets-in-packages-and-development
+) recommends adding a CONTRIBUTING.md with API key instructions etc.  It also recommends
+adding an issue template reminding people not to share their API key.
+6. Have you seen this?
+ > In October 2022, other searching platforms (i.e. Pub EAST, Pub WEST, Pat/FT and App/FT) will be retired and replaced with Patent Public Search.
+
+   under "What is the timeline for Patent Public Search?" on <https://ppubs.uspto.gov/pubwebapp/static/pages/faq.html>  The ropensci blog post vignette has two patft links.
+
 ## Important Notes
 1. The locations endpoint is not on the test server yet.
 2. More endpoints are coming by the end of 2022, rumored to include one for application data.
