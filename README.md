@@ -35,10 +35,10 @@ devtools::install_github("ropensci/patentsview")
 Or the R package for the new version of the API from github:
 ```
 if (!"devtools" %in% rownames(installed.packages())) {
-  devtools::install_github("mustberuss/patentsview@api-redesign")
+  devtools::install_github("ropensci/patentsview@api-redesign")
 }
 ```
-Or the R package for the new version of the API from the r-universe:
+Or the R package for the new version of the API from r-universe:
 
 
 ```r
@@ -71,12 +71,12 @@ search_pv(query = '{"_gte":{"patent_date":"2007-01-01"}}')
 #> #### A list with a single data frame (with list column(s) inside) on a patent level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	25 obs. of  5 variables:
-#>   ..$ patent_number     : chr [1:25] "10000000" ...
-#>   ..$ patent_title      : chr [1:25] "Coherent LADAR using intra-pixel quadra"..
-#>   ..$ patent_date       : chr [1:25] "2018-06-19" ...
-#>   ..$ assignees_at_grant:List of 25
-#>   ..$ inventors_at_grant:List of 25
+#>  $ patents:'data.frame':	1000 obs. of  5 variables:
+#>   ..$ patent_number     : chr [1:1000] "10000000" ...
+#>   ..$ patent_title      : chr [1:1000] "Coherent LADAR using intra-pixel quad"..
+#>   ..$ patent_date       : chr [1:1000] "2018-06-19" ...
+#>   ..$ assignees_at_grant:List of 1000
+#>   ..$ inventors_at_grant:List of 1000
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:

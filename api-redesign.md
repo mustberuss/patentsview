@@ -9,10 +9,13 @@ I wasn't sure what the githubby way to do this would be but this page chronicles
 
 ## Outstanding
 The changes comprising an MVP have been masterfully merged onto ropensci by crew102. Here's what's left:
-1. add retrieve_linked_data() to search-pv to retrieve data from the HATOAS links now returned by the API
-2. Update vignettes, all of them changed.  The original ropensci blog post has been updated and could be added
+1. Update vignettes, all of them changed.  The original ropensci blog post has been updated and could be added
 as a vignette.  There is a new one about converting an existing script and another new one about the api
 changes.  They might be pushing the definition of vignette slightly.
+2. possibly add qry_funs$in_range() and safe_date_ranges() to the r package, more about this in Question 1
+3. There is supposed to be a code release and data update this month.  Hopefully the locations endpoint will be
+add to the test server then, along with the applications endpoint mentioned vaguely
+[here](https://patentsview.org/forum/8/topic/572#comment-560)
 
 ## Questions:
 1. Should the new stuff mentioned [here](https://mustberuss.github.io/patentsview/articles/converting-an-existing-script.html#additions-to-the-r-package-1) be added to the package?
@@ -21,10 +24,11 @@ changes.  They might be pushing the definition of vignette slightly.
 be submitted to CRAN).  There is an unauthorized badge and installation instructions [here](https://mustberuss.github.io/patentsview/)  We'd really use <https://ropensci.r-universe.dev/ui#package:patentsview>
 4. Should we post a tech note to ropensci when the new version of the package is ready?  
 A potential posting is [here](https://mustberuss.github.io/patentsview/articles/ropensci_tech_note.html)  (the stuff about the
-badge could be dropped)
+sticker could be dropped)
 5. Should we add a CONTRIBUTING.md and an issue template? The [best practices page](https://devguide.ropensci.org/package-development-security-best-practices.html#secrets-in-packages-and-development
 ) recommends adding a CONTRIBUTING.md with API key instructions etc.  It also recommends
-adding an issue template reminding people not to share their API key.
+adding an issue template reminding people not to share their API key.  usethis::use_tidy_contributing() generates a base
+[CONTRIBUTING.md](https://github.com/mustberuss/patentsview/tree/api-redesign/.github/CONTRIBUTING.md) (links to a CODE_OF_CONDUCT.md delete or link to ropensci's instead?)
 6. Have you seen this?
  > In October 2022, other searching platforms (i.e. Pub EAST, Pub WEST, Pat/FT and App/FT) will be retired and replaced with Patent Public Search.
 

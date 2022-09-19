@@ -13,9 +13,11 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
-> Important API Change
->
-> The new version of the API requires an API key, or all of your requests will be blocked.  See the [API Changes](api-changes.html#an-api-key-is-required-1) page.
+## Important API Change
+
+The new version of the API requires an API key, or all of your requests will be rejected. Request an 
+API key using this link: <https://patentsview.org/apis/keyrequest> Once you have one, you’ll need to set 
+an environmental variable PATENTSVIEW_API_KEY to the value of your API key for the R package to use.
 
 
 ## A basic example 
@@ -75,15 +77,15 @@ To list all of the retrievable fields for a given endpoint, use `get_fields()`:
 retrvble_flds <- get_fields(endpoint = "patents")
 head(retrvble_flds)
 ```
-**Note: The API documentation has not been updated for the new version of the API** and in the new API version all fields are queryable.  See the [Swagger UI page](https://search.patentsview.org/swagger-ui/) for the new version of the API, the fields returned are listed for each endpoint in the 200 Response body sections
+See the [Swagger UI page](https://search.patentsview.org/swagger-ui/) for the API, the fields returned are listed for each endpoint in the 200 Response body sections.
 
-You can also visit an endpoint's online documentation page to see a list of its queryable and retrievable fields (e.g., see the [inventor field list table](https://patentsview.org/apis/api-endpoints/inventors#field_list)). Note the "Query" column in this table, which indicates whether the field is both queryable and retrievable (Query = Y), or just retrievable (Query = N). The field tables for all of the endpoints can be found in the `fieldsdf` data frame, which you can load using `data("fieldsdf")` or `View(patentsview::fieldsdf)`.
+You can also visit an endpoint's online documentation page to see a list of its retrievable fields (e.g., see the [inventor field list table](https://patentsview.org/apis/api-endpoints/inventorsbeta#field_list)). In earlier versions of the API not all fields were queryable as they are now. The field tables for all of the endpoints can be found in the `fieldsdf` data frame, which you can load using `data("fieldsdf")` or `View(patentsview::fieldsdf)`.
 
 **An important note: By default, PatentsView uses disambiguted versions of assignees, inventors, and locations, instead of raw data.** For example, let's say you search for all inventors whose first name is "john." The PatentsView API is going to return all of the inventors who have a preferred first name (as per the disambiguation results) of john, which may not necessarily be their raw first name. You could be getting back inventors whose first name appears on the patent as, say, "jonathan," "johnn," or even "john jay." You can search on the raw inventor names instead of the preferred names by using the fields starting with "raw" in your query (e.g., `rawinventor_first_name`). The assignee and location raw data fields are not currently being offered by the API. To see the methods behind the disambiguation process, see the [PatentsView Inventor Disambiguation Technical Workshop website](https://patentsview.org/disambiguation).
 
 ## Paginated responses
 
-By default, `search_pv()` returns 25 records per page and only gives you the first page of results. I suggest sticking with these defaults while you're figuring out the details of your request, such as the query you want to use and the fields you want returned. Once you have those items finalized, you can use the `per_page` argument to download up to 1,000 records per page. You can also choose which page of results you want with the `page` argument:
+By default, `search_pv()` returns 1,000 records per page and only gives you the first page of results. I suggest starting with something smaler, like the `per_page` = 150 below, while you're figuring out the details of your request, such as the query you want to use and the fields you want returned. Once you have those items finalized, you can use the `per_page` argument to download up to 1,000 records per page. You can also choose which page of results you want with the `page` argument:
 
 ```{r}
 search_pv(
@@ -115,6 +117,8 @@ query <- qry_funs$eq(inventors_at_grant.name_last = "chambers")
 
 # Here we'll request patent_number and the inventor fields from the patents endpoint
 inv_fields <- get_fields(endpoint = "patents", groups ="inventors_at_grant")
+<span style="color: red;">[trouble here]</span>
+inv_fields
 fields <- c(inv_fields, "patent_number")
 
 result <- search_pv(query, endpoint = "patents", fields = fields)
@@ -141,7 +145,8 @@ Most of the time you will want to use the patents endpoint. Note that you can st
 
 ## Casting fields
 
-The API always returns the data fields as strings, even if they would be better stored using a different data type (e.g., numeric). You can cast all fields to their preferred R types using `cast_pv_data()`:
+The API now returns most data fields as an appropriate data type (e.g., numeric). There is a small number of fields that are returned as strings where
+integers woudl be more appropriate.   You can cast all fields to their preferred R types using `cast_pv_data()`:
 
 ```{r}
 res <- search_pv(
@@ -149,10 +154,8 @@ res <- search_pv(
   fields = c("patent_date", "patent_title", "patent_year")
 )
 
-# This is not quite true in the new version of the API, dates from strings would be the only one still needed
-# Right now all of the fields are stored as character vectors:
 res
-
+# [<span style="color: red;">trouble here</span>]
 # Use more appropriate data types:
 cast_pv_data(res$data)
 ```
@@ -169,31 +172,40 @@ Yes, the API currently allows 45 calls per minute for each API key.  If this lim
 
 #### How do I download more than 10,000 records?
 
-Your best bet is to split your query into pieces based on dates, then concatenate the results together. For example, the below query would return more than 10,000 records for the patents endpoint:
+Your best bet is to split your query into pieces based on dates, then concatenate the results together. There is more on this in the [Converting an existing script vignette](converting-an-existing-script.html#reduced-query-size-1)
 
-** Note that both of these queries exceed the API's new overall result set size of 10,000 rows (it used to allow 100,000 rows).  Using the query as written returns in excess of 140,000 rows.
+For example, the below query would return more than 10,000 records for the patents endpoint:
 
 ```{r}
-query <- with_qfuns(text_any(patent_abstract = 'tool animal'))
+query <- with_qfuns(contains(patent_title = 'game'))
+
 ```
 
-To download all of the records associated with this query, we could split it into two pieces and make two calls to `search_pv()`:
+To download all of the records associated with this query, we could split it into three pieces and make three calls to `search_pv()`, each with all_pages = TRUE:
 
 ```{r}
 query_1a <- with_qfuns(
   and(
-    text_any(patent_abstract = 'tool animal'),
-    lte(patent_date = "2010-01-01")
+    contains(patent_title = 'game'),
+    lte(patent_date = "2010-05-17")
   )
 )
 
 query_1b <- with_qfuns(
   and(
-    text_any(patent_abstract = 'tool animal'),
-    gt(patent_date = "2010-01-01")
+    contains(patent_title = 'game'),
+    qry_funs$in_range(patent_date=c("2010-05-18", "2021-05-10"))
+  )
+)
+
+query_1c <- with_qfuns(
+  and(
+    contains(patent_title = 'game'),
+    gte(patent_date = "2021-05-11")
   )
 )
 ```
+Note that at the time this was written, the original query returned 20,521 rows.  At some point in the future query_1c could return more than 10,000 rows.  
 
 #### How do I access the data frames inside the list columns returned by `search_pv()`?
 
@@ -235,6 +247,6 @@ unnest_pv_data(data = res$data, pk = "patent_number")
 
 Now we are left with a series of flat data frames instead of having a single data frame with other data frames nested inside of it. These flat data frames can be joined together as needed via the primary key (`assignee_id`).
 
-[^1]: You can use `get_endpoints()` to list the endpoint names as the API expects them to appear (e.g., `assignees`, `cpc_subsections`, `inventors`, `locations`, `nber_subcategories`, `patents`, and `uspc_mainclasses`).
+[^1]: You can use `get_endpoints()` to list the endpoint names the R package uses (e.g., `assignees`, `cpc_subsections`, `inventors`, `locations`, `nber_subcategories`, `patents`, and `uspc_mainclasses`). An API change made the actual endpoints singluar, though the returned entities are still plural (which is why the R package still uses the plural names).
 [^2]: This webpage includes some details that are not relevant to the `query` argument in `search_pv`, such as the field list and sort parameter.
 [^3]: You can unnest the data frames that are stored in the list columns using `unnest_pv_data()`. See the FAQs for details.

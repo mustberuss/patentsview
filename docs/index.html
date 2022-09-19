@@ -174,10 +174,9 @@ from CRAN:</p>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"ropensci/patentsview"</span><span class="op">)</span></code></pre></div>
 <p>Or the R package for the new version of the API from github:</p>
 <pre><code>if (!"devtools" %in% rownames(installed.packages())) {
-  devtools::install_github("mustberuss/patentsview@api-redesign")
+  devtools::install_github("ropensci/patentsview@api-redesign")
 }</code></pre>
-<p>Or the R package for the new version of the API from the
-r-universe:</p>
+<p>Or the R package for the new version of the API from r-universe:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
    patentsview <span class="op">=</span> <span class="st">'https://mustberuss.r-universe.dev/'</span>,
@@ -213,12 +212,12 @@ API</a> provides an interface to a disambiguated version of USPTO. The
 <span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on a patent level:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; List of 1</span>
-<span class="co">#&gt;  $ patents:'data.frame': 25 obs. of  5 variables:</span>
-<span class="co">#&gt;   ..$ patent_number     : chr [1:25] "10000000" ...</span>
-<span class="co">#&gt;   ..$ patent_title      : chr [1:25] "Coherent LADAR using intra-pixel quadra"..</span>
-<span class="co">#&gt;   ..$ patent_date       : chr [1:25] "2018-06-19" ...</span>
-<span class="co">#&gt;   ..$ assignees_at_grant:List of 25</span>
-<span class="co">#&gt;   ..$ inventors_at_grant:List of 25</span>
+<span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  5 variables:</span>
+<span class="co">#&gt;   ..$ patent_number     : chr [1:1000] "10000000" ...</span>
+<span class="co">#&gt;   ..$ patent_title      : chr [1:1000] "Coherent LADAR using intra-pixel quad"..</span>
+<span class="co">#&gt;   ..$ patent_date       : chr [1:1000] "2018-06-19" ...</span>
+<span class="co">#&gt;   ..$ assignees_at_grant:List of 1000</span>
+<span class="co">#&gt;   ..$ inventors_at_grant:List of 1000</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $query_results</span>
 <span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span>
@@ -267,6 +266,12 @@ assignees</a> in the field of databases)</li>
 <li>
 <a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
 </li>
+</ul>
+</div>
+<div class="community">
+<h2>Community</h2>
+<ul class="list-unstyled">
+<li><a href="CONTRIBUTING.html">Contributing guide</a></li>
 </ul>
 </div>
 <div class="developers">

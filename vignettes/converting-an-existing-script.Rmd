@@ -230,7 +230,7 @@ the_answer
 #> [1] "2019-10-15" "2021-04-26"
 #> 
 #> [[15]]
-#> [1] "2021-04-27" "2022-09-16"
+#> [1] "2021-04-27" "2022-09-18"
 ```
 
 And now, since it's fun, we'll go through the motions of calling the API for each date range.  We won't actually request all the data (all_pages defaults to FALSE) but each call's total_hit_count will be displayed, showing the total row count of what would have been retrieved if all_pages was TRUE.  Note that none of date ranges would hit the new limit of 10,000 rows.   
@@ -267,7 +267,7 @@ for (pair in the_answer)
 #> [1] "9934 2016-05-03, 2018-02-26"
 #> [1] "9918 2018-02-27, 2019-10-14"
 #> [1] "9874 2019-10-15, 2021-04-26"
-#> [1] "3984 2021-04-27, 2022-09-16"
+#> [1] "3984 2021-04-27, 2022-09-18"
 ```
 
 ## Conclusion

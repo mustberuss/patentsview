@@ -154,40 +154,41 @@
 
     
     
-<blockquote>
-<p>Important API Change</p>
+<div id="important-api-change" class="section level2">
+<h2 class="hasAnchor">
+<a href="#important-api-change" class="anchor"></a>Important API Change</h2>
 <p>The new version of the API requires an API key, or all of your
-requests will be blocked. See the <a href="api-changes.html#an-api-key-is-required-1">API Changes</a>
-page.</p>
-</blockquote>
+requests will be blocked. Request an API key using this link: <a href="https://patentsview.org/apis/keyrequest" class="uri">https://patentsview.org/apis/keyrequest</a> Once you have
+one, you’ll need to set an environmental variable PATENTSVIEW_API_KEY to
+the value of your API key for the R package to use.</p>
+</div>
 <div id="a-basic-example" class="section level2">
 <h2 class="hasAnchor">
 <a href="#a-basic-example" class="anchor"></a>A basic example</h2>
 <p>Let’s start with a basic example of how to use the package’s primary
 function, <code><a href="../reference/search_pv.html">search_pv()</a></code>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/patentsview/index.html">patentsview</a></span><span class="op">)</span>
 
 <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span>
   query <span class="op">=</span> <span class="st">'{"_gte":{"patent_date":"2007-01-01"}}'</span>,
   endpoint <span class="op">=</span> <span class="st">"patents"</span>
 <span class="op">)</span>
 <span class="co">#&gt; $data</span>
-<span class="co">#&gt; [1] "patents"</span>
-<span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on a patent level:</span>
+<span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on patents level:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; List of 1</span>
-<span class="co">#&gt;  $ patents:'data.frame': 25 obs. of  5 variables:</span>
-<span class="co">#&gt;   ..$ patent_number     : chr [1:25] "10000000" ...</span>
-<span class="co">#&gt;   ..$ patent_title      : chr [1:25] "Coherent LADAR using intra-pixel quadra"..</span>
-<span class="co">#&gt;   ..$ patent_date       : chr [1:25] "2018-06-19" ...</span>
-<span class="co">#&gt;   ..$ assignees_at_grant:List of 25</span>
-<span class="co">#&gt;   ..$ inventors_at_grant:List of 25</span>
+<span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  5 variables:</span>
+<span class="co">#&gt;   ..$ patent_number     : chr [1:1000] "10000000" ...</span>
+<span class="co">#&gt;   ..$ patent_title      : chr [1:1000] "Coherent LADAR using intra-pixel quad"..</span>
+<span class="co">#&gt;   ..$ patent_date       : chr [1:1000] "2018-06-19" ...</span>
+<span class="co">#&gt;   ..$ assignees_at_grant:List of 1000</span>
+<span class="co">#&gt;   ..$ inventors_at_grant:List of 1000</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $query_results</span>
 <span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; total_hits = 10,000</span></code></pre></div>
+<span class="co">#&gt; total_hits = 4,019,907</span></code></pre></div>
 <p>This call to <code><a href="../reference/search_pv.html">search_pv()</a></code> sends our query to the patents
 endpoint (the default). The API has 13 different endpoints,
 corresponding to 13 different entity types (application_citation,
@@ -249,18 +250,17 @@ default set. You can specify which fields you want using the
 <span class="op">)</span>
 <span class="va">result</span>
 <span class="co">#&gt; $data</span>
-<span class="co">#&gt; [1] "patents"</span>
-<span class="co">#&gt; #### A list with a single data frame on a patent level:</span>
+<span class="co">#&gt; #### A list with a single data frame on patents level:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; List of 1</span>
-<span class="co">#&gt;  $ patents:'data.frame': 25 obs. of  2 variables:</span>
-<span class="co">#&gt;   ..$ patent_number: chr [1:25] "10000000" ...</span>
-<span class="co">#&gt;   ..$ patent_title : chr [1:25] "Coherent LADAR using intra-pixel quadrature "..</span>
+<span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  2 variables:</span>
+<span class="co">#&gt;   ..$ patent_number: chr [1:1000] "10000000" ...</span>
+<span class="co">#&gt;   ..$ patent_title : chr [1:1000] "Coherent LADAR using intra-pixel quadratur"..</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $query_results</span>
 <span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; total_hits = 10,000</span></code></pre></div>
+<span class="co">#&gt; total_hits = 4,019,907</span></code></pre></div>
 <p>To list all of the retrievable fields for a given endpoint, use
 <code><a href="../reference/get_fields.html">get_fields()</a></code>:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -268,16 +268,13 @@ default set. You can specify which fields you want using the
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">retrvble_flds</span><span class="op">)</span>
 <span class="co">#&gt; [1] "patent_number"  "patent_title"   "patent_date"    "patent_type"   </span>
 <span class="co">#&gt; [5] "patent_country" "patent_year"</span></code></pre></div>
-<p><strong>Note: The API documentation has not been updated for the new
-version of the API</strong> and in the new API version all fields are
-queryable. See the <a href="https://search.patentsview.org/swagger-ui/">Swagger UI page</a>
-for the new version of the API, the fields returned are listed for each
-endpoint in the 200 Response body sections</p>
+<p>See the <a href="https://search.patentsview.org/swagger-ui/">Swagger
+UI page</a> for the API, the fields returned are listed for each
+endpoint in the 200 Response body sections.</p>
 <p>You can also visit an endpoint’s online documentation page to see a
-list of its queryable and retrievable fields (e.g., see the <a href="https://patentsview.org/apis/api-endpoints/inventors#field_list">inventor
-field list table</a>). Note the “Query” column in this table, which
-indicates whether the field is both queryable and retrievable (Query =
-Y), or just retrievable (Query = N). The field tables for all of the
+list of its retrievable fields (e.g., see the <a href="https://patentsview.org/apis/api-endpoints/inventorsbeta#field_list">inventor
+field list table</a>). In earlier versions of the API not all fields
+were queryable as they are now. The field tables for all of the
 endpoints can be found in the <code>fieldsdf</code> data frame, which
 you can load using <code><a href="https://rdrr.io/r/utils/data.html">data("fieldsdf")</a></code> or
 <code><a href="https://rdrr.io/r/utils/View.html">View(patentsview::fieldsdf)</a></code>.</p>
@@ -299,21 +296,21 @@ Disambiguation Technical Workshop website</a>.</p>
 <div id="paginated-responses" class="section level2">
 <h2 class="hasAnchor">
 <a href="#paginated-responses" class="anchor"></a>Paginated responses</h2>
-<p>By default, <code><a href="../reference/search_pv.html">search_pv()</a></code> returns 25 records per page and
-only gives you the first page of results. I suggest sticking with these
-defaults while you’re figuring out the details of your request, such as
-the query you want to use and the fields you want returned. Once you
-have those items finalized, you can use the <code>per_page</code>
-argument to download up to 1,000 records per page. You can also choose
-which page of results you want with the <code>page</code> argument:</p>
+<p>By default, <code><a href="../reference/search_pv.html">search_pv()</a></code> returns 1,000 records per page
+and only gives you the first page of results. I suggest starting with
+something smaler, like the <code>per_page</code> = 150 below, while
+you’re figuring out the details of your request, such as the query you
+want to use and the fields you want returned. Once you have those items
+finalized, you can use the <code>per_page</code> argument to download up
+to 1,000 records per page. You can also choose which page of results you
+want with the <code>page</code> argument:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span>
   query <span class="op">=</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span>inventors_at_grant.name_last <span class="op">=</span> <span class="st">"chambers"</span><span class="op">)</span>,
   page <span class="op">=</span> <span class="fl">2</span>, per_page <span class="op">=</span> <span class="fl">150</span> <span class="co"># gets records 150 - 300</span>
 <span class="op">)</span> 
 <span class="co">#&gt; $data</span>
-<span class="co">#&gt; [1] "patents"</span>
-<span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on a patent level:</span>
+<span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on patents level:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; List of 1</span>
 <span class="co">#&gt;  $ patents:'data.frame': 150 obs. of  5 variables:</span>
@@ -337,8 +334,7 @@ or 10,000 records total):</p>
   all_pages <span class="op">=</span> <span class="cn">TRUE</span>, per_page <span class="op">=</span> <span class="fl">1000</span>
 <span class="op">)</span>
 <span class="co">#&gt; $data</span>
-<span class="co">#&gt; [1] "patents"</span>
-<span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on a patent level:</span>
+<span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on patents level:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; List of 1</span>
 <span class="co">#&gt;  $ patents:'data.frame': 2156 obs. of  5 variables:</span>
@@ -374,65 +370,30 @@ such patents. See the FAQs below for details on how to overcome the
 <p>With the recent API change, the patents endpoint supplies the basic
 patent data and the other endponts return more specific data for those
 patents.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="va">query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span>inventors_at_grant.name_last <span class="op">=</span> <span class="st">"chambers"</span><span class="op">)</span>
-
-<span class="co"># Here we'll request patent_number and the inventor fields from the patents endpoint</span>
-<span class="va">inv_fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"patents"</span>, groups <span class="op">=</span><span class="st">"inventors_at_grant"</span><span class="op">)</span>
-<span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">inv_fields</span>, <span class="st">"patent_number"</span><span class="op">)</span>
-
-<span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query</span>, endpoint <span class="op">=</span> <span class="st">"patents"</span>, fields <span class="op">=</span> <span class="va">fields</span><span class="op">)</span>
-<span class="va">result</span>
-<span class="co">#&gt; $data</span>
-<span class="co">#&gt; [1] "patents"</span>
-<span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on a patent level:</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; List of 1</span>
-<span class="co">#&gt;  $ patents:'data.frame': 25 obs. of  2 variables:</span>
-<span class="co">#&gt;   ..$ patent_number     : chr [1:25] "4279524" ...</span>
-<span class="co">#&gt;   ..$ inventors_at_grant:List of 25</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $query_results</span>
-<span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; total_hits = 2,156</span>
-
-<span class="co"># Here's the first inventors_at_grant</span>
-<span class="va">result</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span><span class="op">$</span><span class="va">inventors_at_grant</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>
-<span class="co">#&gt; [[1]]</span>
-<span class="co">#&gt;   name_first name_last    city state country latitude longitude</span>
-<span class="co">#&gt; 1 William I.  Chambers Wichita    KS      US  37.6853  -97.3872</span>
-
-<span class="co"># Now we will see what the inventors endpoint returns for a similar query.  We use get_fields() to get all the available for the inventors endpoint.</span>
-<span class="va">query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span>name_last <span class="op">=</span> <span class="st">"chambers"</span><span class="op">)</span>
-<span class="va">fields</span> <span class="op">=</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"inventors"</span><span class="op">)</span>
-
-<span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query</span>, endpoint <span class="op">=</span> <span class="st">"inventors"</span>, fields <span class="op">=</span> <span class="va">fields</span><span class="op">)</span>
-<span class="co">#&gt; $data</span>
-<span class="co">#&gt; [1] "inventors"</span>
-<span class="co">#&gt; #### A list with a single data frame on an inventor level:</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; List of 1</span>
-<span class="co">#&gt;  $ inventors:'data.frame':   25 obs. of  13 variables:</span>
-<span class="co">#&gt;   ..$ inventor_id        : int [1:25] 25722 64685 ...</span>
-<span class="co">#&gt;   ..$ name_first         : chr [1:25] "Michael" ...</span>
-<span class="co">#&gt;   ..$ name_last          : chr [1:25] "Chambers" ...</span>
-<span class="co">#&gt;   ..$ num_patents        : int [1:25] 13 67 ...</span>
-<span class="co">#&gt;   ..$ num_assignees      : int [1:25] 2 12 ...</span>
-<span class="co">#&gt;   ..$ lastknown_city     : chr [1:25] "Dubuque" ...</span>
-<span class="co">#&gt;   ..$ lastknown_state    : chr [1:25] "IA" ...</span>
-<span class="co">#&gt;   ..$ lastknown_country  : chr [1:25] "US" ...</span>
-<span class="co">#&gt;   ..$ lastknown_latitude : num [1:25] 42.5 ...</span>
-<span class="co">#&gt;   ..$ lastknown_longitude: num [1:25] -90.7 ...</span>
-<span class="co">#&gt;   ..$ first_seen_date    : chr [1:25] "1982-09-14" ...</span>
-<span class="co">#&gt;   ..$ last_seen_date     : chr [1:25] "2020-11-24" ...</span>
-<span class="co">#&gt;   ..$ years_active       : num [1:25] 38 27 ...</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $query_results</span>
-<span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; total_hits = 439</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>query <span class="ot">&lt;-</span> qry_funs<span class="sc">$</span><span class="fu">eq</span>(<span class="at">inventors_at_grant.name_last =</span> <span class="st">"chambers"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Here we'll request patent_number and the inventor fields from the patents endpoint</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>inv_fields <span class="ot">&lt;-</span> <span class="fu">get_fields</span>(<span class="at">endpoint =</span> <span class="st">"patents"</span>, <span class="at">groups =</span><span class="st">"inventors_at_grant"</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="sc">&lt;</span>span style<span class="ot">=</span><span class="st">"color: red;"</span><span class="sc">&gt;</span>[trouble here]<span class="sc">&lt;</span><span class="er">/</span>span<span class="sc">&gt;</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>inv_fields</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>fields <span class="ot">&lt;-</span> <span class="fu">c</span>(inv_fields, <span class="st">"patent_number"</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">search_pv</span>(query, <span class="at">endpoint =</span> <span class="st">"patents"</span>, <span class="at">fields =</span> fields)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>result</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Here's the first inventors_at_grant</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>result<span class="sc">$</span>data<span class="sc">$</span>patents<span class="sc">$</span>inventors_at_grant[<span class="dv">1</span>]</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Now we will see what the inventors endpoint returns for a similar query.  We use get_fields() to get all the available for the inventors endpoint.</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>query <span class="ot">&lt;-</span> qry_funs<span class="sc">$</span><span class="fu">eq</span>(<span class="at">name_last =</span> <span class="st">"chambers"</span>)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>fields <span class="ot">=</span> <span class="fu">get_fields</span>(<span class="at">endpoint =</span> <span class="st">"inventors"</span>)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="fu">search_pv</span>(query, <span class="at">endpoint =</span> <span class="st">"inventors"</span>, <span class="at">fields =</span> fields)</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error: &lt;text&gt;:6:1: unexpected '&lt;'</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5: inv_fields &lt;- get_fields(endpoint = "patents", groups ="inventors_at_grant")</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6: &lt;</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    ^</span></span></code></pre></div>
 <p>Your choice of endpoint determines two things:</p>
 <ol style="list-style-type: decimal">
 <li><p><strong>Which entity your query is applied to.</strong> The first
@@ -463,22 +424,19 @@ want.</p>
 <div id="casting-fields" class="section level2">
 <h2 class="hasAnchor">
 <a href="#casting-fields" class="anchor"></a>Casting fields</h2>
-<p>The API always returns the data fields as strings, even if they would
-be better stored using a different data type (e.g., numeric). You can
-cast all fields to their preferred R types using
-<code><a href="../reference/cast_pv_data.html">cast_pv_data()</a></code>:</p>
+<p>The API now returns most data fields as an appropriate data type
+(e.g., numeric). There is a small number of fields that are returned as
+strings where integers woudl be more appropriate. You can cast all
+fields to their preferred R types using <code><a href="../reference/cast_pv_data.html">cast_pv_data()</a></code>:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span>
   query <span class="op">=</span> <span class="st">"{\"patent_number\":\"5116621\"}"</span>, 
   fields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"patent_date"</span>, <span class="st">"patent_title"</span>, <span class="st">"patent_year"</span><span class="op">)</span>
 <span class="op">)</span>
 
-<span class="co"># This is not quite true in the new version of the API, dates from strings would be the only one still needed</span>
-<span class="co"># Right now all of the fields are stored as character vectors:</span>
 <span class="va">res</span>
 <span class="co">#&gt; $data</span>
-<span class="co">#&gt; [1] "patents"</span>
-<span class="co">#&gt; #### A list with a single data frame on a patent level:</span>
+<span class="co">#&gt; #### A list with a single data frame on patents level:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; List of 1</span>
 <span class="co">#&gt;  $ patents:'data.frame': 1 obs. of  3 variables:</span>
@@ -490,13 +448,10 @@ cast all fields to their preferred R types using
 <span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; total_hits = 1</span>
-
+<span class="co"># [&lt;span style="color: red;"&gt;trouble here&lt;/span&gt;]</span>
 <span class="co"># Use more appropriate data types:</span>
 <span class="fu"><a href="../reference/cast_pv_data.html">cast_pv_data</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">data</span><span class="op">)</span>
-<span class="co">#&gt; [1] "patent_title!string"</span>
-<span class="co">#&gt; [1] "patent_date!date"</span>
-<span class="co">#&gt; [1] "patents"</span>
-<span class="co">#&gt; #### A list with a single data frame on a patent level:</span>
+<span class="co">#&gt; #### A list with a single data frame on patents level:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; List of 1</span>
 <span class="co">#&gt;  $ patents:'data.frame': 1 obs. of  3 variables:</span>
@@ -533,30 +488,40 @@ your key.</p>
 <h4 class="hasAnchor">
 <a href="#how-do-i-download-more-than-10000-records" class="anchor"></a>How do I download more than 10,000 records?</h4>
 <p>Your best bet is to split your query into pieces based on dates, then
-concatenate the results together. For example, the below query would
-return more than 10,000 records for the patents endpoint:</p>
-<p>** Note that both of these queries exceed the API’s new overall
-result set size of 10,000 rows (it used to allow 100,000 rows). Using
-the query as written returns in excess of 140,000 rows.</p>
+concatenate the results together. There is more on this in the <a href="converting-an-existing-script.html#reduced-query-size-1">Converting
+an existing script vignette</a></p>
+<p>For example, the below query would return more than 10,000 records
+for the patents endpoint:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span><span class="fu">text_any</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="st">'tool animal'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">'game'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>To download all of the records associated with this query, we could
-split it into two pieces and make two calls to
-<code><a href="../reference/search_pv.html">search_pv()</a></code>:</p>
+split it into three pieces and make three calls to
+<code><a href="../reference/search_pv.html">search_pv()</a></code>, each with all_pages = TRUE:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">query_1a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span>
   <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html">and</a></span><span class="op">(</span>
-    <span class="fu">text_any</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="st">'tool animal'</span><span class="op">)</span>,
-    <span class="fu">lte</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2010-01-01"</span><span class="op">)</span>
+    <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">'game'</span><span class="op">)</span>,
+    <span class="fu">lte</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2010-05-17"</span><span class="op">)</span>
   <span class="op">)</span>
 <span class="op">)</span>
 
 <span class="va">query_1b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span>
   <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html">and</a></span><span class="op">(</span>
-    <span class="fu">text_any</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="st">'tool animal'</span><span class="op">)</span>,
-    <span class="fu">gt</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2010-01-01"</span><span class="op">)</span>
+    <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">'game'</span><span class="op">)</span>,
+    <span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span>patent_date<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"2010-05-18"</span>, <span class="st">"2021-05-10"</span><span class="op">)</span><span class="op">)</span>
+  <span class="op">)</span>
+<span class="op">)</span>
+<span class="co">#&gt; Error in and(contains(patent_title = "game"), qry_funs$in_range(patent_date = c("2010-05-18", : attempt to apply non-function</span>
+
+<span class="va">query_1c</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span>
+  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html">and</a></span><span class="op">(</span>
+    <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">'game'</span><span class="op">)</span>,
+    <span class="fu">gte</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2021-05-11"</span><span class="op">)</span>
   <span class="op">)</span>
 <span class="op">)</span></code></pre></div>
+<p>Note that at the time this was written, the original query returned
+20,521 rows. At some point in the future query_1c could return more than
+10,000 rows.</p>
 </div>
 <div id="how-do-i-access-the-data-frames-inside-the-list-columns-returned-by-search_pv" class="section level4">
 <h4 class="hasAnchor">
@@ -577,32 +542,31 @@ interests fields are no longer present</p>
   fields <span class="op">=</span> <span class="va">fields</span>
 <span class="op">)</span>
 <span class="va">res</span><span class="op">$</span><span class="va">data</span>
-<span class="co">#&gt; [1] "patents"</span>
-<span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on a patent level:</span>
+<span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on patents level:</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; List of 1</span>
-<span class="co">#&gt;  $ patents:'data.frame': 25 obs. of  21 variables:</span>
-<span class="co">#&gt;   ..$ patent_number                                               : chr [1:25"..</span>
-<span class="co">#&gt;   ..$ patent_title                                                : chr [1:25"..</span>
-<span class="co">#&gt;   ..$ patent_type                                                 : chr [1:25"..</span>
-<span class="co">#&gt;   ..$ patent_country                                              : chr [1:25"..</span>
-<span class="co">#&gt;   ..$ patent_date                                                 : chr [1:25"..</span>
-<span class="co">#&gt;   ..$ patent_year                                                 : int [1:25]..</span>
-<span class="co">#&gt;   ..$ patent_abstract                                             : chr [1:25"..</span>
-<span class="co">#&gt;   ..$ patent_kind                                                 : chr [1:25"..</span>
-<span class="co">#&gt;   ..$ patent_cpc_current_group_average_patent_processing_days     : logi [1:25..</span>
-<span class="co">#&gt;   ..$ patent_detail_desc_length                                   : int [1:25]..</span>
-<span class="co">#&gt;   ..$ patent_earliest_application_date                            : logi [1:25..</span>
-<span class="co">#&gt;   ..$ patent_num_foreign_documents_cited                          : int [1:25]..</span>
-<span class="co">#&gt;   ..$ patent_num_times_cited_by_us_patents                        : int [1:25]..</span>
-<span class="co">#&gt;   ..$ patent_num_total_documents_cited                            : int [1:25]..</span>
-<span class="co">#&gt;   ..$ patent_num_us_applications_cited                            : int [1:25]..</span>
-<span class="co">#&gt;   ..$ patent_num_us_patents_cited                                 : int [1:25]..</span>
-<span class="co">#&gt;   ..$ patent_term_extension                                       : logi [1:25..</span>
-<span class="co">#&gt;   ..$ patent_uspc_current_mainclass_average_patent_processing_days: logi [1:25..</span>
-<span class="co">#&gt;   ..$ assignees_at_grant                                          :List of 25</span>
-<span class="co">#&gt;   ..$ inventors_at_grant                                          :List of 25</span>
-<span class="co">#&gt;   ..$ cpc_current                                                 :List of 25</span></code></pre></div>
+<span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  21 variables:</span>
+<span class="co">#&gt;   ..$ patent_number                                               : chr [1:10"..</span>
+<span class="co">#&gt;   ..$ patent_title                                                : chr [1:10"..</span>
+<span class="co">#&gt;   ..$ patent_type                                                 : chr [1:10"..</span>
+<span class="co">#&gt;   ..$ patent_country                                              : chr [1:10"..</span>
+<span class="co">#&gt;   ..$ patent_date                                                 : chr [1:10"..</span>
+<span class="co">#&gt;   ..$ patent_year                                                 : int [1:100..</span>
+<span class="co">#&gt;   ..$ patent_abstract                                             : chr [1:10"..</span>
+<span class="co">#&gt;   ..$ patent_kind                                                 : chr [1:10"..</span>
+<span class="co">#&gt;   ..$ patent_cpc_current_group_average_patent_processing_days     : logi [1:10..</span>
+<span class="co">#&gt;   ..$ patent_detail_desc_length                                   : int [1:100..</span>
+<span class="co">#&gt;   ..$ patent_earliest_application_date                            : logi [1:10..</span>
+<span class="co">#&gt;   ..$ patent_num_foreign_documents_cited                          : int [1:100..</span>
+<span class="co">#&gt;   ..$ patent_num_times_cited_by_us_patents                        : int [1:100..</span>
+<span class="co">#&gt;   ..$ patent_num_total_documents_cited                            : int [1:100..</span>
+<span class="co">#&gt;   ..$ patent_num_us_applications_cited                            : int [1:100..</span>
+<span class="co">#&gt;   ..$ patent_num_us_patents_cited                                 : int [1:100..</span>
+<span class="co">#&gt;   ..$ patent_term_extension                                       : logi [1:10..</span>
+<span class="co">#&gt;   ..$ patent_uspc_current_mainclass_average_patent_processing_days: logi [1:10..</span>
+<span class="co">#&gt;   ..$ assignees_at_grant                                          :List of 1000</span>
+<span class="co">#&gt;   ..$ inventors_at_grant                                          :List of 1000</span>
+<span class="co">#&gt;   ..$ cpc_current                                                 :List of 1000</span></code></pre></div>
 <p><code>res$data</code> has vector columns for those fields that belong
 to the primary entity (e.g., <code>res$data$patent_year</code>) and list
 columns for those fields that belong to any secondary entity (e.g.,
@@ -616,11 +580,6 @@ choice of the two).</li>
 </ol>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org">tidyr</a></span><span class="op">)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Attaching package: 'tidyr'</span>
-<span class="co">#&gt; The following object is masked from 'package:magrittr':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     extract</span>
 
 <span class="co"># Get assignee data:</span>
 <span class="va">res</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span> <span class="op">%&gt;%</span> 
@@ -653,53 +612,54 @@ field that can act as a unique identifier for the primary entities:</li>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">res</span><span class="op">$</span><span class="va">data</span>, pk <span class="op">=</span> <span class="st">"patent_number"</span><span class="op">)</span>
 <span class="co">#&gt; List of 4</span>
-<span class="co">#&gt;  $ assignees_at_grant:'data.frame':  22 obs. of  11 variables:</span>
-<span class="co">#&gt;   ..$ patent_number: chr [1:22] "4278558" ...</span>
-<span class="co">#&gt;   ..$ assignee     : chr [1:22] "https://search.patentsview.org/api/v1/assign"..</span>
-<span class="co">#&gt;   ..$ type         : chr [1:22] "2" ...</span>
-<span class="co">#&gt;   ..$ name_first   : chr [1:22] NA ...</span>
-<span class="co">#&gt;   ..$ name_last    : chr [1:22] NA ...</span>
-<span class="co">#&gt;   ..$ organization : chr [1:22] "EAGLEPICHER TECHNOLOGIES, LLC" ...</span>
-<span class="co">#&gt;   ..$ city         : chr [1:22] "Cincinnati" ...</span>
-<span class="co">#&gt;   ..$ state        : chr [1:22] "OH" ...</span>
-<span class="co">#&gt;   ..$ country      : chr [1:22] "US" ...</span>
-<span class="co">#&gt;   ..$ latitude     : num [1:22] 39.1 ...</span>
-<span class="co">#&gt;   ..$ longitude    : num [1:22] -84.5 ...</span>
-<span class="co">#&gt;  $ inventors_at_grant:'data.frame':  52 obs. of  8 variables:</span>
-<span class="co">#&gt;   ..$ patent_number: chr [1:52] "4278558" ...</span>
-<span class="co">#&gt;   ..$ name_first   : chr [1:52] "Donald C." ...</span>
-<span class="co">#&gt;   ..$ name_last    : chr [1:52] "Smith" ...</span>
-<span class="co">#&gt;   ..$ city         : chr [1:52] "Wayne" ...</span>
-<span class="co">#&gt;   ..$ state        : chr [1:52] "IN" ...</span>
-<span class="co">#&gt;   ..$ country      : chr [1:52] "US" ...</span>
-<span class="co">#&gt;   ..$ latitude     : num [1:52] 39.9 ...</span>
-<span class="co">#&gt;   ..$ longitude    : num [1:52] -85 ...</span>
-<span class="co">#&gt;  $ cpc_current       :'data.frame':  121 obs. of  6 variables:</span>
-<span class="co">#&gt;   ..$ patent_number : chr [1:121] "4278558" ...</span>
-<span class="co">#&gt;   ..$ sequence      : int [1:121] 0 1 ...</span>
-<span class="co">#&gt;   ..$ section_id    : chr [1:121] "C" ...</span>
-<span class="co">#&gt;   ..$ cpc_subsection: chr [1:121] "https://search.patentsview.org/api/v1/cpc_"..</span>
-<span class="co">#&gt;   ..$ cpc_group     : chr [1:121] "https://search.patentsview.org/api/v1/cpc_"..</span>
-<span class="co">#&gt;   ..$ cpc_subgroup  : chr [1:121] "https://search.patentsview.org/api/v1/cpc_"..</span>
-<span class="co">#&gt;  $ patents           :'data.frame':  25 obs. of  18 variables:</span>
-<span class="co">#&gt;   ..$ patent_number                                               : chr [1:25"..</span>
-<span class="co">#&gt;   ..$ patent_title                                                : chr [1:25"..</span>
-<span class="co">#&gt;   ..$ patent_type                                                 : chr [1:25"..</span>
-<span class="co">#&gt;   ..$ patent_country                                              : chr [1:25"..</span>
-<span class="co">#&gt;   ..$ patent_date                                                 : chr [1:25"..</span>
-<span class="co">#&gt;   ..$ patent_year                                                 : int [1:25]..</span>
-<span class="co">#&gt;   ..$ patent_abstract                                             : chr [1:25"..</span>
-<span class="co">#&gt;   ..$ patent_kind                                                 : chr [1:25"..</span>
-<span class="co">#&gt;   ..$ patent_cpc_current_group_average_patent_processing_days     : logi [1:25..</span>
-<span class="co">#&gt;   ..$ patent_detail_desc_length                                   : int [1:25]..</span>
-<span class="co">#&gt;   ..$ patent_earliest_application_date                            : logi [1:25..</span>
-<span class="co">#&gt;   ..$ patent_num_foreign_documents_cited                          : int [1:25]..</span>
-<span class="co">#&gt;   ..$ patent_num_times_cited_by_us_patents                        : int [1:25]..</span>
-<span class="co">#&gt;   ..$ patent_num_total_documents_cited                            : int [1:25]..</span>
-<span class="co">#&gt;   ..$ patent_num_us_applications_cited                            : int [1:25]..</span>
-<span class="co">#&gt;   ..$ patent_num_us_patents_cited                                 : int [1:25]..</span>
-<span class="co">#&gt;   ..$ patent_term_extension                                       : logi [1:25..</span>
-<span class="co">#&gt;   ..$ patent_uspc_current_mainclass_average_patent_processing_days: logi [1:25..</span></code></pre></div>
+<span class="co">#&gt;  $ assignees_at_grant:'data.frame':  812 obs. of  11 variables:</span>
+<span class="co">#&gt;   ..$ patent_number: chr [1:812] "4278558" ...</span>
+<span class="co">#&gt;   ..$ assignee     : chr [1:812] "https://search.patentsview.org/api/v1/assig"..</span>
+<span class="co">#&gt;   ..$ type         : chr [1:812] "2" ...</span>
+<span class="co">#&gt;   ..$ name_first   : chr [1:812] NA ...</span>
+<span class="co">#&gt;   ..$ name_last    : chr [1:812] NA ...</span>
+<span class="co">#&gt;   ..$ organization : chr [1:812] "EAGLEPICHER TECHNOLOGIES, LLC" ...</span>
+<span class="co">#&gt;   ..$ city         : chr [1:812] "Cincinnati" ...</span>
+<span class="co">#&gt;   ..$ state        : chr [1:812] "OH" ...</span>
+<span class="co">#&gt;   ..$ country      : chr [1:812] "US" ...</span>
+<span class="co">#&gt;   ..$ latitude     : num [1:812] 39.1 ...</span>
+<span class="co">#&gt;   ..$ longitude    : num [1:812] -84.5 ...</span>
+<span class="co">#&gt;  $ inventors_at_grant:'data.frame':  1896 obs. of  9 variables:</span>
+<span class="co">#&gt;   ..$ patent_number: chr [1:1896] "4278558" ...</span>
+<span class="co">#&gt;   ..$ inventor     : chr [1:1896] "https://search.patentsview.org/api/v1/inve"..</span>
+<span class="co">#&gt;   ..$ name_first   : chr [1:1896] "Donald C." ...</span>
+<span class="co">#&gt;   ..$ name_last    : chr [1:1896] "Smith" ...</span>
+<span class="co">#&gt;   ..$ city         : chr [1:1896] "Wayne" ...</span>
+<span class="co">#&gt;   ..$ state        : chr [1:1896] "IN" ...</span>
+<span class="co">#&gt;   ..$ country      : chr [1:1896] "US" ...</span>
+<span class="co">#&gt;   ..$ latitude     : num [1:1896] 39.9 ...</span>
+<span class="co">#&gt;   ..$ longitude    : num [1:1896] -85 ...</span>
+<span class="co">#&gt;  $ cpc_current       :'data.frame':  3685 obs. of  6 variables:</span>
+<span class="co">#&gt;   ..$ patent_number : chr [1:3685] "4278558" ...</span>
+<span class="co">#&gt;   ..$ sequence      : int [1:3685] 0 1 ...</span>
+<span class="co">#&gt;   ..$ section_id    : chr [1:3685] "C" ...</span>
+<span class="co">#&gt;   ..$ cpc_subsection: chr [1:3685] "https://search.patentsview.org/api/v1/cpc"..</span>
+<span class="co">#&gt;   ..$ cpc_group     : chr [1:3685] "https://search.patentsview.org/api/v1/cpc"..</span>
+<span class="co">#&gt;   ..$ cpc_subgroup  : chr [1:3685] "https://search.patentsview.org/api/v1/cpc"..</span>
+<span class="co">#&gt;  $ patents           :'data.frame':  1000 obs. of  18 variables:</span>
+<span class="co">#&gt;   ..$ patent_number                                               : chr [1:10"..</span>
+<span class="co">#&gt;   ..$ patent_title                                                : chr [1:10"..</span>
+<span class="co">#&gt;   ..$ patent_type                                                 : chr [1:10"..</span>
+<span class="co">#&gt;   ..$ patent_country                                              : chr [1:10"..</span>
+<span class="co">#&gt;   ..$ patent_date                                                 : chr [1:10"..</span>
+<span class="co">#&gt;   ..$ patent_year                                                 : int [1:100..</span>
+<span class="co">#&gt;   ..$ patent_abstract                                             : chr [1:10"..</span>
+<span class="co">#&gt;   ..$ patent_kind                                                 : chr [1:10"..</span>
+<span class="co">#&gt;   ..$ patent_cpc_current_group_average_patent_processing_days     : logi [1:10..</span>
+<span class="co">#&gt;   ..$ patent_detail_desc_length                                   : int [1:100..</span>
+<span class="co">#&gt;   ..$ patent_earliest_application_date                            : logi [1:10..</span>
+<span class="co">#&gt;   ..$ patent_num_foreign_documents_cited                          : int [1:100..</span>
+<span class="co">#&gt;   ..$ patent_num_times_cited_by_us_patents                        : int [1:100..</span>
+<span class="co">#&gt;   ..$ patent_num_total_documents_cited                            : int [1:100..</span>
+<span class="co">#&gt;   ..$ patent_num_us_applications_cited                            : int [1:100..</span>
+<span class="co">#&gt;   ..$ patent_num_us_patents_cited                                 : int [1:100..</span>
+<span class="co">#&gt;   ..$ patent_term_extension                                       : logi [1:10..</span>
+<span class="co">#&gt;   ..$ patent_uspc_current_mainclass_average_patent_processing_days: logi [1:10..</span></code></pre></div>
 <p>Now we are left with a series of flat data frames instead of having a
 single data frame with other data frames nested inside of it. These flat
 data frames can be joined together as needed via the primary key
@@ -710,11 +670,12 @@ data frames can be joined together as needed via the primary key
 <hr>
 <ol>
 <li id="fn1"><p>You can use <code><a href="../reference/get_endpoints.html">get_endpoints()</a></code> to list the
-endpoint names as the API expects them to appear (e.g.,
-<code>assignees</code>, <code>cpc_subsections</code>,
-<code>inventors</code>, <code>locations</code>,
-<code>nber_subcategories</code>, <code>patents</code>, and
-<code>uspc_mainclasses</code>).<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+endpoint names the R package uses (e.g., <code>assignees</code>,
+<code>cpc_subsections</code>, <code>inventors</code>,
+<code>locations</code>, <code>nber_subcategories</code>,
+<code>patents</code>, and <code>uspc_mainclasses</code>). An API change
+made the actual endpoints singluar, though the returned entities are
+still plural (which is why the R package still uses the plural names).<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 <li id="fn2"><p>This webpage includes some details that are not relevant
 to the <code>query</code> argument in <code>search_pv</code>, such as
 the field list and sort parameter.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>

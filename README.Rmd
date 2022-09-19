@@ -39,10 +39,10 @@ devtools::install_github("ropensci/patentsview")
 Or the R package for the new version of the API from github:
 ```
 if (!"devtools" %in% rownames(installed.packages())) {
-  devtools::install_github("mustberuss/patentsview@api-redesign")
+  devtools::install_github("ropensci/patentsview@api-redesign")
 }
 ```
-Or the R package for the new version of the API from the r-universe:
+Or the R package for the new version of the API from r-universe:
 
 ```{r eval = FALSE}
 options(repos = c(

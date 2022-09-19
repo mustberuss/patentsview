@@ -213,12 +213,17 @@ for the ages, pull request?</p>
 <p>The changes comprising an MVP have been masterfully merged onto
 ropensci by crew102. Here’s what’s left:</p>
 <ol>
-<li>add retrieve_linked_data() to search-pv to retrieve data from the
-HATOAS links now returned by the API</li>
 <li>Update vignettes, all of them changed. The original ropensci blog
 post has been updated and could be added as a vignette. There is a new
 one about converting an existing script and another new one about the
-api changes. Might be pushing the definition of vignette slightly.</li>
+api changes. They might be pushing the definition of vignette
+slightly.</li>
+<li>possibly add qry_funs$in_range() and safe_date_ranges() to the r
+package, more about this in Question 1</li>
+<li>There is supposed to be a code release and data update this month.
+Hopefully the locations endpoint will be add to the test server then,
+along with the applications endpoint mentioned vaguely <a href="https://patentsview.org/forum/8/topic/572#comment-560">here</a>
+</li>
 </ol>
 </div>
 <div id="questions" class="section level2">
@@ -236,11 +241,14 @@ use <a href="https://ropensci.r-universe.dev/ui#package:patentsview" class="uri"
 <li><p>Should we post a tech note to ropensci when the new version of
 the package is ready?<br>
 A potential posting is <a href="https://mustberuss.github.io/patentsview/articles/ropensci_tech_note.html">here</a>
-(the stuff about the badge could be dropped)</p></li>
-<li><p>Should we add a CONTRIBUTING.md and issue template? The <a href="https://devguide.ropensci.org/package-development-security-best-practices.html#secrets-in-packages-and-development">best
+(the stuff about the sticker could be dropped)</p></li>
+<li><p>Should we add a CONTRIBUTING.md and an issue template? The <a href="https://devguide.ropensci.org/package-development-security-best-practices.html#secrets-in-packages-and-development">best
 practices page</a> recommends adding a CONTRIBUTING.md with API key
 instructions etc. It also recommends adding an issue template reminding
-people not to share their API key.</p></li>
+people not to share their API key. usethis::use_tidy_contributing()
+generates a base <a href="https://github.com/mustberuss/patentsview/tree/api-redesign/.github/CONTRIBUTING.md">CONTRIBUTING.md</a>
+(links to a CODE_OF_CONDUCT.md delete or link to ropensci’s
+instead?)</p></li>
 <li>
 <p>Have you seen this?</p>
 <blockquote>
