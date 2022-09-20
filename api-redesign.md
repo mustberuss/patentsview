@@ -1,3 +1,5 @@
+everything is a string?? no, there are fulltexts
+
 # Affects on the R package of the Patentsview API changes announced in 2021
 (This is [api-redesign.md](https://github.com/mustberuss/patentsview/blob/api-redesign/api-redesign.md) with navigation to the updated vignettes and reference pages.)
 
@@ -14,7 +16,7 @@ as a vignette.  There is a new one about converting an existing script and anoth
 changes.  They might be pushing the definition of vignette slightly.
 2. possibly add qry_funs$in_range() and safe_date_ranges() to the r package, more about this in Question 1
 3. There is supposed to be a code release and data update this month.  Hopefully the locations endpoint will be
-add to the test server then, along with the applications endpoint mentioned vaguely
+add to the test server, along with the applications endpoint mentioned vaguely
 [here](https://patentsview.org/forum/8/topic/572#comment-560)
 
 ## Questions:
@@ -29,10 +31,7 @@ sticker could be dropped)
 ) recommends adding a CONTRIBUTING.md with API key instructions etc.  It also recommends
 adding an issue template reminding people not to share their API key.  usethis::use_tidy_contributing() generates a base
 [CONTRIBUTING.md](https://github.com/mustberuss/patentsview/tree/api-redesign/.github/CONTRIBUTING.md) (links to a CODE_OF_CONDUCT.md delete or link to ropensci's instead?)
-6. Have you seen this?
- > In October 2022, other searching platforms (i.e. Pub EAST, Pub WEST, Pat/FT and App/FT) will be retired and replaced with Patent Public Search.
-
-   under "What is the timeline for Patent Public Search?" on <https://ppubs.uspto.gov/pubwebapp/static/pages/faq.html>  The ropensci blog post vignette has two patft links.
+6. Have you seen [this](https://content.govdelivery.com/accounts/USPTO/bulletins/32deb51)? patft and appft are going away at the end of September 2022.  The ropensci blog post vignette has two patft links that will need updating. Not even sure how the first one winds up on pn 11,451,709!
 
 ## Important Notes
 1. The locations endpoint is not on the test server yet.

@@ -192,6 +192,8 @@
 2021</h1>
     </div>
 
+
+<p>everything is a string?? no, there are fulltexts</p>
 <div id="affects-on-the-r-package-of-the-patentsview-api-changes-announced-in-2021" class="section level1">
 
 <p>(This is <a href="https://github.com/mustberuss/patentsview/blob/api-redesign/api-redesign.md">api-redesign.md</a>
@@ -221,8 +223,8 @@ slightly.</li>
 <li>possibly add qry_funs$in_range() and safe_date_ranges() to the r
 package, more about this in Question 1</li>
 <li>There is supposed to be a code release and data update this month.
-Hopefully the locations endpoint will be add to the test server then,
-along with the applications endpoint mentioned vaguely <a href="https://patentsview.org/forum/8/topic/572#comment-560">here</a>
+Hopefully the locations endpoint will be add to the test server, along
+with the applications endpoint mentioned vaguely <a href="https://patentsview.org/forum/8/topic/572#comment-560">here</a>
 </li>
 </ol>
 </div>
@@ -230,35 +232,30 @@ along with the applications endpoint mentioned vaguely <a href="https://patentsv
 <h2 class="hasAnchor">
 <a href="#questions" class="anchor"></a>Questions:</h2>
 <ol>
-<li><p>Should the new stuff mentioned <a href="https://mustberuss.github.io/patentsview/articles/converting-an-existing-script.html#additions-to-the-r-package-1">here</a>
-be added to the package?</p></li>
-<li><p>Should we update the version number? Maybe to 1.0.0 since it’s
-not backward compatible.</p></li>
-<li><p>Should we use r-universe for the distribution until the original
-API version is retired? (It could then be submitted to CRAN). There is
-an unauthorized badge and installation instructions <a href="https://mustberuss.github.io/patentsview/">here</a> We’d really
-use <a href="https://ropensci.r-universe.dev/ui#package:patentsview" class="uri">https://ropensci.r-universe.dev/ui#package:patentsview</a></p></li>
-<li><p>Should we post a tech note to ropensci when the new version of
-the package is ready?<br>
+<li>Should the new stuff mentioned <a href="https://mustberuss.github.io/patentsview/articles/converting-an-existing-script.html#additions-to-the-r-package-1">here</a>
+be added to the package?</li>
+<li>Should we update the version number? Maybe to 1.0.0 since it’s not
+backward compatible.</li>
+<li>Should we use r-universe for the distribution until the original API
+version is retired? (It could then be submitted to CRAN). There is an
+unauthorized badge and installation instructions <a href="https://mustberuss.github.io/patentsview/">here</a> We’d really
+use <a href="https://ropensci.r-universe.dev/ui#package:patentsview" class="uri">https://ropensci.r-universe.dev/ui#package:patentsview</a>
+</li>
+<li>Should we post a tech note to ropensci when the new version of the
+package is ready?<br>
 A potential posting is <a href="https://mustberuss.github.io/patentsview/articles/ropensci_tech_note.html">here</a>
-(the stuff about the sticker could be dropped)</p></li>
-<li><p>Should we add a CONTRIBUTING.md and an issue template? The <a href="https://devguide.ropensci.org/package-development-security-best-practices.html#secrets-in-packages-and-development">best
+(the stuff about the sticker could be dropped)</li>
+<li>Should we add a CONTRIBUTING.md and an issue template? The <a href="https://devguide.ropensci.org/package-development-security-best-practices.html#secrets-in-packages-and-development">best
 practices page</a> recommends adding a CONTRIBUTING.md with API key
 instructions etc. It also recommends adding an issue template reminding
 people not to share their API key. usethis::use_tidy_contributing()
 generates a base <a href="https://github.com/mustberuss/patentsview/tree/api-redesign/.github/CONTRIBUTING.md">CONTRIBUTING.md</a>
 (links to a CODE_OF_CONDUCT.md delete or link to ropensci’s
-instead?)</p></li>
-<li>
-<p>Have you seen this?</p>
-<blockquote>
-<p>In October 2022, other searching platforms (i.e. Pub EAST, Pub WEST,
-Pat/FT and App/FT) will be retired and replaced with Patent Public
-Search.</p>
-</blockquote>
-<p>under “What is the timeline for Patent Public Search?” on <a href="https://ppubs.uspto.gov/pubwebapp/static/pages/faq.html" class="uri">https://ppubs.uspto.gov/pubwebapp/static/pages/faq.html</a>
-The ropensci blog post vignette has two patft links.</p>
-</li>
+instead?)</li>
+<li>Have you seen <a href="https://content.govdelivery.com/accounts/USPTO/bulletins/32deb51">this</a>?
+patft and appft are going away at the end of September 2022. The
+ropensci blog post vignette has two patft links that will need updating.
+Not even sure how the first one winds up on pn 11,451,709!</li>
 </ol>
 </div>
 <div id="important-notes" class="section level2">
@@ -441,7 +438,7 @@ query:</li>
 </ol>
 </li>
 </ol>
-<pre class="{r}"><code><a href="https://docs.ropensci.org/patentsview/index.html">library(patentsview)
+<pre class="{r}"><code><a href="https://mustberuss.github.io/patentsview/index.html">library(patentsview)
 
 query &lt;- qry_funs$eq(assignees_at_grant.assignee_id = "35")
 example &lt;-search_pv(query=query, fields=c("assignees_at_grant.assignee_id"))
@@ -702,6 +699,7 @@ roensci blog looks fine, how was that one done?    </li>
 </ol>
 </div>
 </div>
+
 
   </div>
 

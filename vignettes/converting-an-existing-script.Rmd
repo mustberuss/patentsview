@@ -102,78 +102,75 @@ Well, it turns out, we can use the API itself to help us figure out what date ra
 # The patentsview database starts with 1976 though we'll allow a start date and 
 # end date to be passed in.  The caller might want to pick up where they left off 
 # last time etc.
-# (Should they be R dates instead? Though we are returning string dates)
 
-# Enforce that patent_date isn't in the query?
-# They'll also need to have patent_date as the primary sort
+# Enforce that patent_date isn't in the query?  They'll also need to have 
+# patent_date as the primary sort when they query for the date ranges
 
-safe_date_ranges <- function(query, start_date = '1976-01-01', end_date = toString(Sys.Date()))  {
+safe_date_ranges <- function(query, start_date = "1976-01-01", end_date = toString(Sys.Date())) {
+  fields <- c("patent_date")
+  sort <- c("patent_date" = "asc")
+  per_page <- 1000
+  page <- 1
+  date_ranges <- list()
+  pos <- 1
+  count <- 0
 
-   fields <- c("patent_date")
-   sort <- c("patent_date" = "asc")
-   per_page <- 1000
-   page <- 1
-   date_ranges = list()
-   pos <- 1
-   count <- 0
+  repeat{
+    date_range <- qry_funs$in_range(patent_date = c(start_date, end_date))
+    combined_query <- qry_funs$and(date_range, query)
 
-   repeat{
+    results <- search_pv(
+      query = combined_query, fields = fields, sort = sort,
+      per_page = per_page, page = 1
+    )
 
-      date_range <- qry_funs$in_range(patent_date=c(start_date, end_date))
-      combined_query <- qry_funs$and(date_range, query)
+    count <- count + 1
 
-      results <- search_pv(query = combined_query, fields = fields, sort = sort,
-                           per_page = per_page, page = 1)
-      
-      count <- count + 1
+    # Ok, now we look at the total size of this query
+    total_hits <- results$query_results$total_hits
+    rows <- length(results$data$patents$patent_date)
 
-      # ok, now we look at the total size of this query
-      total_hits = results$query_results$total_hits
-      rows <- length(results$data$patents$patent_date)
+    # We're done if the total_hits is 0, if the previous query got the last of the results
+    # probably not even possible?  the previous query would have unknowingly grabbed the
+    # last of the overall data set and we would have backed up one day, assuming there
+    # was more data, beyond the last patent_date we found
+    if (total_hits == 0) {
+      break
+    }
 
-      # we're done if the total_hits is 0, if the previous query got the last of the results
-      # probably not even possible?  the previous query would have unknowingly grabbed the
-      # last of the overall data set and we would have backed up one day, assuming there
-      # was more data, beyond the last patent_date we found
-      if(total_hits == 0)
-         break
+    # We're done if the total_hit is less than 10,000.  The full query using the current 
+    # start and end date will retrieve the last of the overall data set.
+    if (total_hits < 10000) {
+      date_ranges[[pos]] <- c(start_date, end_date) # add the final pair needed
+      break
+    }
 
-      # we're done if the total_hit is less than 10,000
-      # the full query using the current start and end date will retrieve the last of
-      # the overall data set
-      if(total_hits < 10000) {
-         date_ranges[[pos]] = c(start_date, end_date)  # add final pair needed
-         break
-      }
+    # So we have a full data set still, total_hits = 10000.
+    # We need to request the 10th page to get the last patent_date.
+    results <- search_pv(
+      query = combined_query, fields = fields, sort = sort,
+      per_page = per_page, page = 10
+    )
 
-      # is this even possible?  we already know that total_hits > 0
-      if(rows == 0)
-         break
+    count <- count + 1
+    # probably has to be 1000 since total_hits = 10000
+    rows <- length(results$data$patents$patent_date)
 
-      # so we have a full data set still, total_hits = 10000
-      # we need to request the 10th page to get the last patent_date
-      results <- search_pv(query = combined_query, fields = fields, sort = sort,
-                           per_page = per_page, page = 10)
+    # Grab the last patent date, this will become the new start date
+    new_start_date <- results$data$patents$patent_date[rows]
 
-      count <- count + 1
-      # probably has to be 1000 since total_hits = 10000
-      rows <- length(results$data$patents$patent_date)  
+    # Back up one day to get a safe end date with the current start date
+    # (so the total result size will be less than 10,000)
 
-      # grab the last patent date, this will become the new start date
-      new_start_date = results$data$patents$patent_date[rows]
+    safe_end_date <- toString(as.Date(new_start_date) - 1)
+    date_ranges[[pos]] <- c(start_date, safe_end_date)
+    pos <- pos + 1
 
-      # back up one day to get a safe end date with the current start date
-      # (so the total result size will be less than 10,000)
+    start_date <- new_start_date
+  }
 
-      safe_end_date = toString(as.Date(new_start_date) - 1)
-      date_ranges[[pos]]  = c(start_date, safe_end_date)
-      pos = pos + 1
-      
-      start_date = new_start_date
-   }
-
-   print(paste("API calls made:", count))
-   date_ranges
+  print(paste("API calls made:", count))
+  date_ranges
 }
 ```
 
@@ -230,7 +227,7 @@ the_answer
 #> [1] "2019-10-15" "2021-04-26"
 #> 
 #> [[15]]
-#> [1] "2021-04-27" "2022-09-18"
+#> [1] "2021-04-27" "2022-09-19"
 ```
 
 And now, since it's fun, we'll go through the motions of calling the API for each date range.  We won't actually request all the data (all_pages defaults to FALSE) but each call's total_hit_count will be displayed, showing the total row count of what would have been retrieved if all_pages was TRUE.  Note that none of date ranges would hit the new limit of 10,000 rows.   
@@ -267,7 +264,7 @@ for (pair in the_answer)
 #> [1] "9934 2016-05-03, 2018-02-26"
 #> [1] "9918 2018-02-27, 2019-10-14"
 #> [1] "9874 2019-10-15, 2021-04-26"
-#> [1] "3984 2021-04-27, 2022-09-18"
+#> [1] "3984 2021-04-27, 2022-09-19"
 ```
 
 ## Conclusion
