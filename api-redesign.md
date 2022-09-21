@@ -12,8 +12,8 @@ I wasn't sure what the githubby way to do this would be but this page chronicles
 ## Outstanding
 The changes comprising an MVP have been masterfully merged onto ropensci by crew102. Here's what's left:
 1. Update vignettes, all of them changed.  The original ropensci blog post has been updated and could be added
-as a vignette.  There is a new one about converting an existing script and another new one about the api
-changes.  They might be pushing the definition of vignette slightly.
+as a [new vignette](https://mustberuss.github.io/patentsview/articles/ropensci_blog_post.html).  There is a new one about converting an existing script and another new one about the api
+changes (in the navigation above).  They might be pushing the definition of vignette slightly.
 2. possibly add qry_funs$in_range() and safe_date_ranges() to the r package, more about this in Question 1
 3. There is supposed to be a code release and data update this month.  Hopefully the locations endpoint will be
 add to the test server, along with the applications endpoint mentioned vaguely

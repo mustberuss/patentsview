@@ -43,10 +43,11 @@ Or the R package for the new version of the API from r-universe:
 
 ```r
 options(repos = c(
-   patentsview = 'https://mustberuss.r-universe.dev/',
-   CRAN = 'https://cloud.r-project.org'))
+  patentsview = "https://mustberuss.r-universe.dev/",
+  CRAN = "https://cloud.r-project.org"
+))
 
-install.packages('patentsview')
+install.packages("patentsview")
 ```
 ## Important API Change
 
