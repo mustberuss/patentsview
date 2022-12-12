@@ -95,9 +95,11 @@ That was fine when the overall size limit was 100,000 rows but how about now?
 
 Well, it turns out, we can use the API itself to help us figure out what date ranges we could use!  How cool is that?  (here's the function that should probably become part of the R package)
 
+<span style="color:red">Update: A recent change to the API breaks this!</span> "page" is no longer an options parameter, it's now "after", see https://patentsview.org/apis/api-query-language#options_parameter.  I'm working to fix this!!
+
 [ Originally the API returned a total_hits of 10,000 to indicate the limit was hit or that there were 10,000 matches.  
 Now it seems it returns the true size but won't page beyond 10,000 rows.  The code and comments below align with the 
-original way.  I'm hesitant to simplify the code unless it's save to assume that they won't switch back.]
+original way.  I'm hesitant to simplify the code unless it's safe to assume that they won't switch back.]
 
 ```{r}
 

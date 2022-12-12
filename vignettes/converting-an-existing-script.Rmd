@@ -55,10 +55,11 @@ If you want the same data as before, you'll have to make multiple calls to get a
 # First, there is a new in_range query function
 
 range <- qry_funs$in_range(patent_date=c("1970-01-01","1983-02-28")) 
+#> Error in eval(expr, envir, enclos): attempt to apply non-function
 
 # which will generate this, so you don't have to do it by hand
 range
-#> {"_and":[{"_gte":{"patent_date":"1970-01-01"}},{"_lte":{"patent_date":"1983-02-28"}}]}
+#> function (..., na.rm = FALSE)  .Primitive("range")
 ```
 
 Second, here's a new function that should probably be added to the R package.  Given a query that probably shouldn't contain patent_date, it will return a list of start dates and end dates where each date range would return less than the new limit of 10,000 rows.
@@ -92,6 +93,12 @@ query_1b <- with_qfuns(
 That was fine when the overall size limit was 100,000 rows but how about now?
 
 Well, it turns out, we can use the API itself to help us figure out what date ranges we could use!  How cool is that?  (here's the function that should probably become part of the R package)
+
+<span style="color:red">Update: A recent change to the API breaks this!</span> "page" is no longer an options parameter, it's now "after", see https://patentsview.org/apis/api-query-language#options_parameter.  I'm working to fix this!!
+
+[ Originally the API returned a total_hits of 10,000 to indicate the limit was hit or that there were 10,000 matches.  
+Now it seems it returns the true size but won't page beyond 10,000 rows.  The code and comments below align with the 
+original way.  I'm hesitant to simplify the code unless it's safe to assume that they won't switch back.]
 
 
 ```r
@@ -181,53 +188,10 @@ And here's the same sample query as before to give it a go.  Spoiler alert, it t
 query <- with_qfuns(text_any(patent_abstract = 'tool animal'))
 
 the_answer <- safe_date_ranges(query)
-#> [1] "API calls made: 29"
+#> Error: attempt to apply non-function
 
 the_answer
-#> [[1]]
-#> [1] "1976-01-01" "1983-02-28"
-#> 
-#> [[2]]
-#> [1] "1983-03-01" "1989-02-13"
-#> 
-#> [[3]]
-#> [1] "1989-02-14" "1993-09-06"
-#> 
-#> [[4]]
-#> [1] "1993-09-07" "1998-02-23"
-#> 
-#> [[5]]
-#> [1] "1998-02-24" "2001-01-15"
-#> 
-#> [[6]]
-#> [1] "2001-01-16" "2003-10-13"
-#> 
-#> [[7]]
-#> [1] "2003-10-14" "2006-09-25"
-#> 
-#> [[8]]
-#> [1] "2006-09-26" "2009-12-07"
-#> 
-#> [[9]]
-#> [1] "2009-12-08" "2012-05-28"
-#> 
-#> [[10]]
-#> [1] "2012-05-29" "2014-06-09"
-#> 
-#> [[11]]
-#> [1] "2014-06-10" "2016-05-02"
-#> 
-#> [[12]]
-#> [1] "2016-05-03" "2018-02-26"
-#> 
-#> [[13]]
-#> [1] "2018-02-27" "2019-10-14"
-#> 
-#> [[14]]
-#> [1] "2019-10-15" "2021-04-26"
-#> 
-#> [[15]]
-#> [1] "2021-04-27" "2022-09-19"
+#> Error in eval(expr, envir, enclos): object 'the_answer' not found
 ```
 
 And now, since it's fun, we'll go through the motions of calling the API for each date range.  We won't actually request all the data (all_pages defaults to FALSE) but each call's total_hit_count will be displayed, showing the total row count of what would have been retrieved if all_pages was TRUE.  Note that none of date ranges would hit the new limit of 10,000 rows.   
@@ -250,21 +214,7 @@ for (pair in the_answer)
    total_hits = results$query_results$total_hits
    print(paste(total_hits,toString(pair)))
 }
-#> [1] "9999 1976-01-01, 1983-02-28"
-#> [1] "9981 1983-03-01, 1989-02-13"
-#> [1] "9967 1989-02-14, 1993-09-06"
-#> [1] "9963 1993-09-07, 1998-02-23"
-#> [1] "9973 1998-02-24, 2001-01-15"
-#> [1] "9985 2001-01-16, 2003-10-13"
-#> [1] "9976 2003-10-14, 2006-09-25"
-#> [1] "9979 2006-09-26, 2009-12-07"
-#> [1] "9963 2009-12-08, 2012-05-28"
-#> [1] "9930 2012-05-29, 2014-06-09"
-#> [1] "9957 2014-06-10, 2016-05-02"
-#> [1] "9934 2016-05-03, 2018-02-26"
-#> [1] "9918 2018-02-27, 2019-10-14"
-#> [1] "9874 2019-10-15, 2021-04-26"
-#> [1] "3984 2021-04-27, 2022-09-19"
+#> Error in eval(expr, envir, enclos): object 'the_answer' not found
 ```
 
 ## Conclusion
