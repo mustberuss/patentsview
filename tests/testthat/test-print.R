@@ -5,7 +5,7 @@ test_that("We can print the returns from all endpoints ", {
 
   eps <- get_endpoints()
   lapply(eps, function(x) {
-    Sys.sleep(2)
+    Sys.sleep(1)
     print(x)
     j <- search_pv(query = TEST_QUERIES[[x]], endpoint = x)
     print(j)
