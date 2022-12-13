@@ -11,6 +11,8 @@ test_that("API returns all requested groups", {
   skip_on_cran()
   skip_on_ci()
 
+  skip("Temp skip for API bug")
+
   # can we traverse the return building a list of fields?
   # sort both requested fields and returned ones to see if they are equal
 
