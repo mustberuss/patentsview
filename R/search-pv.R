@@ -17,7 +17,6 @@ to_arglist <- function(fields, subent_cnts, mtchd_subent_only,
     fields = fields,
     sort = list(as.list(sort)),
     opts = list(
-      offset = (page - 1) * per_page,
       size = per_page
     )
   )
@@ -113,9 +112,21 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, ..
   }
 
   tmp <- lapply(seq_len(req_pages), function(i) {
-    arg_list$opts$offset <- (i - 1) * arg_list$opts$size
+
     x <- one_request(method, query, base_url, arg_list, api_key, ...)
     x <- process_resp(x)
+
+    # now to page we need set the "after" attribute to where we left off
+    # we want the value of the first/primary sort field
+    s <- names(arg_list$sort[[1]])[[1]]
+    direction <- arg_list$sort[[1]][[1]]
+
+    if(direction == "asc")
+       index <- nrow(x$data[[1]])
+    else
+       index <- 1
+
+    arg_list$opts$after <<- x$data[[1]][[s]][[index]]
 
     x$data[[1]]
   })
@@ -162,7 +173,7 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, ..
 #'  even those records that don't meet your query's requirements. This is
 #'  equivalent to the \code{matched_subentities_only} parameter found
 #'  \href{https://patentsview.org/apis/api-query-language}{here}.
-#' @param page The page number of the results that should be returned.
+#' @param page `r lifecycle::badge("deprecated")` The page number of the results that should be returned.
 #' @param per_page The number of records that should be returned per page. This
 #'  value can be as high as 1,000 (e.g., \code{per_page = 1000}).
 #' @param all_pages Do you want to download all possible pages of output? If
@@ -242,7 +253,7 @@ search_pv <- function(query,
                       endpoint = "patents",
                       subent_cnts = FALSE,
                       mtchd_subent_only = lifecycle::deprecated(),
-                      page = 1,
+                      page = lifecycle::deprecated(),
                       per_page = 1000,
                       all_pages = FALSE,
                       sort = NULL,
@@ -278,6 +289,13 @@ search_pv <- function(query,
     )
   }
 
+  if (lifecycle::is_present(page)) {
+    lifecycle::deprecate_warn(
+      when = "1.0.0",
+      what = "search_pv(page)",
+      details = "The new version of the API does not support the page attribute."
+    )
+  }
   validate_endpoint(endpoint)
 
   if (is.list(query)) {
