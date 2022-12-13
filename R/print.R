@@ -17,18 +17,23 @@ print.pv_data_result <- function(x, ...) {
 
   dat_level <- c(
     assignees = "an assignee",
-    application_citations = "an application citation",
+    us_application_citations = "an application citation",
     cpc_groups = "a CPC group",
-    cpc_subgroups = "a CPC sub group",
-    cpc_subsections = "a CPC subsection",
+    cpc_classes = "a CPC subclass",
+    cpc_subclasses = "a CPC subclass",
     inventors = "an inventor",
     locations = "a location",
     nber_categories = "a NBER category",
     nber_subcategories = "a NBER subcategory",
     patents = "a patent",
-    patent_citations = "a patent citation",
+    us_patent_citations = "a patent citation",
     uspc_mainclasses = "a USPC main class",
-    uspc_subclasses = "a USPC sub class"
+    uspc_subclasses = "a USPC sub class",
+    foreign_citations = "a foreign citation",
+    attorneys = "an attorney",
+    ipcs = "an ipc",
+    rel_app_texts = "a rel_app_text",
+    wipo = "a wipo classification"
   )
 
   lst <- ifelse("list" %in% k, " (with list column(s) inside) ", " ")
