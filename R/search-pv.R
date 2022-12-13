@@ -116,6 +116,7 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, ..
     arg_list$opts$offset <- (i - 1) * arg_list$opts$size
     x <- one_request(method, query, base_url, arg_list, api_key, ...)
     x <- process_resp(x)
+
     x$data[[1]]
   })
 
@@ -288,6 +289,9 @@ search_pv <- function(query,
   #   query, fields, endpoint, method, subent_cnts, mtchd_subent_only, page,
   #   per_page, sort
   # )
+
+  # now for paging to work there needs to be a sort field
+  if(is.null(sort)) sort = get_default_sort(endpoint);
 
   arg_list <- to_arglist(
     fields, subent_cnts, mtchd_subent_only, page, per_page, sort
