@@ -10,11 +10,11 @@ test_that("Data matches between a paged and non paged response", {
 
   # currently there are 43 inventors whose last name is Quack
   # this test case would break if there are ever more than 1000 Quacks
-  # query <- '{"_text_phrase":{"inventors_at_grant.name_last":"Quack"}}'
-  query <- qry_funs$text_phrase("inventors_at_grant.name_last" = "Quack")
+  # query <- '{"_text_phrase":{"inventors.inventor_name_last":"Quack"}}'
+  query <- qry_funs$text_phrase("inventors.inventor_name_last" = "Quack")
 
-  sort <- c("patent_number" = "asc")
-  fields <- c("patent_number", "patent_title", "patent_date", "inventors_at_grant.name_last", "inventors_at_grant.name_first")
+  sort <- c("patent_id" = "asc")
+  fields <- c("patent_id", "patent_title", "patent_date", "inventors.inventor_name_last", "inventors.inventor_name_first")
 
   res <- search_pv(
     query = query,
@@ -23,13 +23,13 @@ test_that("Data matches between a paged and non paged response", {
     per_page = 1000
   )
 
-  dl <- unnest_pv_data(res$data, "patent_number")
+  dl <- unnest_pv_data(res$data, "patent_id")
 
   # we are assuming we can get all the Quacks in a single request
   # we'll assert this so we'll know if this is ever not the case
   # (the length would be at most 1000, the total_hits could eventually go higher, if a
   # lot of Quacks get patents)
-  expect_equal(res$query_results$total_hits, length(res$data$patents$patent_number))
+  expect_equal(res$query_results$total_hits, length(res$data$patents$patent_id))
 
   # now we'll request half the data with paging turned on
   # rats- search-pv cant default this?  or change to a warning there and check here?
@@ -45,6 +45,6 @@ test_that("Data matches between a paged and non paged response", {
     paging_override = TRUE
   )
 
-  dl2 <- unnest_pv_data(res2$data, "patent_number")
+  dl2 <- unnest_pv_data(res2$data, "patent_id")
   expect_equal(dl, dl2)
 })
