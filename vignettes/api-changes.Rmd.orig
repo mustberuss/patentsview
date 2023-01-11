@@ -28,38 +28,42 @@ Perhaps the most important change, without an API key your queries will be rejec
 ## Philosophical Changes
 These changes are likely to break existing code.  Now there are more endpoints and each returns a smaller, more specific data structure pertinent to that endpoint. As an example, previously the inventor endpoint could return assignee information, it no longer does that.  The exception is the patents endpoint.  It now can return assignees_at_grant, inventors_at_grant, cpc_current along with patent specific fields. Note that now subsequent queries would have to be made to the USPC specific endpoints if you are looking for these fields.
 
-Currently there are 13 endpoints, up from the original 7.  The urls changed slightly but the R package takes care of that for you.  
+Currently there are 16 endpoints, up from the original 7.  The urls changed slightly but the R package takes care of that for you.  
 
-1. There are 2 totally new endpoints  
-   -  /api/v1/patent_citation/  
-   -  /api/v1/application_citation/  
-2. 7 of the original api's endpoints have singular names but lighter responses and fewer queryable fields as mentioned above.  
+1. There are 8 totally new endpoints
+   -  /api/v1/ipcs/  
+   -  /api/v1/uspc_subclass/
+   -  /api/v1/patent/attorneys
+   -  /api/v1/patent/foreign_citations/
+   -  /api/v1/patent/otherreference/  (not currently working)
+   -  /api/v1/patent/patent/rel_app_texts/
+   -  /api/v1/patent/us_application_citation/  
+   -  /api/v1/patent/us_patent_citation/  
+2. 5 of the original api's endpoints have singular names but lighter responses and fewer queryable fields as mentioned above.  
    -  /api/v1/assignee/  
-   -  /api/v1/inventor/  
-   -  /api/v1/location/  (not currently on the test server)  
+   -  /api/v1/inventor/ 
+   -  /api/v1/location/
    -  /api/v1/patent/  
-   -  /api/v1/cpc_subsection/  
-   -  /api/v1/nber_subcategory/  
-   -  /api/v1/uspc_subclass/  
-3. There are an additional 4 new endpoints which are subdivisions of the original classification endpoints.  
-   - /api/v1/cpc_group/  
-   - /api/v1/cpc_subgroup/  
-   - /api/v1/nber_category/  
-   - /api/v1/uspc_mainclass/  
+   -  /api/v1/uspc_mainclass/
+3. The original cpc endpoint has a new name and there are two new cpc endpoints
+   -  /api/v1/cpc_class/
+   -  /api/v1/cpc_subclass/
+   -  /api/v1/cpc_group/
+4. The nber_subcategory endpoint seem to be gone now.
+
 
 ## Data Reduction
 
-Quite a few fields seem to have gone away, including government interest fields, ipc fields, wipo fields, lawyer fields, foreign_priority fields, examiner fields, pct fields, raw inventor fields, coinventor fields, patent_firstnamed fields or patent_num_claims.  There's a link to a spreadsheet of the fields returned by endpoint at the bottom of https://patentsview.org/apis/purpose though the Swagger UI page should be more current.
-
+Some fields seem to have gone away, raw inventor fields, coinventor fields, patent_firstnamed fields and patent_num_claims.  There's a link to a spreadsheet of the fields returned by endpoint at the bottom of https://patentsview.org/apis/purpose though the Swagger UI page should be more current.
 
 ## HATEOAS
-Some of the returned fields are HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more information about that field. Slight funky is the cpc_current's cpc_subgroup, returned by the patents endpoint.  Here the slash in the cpc is turned into a colon.  This is a peculiarity of two of the new convience urls that shouldn't be noticable in the r package, unless you are trying to infer the uspc and cpc values from the returned urls, without actually calling back for this data.
-There is something slightly funky with these fields.  They have an _id when in the q:/query and f:/fields parameters but they are returned without the _id.  Example: cpc_subgroup_id is returned as the HATEOAS link cpc_subgroup. 
+Some of the returned fields are HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more information about that field. Slight funky is the cpc_current's cpc_group, returned by the patents endpoint.  Here the slash in the cpc is turned into a colon.  This is a peculiarity of two of the new convience urls that shouldn't be noticable in the r package, unless you are trying to infer the uspc and cpc values from the returned urls, without actually calling back for this data.
+There is something slightly funky with these fields.  They have an _id when in the q:/query and f:/fields parameters but they are returned without the _id.  Example: cpc_group_id is returned as the HATEOAS link cpc_group. 
 
 Example link returned by the patents endpoint
 ```
  "cpc_current": {
-     "cpc_subgroup": "https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4865/"  
+     "cpc_group": "https://search.patentsview.org/api/v1/cpc_group/G01S7:4865/"  
   }
 ```
 Note that going to that link in a browser will result in a 403 Unauthorized, as no API key is sent.
@@ -69,16 +73,16 @@ link and the R package will retrieve the data for you.
 ```{r}
 library(patentsview)
 
-retrieve_linked_data("https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4865/")
+pv_data <- retrieve_linked_data("https://search.patentsview.org/api/v1/cpc_group/G01S7:4865/")
+pv_data
+
+if(pv_data$query_results$total_hits != 1){
+   print("something is wrong with the API.  Response should match this:")
+   query <- qry_funs$eq("cpc_group_id" = "G01S7/4865")
+   search_pv(query, endpoint = "cpc_groups")
+}
 
 ```
-
-## Query size changes
-1. The maximum rows that can be requested at one time is now 1,000, down from 10,000
-2. The overall paged result set size limit is now 10,000 rows, down from the original 100,000 
-
-The R package should take care of these changes, though you may have to make additional
-queries to get around the new overall paged result set size of 10,000 rows.  See the [Converting an Existing Script](converting-an-existing-script.html#reduced-query-size-1) vignette for more on this.
 
 ## Throttling
 The API will now allow 45 requests per minute, making more requests will anger the API.  It will send back an error code with a header indicating how many seconds to wait before sending more queries.  The R package will take care of this for you.  It will sleep for the required number of seconds before resubmitting your query, seemlessly to your script.
