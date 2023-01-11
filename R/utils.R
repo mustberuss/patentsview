@@ -51,8 +51,12 @@ validate_pv_data <- function(data) {
 #' @noRd
 to_singular <- function(plural) {
   # assignees is an exception, singular isn't assigne
+  # wipo endpoint returns singluar wipo as the entity
+  # attorneys accidently works
 
-  if (endsWith(plural, "ies")) {
+  if(plural == "wipo") {
+     singular = plural
+  } else if (endsWith(plural, "ies")) {
     singular <- sub("ies$", "y", plural)
   } else if (endsWith(plural, "es") && !endsWith(plural, "ees")) {
     singular <- sub("es$", "", plural)
@@ -64,7 +68,18 @@ to_singular <- function(plural) {
 
 #' @noRd
 to_plural <- function(singular) {
-  if (endsWith(singular, "y")) {
+  # wipo endpoint returns singluar wipo as the entity
+  # attorneys not attorneies
+
+  # remove the patent/ from nested endpoints when present
+  singular <- sub("^patent/", "", singular)
+
+  if(singular  == "wipo") {
+     plural = singular
+  } 
+  else if (singular == "attorney") {
+     plural = "attorneys"
+  } else if (endsWith(singular, "y")) {
     plural <- sub("y$", "ies", singular)
   } else if (endsWith(singular, "s")) {
     plural <- paste0(singular, "es")

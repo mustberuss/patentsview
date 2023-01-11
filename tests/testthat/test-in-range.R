@@ -4,7 +4,7 @@ test_that("in_range returns the right patents", {
   skip_on_cran()
   skip_on_ci()
 
-  sort <- c("patent_date" = "asc", "patent_number" = "asc")
+  sort <- c("patent_date" = "asc", "patent_id" = "asc")
   fields <- get_fields("patents")
 
   # get the patents from the first through the third issue dates inclusive

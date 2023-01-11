@@ -37,9 +37,9 @@ test_that("You can download up to 9,000+ records", {
   # Should return 9,000+ rows
   query <- with_qfuns(
     and(
-        gte(patent_date = "2021-12-13"),
-        lte(patent_date = "2021-12-24")
-    )
+        gte(patent_date = "2007-12-10"),
+        lte(patent_date = "2007-12-26")
+   )
   )
   out <- search_pv(query, per_page = 1000, all_pages = TRUE)
   expect_gt(out$query_results$total_hits, 9000)
@@ -90,13 +90,13 @@ test_that("Throttled requests are automatically retried", {
   skip_on_cran()
 
   res <- search_pv('{"_gte":{"patent_date":"2007-01-04"}}', per_page = 50)
-  patent_numbers <- res$data$patents$patent_number
+  patent_numbers <- res$data$patents$patent_id
 
   built_singly <- lapply(patent_numbers, function(patent_number) {
     search_pv(
       query = qry_funs$eq(patent_number = patent_number),
       endpoint = "patent_citations",
-      fields = c("patent_number", "cited_patent_number"),
+      fields = c("patent_id", "cited_patent_number"),
       sort = c("cited_patent_number" = "asc")
     )[["data"]][["patent_citations"]]
   })

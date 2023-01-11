@@ -17,7 +17,7 @@ to_arglist <- function(fields, subent_cnts, mtchd_subent_only,
     fields = fields,
     sort = list(as.list(sort)),
     opts = list(
-      offset = (page - 1) * per_page,
+  ##  offset = (page - 1) * per_page,  ## now size and after
       size = per_page
     )
   )
@@ -54,6 +54,7 @@ one_request <- function(method, query, base_url, arg_list, api_key, ...) {
 
   if (method == "GET") {
     get_url <- get_get_url(query, base_url, arg_list)
+    cat(get_url, file = stderr())
     resp <- httr::GET(
       get_url,
       httr::add_headers("X-Api-Key" = api_key),

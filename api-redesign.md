@@ -1,4 +1,3 @@
-everything is a string?? no, there are fulltexts
 
 # Affects on the R package of the Patentsview API changes announced in 2021
 (This is [api-redesign.md](https://github.com/mustberuss/patentsview/blob/api-redesign/api-redesign.md) with navigation to the updated vignettes and reference pages.)
@@ -10,27 +9,18 @@ everything is a string?? no, there are fulltexts
 I wasn't sure what the githubby way to do this would be but this page chronicles the work done so far, the choices made along the way and what is still outstanding.  Whether some of this could or should be issues or a project, in either this repo or its parent's could be debated, or maybe we should find a better way to bicker! (properly discuss the right way to change the R package.) Or maybe slug it all out in an epic, one for the ages, pull request?
 
 ## Outstanding
-The changes comprising an MVP have been masterfully merged onto ropensci by crew102. Here's what's left:
-1. Update vignettes, all of them changed.  The original ropensci blog post has been updated and could be added
-as a [new vignette](https://mustberuss.github.io/patentsview/articles/ropensci_blog_post.html).  There is a new one about converting an existing script and another new one about the api
-changes (in the navigation above).  They might be pushing the definition of vignette slightly.
+The changes comprising an MVP have been masterfully merged onto ropensci by crew102. Here's what's left:    
+
+1. Update vignettes, all of them changed.  The original ropensci blog post has been updated and could be added as a [new vignette](https://mustberuss.github.io/patentsview/articles/ropensci_blog_post.html).  There is a new one about converting an existing script and another new one about the api changes (in the navigation above).  They might be pushing the definition of vignette slightly.
 2. possibly add qry_funs$in_range() and safe_date_ranges() to the r package, more about this in Question 1
-3. There is supposed to be a code release and data update this month.  Hopefully the locations endpoint will be
-add to the test server, along with the applications endpoint mentioned vaguely
-[here](https://patentsview.org/forum/8/topic/572#comment-560)
+3. There is supposed to be a code release and data update in September.  Hopefully the locations endpoint will be add to the test server, along with the applications endpoint mentioned vaguely [here](https://patentsview.org/forum/8/topic/572#comment-560)
 
 ## Questions:
 1. Should the new stuff mentioned [here](https://mustberuss.github.io/patentsview/articles/converting-an-existing-script.html#additions-to-the-r-package-1) be added to the package?
 2. Should we update the version number? Maybe to 1.0.0 since it's not backward compatible.
-3. Should we use r-universe for the distribution until the original API version is retired? (It could then
-be submitted to CRAN).  There is an unauthorized badge and installation instructions [here](https://mustberuss.github.io/patentsview/)  We'd really use <https://ropensci.r-universe.dev/ui#package:patentsview>
-4. Should we post a tech note to ropensci when the new version of the package is ready?  
-A potential posting is [here](https://mustberuss.github.io/patentsview/articles/ropensci_tech_note.html)  (the stuff about the
-sticker could be dropped)
-5. Should we add a CONTRIBUTING.md and an issue template? The [best practices page](https://devguide.ropensci.org/package-development-security-best-practices.html#secrets-in-packages-and-development
-) recommends adding a CONTRIBUTING.md with API key instructions etc.  It also recommends
-adding an issue template reminding people not to share their API key.  usethis::use_tidy_contributing() generates a base
-[CONTRIBUTING.md](https://github.com/mustberuss/patentsview/tree/api-redesign/.github/CONTRIBUTING.md) (links to a CODE_OF_CONDUCT.md delete or link to ropensci's instead?)
+3. Should we use r-universe for the distribution until the original API version is retired? (It could then be submitted to CRAN).  There is an unauthorized badge and installation instructions [here](https://mustberuss.github.io/patentsview/)  We'd really use <https://ropensci.r-universe.dev/ui#package:patentsview>
+4. Should we post a tech note to ropensci when the new version of the package is ready?  A potential posting is [here](https://mustberuss.github.io/patentsview/articles/ropensci_tech_note.html)  (the stuff about the sticker could be dropped)
+5. Should we add a CONTRIBUTING.md and an issue template? The [best practices page](https://devguide.ropensci.org/package-development-security-best-practices.html#secrets-in-packages-and-development) recommends adding a CONTRIBUTING.md with API key instructions etc.  It also recommends adding an issue template reminding people not to share their API key.  usethis::use_tidy_contributing() generates a base [CONTRIBUTING.md](https://github.com/mustberuss/patentsview/tree/api-redesign/.github/CONTRIBUTING.md) (links to a CODE_OF_CONDUCT.md delete or link to ropensci's instead?)
 6. Have you seen [this](https://content.govdelivery.com/accounts/USPTO/bulletins/32deb51)? patft and appft are going away at the end of September 2022.  The ropensci blog post vignette has two patft links that will need updating. Not even sure how the first one winds up on pn 11,451,709!
 
 ## Important Notes
@@ -39,6 +29,7 @@ adding an issue template reminding people not to share their API key.  usethis::
 
 ## Required Further Reading: 
 (Keep reading, they're not prerequisites to reading this page)
+
 1. The [announcement](https://patentsview.org/data-in-action/whats-new-patentsview-july-2021) of the API changes.
 2. The new and modified vignettes (use the nav above).
 3. The new and modified [test cases](https://github.com/mustberuss/patentsview/tree/api-redesign/tests/testthat).
@@ -51,6 +42,7 @@ adding an issue template reminding people not to share their API key.  usethis::
 
 ## General Upheaval
 The villagers may revolt over some of these API changes... &nbsp;&nbsp; &nbsp; Or, the R package will become even more useful and relevant and there will be a parade.
+
 1. The overall paged result set size limit is now 10,000, down from 100,000 (see the [converting-an-existing-script vignette](articles/converting-an-existing-script.html)).
 2. The size/per_page maximum on a single request changes from 10,000 to 1,000.   Maximum check and message changed in validate-args.R, it could or should throw a warning when per_page is set above 1,000 and send to API as 1,000.  
 3. A lot of fields seem to have gone away, like the governmental interests ones.  Some, but not all, are lists in the Discontinued Fields section of [this page](https://patentsview.org/data-in-action/whats-new-patentsview-july-2021).  The swagger definition (https://search.patentsview.org/static/openapi.json) does not contain  government interest fields, ipc fields, wipo fields, lawyer fields, foreign_priority fields, examiner fields, pct fields, raw inventor fields, coinventor fields, patent_firstnamed fields or patent_num_claims. Assuming all these fields are  going away, though more, unspecified, endpoints are supposed to be coming before the end of 2022.
@@ -180,8 +172,9 @@ Open my version of the Swagger object for the new version of the API in the [Swa
 
 ## Carried Over
 Observations from the original version of the R package that are still true in this version.
+
 1. Paging isn't quite right, it repeats the first request if all_pages = TRUE, slight improvement opportunity.
 2. The search field has to be explicitly specified in the f: parameter when a sort field is specified.  The API does have default fields that could be sorted on, without specifying in the f: parameter.  A script could  make API calls to see what the default fields are.   Probably isn't worth the effort, and it's not necessarily an improvement! (it's just an observation)
-3. The screenshot of the highcharter plot in the top-assignees vignette is incomplete.  The png only shows a little bit of IBM's yearly patents, not the full awesomeness of highcharter's plot.  The line graph in the roensci blog looks fine, how was that one done?
+3. The screenshot of the highcharter plot in the top-assignees vignette is incomplete.  The png only shows a little bit of IBM's yearly patents, not the full awesomeness of highcharter's plot.  **Figured it out!**  needed to set delay = TRUE for that block.  Also set global fig.cap="" to suppress "plot of chunk unnamed-chunk-3", I also named the blocks so there wouldn't be image name collisions figure/unnamed-chunk-3-1.png
 &nbsp;
 &nbsp;
