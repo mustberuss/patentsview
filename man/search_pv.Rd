@@ -10,7 +10,7 @@ search_pv(
   endpoint = "patents",
   subent_cnts = FALSE,
   mtchd_subent_only = lifecycle::deprecated(),
-  page = 1,
+  page = lifecycle::deprecated(),
   per_page = 1000,
   all_pages = FALSE,
   sort = NULL,
@@ -60,7 +60,7 @@ even those records that don't meet your query's requirements. This is
 equivalent to the \code{matched_subentities_only} parameter found
 \href{https://patentsview.org/apis/api-query-language}{here}.}
 
-\item{page}{The page number of the results that should be returned.}
+\item{page}{`r lifecycle::badge("deprecated")` The page number of the results that should be returned.}
 
 \item{per_page}{The number of records that should be returned per page. This
 value can be as high as 1,000 (e.g., \code{per_page = 1000}).}

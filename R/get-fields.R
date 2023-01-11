@@ -70,3 +70,28 @@ get_endpoints <- function() {
     "locations", "wipo", "ipcs" #, patent/otherreference
   )
 }
+
+# Now for paging there has to be a sort field.  Here we'll provide defaults
+# for each endpoint if the user does not specify one
+
+# most of the nested endpoints use patent_id, patent/attorneys is the exception
+USE_PATENT_ID <- c("patent/us_application_citations", "patent/us_patent_citations", 
+"patent/rel_app_texts", "patent/foreign_citations")
+
+#' @noRd
+get_default_sort <- function(endpoint) {
+
+   if(endpoint %in% USE_PATENT_ID) {
+      key <- "patent_id"
+   }
+   else
+   {
+      key <- sub("^patent/", "", endpoint)
+      key <- to_singular(key)
+      key <- paste0(key,"_id")
+   }
+
+   default <- c("asc")
+   names(default) = key
+   default
+}

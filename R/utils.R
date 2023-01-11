@@ -87,3 +87,4 @@ to_plural <- function(singular) {
     plural <- paste0(singular, "s")
   }
 }
+

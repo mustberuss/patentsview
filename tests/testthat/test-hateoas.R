@@ -20,9 +20,6 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
   # Call the new, Get only endpoints that don't accept q: s:, o:, f:, parameters
   # The links are returned fully qualified, like below, from some of the endpoints
   # These queries retrieve one specific row
-
-  # might need to make get calls to get a current assignee id etc, they might not be persistent
-
   single_item_queries <- c(
     "https://search.patentsview.org/api/v1/assignee/00000ce5-b13f-4a23-a8fb-c14409ad7b68/",
     "https://search.patentsview.org/api/v1/cpc_subclass/A01B/",
@@ -39,7 +36,7 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
 
     # urls now nested under /patent
     "https://search.patentsview.org/api/v1/patent/attorney/005dd718f3b829bab9e7e7714b3804a5/"
-    # 400 ,"https://search.patentsview.org/api/v1/wipo/1/"
+
   )
 
   # These queries can return more than a single row
@@ -75,3 +72,4 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
    expect_true(j$query_results$total_hits >= 1)
   })
 })
+
