@@ -2,6 +2,10 @@ context("search_pv")
 
 # TODO: add a test to see if all the requested fields come back
 
+add_base_url <- function(x) {
+  paste0("https://search.patentsview.org/api/v1/", x)
+}
+
 endpoints <- get_endpoints()
 
 test_that("API returns expected df names for all endpoints", {
@@ -12,7 +16,7 @@ test_that("API returns expected df names for all endpoints", {
     names(out[[1]])
   }, FUN.VALUE = character(1), USE.NAMES = FALSE)
 
-  # remove nesting 
+  # remove nesting
   plain_endpoints <- gsub("patent/", "", endpoints)
   expect_equal(plain_endpoints, df_names)
 })
@@ -39,8 +43,8 @@ test_that("You can download up to 9,000+ records", {
   # Should return 9,000+ rows
   query <- with_qfuns(
     and(
-        gte(patent_date = "2007-12-10"),
-        lte(patent_date = "2007-12-26")
+        gte(patent_date = "2021-12-13"),
+        lte(patent_date = "2021-12-24")
     )
   )
   out <- search_pv(query, per_page = 1000, all_pages = TRUE)
@@ -50,7 +54,8 @@ test_that("You can download up to 9,000+ records", {
 test_that("search_pv can pull all fields for all endpoints", {
   skip_on_cran()
 
-  skip("Temp skip for API bug")
+  skip("Temp skip for API bug ")
+
   dev_null <- lapply(endpoints, function(x) {
     search_pv(
       query = TEST_QUERIES[[x]],
@@ -65,10 +70,8 @@ test_that("Sort option works as expected", {
   skip_on_cran()
 
   out <- search_pv(
-    qry_funs$neq(assignee_id = 1),
-    # TODO replace after API fix
-    #fields = get_fields("assignees"),
-    fields = c("assignee_id","assignee_lastknown_latitude"),
+    qry_funs$neq(assignee_id = ""),
+    fields = get_fields("assignees"),
     endpoint = "assignees",
     sort = c("assignee_lastknown_latitude" = "desc"),
     per_page = 100
@@ -82,10 +85,18 @@ test_that("search_pv properly URL encodes queries", {
 
   # Covers https://github.com/ropensci/patentsview/issues/24
   # need to use the assignee endpoint now and the field is full_text
-  ampersand_query <- with_qfuns(text_phrase(assignee_organization = "Johnson & Johnson"))
-  dev_null <- search_pv(ampersand_query, endpoint = "assignees")
+  text_query <- with_qfuns(text_phrase(assignee_organization = "Johnson & Johnson"))
+  phrase_search <- search_pv(text_query, endpoint = "assignees")
   expect_true(TRUE)
+
+  # also test that the string operator does not matter now
+  eq_query <- with_qfuns(eq(assignee_organization = "Johnson & Johnson"))
+  eq_search <- search_pv(eq_query, endpoint = "assignees")
+  expect_identical(eq_search$data, phrase_search$data)
+
 })
+
+context("throttle")
 
 # Below we request the same data in built_singly and result_all, with the only
 # difference being that we intentionally get throttled in built_singly by
@@ -94,16 +105,22 @@ test_that("search_pv properly URL encodes queries", {
 test_that("Throttled requests are automatically retried", {
   skip_on_cran()
 
-  # need a request that is under 10,000 rows, we just want a sample of 50 patent numbers
-  query <- with_qfuns(
-    and(
-        gte(patent_date = "2007-12-10"),
-        lte(patent_date = "2007-12-26")
-    )
+  res <- search_pv('{"_gte":{"patent_date":"2007-01-04"}}', per_page = 50)
+  patent_ids <- res$data$patents$patent_id
+
+  expect_message(
+    built_singly <- lapply(patent_ids, function(patent_id) {
+      search_pv(
+        query = qry_funs$eq(patent_id = patent_id),
+        endpoint = "patent/us_patent_citations",
+        fields = c("patent_id", "citation_patent_id"),
+        sort = c("citation_patent_id" = "asc")
+      )[["data"]][["us_patent_citations"]]
+    }),
+    "The API's requests per minute limit has been reached. "
   )
 
-  res <- search_pv(query, per_page = 50)
-  patent_ids <- res$data$patents$patent_id
+  built_singly <- do.call(rbind, built_singly)
 
   result_all <- search_pv(
     query = qry_funs$eq(patent_id = patent_ids),
@@ -115,15 +132,69 @@ test_that("Throttled requests are automatically retried", {
   )
   result_all <- result_all$data$us_patent_citations
 
-  built_singly <- lapply(patent_ids, function(patent_id) {
-    search_pv(
-      query = qry_funs$eq(patent_id = patent_id),
-      endpoint = "patent/us_patent_citations",
-      fields = c("patent_id", "citation_patent_id"),
-      sort = c("citation_patent_id" = "asc")
-    )[["data"]][["us_patent_citations"]]
-  })
-  built_singly <- do.call(rbind, built_singly)
-
   expect_identical(built_singly, result_all)
+})
+
+test_that("We won't expose the user's patentsview API key to random websites", {
+  skip_on_cran()
+
+  # We will try to call the api that tells us who is currently in space
+  in_space_now_url <- "http://api.open-notify.org/astros.json"
+  expect_error(retrieve_linked_data(in_space_now_url))
+})
+
+
+test_that("We can call all the legitimate HATEOAS endpoints", {
+  skip_on_cran()
+
+  single_item_queries <- c(
+    "cpc_subclass/A01B/",
+    "cpc_class/A01/",
+    "patent/10757852/",
+    "uspc_mainclass/30/",
+    "wipo/1/"
+  )
+
+  dev_null <- lapply(single_item_queries, function(q) {
+    print(q)
+    j <- retrieve_linked_data(add_base_url(q))
+    expect_equal(j$query_results$total_hits, 1)
+  })
+
+  multi_item_queries <- c(
+    "patent/us_application_citation/10966293/",
+    "patent/us_patent_citation/10966293/",
+
+    # The next two mistakenly return multiple records.
+    # This test will fail when the API is fixed.
+    "uspc_subclass/30:100/",
+    "cpc_group/G01S7:4811/"
+  )
+  dev_null <- lapply(multi_item_queries, function(q) {
+    j <- retrieve_linked_data(add_base_url(q))
+    expect_true(j$query_results$total_hits > 1)
+  })
+
+  # We'll make a call to get an inventor and assignee HATEOAS link
+  # in case their ids are not persistent
+  res <- search_pv('{"patent_id":"10000000"}',
+    fields = c("inventors.inventor_id", "assignees.assignee_id")
+  )
+
+  # another API bug that when fixed will cause this test to fail
+  expect_error(
+    assignee <- retrieve_linked_data(res$data$patents$assignees[[1]]$assignee)
+  )
+
+  inventor <- retrieve_linked_data(res$data$patents$inventors[[1]]$inventor)
+  expect_true(inventor$query_results$total_hits == 1)
+
+  # Query to get a location HATEOAS link in case location_ids are not persistent
+  res <- search_pv('{"location_name":"Chicago"}',
+    fields = c("location_id"),
+    endpoint = "locations"
+  )
+
+  location <- retrieve_linked_data(add_base_url(paste0("location/", res$data$locations$location_id, "/")))
+  expect_true(location$query_results$total_hits == 1)
 })
