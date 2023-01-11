@@ -21,7 +21,7 @@
 #'
 #' @examples
 #' # Get all assignee-level fields for the patents endpoint:
-#' fields <- get_fields(endpoint = "patents", groups = "assignees_at_grant")
+#' fields <- get_fields(endpoint = "patents", groups = "assignees")
 #'
 #' # ...Then pass to search_pv:
 #' \dontrun{
