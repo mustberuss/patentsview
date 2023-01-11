@@ -32,13 +32,19 @@ search_pv(query = qry_funs$gt(patent_num_times_cited_by_us_patents = 500))
 How many distinct inventors are represented by these highly-cited patents?
 
 ```{r}
-# Setting subent_cnts = TRUE will give us the subentity counts. Since inventors 
-# are subentities for the patents endpoint, this means we will get their counts.
+
 search_pv(
   query = qry_funs$gt(patent_num_times_cited_by_us_patents = 500),
-  fields = c("patent_number", "inventors_at_grant.inventor"), 
-  subent_cnts = TRUE
+  fields = c("patent_id", "inventors.inventor_id")
 )
+```
+What assignee's organizations start Microsoft?
+
+```{r}
+query <- qry_funs$begins(assignee_organization = "Microsoft")
+
+pv_out <- search_pv(query, endpoint = "assignees")
+pv_out$data$assignees$assignee_organization
 ```
 
 Where geographically have Microsoft inventors been coming from over the past few years?
@@ -47,36 +53,42 @@ Where geographically have Microsoft inventors been coming from over the past few
 # Write the query
 query <- with_qfuns(
   and(
-    gte(patent_date = "2019-07-30"), # Dates are in yyyy-mm-dd format 
-    text_phrase(assignees_at_grant.organization = "microsoft")
+    gte(patent_date = "2019-07-30"), # Dates are in yyyy-mm-dd format
+    begins(assignees.assignee_organization = "Microsoft Corporat")
   )
 )
 
 # Create a field list
-inv_fields <- get_fields(endpoint = "patents", groups = "inventors_at_grant")
-fields <- c(inv_fields, "patent_number")
+inv_fields <- get_fields(endpoint = "patents", groups = "inventors")
+fields <- c(inv_fields, "patent_id")
 
 # Pull the data
 pv_out <- search_pv(query, fields = fields, all_pages = TRUE, per_page = 1000)
 
 # Unnest the inventor list column
-unnest_pv_data(pv_out$data, "patent_number")
+unnest_pv_data(pv_out$data, "patent_id")
 ```
 
 Which inventors have Chicago, IL listed as their location on at least one patent.[^1]
 
 ```{r}
-search_pv(
-  query = '{"_and":[{"_text_phrase": {"inventors_at_grant.city":"Chicago"}},{"_text_phrase": {"inventors_at_grant.state":"IL"}}]}',
+pv_out <- search_pv(
+  query = '{"_and":[{"_text_phrase": {"inventors.city":"Chicago"}},{"_text_phrase": {"inventors.state":"IL"}}]}',
   endpoint = "patents"
 )
+
+pv_out
+
+if (pv_out$query_results$total_hits == 0) {
+  print("something seems to be wrong with the API")
+}
 ```
 
 Which assignees have an interest in beer?
 
 ```{r}
 search_pv(
-  query = qry_funs$contains(patent_title = "beer"), 
+  query = qry_funs$contains(patent_title = "beer"),
   endpoint = "patents"
 )
 ```

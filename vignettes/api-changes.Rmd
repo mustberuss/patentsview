@@ -21,38 +21,42 @@ Perhaps the most important change, without an API key your queries will be rejec
 ## Philosophical Changes
 These changes are likely to break existing code.  Now there are more endpoints and each returns a smaller, more specific data structure pertinent to that endpoint. As an example, previously the inventor endpoint could return assignee information, it no longer does that.  The exception is the patents endpoint.  It now can return assignees_at_grant, inventors_at_grant, cpc_current along with patent specific fields. Note that now subsequent queries would have to be made to the USPC specific endpoints if you are looking for these fields.
 
-Currently there are 13 endpoints, up from the original 7.  The urls changed slightly but the R package takes care of that for you.  
+Currently there are 16 endpoints, up from the original 7.  The urls changed slightly but the R package takes care of that for you.  
 
-1. There are 2 totally new endpoints  
-   -  /api/v1/patent_citation/  
-   -  /api/v1/application_citation/  
-2. 7 of the original api's endpoints have singular names but lighter responses and fewer queryable fields as mentioned above.  
+1. There are 8 totally new endpoints
+   -  /api/v1/ipcs/  
+   -  /api/v1/uspc_subclass/
+   -  /api/v1/patent/attorneys
+   -  /api/v1/patent/foreign_citations/
+   -  /api/v1/patent/otherreference/  (not currently working)
+   -  /api/v1/patent/patent/rel_app_texts/
+   -  /api/v1/patent/us_application_citation/  
+   -  /api/v1/patent/us_patent_citation/  
+2. 5 of the original api's endpoints have singular names but lighter responses and fewer queryable fields as mentioned above.  
    -  /api/v1/assignee/  
-   -  /api/v1/inventor/  
-   -  /api/v1/location/  (not currently on the test server)  
+   -  /api/v1/inventor/ 
+   -  /api/v1/location/
    -  /api/v1/patent/  
-   -  /api/v1/cpc_subsection/  
-   -  /api/v1/nber_subcategory/  
-   -  /api/v1/uspc_subclass/  
-3. There are an additional 4 new endpoints which are subdivisions of the original classification endpoints.  
-   - /api/v1/cpc_group/  
-   - /api/v1/cpc_subgroup/  
-   - /api/v1/nber_category/  
-   - /api/v1/uspc_mainclass/  
+   -  /api/v1/uspc_mainclass/
+3. The original cpc endpoint has a new name and there are two new cpc endpoints
+   -  /api/v1/cpc_class/
+   -  /api/v1/cpc_subclass/
+   -  /api/v1/cpc_group/
+4. The nber_subcategory endpoint seem to be gone now.
+
 
 ## Data Reduction
 
-Quite a few fields seem to have gone away, including government interest fields, ipc fields, wipo fields, lawyer fields, foreign_priority fields, examiner fields, pct fields, raw inventor fields, coinventor fields, patent_firstnamed fields or patent_num_claims.  There's a link to a spreadsheet of the fields returned by endpoint at the bottom of https://patentsview.org/apis/purpose though the Swagger UI page should be more current.
-
+Some fields seem to have gone away, raw inventor fields, coinventor fields, patent_firstnamed fields and patent_num_claims.  There's a link to a spreadsheet of the fields returned by endpoint at the bottom of https://patentsview.org/apis/purpose though the Swagger UI page should be more current.
 
 ## HATEOAS
-Some of the returned fields are HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more information about that field. Slight funky is the cpc_current's cpc_subgroup, returned by the patents endpoint.  Here the slash in the cpc is turned into a colon.  This is a peculiarity of two of the new convience urls that shouldn't be noticable in the r package, unless you are trying to infer the uspc and cpc values from the returned urls, without actually calling back for this data.
-There is something slightly funky with these fields.  They have an _id when in the q:/query and f:/fields parameters but they are returned without the _id.  Example: cpc_subgroup_id is returned as the HATEOAS link cpc_subgroup. 
+Some of the returned fields are HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more information about that field. Slight funky is the cpc_current's cpc_group, returned by the patents endpoint.  Here the slash in the cpc is turned into a colon.  This is a peculiarity of two of the new convience urls that shouldn't be noticable in the r package, unless you are trying to infer the uspc and cpc values from the returned urls, without actually calling back for this data.
+There is something slightly funky with these fields.  They have an _id when in the q:/query and f:/fields parameters but they are returned without the _id.  Example: cpc_group_id is returned as the HATEOAS link cpc_group. 
 
 Example link returned by the patents endpoint
 ```
  "cpc_current": {
-     "cpc_subgroup": "https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4865/"  
+     "cpc_group": "https://search.patentsview.org/api/v1/cpc_group/G01S7:4865/"  
   }
 ```
 Note that going to that link in a browser will result in a 403 Unauthorized, as no API key is sent.
@@ -63,28 +67,44 @@ link and the R package will retrieve the data for you.
 ```r
 library(patentsview)
 
-retrieve_linked_data("https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4865/")
+pv_data <- retrieve_linked_data("https://search.patentsview.org/api/v1/cpc_group/G01S7:4865/")
+pv_data
 #> $data
-#> [1] "cpc_subgroups"
-#> #### A list with a single data frame on a CPC sub group level:
+#> #### A list with a single data frame on cpc_groups level:
 #> 
 #> List of 1
-#>  $ cpc_subgroups:'data.frame':	1 obs. of  2 variables:
-#>   ..$ cpc_subgroup_id   : chr "G01S7/4865"
-#>   ..$ cpc_subgroup_title: chr "Details of systems according to groups G01S13/"..
+#>  $ cpc_groups:'data.frame':	100 obs. of  4 variables:
+#>   ..$ cpc_class      : chr [1:100] "https://search.patentsview.org/api/v1/cpc"..
+#>   ..$ cpc_subclass   : chr [1:100] "https://search.patentsview.org/api/v1/cpc"..
+#>   ..$ cpc_group_id   : chr [1:100] "A01B1/00" ...
+#>   ..$ cpc_group_title: chr [1:100] "Hand tools" ...
+#> 
+#> $query_results
+#> #### Distinct entity counts across all downloadable pages of output:
+#> 
+#> total_hits = 242,232
+
+if(pv_data$query_results$total_hits != 1){
+   print("something is wrong with the API.  Response should match this:")
+   query <- qry_funs$eq("cpc_group_id" = "G01S7/4865")
+   search_pv(query, endpoint = "cpc_groups")
+}
+#> [1] "something is wrong with the API.  Response should match this:"
+#> $data
+#> #### A list with a single data frame on cpc_groups level:
+#> 
+#> List of 1
+#>  $ cpc_groups:'data.frame':	1 obs. of  4 variables:
+#>   ..$ cpc_class      : chr "https://search.patentsview.org/api/v1/cpc_class/G"..
+#>   ..$ cpc_subclass   : chr "https://search.patentsview.org/api/v1/cpc_subclas"..
+#>   ..$ cpc_group_id   : chr "G01S7/4865"
+#>   ..$ cpc_group_title: chr "Details of systems according to groups G01S13/00,"..
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
 #> total_hits = 1
 ```
-
-## Query size changes
-1. The maximum rows that can be requested at one time is now 1,000, down from 10,000
-2. The overall paged result set size limit is now 10,000 rows, down from the original 100,000 
-
-The R package should take care of these changes, though you may have to make additional
-queries to get around the new overall paged result set size of 10,000 rows.  See the [Converting an Existing Script](converting-an-existing-script.html#reduced-query-size-1) vignette for more on this.
 
 ## Throttling
 The API will now allow 45 requests per minute, making more requests will anger the API.  It will send back an error code with a header indicating how many seconds to wait before sending more queries.  The R package will take care of this for you.  It will sleep for the required number of seconds before resubmitting your query, seemlessly to your script.
@@ -108,23 +128,164 @@ kable(string_fields,  row.names = FALSE, caption = 'String Fields')
 
 
 
-|endpoint              |field                    |data_type |
-|:---------------------|:------------------------|:---------|
-|patents               |patent_number            |string    |
-|patents               |patent_title             |string    |
-|patents               |patent_type              |string    |
-|patents               |patent_kind              |string    |
-|patent_citations      |patent_number            |string    |
-|patent_citations      |cited_patent_number      |string    |
-|patent_citations      |citation_category        |string    |
-|application_citations |citation_category        |string    |
-|application_citations |cited_application_number |string    |
-|application_citations |citation_kind            |string    |
-|cpc_subsections       |cpc_section_id           |string    |
-|cpc_subsections       |cpc_subsection_id        |string    |
-|uspc_mainclasses      |uspc_mainclass_id        |string    |
-|nber_categories       |nber_category_id         |string    |
-|nber_subcategories    |nber_subcategory_id      |string    |
+Table: String Fields
+
+|endpoint                        |field                                            |data_type |
+|:-------------------------------|:------------------------------------------------|:---------|
+|assignees                       |assignee_id                                      |string    |
+|assignees                       |assignee_individual_name_first                   |string    |
+|assignees                       |assignee_individual_name_last                    |string    |
+|assignees                       |assignee_lastknown_city                          |string    |
+|assignees                       |assignee_lastknown_country                       |string    |
+|assignees                       |assignee_lastknown_location                      |string    |
+|assignees                       |assignee_lastknown_state                         |string    |
+|assignees                       |assignee_organization                            |string    |
+|assignees                       |assignee_type                                    |string    |
+|cpc_classes                     |cpc_class_id                                     |string    |
+|cpc_classes                     |cpc_class_title                                  |string    |
+|cpc_groups                      |cpc_class_id                                     |string    |
+|cpc_groups                      |cpc_group_id                                     |string    |
+|cpc_groups                      |cpc_group_title                                  |string    |
+|cpc_groups                      |cpc_subclass_id                                  |string    |
+|cpc_subclasses                  |cpc_class_id                                     |string    |
+|cpc_subclasses                  |cpc_subclass_id                                  |string    |
+|cpc_subclasses                  |cpc_subclass_title                               |string    |
+|inventors                       |inventor_id                                      |string    |
+|inventors                       |inventor_lastknown_city                          |string    |
+|inventors                       |inventor_lastknown_country                       |string    |
+|inventors                       |inventor_lastknown_location                      |string    |
+|inventors                       |inventor_lastknown_state                         |string    |
+|inventors                       |inventor_name_first                              |string    |
+|inventors                       |inventor_name_last                               |string    |
+|ipcs                            |ipc_class                                        |string    |
+|ipcs                            |ipc_id                                           |string    |
+|ipcs                            |ipc_section                                      |string    |
+|ipcs                            |ipc_subclass                                     |string    |
+|locations                       |location_country                                 |string    |
+|locations                       |location_county                                  |string    |
+|locations                       |location_county_fips                             |string    |
+|locations                       |location_id                                      |string    |
+|locations                       |location_name                                    |string    |
+|locations                       |location_place_type                              |string    |
+|locations                       |location_state                                   |string    |
+|locations                       |location_state_fips                              |string    |
+|patent/attorneys                |attorney_id                                      |string    |
+|patent/attorneys                |attorney_name_first                              |string    |
+|patent/attorneys                |attorney_name_last                               |string    |
+|patent/attorneys                |attorney_organization                            |string    |
+|patent/foreign_citations        |citation_category                                |string    |
+|patent/foreign_citations        |citation_country                                 |string    |
+|patent/foreign_citations        |citation_number                                  |string    |
+|patent/foreign_citations        |patent_id                                        |string    |
+|patent/otherreferences          |patent_id                                        |string    |
+|patent/otherreferences          |reference_sequence                               |string    |
+|patent/otherreferences          |reference_text                                   |string    |
+|patent/rel_app_texts            |patent_id                                        |string    |
+|patent/rel_app_texts            |related_text                                     |string    |
+|patent/us_application_citations |citation_category                                |string    |
+|patent/us_application_citations |citation_document_number                         |string    |
+|patent/us_application_citations |citation_name                                    |string    |
+|patent/us_application_citations |citation_wipo_kind                               |string    |
+|patent/us_application_citations |patent_id                                        |string    |
+|patent/us_patent_citations      |citation_category                                |string    |
+|patent/us_patent_citations      |citation_name                                    |string    |
+|patent/us_patent_citations      |citation_patent_id                               |string    |
+|patent/us_patent_citations      |citation_wipo_kind                               |string    |
+|patent/us_patent_citations      |patent_id                                        |string    |
+|patents                         |applicants.applicant_designation                 |string    |
+|patents                         |applicants.applicant_name_first                  |string    |
+|patents                         |applicants.applicant_name_last                   |string    |
+|patents                         |applicants.applicant_organization                |string    |
+|patents                         |applicants.applicant_type                        |string    |
+|patents                         |applicants.location_id                           |string    |
+|patents                         |application.application_id                       |string    |
+|patents                         |application.application_type                     |string    |
+|patents                         |application.filing_type                          |string    |
+|patents                         |application.series_code                          |string    |
+|patents                         |assignees.assignee_city                          |string    |
+|patents                         |assignees.assignee_country                       |string    |
+|patents                         |assignees.assignee_id                            |string    |
+|patents                         |assignees.assignee_individual_name_first         |string    |
+|patents                         |assignees.assignee_individual_name_last          |string    |
+|patents                         |assignees.assignee_location_id                   |string    |
+|patents                         |assignees.assignee_organization                  |string    |
+|patents                         |assignees.assignee_state                         |string    |
+|patents                         |assignees.assignee_type                          |string    |
+|patents                         |attorneys.attorney_id                            |string    |
+|patents                         |attorneys.attorney_name_first                    |string    |
+|patents                         |attorneys.attorney_name_last                     |string    |
+|patents                         |attorneys.attorney_organization                  |string    |
+|patents                         |botanic.latin_name                               |string    |
+|patents                         |botanic.variety                                  |string    |
+|patents                         |cpc_at_issue.cpc_class_id                        |string    |
+|patents                         |cpc_at_issue.cpc_group_id                        |string    |
+|patents                         |cpc_at_issue.cpc_section                         |string    |
+|patents                         |cpc_at_issue.cpc_subclass_id                     |string    |
+|patents                         |cpc_at_issue.cpc_type                            |string    |
+|patents                         |cpc_current.cpc_class_id                         |string    |
+|patents                         |cpc_current.cpc_group_id                         |string    |
+|patents                         |cpc_current.cpc_section                          |string    |
+|patents                         |cpc_current.cpc_subclass_id                      |string    |
+|patents                         |cpc_current.cpc_type                             |string    |
+|patents                         |examiners.art_group                              |string    |
+|patents                         |examiners.examiner_first_name                    |string    |
+|patents                         |examiners.examiner_id                            |string    |
+|patents                         |examiners.examiner_last_name                     |string    |
+|patents                         |examiners.examiner_role                          |string    |
+|patents                         |foreign_priority.foreign_application_id          |string    |
+|patents                         |foreign_priority.foreign_country_filed           |string    |
+|patents                         |foreign_priority.priority_claim_kind             |string    |
+|patents                         |gov_interest_contract_award_numbers.award_number |string    |
+|patents                         |gov_interest_organizations.fedagency_name        |string    |
+|patents                         |gov_interest_organizations.level_one             |string    |
+|patents                         |gov_interest_organizations.level_three           |string    |
+|patents                         |gov_interest_organizations.level_two             |string    |
+|patents                         |gov_interest_statement                           |string    |
+|patents                         |granted_pregrant_crosswalk.application_number    |string    |
+|patents                         |inventors.inventor_city                          |string    |
+|patents                         |inventors.inventor_country                       |string    |
+|patents                         |inventors.inventor_id                            |string    |
+|patents                         |inventors.inventor_location_id                   |string    |
+|patents                         |inventors.inventor_name_first                    |string    |
+|patents                         |inventors.inventor_name_last                     |string    |
+|patents                         |inventors.inventor_state                         |string    |
+|patents                         |ipcr.ipc_class                                   |string    |
+|patents                         |ipcr.ipc_classification_data_source              |string    |
+|patents                         |ipcr.ipc_classification_value                    |string    |
+|patents                         |ipcr.ipc_id                                      |string    |
+|patents                         |ipcr.ipc_main_group                              |string    |
+|patents                         |ipcr.ipc_section                                 |string    |
+|patents                         |ipcr.ipc_subclass                                |string    |
+|patents                         |ipcr.ipc_subgroup                                |string    |
+|patents                         |ipcr.ipc_symbol_position                         |string    |
+|patents                         |patent_abstract                                  |string    |
+|patents                         |patent_id                                        |string    |
+|patents                         |patent_title                                     |string    |
+|patents                         |patent_type                                      |string    |
+|patents                         |pct_data.application_kind                        |string    |
+|patents                         |pct_data.pct_doc_number                          |string    |
+|patents                         |pct_data.pct_doc_type                            |string    |
+|patents                         |us_related_documents.published_country           |string    |
+|patents                         |us_related_documents.related_doc_kind            |string    |
+|patents                         |us_related_documents.related_doc_number          |string    |
+|patents                         |us_related_documents.related_doc_status          |string    |
+|patents                         |us_related_documents.related_doc_type            |string    |
+|patents                         |us_related_documents.wipo_kind                   |string    |
+|patents                         |us_term_of_grant.term_disclaimer                 |string    |
+|patents                         |us_term_of_grant.term_extension                  |string    |
+|patents                         |us_term_of_grant.term_grant                      |string    |
+|patents                         |uspc_at_issue.uspc_mainclass_id                  |string    |
+|patents                         |uspc_at_issue.uspc_subclass_id                   |string    |
+|patents                         |wipo.wipo_field_id                               |string    |
+|patents                         |wipo_kind                                        |string    |
+|uspc_mainclasses                |uspc_mainclass_id                                |string    |
+|uspc_mainclasses                |uspc_mainclass_title                             |string    |
+|uspc_subclasses                 |uspc_mainclass_id                                |string    |
+|uspc_subclasses                 |uspc_subclass_id                                 |string    |
+|uspc_subclasses                 |uspc_subclass_title                              |string    |
+|wipo                            |field_title                                      |string    |
+|wipo                            |sector_title                                     |string    |
+|wipo                            |wipo_id                                          |string    |
 
 ```r
 
@@ -139,62 +300,10 @@ kable(fulltext_fields ,  row.names = FALSE, caption = 'Full Text Fields')
 
 
 
-|endpoint              |field                                                        |data_type |
-|:---------------------|:------------------------------------------------------------|:---------|
-|patents               |patent_country                                               |fulltext  |
-|patents               |patent_abstract                                              |fulltext  |
-|patents               |patent_uspc_current_mainclass_average_patent_processing_days |fulltext  |
-|patents               |assignees_at_grant.assignee_id                               |fulltext  |
-|patents               |assignees_at_grant.name_first                                |fulltext  |
-|patents               |assignees_at_grant.name_last                                 |fulltext  |
-|patents               |assignees_at_grant.organization                              |fulltext  |
-|patents               |assignees_at_grant.type                                      |fulltext  |
-|patents               |assignees_at_grant.city                                      |fulltext  |
-|patents               |assignees_at_grant.state                                     |fulltext  |
-|patents               |assignees_at_grant.country                                   |fulltext  |
-|patents               |inventors_at_grant.inventor_id                               |fulltext  |
-|patents               |inventors_at_grant.name_first                                |fulltext  |
-|patents               |inventors_at_grant.name_last                                 |fulltext  |
-|patents               |inventors_at_grant.city                                      |fulltext  |
-|patents               |inventors_at_grant.state                                     |fulltext  |
-|patents               |inventors_at_grant.country                                   |fulltext  |
-|patents               |cpc_current.section_id                                       |fulltext  |
-|patents               |cpc_current.subsection_id                                    |fulltext  |
-|patents               |cpc_current.group_id                                         |fulltext  |
-|patents               |cpc_current.subgroup_id                                      |fulltext  |
-|patents               |cpc_current.cpc_subgroup_title                               |fulltext  |
-|assignees             |lastknown_city                                               |fulltext  |
-|assignees             |lastknown_country                                            |fulltext  |
-|assignees             |lastknown_state                                              |fulltext  |
-|assignees             |name_first                                                   |fulltext  |
-|assignees             |name_last                                                    |fulltext  |
-|assignees             |num_inventors                                                |fulltext  |
-|assignees             |num_patents                                                  |fulltext  |
-|assignees             |organization                                                 |fulltext  |
-|assignees             |type                                                         |fulltext  |
-|inventors             |lastknown_city                                               |fulltext  |
-|inventors             |lastknown_country                                            |fulltext  |
-|inventors             |lastknown_state                                              |fulltext  |
-|inventors             |name_first                                                   |fulltext  |
-|inventors             |name_last                                                    |fulltext  |
-|inventors             |num_patents                                                  |fulltext  |
-|inventors             |inventor_id                                                  |fulltext  |
-|inventors             |num_assignees                                                |fulltext  |
-|application_citations |patent_number                                                |fulltext  |
-|cpc_subsections       |cpc_subsection_title                                         |fulltext  |
-|cpc_groups            |cpc_subsection_id                                            |fulltext  |
-|cpc_groups            |cpc_group_id                                                 |fulltext  |
-|cpc_groups            |cpc_group_title                                              |fulltext  |
-|cpc_subgroups         |cpc_subsection_id                                            |fulltext  |
-|cpc_subgroups         |cpc_group_id                                                 |fulltext  |
-|cpc_subgroups         |cpc_subgroup_id                                              |fulltext  |
-|cpc_subgroups         |cpc_subgroup_title                                           |fulltext  |
-|uspc_mainclasses      |uspc_mainclass_title                                         |fulltext  |
-|uspc_subclasses       |uspc_mainclass_id                                            |fulltext  |
-|uspc_subclasses       |uspc_subclass_id                                             |fulltext  |
-|uspc_subclasses       |uspc_subclass_title                                          |fulltext  |
-|nber_categories       |nber_category_title                                          |fulltext  |
-|nber_subcategories    |nber_subcategory_title                                       |fulltext  |
+Table: Full Text Fields
+
+|endpoint |field |data_type |
+|:--------|:-----|:---------|
 
 ## Other Changes
 
@@ -213,48 +322,126 @@ when including them in your query.  Example: assignee organization is renamed or
 
 ```r
 get_fields("patents")
-#>  [1] patent_number                                               
-#>  [2] patent_title                                                
-#>  [3] patent_date                                                 
-#>  [4] patent_type                                                 
-#>  [5] patent_country                                              
-#>  [6] patent_year                                                 
-#>  [7] patent_abstract                                             
-#>  [8] patent_kind                                                 
-#>  [9] patent_num_foreign_documents_cited                          
-#> [10] patent_num_us_applications_cited                            
-#> [11] patent_num_us_patents_cited                                 
-#> [12] patent_num_total_documents_cited                            
-#> [13] patent_num_times_cited_by_us_patents                        
-#> [14] patent_earliest_application_date                            
-#> [15] patent_patent_processing_days                               
-#> [16] patent_uspc_current_mainclass_average_patent_processing_days
-#> [17] patent_cpc_current_group_average_patent_processing_days     
-#> [18] patent_term_extension                                       
-#> [19] patent_detail_desc_length                                   
-#> [20] assignees_at_grant.assignee_id                              
-#> [21] assignees_at_grant.name_first                               
-#> [22] assignees_at_grant.name_last                                
-#> [23] assignees_at_grant.organization                             
-#> [24] assignees_at_grant.type                                     
-#> [25] assignees_at_grant.city                                     
-#> [26] assignees_at_grant.state                                    
-#> [27] assignees_at_grant.country                                  
-#> [28] assignees_at_grant.latitude                                 
-#> [29] assignees_at_grant.longitude                                
-#> [30] inventors_at_grant.inventor_id                              
-#> [31] inventors_at_grant.name_first                               
-#> [32] inventors_at_grant.name_last                                
-#> [33] inventors_at_grant.city                                     
-#> [34] inventors_at_grant.state                                    
-#> [35] inventors_at_grant.country                                  
-#> [36] inventors_at_grant.latitude                                 
-#> [37] inventors_at_grant.longitude                                
-#> [38] cpc_current.sequence                                        
-#> [39] cpc_current.section_id                                      
-#> [40] cpc_current.subsection_id                                   
-#> [41] cpc_current.group_id                                        
-#> [42] cpc_current.subgroup_id                                     
-#> [43] cpc_current.cpc_subgroup_title                              
-#> 109 Levels: patent_number patent_title patent_date ... nber_subcategory_years_active
+#>   [1] "inventors.inventor_city"                                     
+#>   [2] "patent_num_us_applications_cited"                            
+#>   [3] "foreign_priority.foreign_country_filed"                      
+#>   [4] "granted_pregrant_crosswalk.document_number"                  
+#>   [5] "us_term_of_grant.term_grant"                                 
+#>   [6] "us_term_of_grant.disclaimer_date"                            
+#>   [7] "granted_pregrant_crosswalk.application_number"               
+#>   [8] "assignees.assignee_country"                                  
+#>   [9] "pct_data.pct_doc_number"                                     
+#>  [10] "application.application_id"                                  
+#>  [11] "cpc_at_issue.cpc_section"                                    
+#>  [12] "us_related_documents.related_doc_number"                     
+#>  [13] "ipcr.ipc_sequence"                                           
+#>  [14] "uspc_at_issue.uspc_subclass_id"                              
+#>  [15] "ipcr.ipc_subgroup"                                           
+#>  [16] "application.filing_type"                                     
+#>  [17] "inventors.inventor_state"                                    
+#>  [18] "applicants.applicant_designation"                            
+#>  [19] "examiners.examiner_role"                                     
+#>  [20] "botanic.variety"                                             
+#>  [21] "patent_processing_days"                                      
+#>  [22] "assignees.assignee_individual_name_last"                     
+#>  [23] "foreign_priority.priority_claim_kind"                        
+#>  [24] "cpc_current.cpc_section"                                     
+#>  [25] "patent_num_times_cited_by_us_patents"                        
+#>  [26] "gov_interest_organizations.level_three"                      
+#>  [27] "attorneys.attorney_organization"                             
+#>  [28] "pct_data.pct_102_date"                                       
+#>  [29] "ipcr.ipc_action_date"                                        
+#>  [30] "application.series_code"                                     
+#>  [31] "applicants.applicant_type"                                   
+#>  [32] "examiners.examiner_last_name"                                
+#>  [33] "patent_type"                                                 
+#>  [34] "cpc_current.cpc_subclass_id"                                 
+#>  [35] "patent_term_extension"                                       
+#>  [36] "us_related_documents.related_doc_published_date"             
+#>  [37] "patent_uspc_current_mainclass_average_patent_processing_days"
+#>  [38] "patent_year"                                                 
+#>  [39] "examiners.examiner_id"                                       
+#>  [40] "patent_cpc_current_group_average_patent_processing_days"     
+#>  [41] "applicants.applicant_sequence"                               
+#>  [42] "examiners.art_group"                                         
+#>  [43] "ipcr.ipc_section"                                            
+#>  [44] "applicants.applicant_name_last"                              
+#>  [45] "wipo_kind"                                                   
+#>  [46] "application.rule_47_flag"                                    
+#>  [47] "gov_interest_contract_award_numbers.award_number"            
+#>  [48] "us_related_documents.related_doc_sequence"                   
+#>  [49] "wipo.wipo_sequence"                                          
+#>  [50] "patent_num_foreign_documents_cited"                          
+#>  [51] "figures.num_figures"                                         
+#>  [52] "us_term_of_grant.term_disclaimer"                            
+#>  [53] "cpc_current.cpc_class_id"                                    
+#>  [54] "ipcr.ipc_classification_data_source"                         
+#>  [55] "cpc_current.cpc_sequence"                                    
+#>  [56] "gov_interest_statement"                                      
+#>  [57] "patent_num_total_documents_cited"                            
+#>  [58] "assignees.assignee_state"                                    
+#>  [59] "patent_num_us_patents_cited"                                 
+#>  [60] "patent_abstract"                                             
+#>  [61] "examiners.examiner_first_name"                               
+#>  [62] "attorneys.attorney_sequence"                                 
+#>  [63] "uspc_at_issue.uspc_mainclass_id"                             
+#>  [64] "pct_data.application_kind"                                   
+#>  [65] "attorneys.attorney_id"                                       
+#>  [66] "ipcr.ipc_class"                                              
+#>  [67] "attorneys.attorney_name_first"                               
+#>  [68] "pct_data.pct_doc_type"                                       
+#>  [69] "inventors.inventor_location_id"                              
+#>  [70] "applicants.applicant_name_first"                             
+#>  [71] "assignees.assignee_individual_name_first"                    
+#>  [72] "ipcr.ipc_symbol_position"                                    
+#>  [73] "application.filing_date"                                     
+#>  [74] "gov_interest_organizations.level_one"                        
+#>  [75] "assignees.assignee_type"                                     
+#>  [76] "us_related_documents.published_country"                      
+#>  [77] "application.application_type"                                
+#>  [78] "us_related_documents.related_doc_type"                       
+#>  [79] "ipcr.ipc_main_group"                                         
+#>  [80] "assignees.assignee_sequence"                                 
+#>  [81] "inventors.inventor_name_first"                               
+#>  [82] "foreign_priority.foreign_application_id"                     
+#>  [83] "cpc_at_issue.cpc_type"                                       
+#>  [84] "us_related_documents.wipo_kind"                              
+#>  [85] "gov_interest_organizations.fedagency_name"                   
+#>  [86] "inventors.inventor_id"                                       
+#>  [87] "ipcr.ipc_classification_value"                               
+#>  [88] "applicants.applicant_organization"                           
+#>  [89] "pct_data.published_filed_date"                               
+#>  [90] "uspc_at_issue.uspc_sequence"                                 
+#>  [91] "us_term_of_grant.term_extension"                             
+#>  [92] "inventors.inventor_country"                                  
+#>  [93] "us_related_documents.related_doc_status"                     
+#>  [94] "wipo.wipo_field_id"                                          
+#>  [95] "botanic.latin_name"                                          
+#>  [96] "us_related_documents.related_doc_kind"                       
+#>  [97] "patent_title"                                                
+#>  [98] "assignees.assignee_organization"                             
+#>  [99] "gov_interest_organizations.level_two"                        
+#> [100] "ipcr.ipc_subclass"                                           
+#> [101] "assignees.assignee_city"                                     
+#> [102] "patent_date"                                                 
+#> [103] "inventors.inventor_sequence"                                 
+#> [104] "pct_data.pct_371_date"                                       
+#> [105] "cpc_at_issue.cpc_group_id"                                   
+#> [106] "foreign_priority.priority_claim_sequence"                    
+#> [107] "cpc_at_issue.cpc_sequence"                                   
+#> [108] "cpc_current.cpc_group_id"                                    
+#> [109] "ipcr.ipc_id"                                                 
+#> [110] "cpc_at_issue.cpc_class_id"                                   
+#> [111] "foreign_priority.filing_date"                                
+#> [112] "assignees.assignee_id"                                       
+#> [113] "assignees.assignee_location_id"                              
+#> [114] "figures.num_sheets"                                          
+#> [115] "patent_id"                                                   
+#> [116] "applicants.location_id"                                      
+#> [117] "patent_detail_desc_length"                                   
+#> [118] "patent_earliest_application_date"                            
+#> [119] "inventors.inventor_name_last"                                
+#> [120] "attorneys.attorney_name_last"                                
+#> [121] "cpc_current.cpc_type"                                        
+#> [122] "cpc_at_issue.cpc_subclass_id"
 ```

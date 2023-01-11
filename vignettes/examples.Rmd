@@ -24,50 +24,61 @@ library(patentsview)
 
 search_pv(query = qry_funs$gt(patent_num_times_cited_by_us_patents = 500))
 #> $data
-#> [1] "patents"
-#> #### A list with a single data frame (with list column(s) inside) on a patent level:
+#> #### A list with a single data frame on patents level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	25 obs. of  5 variables:
-#>   ..$ patent_number     : chr [1:25] "4278837" ...
-#>   ..$ patent_title      : chr [1:25] "Crypto microprocessor for executing enc"..
-#>   ..$ patent_date       : chr [1:25] "1981-07-14" ...
-#>   ..$ inventors_at_grant:List of 25
-#>   ..$ assignees_at_grant:List of 25
+#>  $ patents:'data.frame':	1000 obs. of  3 variables:
+#>   ..$ patent_id   : chr [1:1000] "10004497" ...
+#>   ..$ patent_title: chr [1:1000] "Interface systems for use with surgical ins"..
+#>   ..$ patent_date : chr [1:1000] "2018-06-26" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 9,108
+#> total_hits = 10,280
 ```
 
 How many distinct inventors are represented by these highly-cited patents?
 
 
 ```r
-# Setting subent_cnts = TRUE will give us the subentity counts. Since inventors 
-# are subentities for the patents endpoint, this means we will get their counts.
+
 search_pv(
   query = qry_funs$gt(patent_num_times_cited_by_us_patents = 500),
-  fields = c("patent_number", "inventors_at_grant.inventor"), 
-  subent_cnts = TRUE
+  fields = c("patent_id", "inventors.inventor_id")
 )
-#> [1] "The api's requests per minute limit has been reached.  Pausing for 5 seconds before continuing."
-#> Warning in one_request(method, query, base_url, arg_list, ...): The api's
-#> requests per minute limit has been reached. Pausing for 5 seconds before
-#> continuing.
 #> $data
-#> [1] "patents"
-#> #### A list with a single data frame on a patent level:
+#> #### A list with a single data frame (with list column(s) inside) on patents level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	25 obs. of  1 variable:
-#>   ..$ patent_number: chr [1:25] "4278837" ...
+#>  $ patents:'data.frame':	1000 obs. of  2 variables:
+#>   ..$ patent_id: chr [1:1000] "10004497" ...
+#>   ..$ inventors:List of 1000
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 9,108
+#> total_hits = 10,280
+```
+What assignee's organizations start Microsoft?
+
+
+```r
+query <- qry_funs$begins(assignee_organization = "Microsoft")
+
+pv_out <- search_pv(query, endpoint = "assignees")
+pv_out$data$assignees$assignee_organization
+#>  [1] "Microsoft Corporation"                           
+#>  [2] "Microsoft Orthopedics Holdings Inc."             
+#>  [3] "Microsoft Systems Inc."                          
+#>  [4] "Microsoft Mobile Internet AB"                    
+#>  [5] "Microsoft Technology Licensing, LLC"             
+#>  [6] "MICROSOFT CORPORAT"                              
+#>  [7] "Microsoft Israel Research and Development (2002)"
+#>  [8] "Microsoft International Holdings B.V."           
+#>  [9] "MICROSOFT MOBILE OY"                             
+#> [10] "Microsoft Technology Learning, LLC"              
+#> [11] "Microsoft Corporation Microsoft Patent Group"
 ```
 
 Where geographically have Microsoft inventors been coming from over the past few years?
@@ -77,58 +88,59 @@ Where geographically have Microsoft inventors been coming from over the past few
 # Write the query
 query <- with_qfuns(
   and(
-    gte(patent_date = "2019-07-30"), # Dates are in yyyy-mm-dd format 
-    text_phrase(assignees_at_grant.organization = "microsoft")
+    gte(patent_date = "2019-07-30"), # Dates are in yyyy-mm-dd format
+    begins(assignees.assignee_organization = "Microsoft Corporat")
   )
 )
 
 # Create a field list
-inv_fields <- get_fields(endpoint = "patents", groups = "inventors_at_grant")
-fields <- c(inv_fields, "patent_number")
+inv_fields <- get_fields(endpoint = "patents", groups = "inventors")
+fields <- c(inv_fields, "patent_id")
 
 # Pull the data
 pv_out <- search_pv(query, fields = fields, all_pages = TRUE, per_page = 1000)
 
 # Unnest the inventor list column
-unnest_pv_data(pv_out$data, "patent_number")
+unnest_pv_data(pv_out$data, "patent_id")
 #> List of 2
-#>  $ inventors_at_grant:'data.frame':	26710 obs. of  8 variables:
-#>   ..$ patent_number: chr [1:26710] "10364598" ...
-#>   ..$ name_first   : chr [1:26710] "Errol Mark" ...
-#>   ..$ name_last    : chr [1:26710] "Tazbaz" ...
-#>   ..$ city         : chr [1:26710] "Bellevue" ...
-#>   ..$ state        : chr [1:26710] "WA" ...
-#>   ..$ country      : chr [1:26710] "US" ...
-#>   ..$ latitude     : num [1:26710] 47.6 ...
-#>   ..$ longitude    : num [1:26710] -122 ...
-#>  $ patents           :'data.frame':	6703 obs. of  1 variable:
-#>   ..$ patent_number: chr [1:6703] "10364598" ...
+#>  $ inventors:'data.frame':	552 obs. of  8 variables:
+#>   ..$ patent_id          : chr [1:552] "10402446" ...
+#>   ..$ inventor           : chr [1:552] "https://search.patentsview.org/api/v1"..
+#>   ..$ inventor_name_first: chr [1:552] "Ankush" ...
+#>   ..$ inventor_name_last : chr [1:552] "Bindlish" ...
+#>   ..$ inventor_city      : chr [1:552] "Bellevue" ...
+#>   ..$ inventor_state     : chr [1:552] "WA" ...
+#>   ..$ inventor_country   : chr [1:552] "US" ...
+#>   ..$ inventor_sequence  : int [1:552] 3 1 ...
+#>  $ patents  :'data.frame':	118 obs. of  1 variable:
+#>   ..$ patent_id: chr [1:118] "10402446" ...
 ```
 
 Which inventors have Chicago, IL listed as their location on at least one patent.[^1]
 
 
 ```r
-search_pv(
-  query = '{"_and":[{"_text_phrase": {"inventors_at_grant.city":"Chicago"}},{"_text_phrase": {"inventors_at_grant.state":"IL"}}]}',
+pv_out <- search_pv(
+  query = '{"_and":[{"_text_phrase": {"inventors.city":"Chicago"}},{"_text_phrase": {"inventors.state":"IL"}}]}',
   endpoint = "patents"
 )
+
+pv_out
 #> $data
-#> [1] "patents"
-#> #### A list with a single data frame (with list column(s) inside) on a patent level:
+#> #### A list with a single data frame on patents level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	25 obs. of  5 variables:
-#>   ..$ patent_number     : chr [1:25] "4278694" ...
-#>   ..$ patent_title      : chr [1:25] "Modified liquid smoke compositions and "..
-#>   ..$ patent_date       : chr [1:25] "1981-07-14" ...
-#>   ..$ assignees_at_grant:List of 25
-#>   ..$ inventors_at_grant:List of 25
+#>  $ patents: list()
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 10,000
+#> total_hits = 0
+
+if (pv_out$query_results$total_hits == 0) {
+  print("something seems to be wrong with the API")
+}
+#> [1] "something seems to be wrong with the API"
 ```
 
 Which assignees have an interest in beer?
@@ -136,25 +148,22 @@ Which assignees have an interest in beer?
 
 ```r
 search_pv(
-  query = qry_funs$contains(patent_title = "beer"), 
+  query = qry_funs$contains(patent_title = "beer"),
   endpoint = "patents"
 )
 #> $data
-#> [1] "patents"
-#> #### A list with a single data frame (with list column(s) inside) on a patent level:
+#> #### A list with a single data frame on patents level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	25 obs. of  5 variables:
-#>   ..$ patent_number     : chr [1:25] "4299161" ...
-#>   ..$ patent_title      : chr [1:25] "Ring and snap-on ring for preventing bu"..
-#>   ..$ patent_date       : chr [1:25] "1981-11-10" ...
-#>   ..$ assignees_at_grant:List of 25
-#>   ..$ inventors_at_grant:List of 25
+#>  $ patents:'data.frame':	553 obs. of  3 variables:
+#>   ..$ patent_id   : chr [1:553] "10000326" ...
+#>   ..$ patent_title: chr [1:553] "Plastic beer keg" ...
+#>   ..$ patent_date : chr [1:553] "2018-06-19" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 323
+#> total_hits = 553
 ```
 
 [^1]: Example taken from https://patentsview.org/apis/api-endpoints/inventors.

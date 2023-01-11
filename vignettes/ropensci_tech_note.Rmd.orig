@@ -17,27 +17,25 @@ knitr::opts_chunk$set(
 
 # New release of the Patentsview Package <img src="../logo.png" align="right" height="134.5" />
 
-In this API arms race, changes in the underlying Patentsview API will break the original version of the R package. Where possible the new version of the R package handles some of the API team's changes.  The new version of the API requires an API key however.  The original and new versions of the API will both be available until the end of 2022, when
-the Patentsview API team plans to shutdown the original version of the API.
+In this API arms race, changes in the underlying Patentsview API will break the original version of the R package. Where possible the new version of the R package handles some of the API team's changes.  The new version of the API requires an API key however.  The original and new versions of the API will both be available for a while, but
+eventually the Patentsview API team plans to shutdown the original version of the API.
 
 The original version of the R package is on CRAN with the new version available on r-universe.  After the original version of the API is shutdown, the new R package will be submitted to CRAN.
 
 ## User Impacting API changes:
-1. Users will need to [request an API key](https://patentsview.org/apis/keyrequest) and set an environmental variable
-2. There are two new endpoints, one for patent citations and one for patent application citiations (data formerly returned by the patents endpoint)
-3. Three of the classification endpoints become divided into seven classification endpoints
-4. Four of the original endpoints remain but the payloads sent and received are smaller
-5. Some of the endpoints return HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more data
-6. Some attribute names have changes and some were removed entirely.
+1. Users will need to [request an API key](https://patentsview.org/apis/keyrequest) and set an environmental variable.
+2. New endpoints were added.
+3. Some endpoints were renamed (moved) and some were removed.
+4. Some of the endpoints return HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more data
+5. Some attribute names have changes and some were removed entirely.
 
 
 ## Highlights of the R package:
 1. There is a new "Converting an existing script" vignette
 2. Throttling is now enforced by the API and handled by the R package (sleep as specified by the throttle response then retry)
-3. The API team reduced the maximum paged result set size by a factor of 10.  The R package has a new function safe_date_ranges() that uses the API itself to calculate date ranges that stay under the new limit.  (An existing query can be broken up into multiple queries using the calculated date ranges as outlined in the new "Converting an existing script" vignette.)
-4. There is a new function retrieve_linked_data() to retrieve data from a HATEOAS link, retrying if throttled
-5. The [ropensci post](https://ropensci.org/blog/2017/09/19/patentsview/) announcing the original version of the R package has been modified to work with the new version of the API and is now a new vignette.
-6. A hex logo was created using GuangchuangYu's [hexSticker](https://github.com/GuangchuangYu/hexSticker)
+3. There is a new function retrieve_linked_data() to retrieve data from a HATEOAS link, retrying if throttled
+4. The [ropensci post](https://ropensci.org/blog/2017/09/19/patentsview/) announcing the original version of the R package has been modified to work with the new version of the API and is now a new vignette.
+5. A hex logo was created using GuangchuangYu's [hexSticker](https://github.com/GuangchuangYu/hexSticker)
 
 The API team has provided a Swagger UI page for the new version of the API at https://search.patentsview.org/swagger-ui/
 to help in the transition.    It is unlikely that an existing script will work as is with the new version of the R package and API.  As shown in the updated Top Assignees vignette, there will be occasions where multiple API calls are needed to retrieve the same data as in a single API call in the original version of the API and R package.

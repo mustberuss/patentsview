@@ -24,7 +24,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   warning = FALSE,
-  message = FALSE
+  message = FALSE,
+  fig.cap = ""
 )
 ```
 
@@ -70,18 +71,18 @@ You can install the stable version of `patentsview` from r-universe:
 
 ```{r, eval = FALSE}
 options(repos = c(
-   patentsview = 'https://mustberuss.r-universe.dev/',
-   CRAN = 'https://cloud.r-project.org'))
+  patentsview = "https://mustberuss.r-universe.dev/",
+  CRAN = "https://cloud.r-project.org"
+))
 
-install.packages('patentsview')
+install.packages("patentsview")
 ```
 
 Or  from GitHub:
 
 ```{r eval = FALSE}
 if (!require(devtools)) install.packages("devtools")
-
-devtools::install_github("mustberuss/patentsview@api-redesign")
+   devtools::install_github("mustberuss/patentsview@api-redesign")
 
 ```
 
@@ -126,7 +127,7 @@ With the original verison of the API we requested patent_average_processing_time
 ```{r}
 search_pv(
   query = qry_funs$gt(patent_year = 2007),
-  fields = c("patent_abstract", "inventors_at_grant.name_first")
+  fields = c("patent_abstract", "inventors.inventor_name_first")
 )
 ```
 
@@ -135,7 +136,7 @@ The fields that you can retrieve depends on the endpoint that you are hitting. W
 ```{r}
 search_pv(
   query = qry_funs$gt(patent_year = 2007),
-  fields = get_fields(endpoint = "patents", groups = c("patents", "inventors_at_grant"))
+  fields = get_fields(endpoint = "patents", groups = c("patents", "inventors"))
 )
 ```
 
@@ -151,149 +152,127 @@ library(patentsview)
 # Write a query:
 query <- with_qfuns( # with_qfuns is basically just: with(qry_funs, ...)
   and(
-    begins(cpc_current.cpc_subgroup_id = 'H04L63/02'),
+    begins(cpc_current.cpc_group_id = "H04L63/02"),
     gte(patent_year = 2007)
   )
 )
 
 # Create a list of fields:
 fields <- c(
-  c("patent_number", "patent_year"),
-  get_fields(endpoint = "patents", groups = c("assignees_at_grant", "cpc_current"))
+  c("patent_id", "patent_year"),
+  get_fields(endpoint = "patents", groups = c("assignees", "cpc_current"))
 )
 
-# TODO: fix this
-# the above didn't work - get_fields() didn't return a vector of strings?
-fields <- get_fields("patents")
-
-# The API currently throws a 500 error when searching by anyb of the CPC fields so we won't send the query to the API.   Instead, we'll query for 300 patent numbers returned from the original API that matched begins(cpc_subgroup_id = 'H04L63/02')  The sort was by patent_title, hoping that will give a random distribution of patent_years (does that matter?)
-
-# Send HTTP request to API's server:   
-# pv_res <- search_pv(query = query, fields = fields, all_pages = TRUE)
-
-# When the API is fixed, we'll remove this and make the commented out query above.
-# This just lets us move on to see what other changes we have to make to live
-# under the new version of the API.
-
-dat <- c("8955089","7778228","10069797","11184318","11076281","7624431","7649848","8111620","10212133","10944724","7873060","8503332","9774570","9882878","10581737","7120692","7600036","7788404","8341275","9071574"
-,"9331992","10397188","6219706","10089480","10963575","10880295","9363290","7475138","7805513","8181258","7853687","9509700","6377577","7023853","9749328","9794262","9584482","9712491","7054944","10764299"
-,"9154459","9225687","9467932","6233618","10225152","10666651","11115224","10318745","9077688","7937669","9197668","6484258","10798105","8582574","10091209","10581863","9686289","9628458","9912666","8126972"
-,"7508767","6697806","7743158","9491625","10834136","9306943","9344296","10958662","10389722","8938794","9537755","10491633","9189644","9529989","9536070","9558334","8082579","10356619","8621570","9137231"
-,"9949118","10623450","10681547","10805800","7698452","8688970","9240945","9514294","10049078","7251824","9525740","10798560","10050949","7653200","10911406","10567482","11115465","10171590","9560142","9344426"
-,"8806040","10951421","10523445","9756135","10608990","11075999","8782393","9742806","7856508","10885165","7490350","10455449","8505077","10924513","10079839","10616244","10958769","8205240","10505894","10498583"
-,"10171425","6550012","7451489","7454499","7454792","7499412","8079075","8447039","7743155","9098459","10594029","8644206","9167426","9398453","10079754","10616279","11005816","9843622","11122065","8205259"
-,"8448247","10498752","10235627","8489534","9684867","10425317","8406119","9170902","9674067","7912856","9306913","9660963","7774402","8639846","10362106","11019143","10326734","10616249","6185606","9288236"
-,"10389760","10110553","9426121","11032733","6606710","11048770","11190488","10110627","10333827","7904941","8316226","7369537","10911490","8363549","9112911","9935980","10644951","7209486","10469529","8667170"
-,"10284504","8463938","10855644","11201847","5654985","10897459","7827313","8069469","8347353","8732796","9356836","9876822","9912701","7478420","7526800","10230531","10764065","6584508","9780995","9392015"
-,"9654489","11036867","7533172","9825975","10205743","10645115","11171984","9578052","8464330","10044882","7480937","9094366","9413907","9781280","6785819","10652213","10826916","6349336","10740134","10701104"
-,"7065042","10320688","8787875","8595479","9210131","10511573","7418504","7921211","7945654","8554899","8572247","8868705","9037713","9077694","9374346","9967240","6502135","6618761","6907473","7010604"
-,"7133930","7933990","7996539","8516117","8874771","9479426","9860283","6985942","8769608","8050281","9542830","9450919","10999318","10630509","11057243","11018995","10785115","8695079","10938619","8230493"
-,"11157598","8707406","10986555","10681064","10367703","10931468","9407662","9065846","10749886","9769187","10102019","10289858","8244745","8694523","9152774","10652254","8990259","9514246","10595360","10021108"
-,"11012409","11005872","9497206","10986067","10911335","10623283","10992675","9813438","10277606","9942240","10375111","9031539","6738808","7069319","7418503","8041817","8402117","8645505","9571958","10305693"
-)
-
-query <- qry_funs$eq("patent_number" = dat)
-
-pv_res <- search_pv(query=query, method="POST", fields = fields, all_pages = TRUE)
-
+# Send HTTP request to API's server:
+pv_res <- search_pv(query = query, fields = fields, all_pages = TRUE)
 ```
 
 2. See where the patents are coming from (geographically) 
 
-```{r}
+```{r blogleaflet}
 library(leaflet)
 library(htmltools)
 library(dplyr)
 library(tidyr)
 library(stringr)
 
+# Now we don't get assignee latitude/longitude from the patent endpoint
+# We're supposed to get assignee_location_id but the API isn't returning them
+# we'd need over 14,000 locations, impractical to call another endpoint
+# anyway.
+
 # my mom was an English teacher, so below we singularize/pluralize Patents
 # or maybe Patents:1 was ok?
 
 data <-
   pv_res$data$patents %>%
-    unnest(assignees_at_grant) %>%
-    mutate(assignee_id = as.integer(str_extract(assignee, "(\\d+)(?=/$)"))) %>%
-    select(assignee_id, organization, patent_number,
-           longitude, latitude) %>%
-    group_by_at(vars(-matches("pat"))) %>%
-    mutate(num_pats = n()) %>%
-    ungroup() %>%
-    select(-patent_number) %>%
-    distinct() %>%
-    mutate(popup = paste0("<font color='Black'>",
-                          htmlEscape(organization), "<br><br>Patent",
-                          ifelse(num_pats==1, ":", "s:"), # singular/plural
-                          num_pats, "</font>")) %>%
-    filter_at(vars(latitude,longitude),any_vars(!is.na(.)))  # seeing NA lats and longs
+  unnest(assignees) %>%
+  mutate(assignee_id = str_extract(assignee, "([\\w-]+)(?=/$)")) %>%
+  select(
+    assignee_id, assignee_organization, patent_id,
+    assignee_lastknown_longitude, assignee_lastknown_latitude
+  ) %>%
+  group_by_at(vars(-matches("pat"))) %>%
+  mutate(num_pats = n()) %>%
+  ungroup() %>%
+  select(-patent_id) %>%
+  distinct() %>%
+  mutate(popup = paste0(
+    "<font color='Black'>",
+    htmlEscape(organization), "<br><br>Patent",
+    ifelse(num_pats == 1, ":", "s:"), # singular/plural
+    num_pats, "</font>"
+  )) %>%
+  filter_at(vars(latitude, longitude), any_vars(!is.na(.))) # seeing NA lats and longs
 
 leaflet(data) %>%
   addProviderTiles(providers$CartoDB.DarkMatterNoLabels) %>%
-  addCircleMarkers(lng = ~longitude, lat = ~latitude,
-                   popup = ~popup, ~sqrt(num_pats), color = "yellow")
-
+  addCircleMarkers(
+    lng = ~longitude, lat = ~latitude,
+    popup = ~popup, ~ sqrt(num_pats), color = "yellow"
+  )
 ```
 
 <br>
 
 3. Plot the growth of the field's topics over time
 
-```{r}
+```{r blogplot}
 library(ggplot2)
 library(RColorBrewer)
 
 # In the new version of the API, we don't get the title back from the patents endpoint
-# we have to call, you guessed it, the cpc_subgroup endpoint now
-qry <- qry_funs$text_any(cpc_subgroup_id = 'H04L63/02')
+# we have to call, you guessed it, the cpc_group endpoint now
+qry <- qry_funs$text_any(cpc_group_id = "H04L63/02")
 qry
 
-# TODO: fix the mapping - seems we want to use _begins here
-qry <- '{"_begins":{"cpc_subgroup_id":"H04L63/02"}}'
+qry <- '{"_begins":{"cpc_group_id":"H04L63/02"}}'
 
-cpc_info <- search_pv(query=qry, fields = get_fields("cpc_subgroups"), endpoint = "cpc_subgroups")
+cpc_info <- search_pv(query = qry, fields = get_fields("cpc_groups"), endpoint = "cpc_groups")
 
-# More API craziness, in the HATEAS link from the patents endpoint, the separator is 
-# inexplicably a colon.  In the data that comes back from the cpc_subgroups endpoint, the 
-# separator is, get this, a slash like it should be.  All that to say that joining 
+# More API craziness, in the HATEAS link from the patents endpoint, the separator is
+# inexplicably a colon.  In the data that comes back from the cpc_groups endpoint, the
+# separator is, get this, a slash like it should be.  All that to say that joining
 # becomes a bit problematic or an exercise that makes dplyr wonder what we're up to.
 
 data <-
   pv_res$data$patents %>%
-    unnest(cpc_current) %>%
-    mutate(cpc_subgroup = str_extract(cpc_subgroup, "([\\w:]+)(?=/$)")) %>% # unHATEOAS cpc_subgroup, funky colon and all
-    filter(cpc_subgroup != "H04L63:02") %>% # remove patents categorized into only top-level category of H04L63/02
-    mutate(cpc_subgroup = str_replace(cpc_subgroup, ":", "/"))  %>%  # back to normality, ahead of a join
-    inner_join(cpc_info$data$cpc_subgroups, by=c("cpc_subgroup"="cpc_subgroup_id")) %>%  # highlighting name inconsistency
-    ungroup() %>%
-    mutate(
-      title = case_when(
-        grepl("filtering", .$cpc_subgroup_title, ignore.case = T) ~
-          "Filtering policies",
-        .$cpc_subgroup %in% c("H04L63/0209", "H04L63/0218") ~  
-          "Architectural arrangements",
-        grepl("Firewall traversal", .$cpc_subgroup_title, ignore.case = T) ~
-          "Firewall traversal",
-        TRUE ~
-          .$cpc_subgroup_title
-      )
-    ) %>%
-    mutate(title = gsub(".*(?=-)-", "", title, perl = TRUE)) %>%
-    group_by(title, patent_year) %>%
-    count() %>%
-    ungroup()
+  unnest(cpc_current) %>%
+  mutate(cpc_group = sub(".*/([\\w:]+)/$", "\\1", cpc_group, perl = TRUE)) %>% # unHATEOAS cpc_group, funky colon and all
+  filter(cpc_group != "H04L63:02") %>% # remove patents categorized into only top-level category of H04L63/02
+  mutate(cpc_group = sub(":", "/", cpc_group)) %>% # back to normality, ahead of a join
+  inner_join(cpc_info$data$cpc_groups, by = c("cpc_group" = "cpc_group_id")) %>% # highlighting name inconsistency
+  ungroup() %>%
+  mutate(
+    title = case_when(
+      grepl("filtering", .$cpc_group_title, ignore.case = T) ~
+        "Filtering policies",
+      .$cpc_group %in% c("H04L63/0209", "H04L63/0218") ~
+        "Architectural arrangements",
+      grepl("Firewall traversal", .$cpc_group_title, ignore.case = T) ~
+        "Firewall traversal",
+      TRUE ~
+        .$cpc_group_title
+    )
+  ) %>%
+  mutate(title = gsub(".*(?=-)-", "", title, perl = TRUE)) %>%
+  group_by(title, patent_year) %>%
+  count() %>%
+  ungroup()
 
 # Here the line graph looks a bit anemic since our data set was only 300 patents and
 # the y scale was limits = c(0, 700)).
 
 ggplot(data = data) +
   geom_smooth(aes(x = patent_year, y = n, colour = title), se = FALSE) +
-  scale_x_continuous("\nGrant year", limits = c(2007, 2016),
-                     breaks = 2007:2016) +
+  scale_x_continuous("\nGrant year",
+    limits = c(2007, 2016),
+    breaks = 2007:2016
+  ) +
   scale_y_continuous("Patents\n", limits = c(0, 25)) +
   scale_colour_manual("", values = brewer.pal(5, "Set2")) +
   theme_bw() + # theme inspired by https://hrbrmstr.github.io/hrbrthemes/
   theme(panel.border = element_blank(), axis.ticks = element_blank())
-
 ```
 
 ## Learning more

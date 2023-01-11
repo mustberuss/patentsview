@@ -29,8 +29,8 @@ query_v_1 <-
             {"_text_all":{"patent_abstract":"dog"}}
           ]},
           {"_or":[
-            {"_text_phrase":{"inventors_at_grant.country":"US"}},
-            {"_text_phrase":{"inventors_at_grant.country":"CA"}}
+            {"_text_phrase":{"inventors.inventor_country":"US"}},
+            {"_text_phrase":{"inventors.inventor_country":"CA"}}
           ]}
   ]}'
 ```
@@ -50,8 +50,8 @@ query_v_2 <-
                ),
           list("_or" = 
                  list(
-                   list("_text_phrase" = list(inventors_at_grant.country = "US")),
-                   list("_text_phrase" = list(inventors_at_grant.country = "CA"))
+                   list("_text_phrase" = list(inventors.inventor_country = "US")),
+                   list("_text_phrase" = list(inventors.inventor_country = "CA"))
                    )
                )
       )
@@ -72,8 +72,8 @@ query_v_3 <-
         text_all(patent_abstract = "dog")
       ),
       or(
-        text_phrase(inventors_at_grant.country = "US"),
-        text_phrase(inventors_at_grant.country = "CA")
+        text_phrase(inventors.inventor_country = "US"),
+        text_phrase(inventors.inventor_country = "CA")
       )
     )
   )
@@ -120,13 +120,13 @@ All of the functions that make up the DSL are found in the `qry_funs` list (e.g.
 Patents linked to an assignee with 10 or fewer distinct (and disambiguated) inventors:
 
 ```{r}
-qry_funs$lte(assignee_total_num_inventors = 10)
+qry_funs$lte(num_inventors = 10)
 ```
 
-Patents assigned to the "CPC subsection"[^2] of G12 (physics instruments):
+Patents assigned to the "CPC class" of G12 (physics instruments):
 
 ```{r}
-qry_funs$eq(cpc_subsection_id = "G12")
+qry_funs$eq(cpc_current.cpc_class_id = "G12")
 ```
 
 Patents that:
@@ -139,7 +139,7 @@ Patents that:
 
 with_qfuns(
   and(
-    text_any(inventors_at_grant.name_first = "kevin"),  # inventor names are now full text
+    text_any(inventors.inventor_name_first = "kevin"),  # inventor names are now full text
     text_phrase(patent_abstract = c("dog bark", "cat meow")),
     not(
       text_phrase(patent_abstract = c("dog chain"))
@@ -162,11 +162,11 @@ OR
 with_qfuns(
   or(
     and(
-      eq(inventors_at_grant.name_last = "smith"),
+      eq(inventors.inventor_name_last = "smith"),
       contains(patent_title = "cotton gin")
     ),
     and(
-      eq(inventors_at_grant.name_last = "turner"),
+      eq(inventors.inventor_name_last = "turner"),
       contains(patent_title = "COBOL")
     )
   )
@@ -174,4 +174,3 @@ with_qfuns(
 ```
 
 [^1]: One may note that using "value arrays" is supposedly supported by the API. For example, the API documentation gives the following query as an example of their use: `'{"inventor_last_name":["Whitney","Hopper"]}'`. The problem with this is that the API is not consistent in its handling of value arrays. For many of the comparison operators, one cannot "or" together values like this using arrays. Thus, the DSL in `patentsview` never relies on arrays when creating queries.
-[^2]: PatentsView gets the names of the CPC hierarchy wrong. For example, a "CPC subsection" according to PatentsView is actually a CPC class.
