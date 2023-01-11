@@ -27,6 +27,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -39,15 +41,15 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">patentsview</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    <span class="fas fa-flag"></span>
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-flag"></span>
      
     API Changes
      
@@ -56,14 +58,14 @@
   <ul class="dropdown-menu" role="menu">
 <li>
       <a href="../articles/api-changes.html">
-        <span class="fas fa-exclamation"></span>
+        <span class="fa fa-exclamation"></span>
          
         2022 API Changes
       </a>
     </li>
     <li>
       <a href="../articles/converting-an-existing-script.html">
-        <span class="fas fa-sync"></span>
+        <span class="fa fa-sync"></span>
          
         Converting an Existing Script
       </a>
@@ -72,28 +74,28 @@
 </li>
 <li>
   <a href="../articles/getting-started.html">
-    <span class="fas fa-play"></span>
+    <span class="fa fa-play"></span>
      
     Getting started
   </a>
 </li>
 <li>
   <a href="../articles/writing-queries.html">
-    <span class="fas fa-pencil"></span>
+    <span class="fa fa-pencil"></span>
      
     Writing queries
   </a>
 </li>
 <li>
   <a href="../articles/examples.html">
-    <span class="fas fa-code"></span>
+    <span class="fa fa-code"></span>
      
     Examples
   </a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    <span class="fas fa-bar-chart"></span>
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-bar-chart"></span>
      
     Applications
      
@@ -102,14 +104,14 @@
   <ul class="dropdown-menu" role="menu">
 <li>
       <a href="../articles/top-assignees.html">
-        <span class="fas fa-university"></span>
+        <span class="fa fa-university"></span>
          
         Top assignees
       </a>
     </li>
     <li>
       <a href="../articles/citation-networks.html">
-        <span class="fas fa-long-arrow-left"></span>
+        <span class="fa fa-long-arrow-left"></span>
          
         Citation networks
       </a>
@@ -120,14 +122,14 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="../reference/index.html">
-    <span class="fas fa-info-circle"></span>
+    <span class="fa fa-info-circle"></span>
      
     Reference
   </a>
 </li>
 <li>
-  <a href="https://github.com/ropensci/patentsview">
-    <span class="fas fa-github fa-lg"></span>
+  <a href="https://github.com/ropensci/patentsview" class="external-link">
+    <span class="fa fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -141,22 +143,22 @@
 
       
 
-      </header><script src="writing-queries_files/header-attrs-2.8/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Writing queries</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/ropensci/patentsview/blob/master/vignettes/writing-queries.Rmd"><code>vignettes/writing-queries.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/ropensci/patentsview/blob/HEAD/vignettes/writing-queries.Rmd" class="external-link"><code>vignettes/writing-queries.Rmd</code></a></small>
       <div class="hidden name"><code>writing-queries.Rmd</code></div>
 
     </div>
 
     
     
-<div id="three-ways-to-write-the-same-query" class="section level2">
-<h2 class="hasAnchor">
-<a href="#three-ways-to-write-the-same-query" class="anchor"></a>Three ways to write the same query</h2>
+<div class="section level2">
+<h2 id="three-ways-to-write-the-same-query">Three ways to write the same query<a class="anchor" aria-label="anchor" href="#three-ways-to-write-the-same-query"></a>
+</h2>
 <p>Let’s say you want to find all patents published in the last 10 years
 that have the word “dog” in their titles or abstracts, and whose
 assignees are located in either the US or Canada. Here are three ways
@@ -165,79 +167,79 @@ you could write such a query:</p>
 <li>Use a string:</li>
 </ol>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">query_v_1</span> <span class="op">&lt;-</span>
-  <span class="st">'{"_and":[
-          {"_gte":{"patent_date":"2007-03-01"}},
-          {"_or":[
-            {"_contains":{"patent_title":"dog"}},
-            {"_text_all":{"patent_abstract":"dog"}}
-          ]},
-          {"_or":[
-            {"_text_phrase":{"inventors_at_grant.country":"US"}},
-            {"_text_phrase":{"inventors_at_grant.country":"CA"}}
-          ]}
-  ]}'</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">query_v_1</span> <span class="op">&lt;-</span></span>
+<span>  <span class="st">'{"_and":[</span></span>
+<span><span class="st">          {"_gte":{"patent_date":"2007-03-01"}},</span></span>
+<span><span class="st">          {"_or":[</span></span>
+<span><span class="st">            {"_contains":{"patent_title":"dog"}},</span></span>
+<span><span class="st">            {"_text_all":{"patent_abstract":"dog"}}</span></span>
+<span><span class="st">          ]},</span></span>
+<span><span class="st">          {"_or":[</span></span>
+<span><span class="st">            {"_text_phrase":{"inventors.inventor_country":"US"}},</span></span>
+<span><span class="st">            {"_text_phrase":{"inventors.inventor_country":"CA"}}</span></span>
+<span><span class="st">          ]}</span></span>
+<span><span class="st">  ]}'</span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Use a list:</li>
 </ol>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">query_v_2</span> <span class="op">&lt;-</span> 
-  <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"_and"</span> <span class="op">=</span> 
-       <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
-          <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"_gte"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2007-03-01"</span><span class="op">)</span><span class="op">)</span>,
-          <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"_or"</span> <span class="op">=</span> 
-                 <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
-                   <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"_contains"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"dog"</span><span class="op">)</span><span class="op">)</span>,
-                   <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"_text_all"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="st">"dog"</span><span class="op">)</span><span class="op">)</span>
-                   <span class="op">)</span>
-               <span class="op">)</span>,
-          <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"_or"</span> <span class="op">=</span> 
-                 <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
-                   <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"_text_phrase"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>inventors_at_grant.country <span class="op">=</span> <span class="st">"US"</span><span class="op">)</span><span class="op">)</span>,
-                   <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"_text_phrase"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>inventors_at_grant.country <span class="op">=</span> <span class="st">"CA"</span><span class="op">)</span><span class="op">)</span>
-                   <span class="op">)</span>
-               <span class="op">)</span>
-      <span class="op">)</span>
-  <span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">query_v_2</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"_and"</span> <span class="op">=</span> </span>
+<span>       <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>          <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"_gte"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2007-03-01"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>          <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"_or"</span> <span class="op">=</span> </span>
+<span>                 <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>                   <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"_contains"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"dog"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"_text_all"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="st">"dog"</span><span class="op">)</span><span class="op">)</span></span>
+<span>                   <span class="op">)</span></span>
+<span>               <span class="op">)</span>,</span>
+<span>          <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"_or"</span> <span class="op">=</span> </span>
+<span>                 <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>                   <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"_text_phrase"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>inventors.inventor_country <span class="op">=</span> <span class="st">"US"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"_text_phrase"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>inventors.inventor_country <span class="op">=</span> <span class="st">"CA"</span><span class="op">)</span><span class="op">)</span></span>
+<span>                   <span class="op">)</span></span>
+<span>               <span class="op">)</span></span>
+<span>      <span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li>Use the <code>patentsview</code> domain specific language
 (DSL):</li>
 </ol>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span>
-
-<span class="va">query_v_3</span> <span class="op">&lt;-</span> 
-  <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span>
-    <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html">and</a></span><span class="op">(</span>
-      <span class="fu">gte</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2007-03-01"</span><span class="op">)</span>,
-      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html">or</a></span><span class="op">(</span>
-        <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"dog"</span><span class="op">)</span>,
-        <span class="fu">text_all</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="st">"dog"</span><span class="op">)</span>
-      <span class="op">)</span>,
-      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html">or</a></span><span class="op">(</span>
-        <span class="fu">text_phrase</span><span class="op">(</span>inventors_at_grant.country <span class="op">=</span> <span class="st">"US"</span><span class="op">)</span>,
-        <span class="fu">text_phrase</span><span class="op">(</span>inventors_at_grant.country <span class="op">=</span> <span class="st">"CA"</span><span class="op">)</span>
-      <span class="op">)</span>
-    <span class="op">)</span>
-  <span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/patentsview/index.html" class="external-link">patentsview</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">query_v_3</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
+<span>    <span class="fu">and</span><span class="op">(</span></span>
+<span>      <span class="fu">gte</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2007-03-01"</span><span class="op">)</span>,</span>
+<span>      <span class="fu">or</span><span class="op">(</span></span>
+<span>        <span class="fu">contains</span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"dog"</span><span class="op">)</span>,</span>
+<span>        <span class="fu">text_all</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="st">"dog"</span><span class="op">)</span></span>
+<span>      <span class="op">)</span>,</span>
+<span>      <span class="fu">or</span><span class="op">(</span></span>
+<span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_country <span class="op">=</span> <span class="st">"US"</span><span class="op">)</span>,</span>
+<span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_country <span class="op">=</span> <span class="st">"CA"</span><span class="op">)</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
 </div>
-<div id="why-use-the-dsl" class="section level2">
-<h2 class="hasAnchor">
-<a href="#why-use-the-dsl" class="anchor"></a>Why use the DSL?</h2>
+<div class="section level2">
+<h2 id="why-use-the-dsl">Why use the DSL?<a class="anchor" aria-label="anchor" href="#why-use-the-dsl"></a>
+</h2>
 <p>We can see that all three versions of the query shown above are
 equivalent:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/prettify.html">minify</a></span><span class="op">(</span><span class="va">query_v_1</span><span class="op">)</span>
-<span class="co">#&gt; {"_and":[{"_gte":{"patent_date":"2007-03-01"}},{"_or":[{"_contains":{"patent_title":"dog"}},{"_text_all":{"patent_abstract":"dog"}}]},{"_or":[{"_text_phrase":{"inventors_at_grant.country":"US"}},{"_text_phrase":{"inventors_at_grant.country":"CA"}}]}]}</span>
-<span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html">toJSON</a></span><span class="op">(</span><span class="va">query_v_2</span>, auto_unbox <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="co">#&gt; {"_and":[{"_gte":{"patent_date":"2007-03-01"}},{"_or":[{"_contains":{"patent_title":"dog"}},{"_text_all":{"patent_abstract":"dog"}}]},{"_or":[{"_text_phrase":{"inventors_at_grant.country":"US"}},{"_text_phrase":{"inventors_at_grant.country":"CA"}}]}]}</span>
-<span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html">toJSON</a></span><span class="op">(</span><span class="va">query_v_3</span>, auto_unbox <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="co">#&gt; {"_and":[{"_gte":{"patent_date":"2007-03-01"}},{"_or":[{"_contains":{"patent_title":"dog"}},{"_text_all":{"patent_abstract":"dog"}}]},{"_or":[{"_text_phrase":{"inventors_at_grant.country":"US"}},{"_text_phrase":{"inventors_at_grant.country":"CA"}}]}]}</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/prettify.html" class="external-link">minify</a></span><span class="op">(</span><span class="va">query_v_1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; {"_and":[{"_gte":{"patent_date":"2007-03-01"}},{"_or":[{"_contains":{"patent_title":"dog"}},{"_text_all":{"patent_abstract":"dog"}}]},{"_or":[{"_text_phrase":{"inventors.inventor_country":"US"}},{"_text_phrase":{"inventors.inventor_country":"CA"}}]}]}</span></span>
+<span><span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html" class="external-link">toJSON</a></span><span class="op">(</span><span class="va">query_v_2</span>, auto_unbox <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; {"_and":[{"_gte":{"patent_date":"2007-03-01"}},{"_or":[{"_contains":{"patent_title":"dog"}},{"_text_all":{"patent_abstract":"dog"}}]},{"_or":[{"_text_phrase":{"inventors.inventor_country":"US"}},{"_text_phrase":{"inventors.inventor_country":"CA"}}]}]}</span></span>
+<span><span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html" class="external-link">toJSON</a></span><span class="op">(</span><span class="va">query_v_3</span>, auto_unbox <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; {"_and":[{"_gte":{"patent_date":"2007-03-01"}},{"_or":[{"_contains":{"patent_title":"dog"}},{"_text_all":{"patent_abstract":"dog"}}]},{"_or":[{"_text_phrase":{"inventors.inventor_country":"US"}},{"_text_phrase":{"inventors.inventor_country":"CA"}}]}]}</span></span></code></pre></div>
 <p>…So why would you ever want to use method 3 over methods 1 or 2?
 There are two main reasons:</p>
-<div id="query-validation" class="section level4">
-<h4 class="hasAnchor">
-<a href="#query-validation" class="anchor"></a>1. Query validation</h4>
+<div class="section level4">
+<h4 id="query-validation">1. Query validation<a class="anchor" aria-label="anchor" href="#query-validation"></a>
+</h4>
 <p><code><a href="../reference/search_pv.html">search_pv()</a></code> will check your query for errors if you use
 methods 2 or 3. This is not the case for method 1, where you would have
 to rely on the API’s error messages for guidance if your query is
@@ -255,9 +257,9 @@ operators you used. For example, it would confirm that the
 <code>patent_date</code> is a character, not an integer).</li>
 </ul>
 </div>
-<div id="concise-easy-to-use-syntax-for-complex-queries" class="section level4">
-<h4 class="hasAnchor">
-<a href="#concise-easy-to-use-syntax-for-complex-queries" class="anchor"></a>2. Concise, easy to use syntax for complex queries</h4>
+<div class="section level4">
+<h4 id="concise-easy-to-use-syntax-for-complex-queries">2. Concise, easy to use syntax for complex queries<a class="anchor" aria-label="anchor" href="#concise-easy-to-use-syntax-for-complex-queries"></a>
+</h4>
 <p>Methods 1 and 3 are both shorter than method 2, making them quicker.
 It’s also a lot easier to get the JSON syntax correct when using method
 3 compared to method 1, because you don’t have to write any JSON at all
@@ -270,15 +272,15 @@ an error).</p>
 <p>Compared to method 1, method 3 will correctly “or” together values if
 you put them in a vector. For example, in the query shown above, a
 vector of two values was given for <code>assingee_country</code>
-(<code><a href="https://rdrr.io/r/base/c.html">c("US", "CA")</a></code>). This safely converted the single “equals”
+(<code>c("US", "CA")</code>). This safely converted the single “equals”
 statement in the third element of the query
 (<code>eq(assingee_country = c("US", "CA"))</code>) to two separate
 equals statements that got or’d together.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
 </div>
 </div>
-<div id="basics-of-the-language" class="section level2">
-<h2 class="hasAnchor">
-<a href="#basics-of-the-language" class="anchor"></a>Basics of the language</h2>
+<div class="section level2">
+<h2 id="basics-of-the-language">Basics of the language<a class="anchor" aria-label="anchor" href="#basics-of-the-language"></a>
+</h2>
 <p>All of the functions that make up the DSL are found in the
 <code>qry_funs</code> list (e.g., <code>qry_funs$eq()</code>). You can
 evaluate code in the context of this list using the function
@@ -295,7 +297,7 @@ These functions are used to compare a field to a value. For example,
 using the “less than or equal to” function (<code>lte</code>), we can
 filter out patents published after some date (e.g.,
 <code>query = qry_funs$lte(patent_date = "2001-01-05")</code>). See the
-“comparison operators” section of the API’s <a href="https://patentsview.org/apis/api-query-language">query language
+“comparison operators” section of the API’s <a href="https://patentsview.org/apis/api-query-language" class="external-link">query language
 page</a> for a description of the 11 comparison operators. One important
 thing to keep in mind is that certain comparison operators only work
 with certain data types. For example, you can’t use the
@@ -316,21 +318,20 @@ don’t have the word “hi” in their titles like this:
 <code>qry_funs$not(qry_funs$text_phrase(patent_title = "hi"))</code>.</li>
 </ol>
 </div>
-<div id="query-examples" class="section level2">
-<h2 class="hasAnchor">
-<a href="#query-examples" class="anchor"></a>Query examples</h2>
+<div class="section level2">
+<h2 id="query-examples">Query examples<a class="anchor" aria-label="anchor" href="#query-examples"></a>
+</h2>
 <p><em>The following queries are intended for the patents
 endpoint</em></p>
 <p>Patents linked to an assignee with 10 or fewer distinct (and
 disambiguated) inventors:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">qry_funs</span><span class="op">$</span><span class="fu">lte</span><span class="op">(</span>assignee_total_num_inventors <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>
-<span class="co">#&gt; {"_lte":{"assignee_total_num_inventors":10}}</span></code></pre></div>
-<p>Patents assigned to the “CPC subsection”<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> of G12 (physics
-instruments):</p>
+<code class="sourceCode R"><span><span class="va">qry_funs</span><span class="op">$</span><span class="fu">lte</span><span class="op">(</span>num_inventors <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; {"_lte":{"num_inventors":10}}</span></span></code></pre></div>
+<p>Patents assigned to the “CPC class” of G12 (physics instruments):</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span>cpc_subsection_id <span class="op">=</span> <span class="st">"G12"</span><span class="op">)</span>
-<span class="co">#&gt; {"_eq":{"cpc_subsection_id":"G12"}}</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span>cpc_current.cpc_class_id <span class="op">=</span> <span class="st">"G12"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; {"_eq":{"cpc_current.cpc_class_id":"G12"}}</span></span></code></pre></div>
 <p>Patents that:</p>
 <ul>
 <li>Have an inventor listed on them whose first name is “kevin” AND</li>
@@ -340,17 +341,17 @@ meow” AND</li>
 it:</li>
 </ul>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span>
-  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html">and</a></span><span class="op">(</span>
-    <span class="fu">text_any</span><span class="op">(</span>inventors_at_grant.name_first <span class="op">=</span> <span class="st">"kevin"</span><span class="op">)</span>,  <span class="co"># inventor names are now full text</span>
-    <span class="fu">text_phrase</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"dog bark"</span>, <span class="st">"cat meow"</span><span class="op">)</span><span class="op">)</span>,
-    <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html">not</a></span><span class="op">(</span>
-      <span class="fu">text_phrase</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"dog chain"</span><span class="op">)</span><span class="op">)</span>
-    <span class="op">)</span>
-  <span class="op">)</span>
-<span class="op">)</span>
-<span class="co">#&gt; {"_and":[{"_text_any":{"inventors_at_grant.name_first":"kevin"}},{"_or":[{"_text_phrase":{"patent_abstract":"dog bark"}},{"_text_phrase":{"patent_abstract":"cat meow"}}]},{"_not":{"_text_phrase":{"patent_abstract":"dog chain"}}}]}</span></code></pre></div>
+<code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
+<span>  <span class="fu">and</span><span class="op">(</span></span>
+<span>    <span class="fu">text_any</span><span class="op">(</span>inventors.inventor_name_first <span class="op">=</span> <span class="st">"kevin"</span><span class="op">)</span>,  <span class="co"># inventor names are now full text</span></span>
+<span>    <span class="fu">text_phrase</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dog bark"</span>, <span class="st">"cat meow"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="fu">not</span><span class="op">(</span></span>
+<span>      <span class="fu">text_phrase</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dog chain"</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; {"_and":[{"_text_any":{"inventors.inventor_name_first":"kevin"}},{"_or":[{"_text_phrase":{"patent_abstract":"dog bark"}},{"_text_phrase":{"patent_abstract":"cat meow"}}]},{"_not":{"_text_phrase":{"patent_abstract":"dog chain"}}}]}</span></span></code></pre></div>
 <p>Patents that:</p>
 <ul>
 <li>Have an inventor listed on them whose last name is “Smith” AND</li>
@@ -362,19 +363,19 @@ it:</li>
 <li>Have “COBOL” in their title</li>
 </ul>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span>
-  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html">or</a></span><span class="op">(</span>
-    <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html">and</a></span><span class="op">(</span>
-      <span class="fu">eq</span><span class="op">(</span>inventors_at_grant.name_last <span class="op">=</span> <span class="st">"smith"</span><span class="op">)</span>,
-      <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"cotton gin"</span><span class="op">)</span>
-    <span class="op">)</span>,
-    <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html">and</a></span><span class="op">(</span>
-      <span class="fu">eq</span><span class="op">(</span>inventors_at_grant.name_last <span class="op">=</span> <span class="st">"turner"</span><span class="op">)</span>,
-      <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"COBOL"</span><span class="op">)</span>
-    <span class="op">)</span>
-  <span class="op">)</span>
-<span class="op">)</span>
-<span class="co">#&gt; {"_or":[{"_and":[{"_eq":{"inventors_at_grant.name_last":"smith"}},{"_contains":{"patent_title":"cotton gin"}}]},{"_and":[{"_eq":{"inventors_at_grant.name_last":"turner"}},{"_contains":{"patent_title":"COBOL"}}]}]}</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
+<span>  <span class="fu">or</span><span class="op">(</span></span>
+<span>    <span class="fu">and</span><span class="op">(</span></span>
+<span>      <span class="fu">eq</span><span class="op">(</span>inventors.inventor_name_last <span class="op">=</span> <span class="st">"smith"</span><span class="op">)</span>,</span>
+<span>      <span class="fu">contains</span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"cotton gin"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    <span class="fu">and</span><span class="op">(</span></span>
+<span>      <span class="fu">eq</span><span class="op">(</span>inventors.inventor_name_last <span class="op">=</span> <span class="st">"turner"</span><span class="op">)</span>,</span>
+<span>      <span class="fu">contains</span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"COBOL"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; {"_or":[{"_and":[{"_eq":{"inventors.inventor_name_last":"smith"}},{"_contains":{"patent_title":"cotton gin"}}]},{"_and":[{"_eq":{"inventors.inventor_name_last":"turner"}},{"_contains":{"patent_title":"COBOL"}}]}]}</span></span></code></pre></div>
 </div>
 <div class="footnotes footnotes-end-of-document">
 <hr>
@@ -387,9 +388,6 @@ with this is that the API is not consistent in its handling of value
 arrays. For many of the comparison operators, one cannot “or” together
 values like this using arrays. Thus, the DSL in <code>patentsview</code>
 never relies on arrays when creating queries.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
-<li id="fn2"><p>PatentsView gets the names of the CPC hierarchy wrong.
-For example, a “CPC subsection” according to PatentsView is actually a
-CPC class.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
   </div>
@@ -405,11 +403,13 @@ CPC class.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
 
 
       <footer><div class="copyright">
-  <p>Developed by Christopher Baker.</p>
+  <p></p>
+<p>Developed by Christopher Baker.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>
@@ -417,6 +417,8 @@ CPC class.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
 
   
 
+
+  
 
   </body>
 </html>
