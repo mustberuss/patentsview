@@ -27,15 +27,6 @@ navbar:
   title: patentsview
   type: default
   left:
-  - text: "API Changes"
-    icon: fa-flag
-    menu:
-      - text: "2022 API Changes"
-        icon: fa-exclamation
-        href: articles/api-changes.html
-      - text: "Converting an Existing Script"
-        icon: fa-sync
-        href: articles/converting-an-existing-script.html
   - text: "Getting started"
     icon: fa-play
     href: articles/getting-started.html

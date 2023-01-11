@@ -52,13 +52,8 @@ out the fields available for a given endpoint.}
 \item{subent_cnts}{`r lifecycle::badge("deprecated")` Non-matched subentities
 will always be returned under the new version of the API}
 
-\item{mtchd_subent_only}{`r lifecycle::badge("deprecated")` Do you want only the subentities that match your
-query to be returned? A value of \code{TRUE} indicates that the subentity
-has to meet your query's requirements in order for it to be returned, while
-a value of \code{FALSE} indicates that all subentity data will be returned,
-even those records that don't meet your query's requirements. This is
-equivalent to the \code{matched_subentities_only} parameter found
-\href{https://patentsview.org/apis/api-query-language}{here}.}
+\item{mtchd_subent_only}{`r lifecycle::badge("deprecated")` This is always
+FALSE in the new version of the API.}
 
 \item{page}{`r lifecycle::badge("deprecated")` The page number of the results that should be returned.}
 
@@ -71,8 +66,8 @@ ignored.}
 
 \item{sort}{A named character vector where the name indicates the field to
 sort by and the value indicates the direction of sorting (direction should
-be either "asc" or "desc"). For example, \code{sort = c("patent_number" =
-"asc")} or \cr\code{sort = c("patent_number" = "asc", "patent_date" =
+be either "asc" or "desc"). For example, \code{sort = c("patent_id" =
+"asc")} or \cr\code{sort = c("patent_id" = "asc", "patent_date" =
 "desc")}. \code{sort = NULL} (the default) means do not sort the results.
 You must include any fields that you wish to sort by in \code{fields}.}
 
@@ -118,29 +113,29 @@ search_pv(query = '{"_gt":{"patent_year":2010}}')
 
 search_pv(
   query = qry_funs$gt(patent_year = 2010),
-  fields = get_fields("patents", c("patents", "assignees_at_grant"))
+  fields = get_fields("patents", c("patents", "assignees"))
 )
 
 search_pv(
   query = qry_funs$gt(patent_year = 2010),
   method = "POST",
-  fields = "patent_number",
-  sort = c("patent_number" = "asc")
+  fields = "patent_id",
+  sort = c("patent_id" = "asc")
 )
 
 search_pv(
-  query = qry_funs$eq(name_last = "crew"),
+  query = qry_funs$eq(inventor_name_last = "Crew"),
   endpoint = "inventors",
   all_pages = TRUE
 )
 
 search_pv(
-  query = qry_funs$contains(name_last = "smith"),
+  query = qry_funs$contains(assignee_individual_name_last = "Smith"),
   endpoint = "assignees"
 )
 
 search_pv(
-  query = qry_funs$contains(inventors_at_grant.name_last = "smith"),
+  query = qry_funs$contains(inventors.inventor_name_last = "Smith"),
   endpoint = "patents",
   config = httr::timeout(40)
 )
