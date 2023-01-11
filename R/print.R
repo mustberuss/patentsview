@@ -15,42 +15,23 @@ print.pv_data_result <- function(x, ...) {
 
   k <- vapply(names(df), function(y) class(df[, y]), FUN.VALUE = character(1))
 
-  dat_level <- c(
-    assignees = "an assignee",
-    application_citations = "an application citation",
-    cpc_groups = "a CPC group",
-    cpc_subgroups = "a CPC sub group",
-    cpc_subsections = "a CPC subsection",
-    inventors = "an inventor",
-    locations = "a location",
-    nber_categories = "a NBER category",
-    nber_subcategories = "a NBER subcategory",
-    patents = "a patent",
-    patent_citations = "a patent citation",
-    uspc_mainclasses = "a USPC main class",
-    uspc_subclasses = "a USPC sub class"
-  )
-
   lst <- ifelse("list" %in% k, " (with list column(s) inside) ", " ")
-  print(names(x)[1])
 
   cat(
     "#### A list with a single data frame", lst, "on ",
-    dat_level[[names(x)[1]]], " level:\n\n",
+    names(x)[1], " level:\n\n",
     sep = ""
   )
 
   utils::str(
-    x,
-    vec.len = 1, max.level = 2, give.attr = FALSE, strict.width = "cut"
+    x, vec.len = 1, max.level = 2, give.attr = FALSE, strict.width = "cut"
   )
 }
 
 #' @export
 print.pv_relay_db <- function(x, ...) {
   utils::str(
-    x,
-    vec.len = 1, max.level = 2, give.attr = FALSE, strict.width = "cut"
+    x, vec.len = 1, max.level = 2, give.attr = FALSE, strict.width = "cut"
   )
 }
 

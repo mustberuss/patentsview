@@ -3,8 +3,8 @@
 #' This function suggests a value that you could use for the \code{pk} argument
 #' in \code{\link{unnest_pv_data}}, based on the endpoint you searched.
 #' It will return a potential unique identifier for a given entity (i.e., a
-#' given endpoint). For example, it will return "patent_number" when
-#' \code{endpoint = "patent"}.
+#' given endpoint). For example, it will return "patent_id" when
+#' \code{endpoint = "patents"}.
 #'
 #' @param endpoint The endpoint which you would like to know a potential primary
 #'   key for.
@@ -14,24 +14,28 @@
 #'
 #' @examples
 #' get_ok_pk(endpoint = "inventors") # Returns "inventor_id"
-#' get_ok_pk(endpoint = "cpc_subsections") # Returns "cpc_subsection_id"
+#' get_ok_pk(endpoint = "cpc_groups") # Returns "cpc_group_id"
 #'
 #' @export
-
-# there is an assignee_id, cpc_subsection_id, cpc_subgroup_id, cpc_group_id,
-# inventor_id, uspc_mainclass_id, uspc_subclass_id, nber_category_id, nber_subcategory_id
-
 get_ok_pk <- function(endpoint) {
-  es_eps <- c(
-    "patents" = "patent_number",
-    "patent_citations" = "patent_number",
-    "application_citations" = "patent_number"
-  )
-  ifelse(
-    endpoint %in% names(es_eps),
-    es_eps[[endpoint]],
-    paste0(to_singular(endpoint), "_id")
-  )
+
+# most of the nested endpoints use patent_id, patent/attorneys is the exception
+use_patent_id <- c(
+  # if endpoint passed
+  "patent/us_application_citations", "patent/us_patent_citations",
+  "patent/rel_app_texts", "patent/foreign_citations", "patent/rel_app_texts",
+
+  # if names(pv_out[["data"]]) passed
+  "us_application_citations", "us_patent_citations", "foreign_citations",
+  "rel_app_texts", "patents"
+)
+  if (endpoint %in% use_patent_id ) {
+    "patent_id"
+  } else {
+    key <- sub("^patent/", "", endpoint)
+    key <- to_singular(key)
+    paste0(key, "_id")
+  }
 }
 
 #' Unnest PatentsView data
@@ -49,8 +53,8 @@ get_ok_pk <- function(endpoint) {
 #'   inside it. See examples.
 #' @param pk The column/field name that will link the data frames together. This
 #'   should be the unique identifier for the primary entity. For example, if you
-#'   used the patent endpoint in your call to \code{search_pv}, you could
-#'   specify \code{pk = "patent_number"}. \strong{This identifier has to have
+#'   used the patents endpoint in your call to \code{search_pv}, you could
+#'   specify \code{pk = "patent_id"}. \strong{This identifier has to have
 #'   been included in your \code{fields} vector when you called
 #'   \code{search_pv}}. You can use \code{\link{get_ok_pk}} to suggest a
 #'   potential primary key for your data.
@@ -62,16 +66,14 @@ get_ok_pk <- function(endpoint) {
 #' @examples
 #' \dontrun{
 #'
-#' fields <- c(
-#'   "patent_number", "patent_title", "inventors_at_grant.city",
-#'   "inventors_at_grant.country"
-#' )
+#' fields <- c("patent_id", "patent_title", "inventors.inventor_city", "inventors.inventor_country")
 #' res <- search_pv(query = '{"_gte":{"patent_year":2015}}', fields = fields)
-#' unnest_pv_data(data = res$data, pk = "patent_number")
+#' unnest_pv_data(data = res$data, pk = "patent_id")
 #' }
 #'
 #' @export
 unnest_pv_data <- function(data, pk = get_ok_pk(names(data))) {
+
   validate_pv_data(data)
 
   df <- data[[1]]
@@ -87,7 +89,6 @@ unnest_pv_data <- function(data, pk = get_ok_pk(names(data))) {
   sub_ent_df <- df[, !prim_ent_var, drop = FALSE]
   sub_ents <- colnames(sub_ent_df)
 
-  # data uses plural name while endpoint uses singular name
   ok_pk <- get_ok_pk(names(data))
 
   out_sub_ent <- lapply2(sub_ents, function(x) {

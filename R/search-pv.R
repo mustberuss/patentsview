@@ -11,13 +11,11 @@ tojson_2 <- function(x, ...) {
 }
 
 #' @noRd
-to_arglist <- function(fields, subent_cnts, mtchd_subent_only,
-                       page, per_page, sort) {
+to_arglist <- function(fields, page, per_page, sort) {
   list(
     fields = fields,
     sort = list(as.list(sort)),
     opts = list(
-  ##  offset = (page - 1) * per_page,  ## now size and after
       size = per_page
     )
   )
@@ -54,7 +52,6 @@ one_request <- function(method, query, base_url, arg_list, api_key, ...) {
 
   if (method == "GET") {
     get_url <- get_get_url(query, base_url, arg_list)
-    cat(get_url, file = stderr())
     resp <- httr::GET(
       get_url,
       httr::add_headers("X-Api-Key" = api_key),
@@ -98,29 +95,33 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, ..
   if (req_pages < 1) {
     stop2("No records matched your query...Can't download multiple pages")
   }
-  if (matched_records > 10000) {
-    stop2(
-      "The API only allows you to download 10,000 records in a single query. ",
-      "Your query returned ", matched_records, " records. See <LINK> for ",
-      "how to get around this limitation."
-    )
-  }
-  if (req_pages > 10) {
-    stop2(
-      "The API only allows you to download 10 pages in a single query. ",
-      "Your query returned ", req_pages, " pages. See <LINK> for ",
-      "how to get around this limitation."
-    )
-  }
 
   tmp <- lapply(seq_len(req_pages), function(i) {
-    arg_list$opts$offset <- (i - 1) * arg_list$opts$size
     x <- one_request(method, query, base_url, arg_list, api_key, ...)
     x <- process_resp(x)
+
+    # now to page we need set the "after" attribute to where we left off
+    # we want the value of the primary sort field
+    s <- names(arg_list$sort[[1]])[[1]]
+    if (arg_list$sort[[1]][[1]] == "asc") {
+      index <- nrow(x$data[[1]])
+    } else {
+      index <- 1
+    }
+
+    arg_list$opts$after <<- x$data[[1]][[s]][[index]]
+
     x$data[[1]]
   })
 
   do.call("rbind", c(tmp, make.row.names = FALSE))
+}
+
+#' @noRd
+get_default_sort <- function(endpoint) {
+  default <- c("asc")
+  names(default) <- get_ok_pk(endpoint)
+  default
 }
 
 #' Search PatentsView
@@ -155,14 +156,9 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, ..
 #'  \code{get_endpoints()} to list the available endpoints.
 #' @param subent_cnts `r lifecycle::badge("deprecated")` Non-matched subentities
 #' will always be returned under the new version of the API
-#' @param mtchd_subent_only `r lifecycle::badge("deprecated")` Do you want only the subentities that match your
-#'  query to be returned? A value of \code{TRUE} indicates that the subentity
-#'  has to meet your query's requirements in order for it to be returned, while
-#'  a value of \code{FALSE} indicates that all subentity data will be returned,
-#'  even those records that don't meet your query's requirements. This is
-#'  equivalent to the \code{matched_subentities_only} parameter found
-#'  \href{https://patentsview.org/apis/api-query-language}{here}.
-#' @param page The page number of the results that should be returned.
+#' @param mtchd_subent_only `r lifecycle::badge("deprecated")` This is always
+#' FALSE in the new version of the API.
+#' @param page `r lifecycle::badge("deprecated")` The page number of the results that should be returned.
 #' @param per_page The number of records that should be returned per page. This
 #'  value can be as high as 1,000 (e.g., \code{per_page = 1000}).
 #' @param all_pages Do you want to download all possible pages of output? If
@@ -170,8 +166,8 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, ..
 #'  ignored.
 #' @param sort A named character vector where the name indicates the field to
 #'  sort by and the value indicates the direction of sorting (direction should
-#'  be either "asc" or "desc"). For example, \code{sort = c("patent_number" =
-#'  "asc")} or \cr\code{sort = c("patent_number" = "asc", "patent_date" =
+#'  be either "asc" or "desc"). For example, \code{sort = c("patent_id" =
+#'  "asc")} or \cr\code{sort = c("patent_id" = "asc", "patent_date" =
 #'  "desc")}. \code{sort = NULL} (the default) means do not sort the results.
 #'  You must include any fields that you wish to sort by in \code{fields}.
 #' @param method The HTTP method that you want to use to send the request.
@@ -208,29 +204,29 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, ..
 #'
 #' search_pv(
 #'   query = qry_funs$gt(patent_year = 2010),
-#'   fields = get_fields("patents", c("patents", "assignees_at_grant"))
+#'   fields = get_fields("patents", c("patents", "assignees"))
 #' )
 #'
 #' search_pv(
 #'   query = qry_funs$gt(patent_year = 2010),
 #'   method = "POST",
-#'   fields = "patent_number",
-#'   sort = c("patent_number" = "asc")
+#'   fields = "patent_id",
+#'   sort = c("patent_id" = "asc")
 #' )
 #'
 #' search_pv(
-#'   query = qry_funs$eq(name_last = "crew"),
+#'   query = qry_funs$eq(inventor_name_last = "Crew"),
 #'   endpoint = "inventors",
 #'   all_pages = TRUE
 #' )
 #'
 #' search_pv(
-#'   query = qry_funs$contains(name_last = "smith"),
+#'   query = qry_funs$contains(assignee_individual_name_last = "Smith"),
 #'   endpoint = "assignees"
 #' )
 #'
 #' search_pv(
-#'   query = qry_funs$contains(inventors_at_grant.name_last = "smith"),
+#'   query = qry_funs$contains(inventors.inventor_name_last = "Smith"),
 #'   endpoint = "patents",
 #'   config = httr::timeout(40)
 #' )
@@ -242,7 +238,7 @@ search_pv <- function(query,
                       endpoint = "patents",
                       subent_cnts = FALSE,
                       mtchd_subent_only = lifecycle::deprecated(),
-                      page = 1,
+                      page = lifecycle::deprecated(),
                       per_page = 1000,
                       all_pages = FALSE,
                       sort = NULL,
@@ -251,96 +247,66 @@ search_pv <- function(query,
                       api_key = Sys.getenv("PATENTSVIEW_API_KEY"),
                       ...) {
 
-  if (identical(api_key, "")) {
-    stop2("Need API key")
-  }
-  if (!is.null(error_browser)) {
-    lifecycle::deprecate_warn(when = "0.2.0", what = "search_pv(error_browser)")
-  }
-  # Was previously defaulting to FALSE and we're still defaulting to FALSE to
-  # mirror the fact that the API doesn't support subent_cnts. Warn only if user
-  # tries to set subent_cnts to TRUE.
-  if (isTRUE(subent_cnts)) {
-    lifecycle::deprecate_warn(
-      when = "1.0.0",
-      what = "search_pv(subent_cnts)",
-      details = "The new version of the API does not support subentity counts."
-    )
-  }
-  # Was previously defaulting to TRUE and now we're defaulting to FALSE, hence
-  # we're being more chatty here than with subent_cnts.
-  if (lifecycle::is_present(mtchd_subent_only)) {
-    lifecycle::deprecate_warn(
-      when = "1.0.0",
-      what = "search_pv(mtchd_subent_only)",
-      details = "Non-matched subentities will always be returned under the new
-      version of the API"
-    )
-  }
-
-  validate_endpoint(endpoint)
+  validate_args(api_key, fields, endpoint, method, page, per_page, sort)
+  deprecate_warn_all(error_browser, subent_cnts, mtchd_subent_only)
 
   if (is.list(query)) {
-    # check_query(query, endpoint)
+    check_query(query, endpoint)
     query <- jsonlite::toJSON(query, auto_unbox = TRUE)
   }
 
-  # validate_misc_args(
-  #   query, fields, endpoint, method, subent_cnts, mtchd_subent_only, page,
-  #   per_page, sort
-  # )
+  # now for paging to work there needs to be a sort field
+  if (all_pages && is.null(sort)) {
+    sort <- get_default_sort(endpoint)
+    # insure we'll have the value of the sort field
+    if (!names(sort) %in% fields) fields <- c(fields, names(sort))
+  }
 
-  arg_list <- to_arglist(
-    fields, subent_cnts, mtchd_subent_only, page, per_page, sort
-  )
-
+  arg_list <- to_arglist(fields, page, per_page, sort)
   base_url <- get_base(endpoint)
 
-  res <- one_request(method, query, base_url, arg_list, api_key, ...)
-  # TODO(cbaker): better naming here
-  res <- process_resp(res)
+  result <- one_request(method, query, base_url, arg_list, api_key, ...)
+  result <- process_resp(result)
+  if (!all_pages) return(result)
 
-  if (!all_pages) return(res)
+  full_data <- request_apply(result, method, query, base_url, arg_list, api_key, ...)
+  result$data[[1]] <- full_data
 
-  full_data <- request_apply(res, method, query, base_url, arg_list, api_key, ...)
-  res$data[[1]] <- full_data
-
-  res
+  result
 }
 
 #' Get Linked Data
 #'
-#' Some of the endpoints now returns HATEOAS style links to get more data.
-#' ex "inventor": "https://search.patentsview.org/api/v1/inventor/252373/"
-#' 
-#' @param url The link that was returned by the API on a previous call
+#' Some of the endpoints now return HATEOAS style links to get more data. E.g.,
+#' the inventors endpoint may return a link such as:
+#' "https://search.patentsview.org/api/v1/inventor/252373/"
 #'
-#' @param api_key API key. See \href{https://patentsview.org/apis/keyrequest}{
-#'  Here} for info on creating a key.
+#' @param url The link that was returned by the API on a previous call.
 #'
-#' @return A character vector with field names, same as search_pv()
+#' @inherit search_pv return
+#' @inheritParams search_pv
 #'
 #' @examples
 #' \dontrun{
 #'
 #' retrieve_linked_data(
-#'   "https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4811/"
+#'   "https://search.patentsview.org/api/v1/cpc_group/G01S7:4811/"
 #'  )
 #' }
 #'
 #' @export
 retrieve_linked_data <- function(url,
-                                 api_key = Sys.getenv("PATENTSVIEW_API_KEY")
+                                 api_key = Sys.getenv("PATENTSVIEW_API_KEY"),
+                                 ...
                                 ) {
 
   # Don't sent the API key to any domain other than patentsview.org
-  if (!grepl("^https://[^/]*\\.*patentsview.org/", url)) {
-    stop2("retrieve_linked_data is only for patentsview.org urls - sends API key")
+  if (!grepl("^https://[^/]*\\.patentsview.org/", url)) {
+    stop2("retrieve_linked_data is only for patentsview.org urls")
   }
 
-  # Go through one_request, it would resend on 429 too many requests 
-  # The API doesn't seeem to mind ?q=&f=&o=&s= appended to the url
-  res = one_request("GET", "", url, list(), api_key)
-  res <- process_resp(res)
-  res
+  # Go through one_request, which handles resend on throttle errors
+  # The API doesn't seem to mind ?q=&f=&o=&s= appended to the URL
+  res <- one_request("GET", "", url, list(), api_key, ...)
+  process_resp(res)
 }
