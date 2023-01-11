@@ -1,36 +1,37 @@
 #' @noRd
 as_is <- function(x) x
 
-# now the api does return integer fields, so integer are cast as_is
-# int is used (until an api fix) for fields returned as strings that should be returned
-# as integers, so we'll be case as.integer
-
 #' @noRd
 get_cast_fun <- function(data_type) {
   # Some fields aren't documented, so we don't know what their data type is. Use
   # string type for these.
   if (length(data_type) != 1) data_type <- "string"
-  switch(data_type,
+  switch(
+    data_type,
     "string" = as_is,
     "date" = as.Date,
-    "float" = as_is,
+    "float" = as.numeric,
+    "number" = as_is,
     "integer" = as_is,
-    "int" = as.integer, # only used on problematic /patents assignees_at_grant.type
+    "int" = as_is,
     "fulltext" = as_is
   )
 }
 
 #' @noRd
 lookup_cast_fun <- function(name, typesdf) {
-  # data_type <- typesdf[typesdf$field == name, "data_type"]
-  # typesdf$field has the qualified name if it's a nested field, we use plain_name now
-  # (new column added to the csv file)
-  data_type <- typesdf[typesdf$plain_name == name, "cast_as"]
+  data_type <- typesdf[typesdf$field == name, "data_type"]
   get_cast_fun(data_type = data_type)
 }
 
 #' @noRd
 cast_one.character <- function(one, name, typesdf) {
+  cast_fun <- lookup_cast_fun(name, typesdf)
+  cast_fun(one)
+}
+
+#' @noRd
+cast_one.double <- function(one, name, typesdf) {
   cast_fun <- lookup_cast_fun(name, typesdf)
   cast_fun(one)
 }
@@ -91,9 +92,7 @@ cast_pv_data <- function(data) {
 
   endpoint <- names(data)
 
-  # now we want to use the unqualified column
-  # typesdf <- fieldsdf[fieldsdf$endpoint == endpoint, c("field", "data_type")]
-  typesdf <- fieldsdf[fieldsdf$endpoint == endpoint, c("plain_name", "cast_as")]
+  typesdf <- fieldsdf[fieldsdf$endpoint == endpoint, c("field", "data_type")]
 
   df <- data[[1]]
 
