@@ -13,22 +13,6 @@ use LWP::Simple;
 # an error when included in the fields parameter.  Not positive if this is
 # a bug or a feature, ie whether the code should remain or not.
 
-# at one time requesting these fields caused error
-# should be a hash of hashes if fields aren't unique across endpoints
-%bad_fields = (
-"attorney_first_seen_date" => "patent/attorneys", 
-"attorney_last_seen_date" => "patent/attorneys",
-"attorney_num_inventors" => "patent/us_application_citations",
-"attorney_num_patents" => "patent/us_application_citations",
-"attorney_years_active" => "patent/us_application_citations",
-"location_place_type" => "locations",
-"location_latitude" => "locations",
-"location_longitude" => "locations",
-"location_num_assignees" => "locations",
-"location_num_patents" => "locations",
-"location_num_inventors" => "locations"
-);
-
 my $data = get('https://search.patentsview.org/static/openapi.json');
 open my $url_fh, '<', \$data or die $!;
 
@@ -39,7 +23,6 @@ open(OUT, ">$out_file") || die ("couldn't write to $out_file");
 print OUT << "HEADERS";
 "endpoint","field","data_type","group","common_name"
 HEADERS
-
 
 while($line = <$url_fh>)
 {
@@ -127,9 +110,12 @@ while($line = <$url_fh>)
                            $type = "date" if($field =~ /_date$/);
                            $type = "integer" if($type eq "number");
                            $type = "number" if($field =~ /latitude|longitude/);  # strings in the openapi definition
-
+                           $type = "int" if($field eq "assignee_type");  # string that needs to be cast as integers
                            $common = $field;
                            $field = "$group.$field" if($group ne "");
+
+                           # keep track of the types, if a new type shows up cast-pv-data will need code for it
+                           $types{$type}++;
 
                            $output_entity = $endpoints{$entity};  # need to nest where needed
 
@@ -179,15 +165,36 @@ foreach my $endpoint ( keys %save ) {
     }
 }
 
-# iterate through  $save again writing out the non bad fields,
-# ones that aren't explicitly in $bad_fields 
-
+# iterate through $save again writing to the output file
 foreach my $endpoint ( keys %save ) {
     for my $attribute ( keys $save{$endpoint}->%* ) {
            print OUT $save{$endpoint}{$attribute};
     }
 }
 
-
 close (DAT);
 close (OUT);
+
+# warn if there's a type we don't know about
+%known_types = ( "boolean" => 1, "date" => 1, "int" => 1, 
+                 "integer" => 1, "number" => 1, "string" => 1);
+
+print "types found:\n";
+@warn = ();
+$total = 0;
+
+foreach $key (sort keys %types)
+{
+   print "($types{$key})\t$key\n";
+   $total += $types{$key};
+   push(@warn, "new data type $key found\n") if(!exists $known_types{$key});
+}
+
+print "\n$total\ttotal fields\n\n";
+
+for $w (@warn)
+{
+   print $w;
+}
+
+
