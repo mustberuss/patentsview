@@ -10,7 +10,7 @@ search_pv(
   endpoint = "patents",
   subent_cnts = FALSE,
   mtchd_subent_only = lifecycle::deprecated(),
-  page = lifecycle::deprecated(),
+  page,
   per_page = 1000,
   all_pages = FALSE,
   sort = NULL,
