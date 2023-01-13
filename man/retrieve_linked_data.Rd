@@ -17,22 +17,22 @@ Here} for info on creating a key.}
 }
 \value{
 A list with the following three elements:
- \describe{
-   \item{data}{A list with one element - a named data frame containing the
-   data returned by the server. Each row in the data frame corresponds to a
-   single value for the primary entity. For example, if you search the
-   assignees endpoint, then the data frame will be on the assignee-level,
-   where each row corresponds to a single assignee. Fields that are not on
-   the assignee-level would be returned in list columns.}
+\describe{
+\item{data}{A list with one element - a named data frame containing the
+data returned by the server. Each row in the data frame corresponds to a
+single value for the primary entity. For example, if you search the
+assignees endpoint, then the data frame will be on the assignee-level,
+where each row corresponds to a single assignee. Fields that are not on
+the assignee-level would be returned in list columns.}
 
-   \item{query_results}{Entity counts across all pages of output (not just
-   the page returned to you).}
+\item{query_results}{Entity counts across all pages of output (not just
+the page returned to you).}
 
-   \item{request}{Details of the HTTP request that was sent to the server.
-   When you set \code{all_pages = TRUE}, you will only get a sample request.
-   In other words, you will not be given multiple requests for the multiple
-   calls that were made to the server (one for each page of results).}
- }
+\item{request}{Details of the HTTP request that was sent to the server.
+When you set \code{all_pages = TRUE}, you will only get a sample request.
+In other words, you will not be given multiple requests for the multiple
+calls that were made to the server (one for each page of results).}
+}
 }
 \description{
 Some of the endpoints now return HATEOAS style links to get more data. E.g.,

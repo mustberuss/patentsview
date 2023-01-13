@@ -22,20 +22,20 @@ search_pv(
 }
 \arguments{
 \item{query}{The query that the API will use to filter records. \code{query}
- can come in any one of the following forms:
- \itemize{
-   \item A character string with valid JSON. \cr
-   E.g., \code{'{"_gte":{"patent_date":"2007-01-04"}}'}
+can come in any one of the following forms:
+\itemize{
+\item A character string with valid JSON. \cr
+E.g., \code{'{"_gte":{"patent_date":"2007-01-04"}}'}
 
-   \item A list which will be converted to JSON by \code{search_pv}. \cr
-   E.g., \code{list("_gte" = list("patent_date" = "2007-01-04"))}
+\item A list which will be converted to JSON by \code{search_pv}. \cr
+E.g., \code{list("_gte" = list("patent_date" = "2007-01-04"))}
 
-   \item An object of class \code{pv_query}, which you create by calling one
-   of the functions found in the \code{\link{qry_funs}} list...See the
-   \href{https://docs.ropensci.org/patentsview/articles/writing-queries.html}{writing
-   queries vignette} for details.\cr
-   E.g., \code{qry_funs$gte(patent_date = "2007-01-04")}
- }}
+\item An object of class \code{pv_query}, which you create by calling one
+of the functions found in the \code{\link{qry_funs}} list...See the
+\href{https://docs.ropensci.org/patentsview/articles/writing-queries.html}{writing
+queries vignette} for details.\cr
+E.g., \code{qry_funs$gte(patent_date = "2007-01-04")}
+}}
 
 \item{fields}{A character vector of the fields that you want returned to you.
 A value of \code{NULL} indicates that the default fields should be
@@ -49,13 +49,13 @@ out the fields available for a given endpoint.}
 \item{endpoint}{The web service resource you wish to search. Use
 \code{get_endpoints()} to list the available endpoints.}
 
-\item{subent_cnts}{`r lifecycle::badge("deprecated")` Non-matched subentities
+\item{subent_cnts}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Non-matched subentities
 will always be returned under the new version of the API}
 
-\item{mtchd_subent_only}{`r lifecycle::badge("deprecated")` This is always
+\item{mtchd_subent_only}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This is always
 FALSE in the new version of the API.}
 
-\item{page}{`r lifecycle::badge("deprecated")` The page number of the results that should be returned.}
+\item{page}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} The page number of the results that should be returned.}
 
 \item{per_page}{The number of records that should be returned per page. This
 value can be as high as 1,000 (e.g., \code{per_page = 1000}).}
@@ -67,15 +67,15 @@ ignored.}
 \item{sort}{A named character vector where the name indicates the field to
 sort by and the value indicates the direction of sorting (direction should
 be either "asc" or "desc"). For example, \code{sort = c("patent_id" =
-"asc")} or \cr\code{sort = c("patent_id" = "asc", "patent_date" =
-"desc")}. \code{sort = NULL} (the default) means do not sort the results.
+ "asc")} or \cr\code{sort = c("patent_id" = "asc", "patent_date" =
+ "desc")}. \code{sort = NULL} (the default) means do not sort the results.
 You must include any fields that you wish to sort by in \code{fields}.}
 
 \item{method}{The HTTP method that you want to use to send the request.
 Possible values include "GET" or "POST". Use the POST method when
 your query is very long (say, over 2,000 characters in length).}
 
-\item{error_browser}{`r lifecycle::badge("deprecated")`}
+\item{error_browser}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 
 \item{api_key}{API key. See \href{https://patentsview.org/apis/keyrequest}{
 Here} for info on creating a key.}
@@ -85,22 +85,22 @@ Here} for info on creating a key.}
 }
 \value{
 A list with the following three elements:
- \describe{
-   \item{data}{A list with one element - a named data frame containing the
-   data returned by the server. Each row in the data frame corresponds to a
-   single value for the primary entity. For example, if you search the
-   assignees endpoint, then the data frame will be on the assignee-level,
-   where each row corresponds to a single assignee. Fields that are not on
-   the assignee-level would be returned in list columns.}
+\describe{
+\item{data}{A list with one element - a named data frame containing the
+data returned by the server. Each row in the data frame corresponds to a
+single value for the primary entity. For example, if you search the
+assignees endpoint, then the data frame will be on the assignee-level,
+where each row corresponds to a single assignee. Fields that are not on
+the assignee-level would be returned in list columns.}
 
-   \item{query_results}{Entity counts across all pages of output (not just
-   the page returned to you).}
+\item{query_results}{Entity counts across all pages of output (not just
+the page returned to you).}
 
-   \item{request}{Details of the HTTP request that was sent to the server.
-   When you set \code{all_pages = TRUE}, you will only get a sample request.
-   In other words, you will not be given multiple requests for the multiple
-   calls that were made to the server (one for each page of results).}
- }
+\item{request}{Details of the HTTP request that was sent to the server.
+When you set \code{all_pages = TRUE}, you will only get a sample request.
+In other words, you will not be given multiple requests for the multiple
+calls that were made to the server (one for each page of results).}
+}
 }
 \description{
 This function makes an HTTP request to the PatentsView API for data matching
