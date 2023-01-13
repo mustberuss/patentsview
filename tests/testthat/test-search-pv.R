@@ -54,9 +54,21 @@ test_that("You can download up to 9,000+ records", {
 test_that("search_pv can pull all fields for all endpoints", {
   skip_on_cran()
 
-  skip("Temp skip for API bug ")
+  troubled_endpoints <- c("locations", "patent/attorneys")
 
-  dev_null <- lapply(endpoints, function(x) {
+  # these tests will fail when the API is fixed
+  dev_null <- lapply(troubled_endpoints, function(x) {
+    expect_error(
+      search_pv(
+        query = TEST_QUERIES[[x]],
+        endpoint = x,
+        fields = get_fields(x)
+      )
+    )
+  })
+
+  # We should be able to get all fields from the non troubled endpoints
+  dev_null <- lapply(endpoints[!(endpoints %in% troubled_endpoints)], function(x) {
     search_pv(
       query = TEST_QUERIES[[x]],
       endpoint = x,
@@ -197,4 +209,25 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
 
   location <- retrieve_linked_data(add_base_url(paste0("location/", res$data$locations$location_id, "/")))
   expect_true(location$query_results$total_hits == 1)
+})
+
+test_that("individual fields are still broken", {
+  skip_on_cran()
+
+  # Sample fields that cause 500 errors when requested by themselves.
+  # Some don't throw errors when included in get_fields() but they do if
+  # they are the only field requested.  Other individual fields at these
+  # same endpoints throw errors.  Check fields again when these fail.
+  sample_bad_fields <- c(
+    "assignee_organization" = "assignees", "inventor_lastknown_longitude" = "inventors",
+    "location_name" = "locations", "attorney_name_last" = "patent/attorneys",
+    "citation_country" = "patent/foreign_citations", "ipc_id" = "ipcs"
+  )
+
+  dev_null <- lapply(names(sample_bad_fields), function(x) {
+    endpoint <- sample_bad_fields[[x]]
+    expect_error(
+      out <- search_pv(query = TEST_QUERIES[[endpoint]], endpoint = endpoint, fields = c(x))
+    )
+  })
 })

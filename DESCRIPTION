@@ -23,6 +23,7 @@ Imports:
 Suggests:
     dplyr,
     knitr,
+    rlang,
     rmarkdown,
     testthat,
     tidyr
