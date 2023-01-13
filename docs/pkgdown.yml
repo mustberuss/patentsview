@@ -1,5 +1,5 @@
 pandoc: '2.18'
-pkgdown: 1.6.1
+pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   api-changes: api-changes.html
@@ -11,5 +11,5 @@ articles:
   ropensci_tech_note: ropensci_tech_note.html
   top-assignees: top-assignees.html
   writing-queries: writing-queries.html
-last_built: 2022-09-01T18:06Z
+last_built: 2023-01-13T04:05Z
 

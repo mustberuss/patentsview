@@ -38,8 +38,8 @@ qry_funs$contains(assignee_organization="Rice University")
 #> {"_contains":{"assignee_organization":"Rice University"}}
 
 # now you would have to do 
-qry_funs$text_phrase(assignees_at_grant.organization="Rice University")
-#> {"_text_phrase":{"assignees_at_grant.organization":"Rice University"}}
+qry_funs$text_phrase(assignees.assignee_organization="Rice University")
+#> {"_text_phrase":{"assignees.assignee_organization":"Rice University"}}
 ```
 
 

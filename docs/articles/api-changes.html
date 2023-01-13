@@ -47,31 +47,6 @@
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    <span class="fa fa-flag"></span>
-     
-    API Changes
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="../articles/api-changes.html">
-        <span class="fa fa-exclamation"></span>
-         
-        2022 API Changes
-      </a>
-    </li>
-    <li>
-      <a href="../articles/converting-an-existing-script.html">
-        <span class="fa fa-sync"></span>
-         
-        Converting an Existing Script
-      </a>
-    </li>
-  </ul>
-</li>
 <li>
   <a href="../articles/getting-started.html">
     <span class="fa fa-play"></span>
@@ -193,10 +168,10 @@ the value of your API key for the R package to use.</p>
 endpoints and each returns a smaller, more specific data structure
 pertinent to that endpoint. As an example, previously the inventor
 endpoint could return assignee information, it no longer does that. The
-exception is the patents endpoint. It now can return assignees_at_grant,
-inventors_at_grant, cpc_current along with patent specific fields. Note
-that now subsequent queries would have to be made to the USPC specific
-endpoints if you are looking for these fields.</p>
+exception is the patents endpoint. It now can return assignees,
+inventors, cpc_current along with patent specific fields. Note that now
+subsequent queries would have to be made to the USPC specific endpoints
+if you are looking for these fields.</p>
 <p>Currently there are 16 endpoints, up from the original 7. The urls
 changed slightly but the R package takes care of that for you.</p>
 <ol style="list-style-type: decimal">
@@ -270,7 +245,7 @@ Unauthorized, as no API key is sent.</p>
 HATEOAS links, just pass the returned link and the R package will
 retrieve the data for you.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/patentsview/index.html" class="external-link">patentsview</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html" class="external-link">patentsview</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">pv_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/retrieve_linked_data.html">retrieve_linked_data</a></span><span class="op">(</span><span class="st">"https://search.patentsview.org/api/v1/cpc_group/G01S7:4865/"</span><span class="op">)</span></span>
 <span><span class="va">pv_data</span></span>
@@ -391,358 +366,348 @@ full text fields.</p>
 <td align="left">string</td>
 </tr>
 <tr class="odd">
-<td align="left">assignees</td>
-<td align="left">assignee_type</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
 <td align="left">cpc_classes</td>
 <td align="left">cpc_class_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">cpc_classes</td>
 <td align="left">cpc_class_title</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">cpc_groups</td>
 <td align="left">cpc_class_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">cpc_groups</td>
 <td align="left">cpc_group_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">cpc_groups</td>
 <td align="left">cpc_group_title</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">cpc_groups</td>
 <td align="left">cpc_subclass_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">cpc_subclasses</td>
 <td align="left">cpc_class_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">cpc_subclasses</td>
 <td align="left">cpc_subclass_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">cpc_subclasses</td>
 <td align="left">cpc_subclass_title</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">inventors</td>
 <td align="left">inventor_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">inventors</td>
 <td align="left">inventor_lastknown_city</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">inventors</td>
 <td align="left">inventor_lastknown_country</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">inventors</td>
 <td align="left">inventor_lastknown_location</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">inventors</td>
 <td align="left">inventor_lastknown_state</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">inventors</td>
 <td align="left">inventor_name_first</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">inventors</td>
 <td align="left">inventor_name_last</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">ipcs</td>
 <td align="left">ipc_class</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">ipcs</td>
 <td align="left">ipc_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">ipcs</td>
 <td align="left">ipc_section</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">ipcs</td>
 <td align="left">ipc_subclass</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">locations</td>
 <td align="left">location_country</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">locations</td>
 <td align="left">location_county</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">locations</td>
 <td align="left">location_county_fips</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">locations</td>
 <td align="left">location_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">locations</td>
 <td align="left">location_name</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">locations</td>
 <td align="left">location_place_type</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">locations</td>
 <td align="left">location_state</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">locations</td>
 <td align="left">location_state_fips</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">patent/attorneys</td>
 <td align="left">attorney_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">patent/attorneys</td>
 <td align="left">attorney_name_first</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">patent/attorneys</td>
 <td align="left">attorney_name_last</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">patent/attorneys</td>
 <td align="left">attorney_organization</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">patent/foreign_citations</td>
 <td align="left">citation_category</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">patent/foreign_citations</td>
 <td align="left">citation_country</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">patent/foreign_citations</td>
 <td align="left">citation_number</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">patent/foreign_citations</td>
 <td align="left">patent_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">patent/otherreferences</td>
 <td align="left">patent_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">patent/otherreferences</td>
 <td align="left">reference_sequence</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">patent/otherreferences</td>
 <td align="left">reference_text</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">patent/rel_app_texts</td>
 <td align="left">patent_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">patent/rel_app_texts</td>
 <td align="left">related_text</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">patent/us_application_citations</td>
 <td align="left">citation_category</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">patent/us_application_citations</td>
 <td align="left">citation_document_number</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">patent/us_application_citations</td>
 <td align="left">citation_name</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">patent/us_application_citations</td>
 <td align="left">citation_wipo_kind</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">patent/us_application_citations</td>
 <td align="left">patent_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">patent/us_patent_citations</td>
 <td align="left">citation_category</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">patent/us_patent_citations</td>
 <td align="left">citation_name</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">patent/us_patent_citations</td>
 <td align="left">citation_patent_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">patent/us_patent_citations</td>
 <td align="left">citation_wipo_kind</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">patent/us_patent_citations</td>
 <td align="left">patent_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">patents</td>
 <td align="left">applicants.applicant_designation</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">patents</td>
 <td align="left">applicants.applicant_name_first</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">patents</td>
 <td align="left">applicants.applicant_name_last</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">patents</td>
 <td align="left">applicants.applicant_organization</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">patents</td>
 <td align="left">applicants.applicant_type</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">patents</td>
 <td align="left">applicants.location_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">patents</td>
 <td align="left">application.application_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">patents</td>
 <td align="left">application.application_type</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">patents</td>
 <td align="left">application.filing_type</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">patents</td>
 <td align="left">application.series_code</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">patents</td>
 <td align="left">assignees.assignee_city</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">patents</td>
 <td align="left">assignees.assignee_country</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">patents</td>
 <td align="left">assignees.assignee_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">patents</td>
 <td align="left">assignees.assignee_individual_name_first</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">patents</td>
 <td align="left">assignees.assignee_individual_name_last</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">patents</td>
 <td align="left">assignees.assignee_location_id</td>
 <td align="left">string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">patents</td>
 <td align="left">assignees.assignee_organization</td>
 <td align="left">string</td>
 </tr>
-<tr class="even">
-<td align="left">patents</td>
-<td align="left">assignees.assignee_state</td>
-<td align="left">string</td>
-</tr>
 <tr class="odd">
 <td align="left">patents</td>
-<td align="left">assignees.assignee_type</td>
+<td align="left">assignees.assignee_state</td>
 <td align="left">string</td>
 </tr>
 <tr class="even">
@@ -1169,128 +1134,128 @@ f:parameter. Here are all the patents endpoint’s fields:</p></li>
 </ul>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span><span class="st">"patents"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   [1] "inventors.inventor_city"                                     </span></span>
+<span><span class="co">#&gt;   [1] "patent_id"                                                   </span></span>
 <span><span class="co">#&gt;   [2] "patent_num_us_applications_cited"                            </span></span>
-<span><span class="co">#&gt;   [3] "foreign_priority.foreign_country_filed"                      </span></span>
-<span><span class="co">#&gt;   [4] "granted_pregrant_crosswalk.document_number"                  </span></span>
-<span><span class="co">#&gt;   [5] "us_term_of_grant.term_grant"                                 </span></span>
-<span><span class="co">#&gt;   [6] "us_term_of_grant.disclaimer_date"                            </span></span>
-<span><span class="co">#&gt;   [7] "granted_pregrant_crosswalk.application_number"               </span></span>
-<span><span class="co">#&gt;   [8] "assignees.assignee_country"                                  </span></span>
-<span><span class="co">#&gt;   [9] "pct_data.pct_doc_number"                                     </span></span>
-<span><span class="co">#&gt;  [10] "application.application_id"                                  </span></span>
-<span><span class="co">#&gt;  [11] "cpc_at_issue.cpc_section"                                    </span></span>
-<span><span class="co">#&gt;  [12] "us_related_documents.related_doc_number"                     </span></span>
-<span><span class="co">#&gt;  [13] "ipcr.ipc_sequence"                                           </span></span>
-<span><span class="co">#&gt;  [14] "uspc_at_issue.uspc_subclass_id"                              </span></span>
-<span><span class="co">#&gt;  [15] "ipcr.ipc_subgroup"                                           </span></span>
-<span><span class="co">#&gt;  [16] "application.filing_type"                                     </span></span>
-<span><span class="co">#&gt;  [17] "inventors.inventor_state"                                    </span></span>
-<span><span class="co">#&gt;  [18] "applicants.applicant_designation"                            </span></span>
-<span><span class="co">#&gt;  [19] "examiners.examiner_role"                                     </span></span>
-<span><span class="co">#&gt;  [20] "botanic.variety"                                             </span></span>
-<span><span class="co">#&gt;  [21] "patent_processing_days"                                      </span></span>
-<span><span class="co">#&gt;  [22] "assignees.assignee_individual_name_last"                     </span></span>
-<span><span class="co">#&gt;  [23] "foreign_priority.priority_claim_kind"                        </span></span>
-<span><span class="co">#&gt;  [24] "cpc_current.cpc_section"                                     </span></span>
-<span><span class="co">#&gt;  [25] "patent_num_times_cited_by_us_patents"                        </span></span>
-<span><span class="co">#&gt;  [26] "gov_interest_organizations.level_three"                      </span></span>
-<span><span class="co">#&gt;  [27] "attorneys.attorney_organization"                             </span></span>
-<span><span class="co">#&gt;  [28] "pct_data.pct_102_date"                                       </span></span>
-<span><span class="co">#&gt;  [29] "ipcr.ipc_action_date"                                        </span></span>
-<span><span class="co">#&gt;  [30] "application.series_code"                                     </span></span>
-<span><span class="co">#&gt;  [31] "applicants.applicant_type"                                   </span></span>
-<span><span class="co">#&gt;  [32] "examiners.examiner_last_name"                                </span></span>
-<span><span class="co">#&gt;  [33] "patent_type"                                                 </span></span>
-<span><span class="co">#&gt;  [34] "cpc_current.cpc_subclass_id"                                 </span></span>
-<span><span class="co">#&gt;  [35] "patent_term_extension"                                       </span></span>
-<span><span class="co">#&gt;  [36] "us_related_documents.related_doc_published_date"             </span></span>
-<span><span class="co">#&gt;  [37] "patent_uspc_current_mainclass_average_patent_processing_days"</span></span>
-<span><span class="co">#&gt;  [38] "patent_year"                                                 </span></span>
-<span><span class="co">#&gt;  [39] "examiners.examiner_id"                                       </span></span>
-<span><span class="co">#&gt;  [40] "patent_cpc_current_group_average_patent_processing_days"     </span></span>
-<span><span class="co">#&gt;  [41] "applicants.applicant_sequence"                               </span></span>
-<span><span class="co">#&gt;  [42] "examiners.art_group"                                         </span></span>
-<span><span class="co">#&gt;  [43] "ipcr.ipc_section"                                            </span></span>
-<span><span class="co">#&gt;  [44] "applicants.applicant_name_last"                              </span></span>
-<span><span class="co">#&gt;  [45] "wipo_kind"                                                   </span></span>
-<span><span class="co">#&gt;  [46] "application.rule_47_flag"                                    </span></span>
-<span><span class="co">#&gt;  [47] "gov_interest_contract_award_numbers.award_number"            </span></span>
-<span><span class="co">#&gt;  [48] "us_related_documents.related_doc_sequence"                   </span></span>
-<span><span class="co">#&gt;  [49] "wipo.wipo_sequence"                                          </span></span>
-<span><span class="co">#&gt;  [50] "patent_num_foreign_documents_cited"                          </span></span>
-<span><span class="co">#&gt;  [51] "figures.num_figures"                                         </span></span>
-<span><span class="co">#&gt;  [52] "us_term_of_grant.term_disclaimer"                            </span></span>
-<span><span class="co">#&gt;  [53] "cpc_current.cpc_class_id"                                    </span></span>
-<span><span class="co">#&gt;  [54] "ipcr.ipc_classification_data_source"                         </span></span>
-<span><span class="co">#&gt;  [55] "cpc_current.cpc_sequence"                                    </span></span>
-<span><span class="co">#&gt;  [56] "gov_interest_statement"                                      </span></span>
-<span><span class="co">#&gt;  [57] "patent_num_total_documents_cited"                            </span></span>
-<span><span class="co">#&gt;  [58] "assignees.assignee_state"                                    </span></span>
-<span><span class="co">#&gt;  [59] "patent_num_us_patents_cited"                                 </span></span>
-<span><span class="co">#&gt;  [60] "patent_abstract"                                             </span></span>
-<span><span class="co">#&gt;  [61] "examiners.examiner_first_name"                               </span></span>
-<span><span class="co">#&gt;  [62] "attorneys.attorney_sequence"                                 </span></span>
-<span><span class="co">#&gt;  [63] "uspc_at_issue.uspc_mainclass_id"                             </span></span>
-<span><span class="co">#&gt;  [64] "pct_data.application_kind"                                   </span></span>
-<span><span class="co">#&gt;  [65] "attorneys.attorney_id"                                       </span></span>
-<span><span class="co">#&gt;  [66] "ipcr.ipc_class"                                              </span></span>
-<span><span class="co">#&gt;  [67] "attorneys.attorney_name_first"                               </span></span>
-<span><span class="co">#&gt;  [68] "pct_data.pct_doc_type"                                       </span></span>
-<span><span class="co">#&gt;  [69] "inventors.inventor_location_id"                              </span></span>
-<span><span class="co">#&gt;  [70] "applicants.applicant_name_first"                             </span></span>
+<span><span class="co">#&gt;   [3] "applicants.applicant_organization"                           </span></span>
+<span><span class="co">#&gt;   [4] "attorneys.attorney_sequence"                                 </span></span>
+<span><span class="co">#&gt;   [5] "us_related_documents.published_country"                      </span></span>
+<span><span class="co">#&gt;   [6] "us_related_documents.related_doc_sequence"                   </span></span>
+<span><span class="co">#&gt;   [7] "patent_uspc_current_mainclass_average_patent_processing_days"</span></span>
+<span><span class="co">#&gt;   [8] "attorneys.attorney_name_first"                               </span></span>
+<span><span class="co">#&gt;   [9] "botanic.latin_name"                                          </span></span>
+<span><span class="co">#&gt;  [10] "wipo_kind"                                                   </span></span>
+<span><span class="co">#&gt;  [11] "application.rule_47_flag"                                    </span></span>
+<span><span class="co">#&gt;  [12] "cpc_current.cpc_subclass_id"                                 </span></span>
+<span><span class="co">#&gt;  [13] "assignees.assignee_id"                                       </span></span>
+<span><span class="co">#&gt;  [14] "ipcr.ipc_class"                                              </span></span>
+<span><span class="co">#&gt;  [15] "figures.num_figures"                                         </span></span>
+<span><span class="co">#&gt;  [16] "inventors.inventor_sequence"                                 </span></span>
+<span><span class="co">#&gt;  [17] "botanic.variety"                                             </span></span>
+<span><span class="co">#&gt;  [18] "us_related_documents.related_doc_published_date"             </span></span>
+<span><span class="co">#&gt;  [19] "inventors.inventor_city"                                     </span></span>
+<span><span class="co">#&gt;  [20] "cpc_current.cpc_section"                                     </span></span>
+<span><span class="co">#&gt;  [21] "us_related_documents.related_doc_number"                     </span></span>
+<span><span class="co">#&gt;  [22] "cpc_at_issue.cpc_class_id"                                   </span></span>
+<span><span class="co">#&gt;  [23] "ipcr.ipc_section"                                            </span></span>
+<span><span class="co">#&gt;  [24] "foreign_priority.filing_date"                                </span></span>
+<span><span class="co">#&gt;  [25] "cpc_at_issue.cpc_type"                                       </span></span>
+<span><span class="co">#&gt;  [26] "inventors.inventor_state"                                    </span></span>
+<span><span class="co">#&gt;  [27] "ipcr.ipc_subgroup"                                           </span></span>
+<span><span class="co">#&gt;  [28] "patent_abstract"                                             </span></span>
+<span><span class="co">#&gt;  [29] "gov_interest_organizations.fedagency_name"                   </span></span>
+<span><span class="co">#&gt;  [30] "assignees.assignee_organization"                             </span></span>
+<span><span class="co">#&gt;  [31] "application.filing_type"                                     </span></span>
+<span><span class="co">#&gt;  [32] "ipcr.ipc_main_group"                                         </span></span>
+<span><span class="co">#&gt;  [33] "inventors.inventor_name_first"                               </span></span>
+<span><span class="co">#&gt;  [34] "us_related_documents.related_doc_status"                     </span></span>
+<span><span class="co">#&gt;  [35] "wipo.wipo_field_id"                                          </span></span>
+<span><span class="co">#&gt;  [36] "patent_date"                                                 </span></span>
+<span><span class="co">#&gt;  [37] "gov_interest_organizations.level_three"                      </span></span>
+<span><span class="co">#&gt;  [38] "foreign_priority.foreign_country_filed"                      </span></span>
+<span><span class="co">#&gt;  [39] "assignees.assignee_country"                                  </span></span>
+<span><span class="co">#&gt;  [40] "ipcr.ipc_classification_value"                               </span></span>
+<span><span class="co">#&gt;  [41] "assignees.assignee_type"                                     </span></span>
+<span><span class="co">#&gt;  [42] "cpc_current.cpc_type"                                        </span></span>
+<span><span class="co">#&gt;  [43] "application.filing_date"                                     </span></span>
+<span><span class="co">#&gt;  [44] "cpc_current.cpc_sequence"                                    </span></span>
+<span><span class="co">#&gt;  [45] "us_related_documents.related_doc_kind"                       </span></span>
+<span><span class="co">#&gt;  [46] "gov_interest_organizations.level_one"                        </span></span>
+<span><span class="co">#&gt;  [47] "us_term_of_grant.term_disclaimer"                            </span></span>
+<span><span class="co">#&gt;  [48] "ipcr.ipc_symbol_position"                                    </span></span>
+<span><span class="co">#&gt;  [49] "us_related_documents.related_doc_type"                       </span></span>
+<span><span class="co">#&gt;  [50] "patent_term_extension"                                       </span></span>
+<span><span class="co">#&gt;  [51] "assignees.assignee_individual_name_last"                     </span></span>
+<span><span class="co">#&gt;  [52] "application.application_id"                                  </span></span>
+<span><span class="co">#&gt;  [53] "ipcr.ipc_sequence"                                           </span></span>
+<span><span class="co">#&gt;  [54] "examiners.examiner_id"                                       </span></span>
+<span><span class="co">#&gt;  [55] "application.application_type"                                </span></span>
+<span><span class="co">#&gt;  [56] "examiners.examiner_role"                                     </span></span>
+<span><span class="co">#&gt;  [57] "applicants.applicant_name_last"                              </span></span>
+<span><span class="co">#&gt;  [58] "uspc_at_issue.uspc_subclass_id"                              </span></span>
+<span><span class="co">#&gt;  [59] "applicants.applicant_name_first"                             </span></span>
+<span><span class="co">#&gt;  [60] "patent_year"                                                 </span></span>
+<span><span class="co">#&gt;  [61] "gov_interest_organizations.level_two"                        </span></span>
+<span><span class="co">#&gt;  [62] "patent_earliest_application_date"                            </span></span>
+<span><span class="co">#&gt;  [63] "attorneys.attorney_name_last"                                </span></span>
+<span><span class="co">#&gt;  [64] "cpc_at_issue.cpc_group_id"                                   </span></span>
+<span><span class="co">#&gt;  [65] "assignees.assignee_sequence"                                 </span></span>
+<span><span class="co">#&gt;  [66] "wipo.wipo_sequence"                                          </span></span>
+<span><span class="co">#&gt;  [67] "uspc_at_issue.uspc_sequence"                                 </span></span>
+<span><span class="co">#&gt;  [68] "patent_num_total_documents_cited"                            </span></span>
+<span><span class="co">#&gt;  [69] "cpc_current.cpc_class_id"                                    </span></span>
+<span><span class="co">#&gt;  [70] "pct_data.pct_371_date"                                       </span></span>
 <span><span class="co">#&gt;  [71] "assignees.assignee_individual_name_first"                    </span></span>
-<span><span class="co">#&gt;  [72] "ipcr.ipc_symbol_position"                                    </span></span>
-<span><span class="co">#&gt;  [73] "application.filing_date"                                     </span></span>
-<span><span class="co">#&gt;  [74] "gov_interest_organizations.level_one"                        </span></span>
-<span><span class="co">#&gt;  [75] "assignees.assignee_type"                                     </span></span>
-<span><span class="co">#&gt;  [76] "us_related_documents.published_country"                      </span></span>
-<span><span class="co">#&gt;  [77] "application.application_type"                                </span></span>
-<span><span class="co">#&gt;  [78] "us_related_documents.related_doc_type"                       </span></span>
-<span><span class="co">#&gt;  [79] "ipcr.ipc_main_group"                                         </span></span>
-<span><span class="co">#&gt;  [80] "assignees.assignee_sequence"                                 </span></span>
-<span><span class="co">#&gt;  [81] "inventors.inventor_name_first"                               </span></span>
-<span><span class="co">#&gt;  [82] "foreign_priority.foreign_application_id"                     </span></span>
-<span><span class="co">#&gt;  [83] "cpc_at_issue.cpc_type"                                       </span></span>
-<span><span class="co">#&gt;  [84] "us_related_documents.wipo_kind"                              </span></span>
-<span><span class="co">#&gt;  [85] "gov_interest_organizations.fedagency_name"                   </span></span>
-<span><span class="co">#&gt;  [86] "inventors.inventor_id"                                       </span></span>
-<span><span class="co">#&gt;  [87] "ipcr.ipc_classification_value"                               </span></span>
-<span><span class="co">#&gt;  [88] "applicants.applicant_organization"                           </span></span>
-<span><span class="co">#&gt;  [89] "pct_data.published_filed_date"                               </span></span>
-<span><span class="co">#&gt;  [90] "uspc_at_issue.uspc_sequence"                                 </span></span>
-<span><span class="co">#&gt;  [91] "us_term_of_grant.term_extension"                             </span></span>
+<span><span class="co">#&gt;  [72] "ipcr.ipc_action_date"                                        </span></span>
+<span><span class="co">#&gt;  [73] "patent_cpc_current_group_average_patent_processing_days"     </span></span>
+<span><span class="co">#&gt;  [74] "cpc_at_issue.cpc_sequence"                                   </span></span>
+<span><span class="co">#&gt;  [75] "granted_pregrant_crosswalk.document_number"                  </span></span>
+<span><span class="co">#&gt;  [76] "applicants.location_id"                                      </span></span>
+<span><span class="co">#&gt;  [77] "examiners.art_group"                                         </span></span>
+<span><span class="co">#&gt;  [78] "patent_title"                                                </span></span>
+<span><span class="co">#&gt;  [79] "ipcr.ipc_subclass"                                           </span></span>
+<span><span class="co">#&gt;  [80] "ipcr.ipc_id"                                                 </span></span>
+<span><span class="co">#&gt;  [81] "patent_num_times_cited_by_us_patents"                        </span></span>
+<span><span class="co">#&gt;  [82] "pct_data.published_filed_date"                               </span></span>
+<span><span class="co">#&gt;  [83] "applicants.applicant_type"                                   </span></span>
+<span><span class="co">#&gt;  [84] "application.series_code"                                     </span></span>
+<span><span class="co">#&gt;  [85] "foreign_priority.foreign_application_id"                     </span></span>
+<span><span class="co">#&gt;  [86] "cpc_at_issue.cpc_subclass_id"                                </span></span>
+<span><span class="co">#&gt;  [87] "gov_interest_statement"                                      </span></span>
+<span><span class="co">#&gt;  [88] "ipcr.ipc_classification_data_source"                         </span></span>
+<span><span class="co">#&gt;  [89] "us_related_documents.wipo_kind"                              </span></span>
+<span><span class="co">#&gt;  [90] "examiners.examiner_last_name"                                </span></span>
+<span><span class="co">#&gt;  [91] "pct_data.pct_doc_type"                                       </span></span>
 <span><span class="co">#&gt;  [92] "inventors.inventor_country"                                  </span></span>
-<span><span class="co">#&gt;  [93] "us_related_documents.related_doc_status"                     </span></span>
-<span><span class="co">#&gt;  [94] "wipo.wipo_field_id"                                          </span></span>
-<span><span class="co">#&gt;  [95] "botanic.latin_name"                                          </span></span>
-<span><span class="co">#&gt;  [96] "us_related_documents.related_doc_kind"                       </span></span>
-<span><span class="co">#&gt;  [97] "patent_title"                                                </span></span>
-<span><span class="co">#&gt;  [98] "assignees.assignee_organization"                             </span></span>
-<span><span class="co">#&gt;  [99] "gov_interest_organizations.level_two"                        </span></span>
-<span><span class="co">#&gt; [100] "ipcr.ipc_subclass"                                           </span></span>
-<span><span class="co">#&gt; [101] "assignees.assignee_city"                                     </span></span>
-<span><span class="co">#&gt; [102] "patent_date"                                                 </span></span>
-<span><span class="co">#&gt; [103] "inventors.inventor_sequence"                                 </span></span>
-<span><span class="co">#&gt; [104] "pct_data.pct_371_date"                                       </span></span>
-<span><span class="co">#&gt; [105] "cpc_at_issue.cpc_group_id"                                   </span></span>
-<span><span class="co">#&gt; [106] "foreign_priority.priority_claim_sequence"                    </span></span>
-<span><span class="co">#&gt; [107] "cpc_at_issue.cpc_sequence"                                   </span></span>
+<span><span class="co">#&gt;  [93] "gov_interest_contract_award_numbers.award_number"            </span></span>
+<span><span class="co">#&gt;  [94] "inventors.inventor_id"                                       </span></span>
+<span><span class="co">#&gt;  [95] "patent_processing_days"                                      </span></span>
+<span><span class="co">#&gt;  [96] "assignees.assignee_state"                                    </span></span>
+<span><span class="co">#&gt;  [97] "inventors.inventor_name_last"                                </span></span>
+<span><span class="co">#&gt;  [98] "patent_num_us_patents_cited"                                 </span></span>
+<span><span class="co">#&gt;  [99] "pct_data.application_kind"                                   </span></span>
+<span><span class="co">#&gt; [100] "attorneys.attorney_organization"                             </span></span>
+<span><span class="co">#&gt; [101] "granted_pregrant_crosswalk.application_number"               </span></span>
+<span><span class="co">#&gt; [102] "figures.num_sheets"                                          </span></span>
+<span><span class="co">#&gt; [103] "us_term_of_grant.term_extension"                             </span></span>
+<span><span class="co">#&gt; [104] "examiners.examiner_first_name"                               </span></span>
+<span><span class="co">#&gt; [105] "assignees.assignee_location_id"                              </span></span>
+<span><span class="co">#&gt; [106] "foreign_priority.priority_claim_kind"                        </span></span>
+<span><span class="co">#&gt; [107] "inventors.inventor_location_id"                              </span></span>
 <span><span class="co">#&gt; [108] "cpc_current.cpc_group_id"                                    </span></span>
-<span><span class="co">#&gt; [109] "ipcr.ipc_id"                                                 </span></span>
-<span><span class="co">#&gt; [110] "cpc_at_issue.cpc_class_id"                                   </span></span>
-<span><span class="co">#&gt; [111] "foreign_priority.filing_date"                                </span></span>
-<span><span class="co">#&gt; [112] "assignees.assignee_id"                                       </span></span>
-<span><span class="co">#&gt; [113] "assignees.assignee_location_id"                              </span></span>
-<span><span class="co">#&gt; [114] "figures.num_sheets"                                          </span></span>
-<span><span class="co">#&gt; [115] "patent_id"                                                   </span></span>
-<span><span class="co">#&gt; [116] "applicants.location_id"                                      </span></span>
-<span><span class="co">#&gt; [117] "patent_detail_desc_length"                                   </span></span>
-<span><span class="co">#&gt; [118] "patent_earliest_application_date"                            </span></span>
-<span><span class="co">#&gt; [119] "inventors.inventor_name_last"                                </span></span>
-<span><span class="co">#&gt; [120] "attorneys.attorney_name_last"                                </span></span>
-<span><span class="co">#&gt; [121] "cpc_current.cpc_type"                                        </span></span>
-<span><span class="co">#&gt; [122] "cpc_at_issue.cpc_subclass_id"</span></span></code></pre></div>
+<span><span class="co">#&gt; [109] "foreign_priority.priority_claim_sequence"                    </span></span>
+<span><span class="co">#&gt; [110] "us_term_of_grant.disclaimer_date"                            </span></span>
+<span><span class="co">#&gt; [111] "assignees.assignee_city"                                     </span></span>
+<span><span class="co">#&gt; [112] "patent_detail_desc_length"                                   </span></span>
+<span><span class="co">#&gt; [113] "pct_data.pct_doc_number"                                     </span></span>
+<span><span class="co">#&gt; [114] "applicants.applicant_designation"                            </span></span>
+<span><span class="co">#&gt; [115] "us_term_of_grant.term_grant"                                 </span></span>
+<span><span class="co">#&gt; [116] "attorneys.attorney_id"                                       </span></span>
+<span><span class="co">#&gt; [117] "uspc_at_issue.uspc_mainclass_id"                             </span></span>
+<span><span class="co">#&gt; [118] "applicants.applicant_sequence"                               </span></span>
+<span><span class="co">#&gt; [119] "cpc_at_issue.cpc_section"                                    </span></span>
+<span><span class="co">#&gt; [120] "pct_data.pct_102_date"                                       </span></span>
+<span><span class="co">#&gt; [121] "patent_type"                                                 </span></span>
+<span><span class="co">#&gt; [122] "patent_num_foreign_documents_cited"</span></span></code></pre></div>
 </div>
   </div>
 

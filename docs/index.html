@@ -50,31 +50,6 @@
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    <span class="fa fa-flag"></span>
-     
-    API Changes
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="articles/api-changes.html">
-        <span class="fa fa-exclamation"></span>
-         
-        2022 API Changes
-      </a>
-    </li>
-    <li>
-      <a href="articles/converting-an-existing-script.html">
-        <span class="fa fa-sync"></span>
-         
-        Converting an Existing Script
-      </a>
-    </li>
-  </ul>
-</li>
 <li>
   <a href="articles/getting-started.html">
     <span class="fa fa-play"></span>
@@ -149,7 +124,7 @@
       </header><div class="row">
   <div class="contents col-md-9">
 <div class="section level1">
-<div class="page-header"><h1 id="pkgdown-">pkgdown <img src="reference/figures/logo.png" align="right" height="134.5"><a class="anchor" aria-label="anchor" href="#pkgdown-"></a>
+<div class="page-header"><h1 id="patentsview-">patentsview <img src="reference/figures/logo.png" align="right" height="200" style="float:right; height:200px;"><a class="anchor" aria-label="anchor" href="#patentsview-"></a>
 </h1></div>
 <blockquote>
 <p>An R client to the PatentsView API</p>
@@ -197,21 +172,18 @@
 <span></span>
 <span><span class="fu"><a href="reference/search_pv.html">search_pv</a></span><span class="op">(</span>query <span class="op">=</span> <span class="st">'{"_gte":{"patent_date":"2007-01-01"}}'</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $data</span></span>
-<span><span class="co">#&gt; [1] "patents"</span></span>
-<span><span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on a patent level:</span></span>
+<span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  5 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_number     : chr [1:1000] "10000000" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_title      : chr [1:1000] "Coherent LADAR using intra-pixel quad"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_date       : chr [1:1000] "2018-06-19" ...</span></span>
-<span><span class="co">#&gt;   ..$ assignees_at_grant:List of 1000</span></span>
-<span><span class="co">#&gt;   ..$ inventors_at_grant:List of 1000</span></span>
+<span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  3 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id   : chr [1:1000] "10000000" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_title: chr [1:1000] "Coherent LADAR using intra-pixel quadrature"..</span></span>
+<span><span class="co">#&gt;   ..$ patent_date : chr [1:1000] "2018-06-19" ...</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 4,019,907</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 4,642,018</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="learning-more">Learning more<a class="anchor" aria-label="anchor" href="#learning-more"></a>
@@ -282,7 +254,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

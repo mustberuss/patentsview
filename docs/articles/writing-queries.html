@@ -47,31 +47,6 @@
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    <span class="fa fa-flag"></span>
-     
-    API Changes
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="../articles/api-changes.html">
-        <span class="fa fa-exclamation"></span>
-         
-        2022 API Changes
-      </a>
-    </li>
-    <li>
-      <a href="../articles/converting-an-existing-script.html">
-        <span class="fa fa-sync"></span>
-         
-        Converting an Existing Script
-      </a>
-    </li>
-  </ul>
-</li>
 <li>
   <a href="../articles/getting-started.html">
     <span class="fa fa-play"></span>
@@ -206,17 +181,17 @@ you could write such a query:</p>
 (DSL):</li>
 </ol>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/patentsview/index.html" class="external-link">patentsview</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html" class="external-link">patentsview</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">query_v_3</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>    <span class="fu">and</span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
 <span>      <span class="fu">gte</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2007-03-01"</span><span class="op">)</span>,</span>
-<span>      <span class="fu">or</span><span class="op">(</span></span>
-<span>        <span class="fu">contains</span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"dog"</span><span class="op">)</span>,</span>
+<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">or</a></span><span class="op">(</span></span>
+<span>        <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"dog"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_all</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="st">"dog"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span>,</span>
-<span>      <span class="fu">or</span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">or</a></span><span class="op">(</span></span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_country <span class="op">=</span> <span class="st">"US"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_country <span class="op">=</span> <span class="st">"CA"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span></span>
@@ -343,10 +318,10 @@ it:</li>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>  <span class="fu">and</span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
 <span>    <span class="fu">text_any</span><span class="op">(</span>inventors.inventor_name_first <span class="op">=</span> <span class="st">"kevin"</span><span class="op">)</span>,  <span class="co"># inventor names are now full text</span></span>
 <span>    <span class="fu">text_phrase</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dog bark"</span>, <span class="st">"cat meow"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    <span class="fu">not</span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">not</a></span><span class="op">(</span></span>
 <span>      <span class="fu">text_phrase</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dog chain"</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
@@ -364,14 +339,14 @@ it:</li>
 </ul>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>  <span class="fu">or</span><span class="op">(</span></span>
-<span>    <span class="fu">and</span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">or</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
 <span>      <span class="fu">eq</span><span class="op">(</span>inventors.inventor_name_last <span class="op">=</span> <span class="st">"smith"</span><span class="op">)</span>,</span>
-<span>      <span class="fu">contains</span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"cotton gin"</span><span class="op">)</span></span>
+<span>      <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"cotton gin"</span><span class="op">)</span></span>
 <span>    <span class="op">)</span>,</span>
-<span>    <span class="fu">and</span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
 <span>      <span class="fu">eq</span><span class="op">(</span>inventors.inventor_name_last <span class="op">=</span> <span class="st">"turner"</span><span class="op">)</span>,</span>
-<span>      <span class="fu">contains</span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"COBOL"</span><span class="op">)</span></span>
+<span>      <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"COBOL"</span><span class="op">)</span></span>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
@@ -409,7 +384,7 @@ never relies on arrays when creating queries.<a href="#fnref1" class="footnote-b
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

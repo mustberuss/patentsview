@@ -10,7 +10,7 @@ vignette: >
 
 ## Important API Change
 
-The new version of the API requires an API key, or all of your requests will be blocked. Request an 
+The new version of the API requires an API key, or all of your requests will be rejected. Request an 
 API key using this link: <https://patentsview.org/apis/keyrequest> Once you have one, you’ll need to set 
 an environmental variable PATENTSVIEW_API_KEY to the value of your API key for the R package to use.
 
@@ -28,20 +28,18 @@ search_pv(
   endpoint = "patents"
 )
 #> $data
-#> #### A list with a single data frame (with list column(s) inside) on patents level:
+#> #### A list with a single data frame on patents level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	1000 obs. of  5 variables:
-#>   ..$ patent_number     : chr [1:1000] "10000000" ...
-#>   ..$ patent_title      : chr [1:1000] "Coherent LADAR using intra-pixel quad"..
-#>   ..$ patent_date       : chr [1:1000] "2018-06-19" ...
-#>   ..$ assignees_at_grant:List of 1000
-#>   ..$ inventors_at_grant:List of 1000
+#>  $ patents:'data.frame':	1000 obs. of  3 variables:
+#>   ..$ patent_id   : chr [1:1000] "10000000" ...
+#>   ..$ patent_title: chr [1:1000] "Coherent LADAR using intra-pixel quadrature"..
+#>   ..$ patent_date : chr [1:1000] "2018-06-19" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 4,019,907
+#> total_hits = 4,642,018
 ```
 
 This call to `search_pv()` sends our query to the patents endpoint (the default). The API has 13 different endpoints, corresponding to 13 different entity types (application_citation, assignee, cpc_group, cpc_subgroup, cpc_subsection, inventor, location, nber_category, nber_subcategory, patent, patent_citation, uspc_mainclass and uspc_subclass).[^1] Your choice of endpoint determines which entity your query is applied to, as well as the structure of the data that is returned (more on this in the "13 endpoints for 13 entities section"). For now, let's turn our attention to the `query` parameter. 
@@ -82,19 +80,9 @@ result = search_pv(
   query = '{"_gte":{"patent_date":"2007-01-01"}}',
   fields = c("patent_number", "patent_title")
 )
+#> Error: Bad field(s): patent_number
 result
-#> $data
-#> #### A list with a single data frame on patents level:
-#> 
-#> List of 1
-#>  $ patents:'data.frame':	1000 obs. of  2 variables:
-#>   ..$ patent_number: chr [1:1000] "10000000" ...
-#>   ..$ patent_title : chr [1:1000] "Coherent LADAR using intra-pixel quadratur"..
-#> 
-#> $query_results
-#> #### Distinct entity counts across all downloadable pages of output:
-#> 
-#> total_hits = 4,019,907
+#> Error in eval(expr, envir, enclos): object 'result' not found
 ```
 
 To list all of the retrievable fields for a given endpoint, use `get_fields()`:
@@ -103,8 +91,12 @@ To list all of the retrievable fields for a given endpoint, use `get_fields()`:
 ```r
 retrvble_flds <- get_fields(endpoint = "patents")
 head(retrvble_flds)
-#> [1] "patent_number"  "patent_title"   "patent_date"    "patent_type"   
-#> [5] "patent_country" "patent_year"
+#> [1] "patent_id"                                
+#> [2] "patent_num_us_applications_cited"         
+#> [3] "applicants.applicant_organization"        
+#> [4] "attorneys.attorney_sequence"              
+#> [5] "us_related_documents.published_country"   
+#> [6] "us_related_documents.related_doc_sequence"
 ```
 See the [Swagger UI page](https://search.patentsview.org/swagger-ui/) for the API, the fields returned are listed for each endpoint in the 200 Response body sections.
 
@@ -114,54 +106,17 @@ You can also visit an endpoint's online documentation page to see a list of its 
 
 ## Paginated responses
 
-By default, `search_pv()` returns 1,000 records per page and only gives you the first page of results. I suggest starting with something smaler, like the `per_page` = 150 below, while you're figuring out the details of your request, such as the query you want to use and the fields you want returned. Once you have those items finalized, you can use the `per_page` argument to download up to 1,000 records per page. You can also choose which page of results you want with the `page` argument:
-
-
-```r
-search_pv(
-  query = qry_funs$eq(inventors_at_grant.name_last = "chambers"),
-  page = 2, per_page = 150 # gets records 150 - 300
-) 
-#> $data
-#> #### A list with a single data frame (with list column(s) inside) on patents level:
-#> 
-#> List of 1
-#>  $ patents:'data.frame':	150 obs. of  5 variables:
-#>   ..$ patent_number     : chr [1:150] "6143773" ...
-#>   ..$ patent_title      : chr [1:150] "Substituted thienobenzisoxazole deriva"..
-#>   ..$ patent_date       : chr [1:150] "2000-11-07" ...
-#>   ..$ assignees_at_grant:List of 150
-#>   ..$ inventors_at_grant:List of 150
-#> 
-#> $query_results
-#> #### Distinct entity counts across all downloadable pages of output:
-#> 
-#> total_hits = 2,156
-```
+By default, `search_pv()` returns 1,000 records per page and only gives you the first page of results. I suggest starting with something smaler, like the `per_page` = 150 below, while you're figuring out the details of your request, such as the query you want to use and the fields you want returned. Once you have those items finalized, you can use the `per_page` argument to download up to 1,000 records per page. 
 
 You can download all pages of output in one call by setting `all_pages = TRUE`. This will set `per_page` equal to 1,000 and loop over all pages of output (downloading up to 10 pages, or 10,000 records total):
 
 
 ```r
 search_pv(
-  query = qry_funs$eq(inventors_at_grant.name_last = "chambers"),
+  query = qry_funs$eq(inventors.inventors_name_last = "chambers"),
   all_pages = TRUE, per_page = 1000
 )
-#> $data
-#> #### A list with a single data frame (with list column(s) inside) on patents level:
-#> 
-#> List of 1
-#>  $ patents:'data.frame':	2156 obs. of  5 variables:
-#>   ..$ patent_number     : chr [1:2156] "4279524" ...
-#>   ..$ patent_title      : chr [1:2156] "Apparatus for advancing a record medi"..
-#>   ..$ patent_date       : chr [1:2156] "1981-07-21" ...
-#>   ..$ assignees_at_grant:List of 2156
-#>   ..$ inventors_at_grant:List of 2156
-#> 
-#> $query_results
-#> #### Distinct entity counts across all downloadable pages of output:
-#> 
-#> total_hits = 2,156
+#> Error: inventors.inventors_name_last is not a valid field to query for your endpoint
 ```
 
 ## Entity counts
@@ -175,36 +130,39 @@ With the recent API change, the patents endpoint supplies the basic patent data 
 
 ```r
 
-query <- qry_funs$eq(inventors_at_grant.name_last = "chambers")
+query <- qry_funs$eq(inventors.inventor_name_last = "chambers")
 
 # Here we'll request patent_number and the inventor fields from the patents endpoint
-inv_fields <- get_fields(endpoint = "patents", groups ="inventors_at_grant")
-<span style="color: red;">[trouble here]</span>
+inv_fields <- get_fields(endpoint = "patents", groups ="inventors")
 inv_fields
+#> [1] "inventors.inventor_sequence"    "inventors.inventor_city"       
+#> [3] "inventors.inventor_state"       "inventors.inventor_name_first" 
+#> [5] "inventors.inventor_country"     "inventors.inventor_id"         
+#> [7] "inventors.inventor_name_last"   "inventors.inventor_location_id"
 fields <- c(inv_fields, "patent_number")
 
 result <- search_pv(query, endpoint = "patents", fields = fields)
+#> Error: Bad field(s): patent_number
 result
+#> Error in eval(expr, envir, enclos): object 'result' not found
 
-# Here's the first inventors_at_grant
-result$data$patents$inventors_at_grant[1]
+# Here's the first inventors
+result$data$patents$inventors[[1]]
+#> Error in eval(expr, envir, enclos): object 'result' not found
 
 # Now we will see what the inventors endpoint returns for a similar query.  We use get_fields() to get all the available for the inventors endpoint.
 query <- qry_funs$eq(name_last = "chambers")
 fields = get_fields(endpoint = "inventors")
 
 search_pv(query, endpoint = "inventors", fields = fields)
-#> Error: <text>:6:1: unexpected '<'
-#> 5: inv_fields <- get_fields(endpoint = "patents", groups ="inventors_at_grant")
-#> 6: <
-#>    ^
+#> Error: name_last is not a valid field to query for your endpoint
 ```
 
 Your choice of endpoint determines two things:
 
 1. **Which entity your query is applied to.** The first call shown above used the patents endpoint, so the API searched for patents that have at least one inventor listed on them with the last name "chambers." The second call used the inventors endpoint to show what it returns for a similar query.
 
-2. **The structure of the data frame that is returned.** The first call returned a data frame on the patent level, meaning that each row corresponded to a different patent. Fields that were not on the patent level (e.g., `inventors_at_grant.name_last`) were returned in list columns that are named after the entity associated with the field (e.g., the `inventors_at_grant` entity).[^3] Meanwhile, the second call gave us a data frame on the inventor level (one row for each inventor) because it used the inventors endpoint.
+2. **The structure of the data frame that is returned.** The first call returned a data frame on the patent level, meaning that each row corresponded to a different patent. Fields that were not on the patent level (e.g., `inventors.inventor_name_last`) were returned in list columns that are named after the entity associated with the field (e.g., the `inventors` entity).[^3] Meanwhile, the second call gave us a data frame on the inventor level (one row for each inventor) because it used the inventors endpoint.
 
 Most of the time you will want to use the patents endpoint. Note that you can still effectively filter on fields that are not at the patent-level when using the patents endpoint (e.g., you can filter on assignee name or CPC category). This is because patents are relatively low-level entities. For higher level entities like assignees, if you filter on a field that is not at the assignee-level (e.g., inventor name), the API will return data on any assignee that has at least one inventor whose name matches your search, which is probably not what you want.
 
@@ -219,31 +177,14 @@ res <- search_pv(
   query = "{\"patent_number\":\"5116621\"}", 
   fields = c("patent_date", "patent_title", "patent_year")
 )
+#> Error in prsd_resp[[4]]: subscript out of bounds
 
 res
-#> $data
-#> #### A list with a single data frame on patents level:
-#> 
-#> List of 1
-#>  $ patents:'data.frame':	1 obs. of  3 variables:
-#>   ..$ patent_title: chr "Anti-inflammatory analgesic patch"
-#>   ..$ patent_date : chr "1992-05-26"
-#>   ..$ patent_year : int 1992
-#> 
-#> $query_results
-#> #### Distinct entity counts across all downloadable pages of output:
-#> 
-#> total_hits = 1
+#> Error in eval(expr, envir, enclos): object 'res' not found
 # [<span style="color: red;">trouble here</span>]
 # Use more appropriate data types:
 cast_pv_data(res$data)
-#> #### A list with a single data frame on patents level:
-#> 
-#> List of 1
-#>  $ patents:'data.frame':	1 obs. of  3 variables:
-#>   ..$ patent_title: chr "Anti-inflammatory analgesic patch"
-#>   ..$ patent_date : Date[1:1], format: "1992-05-26"
-#>   ..$ patent_year : logi NA
+#> Error in "pv_data_result" %in% class(data): object 'res' not found
 ```
 
 ## FAQs
@@ -284,7 +225,6 @@ query_1b <- with_qfuns(
     qry_funs$in_range(patent_date=c("2010-05-18", "2021-05-10"))
   )
 )
-#> Error in and(contains(patent_title = "game"), qry_funs$in_range(patent_date = c("2010-05-18", : attempt to apply non-function
 
 query_1c <- with_qfuns(
   and(
@@ -307,39 +247,18 @@ fields <- get_fields("patents")
 
 # Pull data
 res <- search_pv(
-  query = qry_funs$text_any(inventors_at_grant.name_last = "smith"), 
+  query = qry_funs$text_any(inventors.inventor_name_last = "smith"), 
   endpoint = "patents", 
   fields = fields
 )
 res$data
-#> #### A list with a single data frame (with list column(s) inside) on patents level:
+#> #### A list with a single data frame on patents level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	1000 obs. of  21 variables:
-#>   ..$ patent_number                                               : chr [1:10"..
-#>   ..$ patent_title                                                : chr [1:10"..
-#>   ..$ patent_type                                                 : chr [1:10"..
-#>   ..$ patent_country                                              : chr [1:10"..
-#>   ..$ patent_date                                                 : chr [1:10"..
-#>   ..$ patent_year                                                 : int [1:100..
-#>   ..$ patent_abstract                                             : chr [1:10"..
-#>   ..$ patent_kind                                                 : chr [1:10"..
-#>   ..$ patent_cpc_current_group_average_patent_processing_days     : logi [1:10..
-#>   ..$ patent_detail_desc_length                                   : int [1:100..
-#>   ..$ patent_earliest_application_date                            : logi [1:10..
-#>   ..$ patent_num_foreign_documents_cited                          : int [1:100..
-#>   ..$ patent_num_times_cited_by_us_patents                        : int [1:100..
-#>   ..$ patent_num_total_documents_cited                            : int [1:100..
-#>   ..$ patent_num_us_applications_cited                            : int [1:100..
-#>   ..$ patent_num_us_patents_cited                                 : int [1:100..
-#>   ..$ patent_term_extension                                       : logi [1:10..
-#>   ..$ patent_uspc_current_mainclass_average_patent_processing_days: logi [1:10..
-#>   ..$ assignees_at_grant                                          :List of 1000
-#>   ..$ inventors_at_grant                                          :List of 1000
-#>   ..$ cpc_current                                                 :List of 1000
+#>  $ patents: list()
 ```
 
-`res$data` has vector columns for those fields that belong to the primary entity (e.g., `res$data$patent_year`) and list columns for those fields that belong to any secondary entity (e.g., `res$data$assignees_at_grant$organization`). You have two good ways to pull out the data frames that are nested inside these list columns: 
+`res$data` has vector columns for those fields that belong to the primary entity (e.g., `res$data$patent_year`) and list columns for those fields that belong to any secondary entity (e.g., `res$data$assignees$assignee_organization`). You have two good ways to pull out the data frames that are nested inside these list columns: 
 
 1. **Use tidyr::unnest.** (This is probably the easier choice of the two). 
 
@@ -349,24 +268,9 @@ library(tidyr)
 
 # Get assignee data:
 res$data$patents %>% 
-  unnest(assignees_at_grant) %>%
+  unnest(assignees) %>%
   head()
-#> # A tibble: 6 x 30
-#>   patent_number patent_title  patent_type patent_country patent_date patent_year
-#>   <chr>         <chr>         <chr>       <chr>          <chr>             <int>
-#> 1 4278558       Quick cure c~ utility     US             1981-07-14         1981
-#> 2 4278628       Method for p~ utility     US             1981-07-14         1981
-#> 3 4279032       Channel bank~ utility     US             1981-07-14         1981
-#> 4 4279081       Wallboard T-~ utility     US             1981-07-21         1981
-#> 5 4279622       Gas-gas quen~ utility     US             1981-07-21         1981
-#> 6 4279644       Recovery of ~ utility     US             1981-07-21         1981
-#> # ... with 24 more variables: patent_abstract <chr>, patent_kind <chr>,
-#> #   patent_cpc_current_group_average_patent_processing_days <lgl>,
-#> #   patent_detail_desc_length <int>, patent_earliest_application_date <lgl>,
-#> #   patent_num_foreign_documents_cited <int>,
-#> #   patent_num_times_cited_by_us_patents <int>,
-#> #   patent_num_total_documents_cited <int>,
-#> #   patent_num_us_applications_cited <int>, ...
+#> Error in UseMethod("unnest"): no applicable method for 'unnest' applied to an object of class "list"
 ```
 
 2. **Use patentsview::unnest_pv_data.** `unnest_pv_data()` creates a series of data frames (one for each entity level) that are like tables in a relational database. You provide it with the data returned by `search_pv()` and a field that can act as a unique identifier for the primary entities:
@@ -374,55 +278,7 @@ res$data$patents %>%
 
 ```r
 unnest_pv_data(data = res$data, pk = "patent_number")
-#> List of 4
-#>  $ assignees_at_grant:'data.frame':	812 obs. of  11 variables:
-#>   ..$ patent_number: chr [1:812] "4278558" ...
-#>   ..$ assignee     : chr [1:812] "https://search.patentsview.org/api/v1/assig"..
-#>   ..$ type         : chr [1:812] "2" ...
-#>   ..$ name_first   : chr [1:812] NA ...
-#>   ..$ name_last    : chr [1:812] NA ...
-#>   ..$ organization : chr [1:812] "EAGLEPICHER TECHNOLOGIES, LLC" ...
-#>   ..$ city         : chr [1:812] "Cincinnati" ...
-#>   ..$ state        : chr [1:812] "OH" ...
-#>   ..$ country      : chr [1:812] "US" ...
-#>   ..$ latitude     : num [1:812] 39.1 ...
-#>   ..$ longitude    : num [1:812] -84.5 ...
-#>  $ inventors_at_grant:'data.frame':	1896 obs. of  9 variables:
-#>   ..$ patent_number: chr [1:1896] "4278558" ...
-#>   ..$ inventor     : chr [1:1896] "https://search.patentsview.org/api/v1/inve"..
-#>   ..$ name_first   : chr [1:1896] "Donald C." ...
-#>   ..$ name_last    : chr [1:1896] "Smith" ...
-#>   ..$ city         : chr [1:1896] "Wayne" ...
-#>   ..$ state        : chr [1:1896] "IN" ...
-#>   ..$ country      : chr [1:1896] "US" ...
-#>   ..$ latitude     : num [1:1896] 39.9 ...
-#>   ..$ longitude    : num [1:1896] -85 ...
-#>  $ cpc_current       :'data.frame':	3685 obs. of  6 variables:
-#>   ..$ patent_number : chr [1:3685] "4278558" ...
-#>   ..$ sequence      : int [1:3685] 0 1 ...
-#>   ..$ section_id    : chr [1:3685] "C" ...
-#>   ..$ cpc_subsection: chr [1:3685] "https://search.patentsview.org/api/v1/cpc"..
-#>   ..$ cpc_group     : chr [1:3685] "https://search.patentsview.org/api/v1/cpc"..
-#>   ..$ cpc_subgroup  : chr [1:3685] "https://search.patentsview.org/api/v1/cpc"..
-#>  $ patents           :'data.frame':	1000 obs. of  18 variables:
-#>   ..$ patent_number                                               : chr [1:10"..
-#>   ..$ patent_title                                                : chr [1:10"..
-#>   ..$ patent_type                                                 : chr [1:10"..
-#>   ..$ patent_country                                              : chr [1:10"..
-#>   ..$ patent_date                                                 : chr [1:10"..
-#>   ..$ patent_year                                                 : int [1:100..
-#>   ..$ patent_abstract                                             : chr [1:10"..
-#>   ..$ patent_kind                                                 : chr [1:10"..
-#>   ..$ patent_cpc_current_group_average_patent_processing_days     : logi [1:10..
-#>   ..$ patent_detail_desc_length                                   : int [1:100..
-#>   ..$ patent_earliest_application_date                            : logi [1:10..
-#>   ..$ patent_num_foreign_documents_cited                          : int [1:100..
-#>   ..$ patent_num_times_cited_by_us_patents                        : int [1:100..
-#>   ..$ patent_num_total_documents_cited                            : int [1:100..
-#>   ..$ patent_num_us_applications_cited                            : int [1:100..
-#>   ..$ patent_num_us_patents_cited                                 : int [1:100..
-#>   ..$ patent_term_extension                                       : logi [1:10..
-#>   ..$ patent_uspc_current_mainclass_average_patent_processing_days: logi [1:10..
+#> Error: patent_number not in primary entity data frame...Did you include it in your fields list?
 ```
 
 Now we are left with a series of flat data frames instead of having a single data frame with other data frames nested inside of it. These flat data frames can be joined together as needed via the primary key (`assignee_id`).
