@@ -52,11 +52,18 @@ get_num_groups <- function(url) {
 #' @noRd
 xheader_er_or_status <- function(resp) {
   # look for the api's ultra-helpful X-Status-Reason header
-  xhdr <- httr::headers(resp)["X-Status-Reason"]
+  xhdr <- get_x_status(resp)
 
   if (length(xhdr) != 1) {
     httr::stop_for_status(resp)
   } else {
     stop(xhdr[[1]], call. = FALSE)
   }
+}
+
+#' @noRd
+get_x_status <- function(resp) {
+  headers <- httr::headers(resp)
+  # we don't want to match the new x-status-reason-code
+  headers[grepl("x-status-reason$", names(headers), ignore.case = TRUE)]
 }
