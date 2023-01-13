@@ -11,7 +11,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# pkgdown <img src="man/figures/logo.png" align="right" height="134.5" />
+# patentsview <img src="man/figures/logo.png" align="right" height="200" style="float:right; height:200px;" />
 > An R client to the PatentsView API
 
 [![](http://badges.ropensci.org/112_status.svg)](https://github.com/ropensci/software-review/issues/112)

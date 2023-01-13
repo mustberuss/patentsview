@@ -5,7 +5,7 @@ output: github_document
 
 
 
-# pkgdown <img src="man/figures/logo.png" align="right" height="134.5" />
+# patentsview <img src="man/figures/logo.png" align="right" height="200" style="float:right; height:200px;" />
 > An R client to the PatentsView API
 
 [![](http://badges.ropensci.org/112_status.svg)](https://github.com/ropensci/software-review/issues/112)
@@ -68,21 +68,18 @@ library(patentsview)
 
 search_pv(query = '{"_gte":{"patent_date":"2007-01-01"}}')
 #> $data
-#> [1] "patents"
-#> #### A list with a single data frame (with list column(s) inside) on a patent level:
+#> #### A list with a single data frame on patents level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	1000 obs. of  5 variables:
-#>   ..$ patent_number     : chr [1:1000] "10000000" ...
-#>   ..$ patent_title      : chr [1:1000] "Coherent LADAR using intra-pixel quad"..
-#>   ..$ patent_date       : chr [1:1000] "2018-06-19" ...
-#>   ..$ assignees_at_grant:List of 1000
-#>   ..$ inventors_at_grant:List of 1000
+#>  $ patents:'data.frame':	1000 obs. of  3 variables:
+#>   ..$ patent_id   : chr [1:1000] "10000000" ...
+#>   ..$ patent_title: chr [1:1000] "Coherent LADAR using intra-pixel quadrature"..
+#>   ..$ patent_date : chr [1:1000] "2018-06-19" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 4,019,907
+#> total_hits = 4,642,018
 ```
 
 ## Learning more
