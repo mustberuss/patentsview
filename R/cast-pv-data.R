@@ -13,14 +13,15 @@ get_cast_fun <- function(data_type) {
     "float" = as.numeric,
     "number" = as_is,
     "integer" = as_is,
-    "int" = as_is,
-    "fulltext" = as_is
+    "int" = as.integer,
+    "fulltext" = as_is,
+    "boolean" = as_is
   )
 }
 
 #' @noRd
 lookup_cast_fun <- function(name, typesdf) {
-  data_type <- typesdf[typesdf$field == name, "data_type"]
+  data_type <- typesdf[typesdf$common_name == name, "data_type"]
   get_cast_fun(data_type = data_type)
 }
 
@@ -32,6 +33,12 @@ cast_one.character <- function(one, name, typesdf) {
 
 #' @noRd
 cast_one.double <- function(one, name, typesdf) {
+  cast_fun <- lookup_cast_fun(name, typesdf)
+  cast_fun(one)
+}
+
+#' @noRd
+cast_one.boolean <- function(one, name, typesdf) {
   cast_fun <- lookup_cast_fun(name, typesdf)
   cast_fun(one)
 }
@@ -92,7 +99,7 @@ cast_pv_data <- function(data) {
 
   endpoint <- names(data)
 
-  typesdf <- fieldsdf[fieldsdf$endpoint == endpoint, c("field", "data_type")]
+  typesdf <- fieldsdf[fieldsdf$endpoint == endpoint, c("common_name", "data_type")]
 
   df <- data[[1]]
 
