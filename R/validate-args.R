@@ -34,6 +34,7 @@ validate_args <- function(api_key, fields, endpoint, method, page, per_page,
       details = "The new version of the API does not support the page attribute."
     )
   }
+
   asrt(
     all(is.numeric(per_page), length(per_page) == 1, per_page <= 1000),
     "per_page must be a numeric value less than or equal to 1,000"
@@ -72,8 +73,8 @@ deprecate_warn_all <- function(error_browser, subent_cnts, mtchd_subent_only) {
   }
   # Was previously defaulting to FALSE and we're still defaulting to FALSE to
   # mirror the fact that the API doesn't support subent_cnts. Warn only if user
-  # tries to set subent_cnts to TRUE.
-  if (isTRUE(subent_cnts)) {
+  # tries to set subent_cnts to anything other than FALSE (test cases try NULL and 7)
+  if (!(is.logical(subent_cnts) && isFALSE(subent_cnts))) {
     lifecycle::deprecate_warn(
       when = "1.0.0",
       what = "search_pv(subent_cnts)",
