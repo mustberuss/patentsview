@@ -4,7 +4,7 @@ test_that("validate_args throws errors for all bad args", {
   skip_on_cran()
 
   # make sure deprecated warnings are always thrown- bypass 8 hour suppression
-  # rlang::local_options(lifecycle_verbosity = "warning")
+  rlang::local_options(lifecycle_verbosity = "warning")
 
   expect_error(
     search_pv('{"patent_date":["1976-01-06"]}', endpoint = "patent"),
@@ -18,11 +18,11 @@ test_that("validate_args throws errors for all bad args", {
     search_pv('{"patent_date":["1976-01-06"]}', subent_cnts = TRUE),
     "subent_cnts"
   )
-#  expect_warning(
-#    search_pv('{"patent_date":["1976-01-06"]}', subent_cnts = 7),
-#    "subent_cnts"
-#  )
-   expect_warning(
+  expect_warning(
+    search_pv('{"patent_date":["1976-01-06"]}', subent_cnts = 7),
+    "subent_cnts"
+  )
+  expect_warning(
      search_pv('{"patent_date":["1976-01-06"]}', mtchd_subent_only = NULL),
      "mtchd_subent_only"  # deprecation warning
   )
