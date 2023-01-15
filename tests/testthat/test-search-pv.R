@@ -1,5 +1,3 @@
-context("search_pv")
-
 # TODO: add a test to see if all the requested fields come back
 
 add_base_url <- function(x) {
@@ -107,8 +105,6 @@ test_that("search_pv properly URL encodes queries", {
   expect_identical(eq_search$data, phrase_search$data)
 
 })
-
-context("throttle")
 
 # Below we request the same data in built_singly and result_all, with the only
 # difference being that we intentionally get throttled in built_singly by

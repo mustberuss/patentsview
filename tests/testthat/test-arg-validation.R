@@ -1,5 +1,3 @@
-context("validate_args")
-
 test_that("validate_args throws errors for all bad args", {
   skip_on_cran()
 
@@ -16,15 +14,15 @@ test_that("validate_args throws errors for all bad args", {
   )
   expect_warning(
     search_pv('{"patent_date":["1976-01-06"]}', subent_cnts = TRUE),
-    "subent_cnts"
+    class = "lifecycle_warning_deprecated"
   )
   expect_warning(
     search_pv('{"patent_date":["1976-01-06"]}', subent_cnts = 7),
-    "subent_cnts"
+    class = "lifecycle_warning_deprecated"
   )
   expect_warning(
      search_pv('{"patent_date":["1976-01-06"]}', mtchd_subent_only = NULL),
-     "mtchd_subent_only"  # deprecation warning
+     class = "lifecycle_warning_deprecated"
   )
   expect_error(
     search_pv('{"patent_date":["1976-01-06"]}', per_page = "50"),
@@ -32,7 +30,7 @@ test_that("validate_args throws errors for all bad args", {
   )
   expect_warning(
     search_pv('{"patent_date":["1976-01-06"]}', page = NA),
-    "page" # unsupported page parameter
+    class = "lifecycle_warning_deprecated" # unsupported page parameter
   )
   expect_error(
     search_pv(

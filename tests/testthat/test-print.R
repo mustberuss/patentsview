@@ -1,5 +1,3 @@
-context("print")
-
 test_that("We can print the returns from all endpoints ", {
   skip_on_cran()
 

@@ -25,7 +25,8 @@ Suggests:
     knitr,
     rlang,
     rmarkdown,
-    testthat,
+    testthat (>= 3.0.0),
     tidyr
 RoxygenNote: 7.2.1
 Roxygen: list(markdown = TRUE)
+Config/testthat/edition: 3

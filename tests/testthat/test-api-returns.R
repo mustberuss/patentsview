@@ -1,5 +1,3 @@
-context("api-returns")
-
 # Test to see if all the requested fields come back - more to test the new
 # version of the api than to test the r packge!  test-search-pv.R tests that we
 # get the df names back, here we're checking that all the groups and eventually

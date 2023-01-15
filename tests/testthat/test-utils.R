@@ -1,5 +1,3 @@
-context("utils")
-
 test_that("we can convert endpoints to their singular form and back", {
   eps <- get_endpoints()
   z <- vapply(eps, function(x) {

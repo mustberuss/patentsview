@@ -1,5 +1,3 @@
-context("cast_pv_data")
-
 test_that("cast_pv_data casts patent fields as expected", {
   skip_on_cran()
   skip_on_ci()

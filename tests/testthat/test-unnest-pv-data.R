@@ -1,5 +1,3 @@
-context("unnest_pv_data")
-
 eps <- get_endpoints()
 
 test_that("", {
