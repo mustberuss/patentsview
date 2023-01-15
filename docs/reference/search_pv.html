@@ -105,8 +105,8 @@ the user's query.</p>
 <span>  fields <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  endpoint <span class="op">=</span> <span class="st">"patents"</span>,</span>
 <span>  subent_cnts <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  mtchd_subent_only <span class="op">=</span> <span class="fu">lifecycle</span><span class="fu">::</span><span class="fu"><a href="https://lifecycle.r-lib.org/reference/deprecated.html" class="external-link">deprecated</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  page <span class="op">=</span> <span class="fu">lifecycle</span><span class="fu">::</span><span class="fu"><a href="https://lifecycle.r-lib.org/reference/deprecated.html" class="external-link">deprecated</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="va">mtchd_subent_only</span>,</span>
+<span>  <span class="va">page</span>,</span>
 <span>  per_page <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  all_pages <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  sort <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -121,15 +121,15 @@ the user's query.</p>
     <h2>Arguments</h2>
     <dl><dt>query</dt>
 <dd><p>The query that the API will use to filter records. <code>query</code>
- can come in any one of the following forms:</p><ul><li><p>A character string with valid JSON. <br>
-   E.g., <code>'{"_gte":{"patent_date":"2007-01-04"}}'</code></p></li>
+can come in any one of the following forms:</p><ul><li><p>A character string with valid JSON. <br>
+E.g., <code>'{"_gte":{"patent_date":"2007-01-04"}}'</code></p></li>
 <li><p>A list which will be converted to JSON by <code>search_pv</code>. <br>
-   E.g., <code>list("_gte" = list("patent_date" = "2007-01-04"))</code></p></li>
+E.g., <code>list("_gte" = list("patent_date" = "2007-01-04"))</code></p></li>
 <li><p>An object of class <code>pv_query</code>, which you create by calling one
-   of the functions found in the <code><a href="qry_funs.html">qry_funs</a></code> list...See the
-   <a href="https://docs.ropensci.org/patentsview/articles/writing-queries.html" class="external-link">writing
-   queries vignette</a> for details.<br>
-   E.g., <code>qry_funs$gte(patent_date = "2007-01-04")</code></p></li>
+of the functions found in the <code><a href="qry_funs.html">qry_funs</a></code> list...See the
+<a href="https://docs.ropensci.org/patentsview/articles/writing-queries.html" class="external-link">writing
+queries vignette</a> for details.<br>
+E.g., <code>qry_funs$gte(patent_date = "2007-01-04")</code></p></li>
 </ul></dd>
 
 
@@ -150,17 +150,17 @@ out the fields available for a given endpoint.</p></dd>
 
 
 <dt>subent_cnts</dt>
-<dd><p>`r lifecycle::badge("deprecated")` Non-matched subentities
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> Non-matched subentities
 will always be returned under the new version of the API</p></dd>
 
 
 <dt>mtchd_subent_only</dt>
-<dd><p>`r lifecycle::badge("deprecated")` This is always
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> This is always
 FALSE in the new version of the API.</p></dd>
 
 
 <dt>page</dt>
-<dd><p>`r lifecycle::badge("deprecated")` The page number of the results that should be returned.</p></dd>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> The page number of the results that should be returned.</p></dd>
 
 
 <dt>per_page</dt>
@@ -170,16 +170,15 @@ value can be as high as 1,000 (e.g., <code>per_page = 1000</code>).</p></dd>
 
 <dt>all_pages</dt>
 <dd><p>Do you want to download all possible pages of output? If
-<code>all_pages = TRUE</code>, the values of <code>page</code> and <code>per_page</code> are
-ignored.</p></dd>
+<code>all_pages = TRUE</code>, the value <code>per_page</code> is ignored.</p></dd>
 
 
 <dt>sort</dt>
 <dd><p>A named character vector where the name indicates the field to
 sort by and the value indicates the direction of sorting (direction should
 be either "asc" or "desc"). For example, <code>sort = c("patent_id" =
-"asc")</code> or <br><code>sort = c("patent_id" = "asc", "patent_date" =
-"desc")</code>. <code>sort = NULL</code> (the default) means do not sort the results.
+ "asc")</code> or <br><code>sort = c("patent_id" = "asc", "patent_date" =
+ "desc")</code>. <code>sort = NULL</code> (the default) means do not sort the results.
 You must include any fields that you wish to sort by in <code>fields</code>.</p></dd>
 
 
@@ -190,7 +189,7 @@ your query is very long (say, over 2,000 characters in length).</p></dd>
 
 
 <dt>error_browser</dt>
-<dd><p>`r lifecycle::badge("deprecated")`</p></dd>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a></p></dd>
 
 
 <dt>api_key</dt>
@@ -207,29 +206,27 @@ Here</a> for info on creating a key.</p></dd>
     <h2>Value</h2>
     
 
-<p>A list with the following three elements:</p>
-<p></p>
-<dl><dt>data</dt>
+<p>A list with the following three elements:</p><dl><dt>data</dt>
 <dd><p>A list with one element - a named data frame containing the
-   data returned by the server. Each row in the data frame corresponds to a
-   single value for the primary entity. For example, if you search the
-   assignees endpoint, then the data frame will be on the assignee-level,
-   where each row corresponds to a single assignee. Fields that are not on
-   the assignee-level would be returned in list columns.</p></dd>
+data returned by the server. Each row in the data frame corresponds to a
+single value for the primary entity. For example, if you search the
+assignees endpoint, then the data frame will be on the assignee-level,
+where each row corresponds to a single assignee. Fields that are not on
+the assignee-level would be returned in list columns.</p></dd>
 
 
-   <dt>query_results</dt>
+<dt>query_results</dt>
 <dd><p>Entity counts across all pages of output (not just
-   the page returned to you).</p></dd>
+the page returned to you).</p></dd>
 
 
-   <dt>request</dt>
+<dt>request</dt>
 <dd><p>Details of the HTTP request that was sent to the server.
-   When you set <code>all_pages = TRUE</code>, you will only get a sample request.
-   In other words, you will not be given multiple requests for the multiple
-   calls that were made to the server (one for each page of results).</p></dd>
+When you set <code>all_pages = TRUE</code>, you will only get a sample request.
+In other words, you will not be given multiple requests for the multiple
+calls that were made to the server (one for each page of results).</p></dd>
 
- 
+
 </dl></div>
 
     <div id="ref-examples">

@@ -162,8 +162,7 @@ get_default_sort <- function(endpoint) {
 #' @param per_page The number of records that should be returned per page. This
 #'  value can be as high as 1,000 (e.g., \code{per_page = 1000}).
 #' @param all_pages Do you want to download all possible pages of output? If
-#'  \code{all_pages = TRUE}, the values of \code{page} and \code{per_page} are
-#'  ignored.
+#'  \code{all_pages = TRUE}, the value \code{per_page} is ignored.
 #' @param sort A named character vector where the name indicates the field to
 #'  sort by and the value indicates the direction of sorting (direction should
 #'  be either "asc" or "desc"). For example, \code{sort = c("patent_id" =
@@ -237,8 +236,8 @@ search_pv <- function(query,
                       fields = NULL,
                       endpoint = "patents",
                       subent_cnts = FALSE,
-                      mtchd_subent_only = lifecycle::deprecated(),
-                      page, #  = lifecycle::deprecated(),
+                      mtchd_subent_only,
+                      page,
                       per_page = 1000,
                       all_pages = FALSE,
                       sort = NULL,

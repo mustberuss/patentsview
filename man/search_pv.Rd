@@ -9,7 +9,7 @@ search_pv(
   fields = NULL,
   endpoint = "patents",
   subent_cnts = FALSE,
-  mtchd_subent_only = lifecycle::deprecated(),
+  mtchd_subent_only,
   page,
   per_page = 1000,
   all_pages = FALSE,
@@ -61,8 +61,7 @@ FALSE in the new version of the API.}
 value can be as high as 1,000 (e.g., \code{per_page = 1000}).}
 
 \item{all_pages}{Do you want to download all possible pages of output? If
-\code{all_pages = TRUE}, the values of \code{page} and \code{per_page} are
-ignored.}
+\code{all_pages = TRUE}, the value \code{per_page} is ignored.}
 
 \item{sort}{A named character vector where the name indicates the field to
 sort by and the value indicates the direction of sorting (direction should

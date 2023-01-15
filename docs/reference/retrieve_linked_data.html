@@ -125,29 +125,27 @@ Here</a> for info on creating a key.</p></dd>
     <h2>Value</h2>
     
 
-<p>A list with the following three elements:</p>
-<p></p>
-<dl><dt>data</dt>
+<p>A list with the following three elements:</p><dl><dt>data</dt>
 <dd><p>A list with one element - a named data frame containing the
-   data returned by the server. Each row in the data frame corresponds to a
-   single value for the primary entity. For example, if you search the
-   assignees endpoint, then the data frame will be on the assignee-level,
-   where each row corresponds to a single assignee. Fields that are not on
-   the assignee-level would be returned in list columns.</p></dd>
+data returned by the server. Each row in the data frame corresponds to a
+single value for the primary entity. For example, if you search the
+assignees endpoint, then the data frame will be on the assignee-level,
+where each row corresponds to a single assignee. Fields that are not on
+the assignee-level would be returned in list columns.</p></dd>
 
 
-   <dt>query_results</dt>
+<dt>query_results</dt>
 <dd><p>Entity counts across all pages of output (not just
-   the page returned to you).</p></dd>
+the page returned to you).</p></dd>
 
 
-   <dt>request</dt>
+<dt>request</dt>
 <dd><p>Details of the HTTP request that was sent to the server.
-   When you set <code>all_pages = TRUE</code>, you will only get a sample request.
-   In other words, you will not be given multiple requests for the multiple
-   calls that were made to the server (one for each page of results).</p></dd>
+When you set <code>all_pages = TRUE</code>, you will only get a sample request.
+In other words, you will not be given multiple requests for the multiple
+calls that were made to the server (one for each page of results).</p></dd>
 
- 
+
 </dl></div>
 
     <div id="ref-examples">
