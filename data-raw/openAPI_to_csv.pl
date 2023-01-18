@@ -159,6 +159,7 @@ foreach my $endpoint ( keys %save ) {
        if($attribute =~ /_id$/) {
           $hateoas = $`;  # before the match
           if(exists $save{$endpoint}{$hateoas}) {
+             # print "deleting $hateoas from $endpoint\n";
              delete($save{$endpoint}{$hateoas});
           }
        }
@@ -166,8 +167,9 @@ foreach my $endpoint ( keys %save ) {
 }
 
 # iterate through $save again writing to the output file
-foreach my $endpoint ( keys %save ) {
-    for my $attribute ( keys $save{$endpoint}->%* ) {
+# sort for reproducibility- we don't want a git diff if the output didn't change
+foreach my $endpoint (sort keys %save ) {
+    for my $attribute (sort keys $save{$endpoint}->%* ) {
            print OUT $save{$endpoint}{$attribute};
     }
 }
@@ -175,7 +177,8 @@ foreach my $endpoint ( keys %save ) {
 close (DAT);
 close (OUT);
 
-# warn if there's a type we don't know about
+# warn if there's a type we don't know about- would need to add 
+# code to cast-pv-data.R
 %known_types = ( "boolean" => 1, "date" => 1, "int" => 1, 
                  "integer" => 1, "number" => 1, "string" => 1);
 
