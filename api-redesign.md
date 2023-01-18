@@ -11,12 +11,17 @@ I wasn't sure what the githubby way to do this would be but this page chronicles
 ## Outstanding
 The changes comprising an MVP have been masterfully merged onto ropensci by crew102. Here's what's left:    
 
-1. Update vignettes, all of them changed.  The original ropensci blog post has been updated and could be added as a [new vignette](https://mustberuss.github.io/patentsview/articles/ropensci_blog_post.html).  There is a new one about converting an existing script and another new one about the api changes (in the navigation above).  They might be pushing the definition of vignette slightly.
-2. possibly add qry_funs$in_range() and safe_date_ranges() to the r package, more about this in Question 1
-3. There is supposed to be a code release and data update in September.  Hopefully the locations endpoint will be add to the test server, along with the applications endpoint mentioned vaguely [here](https://patentsview.org/forum/8/topic/572#comment-560)
+1. The original ropensci blog post has been updated and could be added as a [new vignette](https://mustberuss.github.io/patentsview/articles/ropensci_blog_post.html).  There is a new one about converting an existing script and another new one about the api changes (in the navigation above).  They might be pushing the definition of vignette slightly.
+The problem is that the most recent API change has broken it, possibly irrevocably (assignee_lastknown_latitude/assignee_lastknown_longitude are supposed to 
+come back from the API but aren't currently)
+2. possibly add qry_funs$in_range() to the r package
+3. paging's after parameter needs work - when there is more than a primary sort.  Could use the idea of the Patentsview Wrapper
+where it sends in only a primary sort field to the api and uses the dataframe to 
+4. Change the endpoints to singular and do a soft deprecate the current plural ones?
+5. fieldsdf.R needs to be fixed to work with the [updated OpenAPI spec](https://search.patentsview.org/static/openapi.json)
 
 ## Questions:
-1. Should the new stuff mentioned [here](https://mustberuss.github.io/patentsview/articles/converting-an-existing-script.html#additions-to-the-r-package-1) be added to the package?
+1. warn or message when all_pages is TRUE and the result set is over say a million rows?
 2. Should we update the version number? Maybe to 1.0.0 since it's not backward compatible.
 3. Should we use r-universe for the distribution until the original API version is retired? (It could then be submitted to CRAN).  There is an unauthorized badge and installation instructions [here](https://mustberuss.github.io/patentsview/)  We'd really use <https://ropensci.r-universe.dev/ui#package:patentsview>
 4. Should we post a tech note to ropensci when the new version of the package is ready?  A potential posting is [here](https://mustberuss.github.io/patentsview/articles/ropensci_tech_note.html)  (the stuff about the sticker could be dropped)
@@ -24,8 +29,14 @@ The changes comprising an MVP have been masterfully merged onto ropensci by crew
 6. Have you seen [this](https://content.govdelivery.com/accounts/USPTO/bulletins/32deb51)? patft and appft are going away at the end of September 2022.  The ropensci blog post vignette has two patft links that will need updating. Not even sure how the first one winds up on pn 11,451,709!
 
 ## Important Notes
-1. The locations endpoint is not on the test server yet.
-2. More endpoints are coming by the end of 2022, rumored to include one for application data.
+1. There is a new endpoint, patent/otherreference/,  mentioned in the OpenAPI object but I can't get it do anything other than throw errors.  The returned entity, other_references, breaks the singular/plural pattern.
+2. There are still API bugs, see the test cases, several will fail when API bugs are fixed
+
+
+## Changes here not in [PR 29](https://github.com/ropensci/patentsview/pull/29) / not yet in mustberuss/master
+1.  upgraded build versions
+2.  upgraded testthat to 3e
+3.  changed skipped tests to working ones
 
 ## Required Further Reading: 
 (Keep reading, they're not prerequisites to reading this page)
@@ -43,15 +54,14 @@ The changes comprising an MVP have been masterfully merged onto ropensci by crew
 ## General Upheaval
 The villagers may revolt over some of these API changes... &nbsp;&nbsp; &nbsp; Or, the R package will become even more useful and relevant and there will be a parade.
 
-1. The overall paged result set size limit is now 10,000, down from 100,000 (see the [converting-an-existing-script vignette](articles/converting-an-existing-script.html)).
-2. The size/per_page maximum on a single request changes from 10,000 to 1,000.   Maximum check and message changed in validate-args.R, it could or should throw a warning when per_page is set above 1,000 and send to API as 1,000.  
-3. A lot of fields seem to have gone away, like the governmental interests ones.  Some, but not all, are lists in the Discontinued Fields section of [this page](https://patentsview.org/data-in-action/whats-new-patentsview-july-2021).  The swagger definition (https://search.patentsview.org/static/openapi.json) does not contain  government interest fields, ipc fields, wipo fields, lawyer fields, foreign_priority fields, examiner fields, pct fields, raw inventor fields, coinventor fields, patent_firstnamed fields or patent_num_claims. Assuming all these fields are  going away, though more, unspecified, endpoints are supposed to be coming before the end of 2022.
-4. The options matched_subentities_only and include_subentity_total_counts seem to have gone away, but they don't seem to throw errors when requested.  The R package should probably throw an error or warning when set, the behavior of an old script may be different than what the user expects.  From https://patentsview.org/api-v01-information-page  
+1. The size/per_page maximum on a single request changes from 10,000 to 1,000.   Maximum check and message changed in validate-args.R, it could or should throw a warning when per_page is set above 1,000 and send to API as 1,000.  
+2. A lot of fields seem to have gone away, like the governmental interests ones.  Some, but not all, are lists in the Discontinued Fields section of [this page](https://patentsview.org/data-in-action/whats-new-patentsview-july-2021).  The swagger definition (https://search.patentsview.org/static/openapi.json) does not contain  government interest fields, ipc fields, wipo fields, lawyer fields, foreign_priority fields, examiner fields, pct fields, raw inventor fields, coinventor fields, patent_firstnamed fields or patent_num_claims. Assuming all these fields are  going away, though more, unspecified, endpoints are supposed to be coming before the end of 2022.
+3. The options matched_subentities_only and include_subentity_total_counts seem to have gone away, but they don't seem to throw errors when requested.  The R package should probably throw an error or warning when set, the behavior of an old script may be different than what the user expects.  From https://patentsview.org/api-v01-information-page  
     > Owing to de-normalized and split API design, sub-entity information is not available directly via each endpoint. As a consequence, "matched_subentity" option parameters are not valid. 
-5. Some attributes have new names, like name_last in the nested inventor object returned from the patents endpoint. Now in the fields parameter it would be specified as “inventor.name_last” where formerly it was “inventor_last_name” when using the patents endpoint and name_last when hitting the assignees endpoint (where it comes back at the top level, not within an nested object).
-6. There are type changes in some of the attributes, affecting which query methods are used, contains vs test_any etc.  organization (formerly the string assignee_organization) is now a full text field.  I need to confirm this, but it seems that most fields are now full text.  Exceptions seem to be in the patents endpoint.  
-7. The uspc and nber fields do not currently come back from the patents endpoint.  Now there is no real point to call the uspc or nber endpoints.  This means there is no way to search for patents using the uspc or nber fields.  This is especially bad for plant, design and ressued patents.  The bulk cpc file only contains assignments for utility patents so plant, design and reissued patents cannot be searched by any classification system.  The ipc and wipo fields seem to have gone away in the new version of the API.
-8. The cited_patent and citedby_patent fields no longer can come back from the patents endpoint, instead the new patent_citation endpoint needs to be called.  Similarily, the appcit_app fields come only from the new application_citation endpoint. 
+4. Some attributes have new names, like name_last in the nested inventor object returned from the patents endpoint. Now in the fields parameter it would be specified as “inventor.name_last” where formerly it was “inventor_last_name” when using the patents endpoint and name_last when hitting the assignees endpoint (where it comes back at the top level, not within an nested object).
+5. There are type changes in some of the attributes, affecting which query methods are used, contains vs test_any etc.  organization (formerly the string assignee_organization) is now a full text field.  I need to confirm this, but it seems that most fields are now full text.  Exceptions seem to be in the patents endpoint.  
+6. The uspc and nber fields do not currently come back from the patents endpoint.  Now there is no real point to call the uspc or nber endpoints.  This means there is no way to search for patents using the uspc or nber fields.  This is especially bad for plant, design and ressued patents.  The bulk cpc file only contains assignments for utility patents so plant, design and reissued patents cannot be searched by any classification system.  The ipc and wipo fields seem to have gone away in the new version of the API.
+7. The cited_patent and citedby_patent fields no longer can come back from the patents endpoint, instead the new patent_citation endpoint needs to be called.  Similarily, the appcit_app fields come only from the new application_citation endpoint. 
 
 ## R Package Design Choices
 1. **Changes made in search-pv.R**
@@ -77,20 +87,24 @@ The villagers may revolt over some of these API changes... &nbsp;&nbsp; &nbsp; O
 ```{r}
 library(patentsview)
 
-query <- qry_funs$eq(assignees_at_grant.assignee_id = "35")
-example <-search_pv(query=query, fields=c("assignees_at_grant.assignee_id"))
+query <- with_qfuns(text_phrase(assignees.assignee_organization = "Johnson & Johnson"))
+example <- search_pv(query=query, fields=c("assignees.assignee_id"))
 
-head(example$data$patents$assignees_at_grant, 1)
+head(example$data$patents$assignees, 1)
 # [[1]]
-#                                            assignee
-# 1 https://search.patentsview.org/api/v1/assignee/35/
+#                                                                              assignee
+#1 https://search.patentsview.org/api/v1/assignee/4cc92231-2f00-11ed-aea8-1234bde3cd05/
 
 ```
+
+It's also an example where the fields parameter specifies a field ending in _id but 
+field in the entity that is returned does not have the _id in it. 
+
 2. **General Choices**
    1. Now there are new, get-only convience endpoints that take a url parameter (what the HATEOAS links hit).  The R package ignores these and just uses the ones that do posts and gets using q,f,s and o parameters, as the original version of the API did.
    2. The online documentation is lagging.  The two new endpoints are documented on https://patentsview.org/data-in-action/whats-new-patentsview-july-2021 but they're missing the Query column (all fields queryable now).  Pages for the other endpoint haven't been changed yet. I created fake pages for data-raw/mbr_fieldsdf.R to consume.  They're on a site I control https://patentsview.historicip.com/api/. In the fake pages, "integer" fields get cast as_is while "int" fields (integers still sent as strings) get cast as.integer. _Update:_ The documentation has been updated but the fields are in an image.  Ex https://patentsview.org/apis/api-endpoints/patentsbeta
    3. As an alternative to scraping the fake pages just mentioned, I created data-raw/yml_extract.R to try to create the csv by parsing the API's Swagger definition.  _Update:_ data-raw/definition_extract.R parses the new json Swagger definition.
-   4. Now only 3 of the 13 endpoints are searchable by patent number, which affected a few of the test cases.  I wound up adding R/test-helpers.R to generate a test query per endpoint.  Initially I had it as tests/testthat/helper-queries.R but I thought that caused the ubuntu-20.04 build failure.
+   4. Now only 3 of the 15 endpoints are searchable by patent number, which affected a few of the test cases.  I wound up adding R/test-helpers.R to generate a test query per endpoint.  Initially I had it as tests/testthat/helper-queries.R but I thought that caused the ubuntu-20.04 build failure.
    5. I set my API key as asecret in my repo so tests will run and the vignettes can be half rendered etc.  It's retrieved in R-CMD-check.yaml.
    6. I had to add dev = "png" to the knitr::opts_chunk$set in citation-networks.Rmd.orig to get it to render locally.
    7. See the new vignette [converting-an-existing-script.html#additions-to-the-r-package-1](articles/converting-an-existing-script.html#additions-to-the-r-package-1)  I wrote a function that uses the API to determine date ranges for a query returning more than 10,000 rows.  I think it should be added to the R package, but I wasn't sure if it's a good idea..
