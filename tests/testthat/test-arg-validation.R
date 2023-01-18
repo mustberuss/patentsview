@@ -40,4 +40,9 @@ test_that("validate_args throws errors for all bad args", {
     ),
     "sort"
   )
+
+  expect_error(
+    get_fields("assignees", groups="cpc_current"),  # valid group for a different endpoint
+    "groups"
+  )
 })

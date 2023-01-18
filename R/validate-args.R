@@ -50,11 +50,11 @@ validate_args <- function(api_key, fields, endpoint, method, page, per_page,
 }
 
 #' @noRd
-validate_groups <- function(groups) {
-  ok_grps <- unique(fieldsdf$group)
+validate_groups <- function(endpoint, groups) {
+  ok_grps <- unique(fieldsdf[fieldsdf$endpoint == endpoint, c("group")])
   asrt(
     all(groups %in% ok_grps),
-    "group must be one of the following: ", paste(ok_grps, collapse = ", ")
+    "groups for the ", endpoint, " endpoint must be one or more of the following: ", paste(ok_grps, collapse = ", ")
   )
 }
 

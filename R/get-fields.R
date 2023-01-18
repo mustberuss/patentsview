@@ -48,7 +48,7 @@ get_fields <- function(endpoint, groups = NULL) {
   if (is.null(groups)) {
     fieldsdf[fieldsdf$endpoint == endpoint, "field"]
   } else {
-    validate_groups(groups = groups)
+    validate_groups(endpoint, groups = groups)
     fieldsdf[fieldsdf$endpoint == endpoint & fieldsdf$group %in% groups, "field"]
   }
 }
