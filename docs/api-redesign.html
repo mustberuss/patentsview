@@ -102,14 +102,16 @@
 <div class="section level2">
 <h2 id="outstanding">Outstanding<a class="anchor" aria-label="anchor" href="#outstanding"></a></h2>
 <p>The changes comprising an MVP have been masterfully merged onto ropensci by crew102. Here’s what’s left:</p>
-<ol style="list-style-type: decimal"><li>Update vignettes, all of them changed. The original ropensci blog post has been updated and could be added as a <a href="https://mustberuss.github.io/patentsview/articles/ropensci_blog_post.html" class="external-link">new vignette</a>. There is a new one about converting an existing script and another new one about the api changes (in the navigation above). They might be pushing the definition of vignette slightly.</li>
-<li>possibly add qry_funs$in_range() and safe_date_ranges() to the r package, more about this in Question 1</li>
-<li>There is supposed to be a code release and data update in September. Hopefully the locations endpoint will be add to the test server, along with the applications endpoint mentioned vaguely <a href="https://patentsview.org/forum/8/topic/572#comment-560" class="external-link">here</a>
+<ol style="list-style-type: decimal"><li>The original ropensci blog post has been updated and could be added as a <a href="https://mustberuss.github.io/patentsview/articles/ropensci_blog_post.html" class="external-link">new vignette</a>. There is a new one about converting an existing script and another new one about the api changes (in the navigation above). They might be pushing the definition of vignette slightly. The problem is that the most recent API change has broken it, possibly irrevocably (assignee_lastknown_latitude/assignee_lastknown_longitude are supposed to come back from the API but aren’t currently)</li>
+<li>possibly add qry_funs$in_range() to the r package</li>
+<li>paging’s after parameter needs work - when there is more than a primary sort. Could use the idea of the Patentsview Wrapper where it sends in only a primary sort field to the api and uses the dataframe to</li>
+<li>Change the endpoints to singular and do a soft deprecate the current plural ones?</li>
+<li>fieldsdf.R needs to be fixed to work with the <a href="https://search.patentsview.org/static/openapi.json" class="external-link">updated OpenAPI spec</a>
 </li>
 </ol></div>
 <div class="section level2">
 <h2 id="questions">Questions:<a class="anchor" aria-label="anchor" href="#questions"></a></h2>
-<ol style="list-style-type: decimal"><li>Should the new stuff mentioned <a href="https://mustberuss.github.io/patentsview/articles/converting-an-existing-script.html#additions-to-the-r-package-1" class="external-link">here</a> be added to the package?</li>
+<ol style="list-style-type: decimal"><li>warn or message when all_pages is TRUE and the result set is over say a million rows?</li>
 <li>Should we update the version number? Maybe to 1.0.0 since it’s not backward compatible.</li>
 <li>Should we use r-universe for the distribution until the original API version is retired? (It could then be submitted to CRAN). There is an unauthorized badge and installation instructions <a href="https://mustberuss.github.io/patentsview/" class="external-link">here</a> We’d really use <a href="https://ropensci.r-universe.dev/ui#package:patentsview" class="external-link uri">https://ropensci.r-universe.dev/ui#package:patentsview</a>
 </li>
@@ -119,8 +121,14 @@
 </ol></div>
 <div class="section level2">
 <h2 id="important-notes">Important Notes<a class="anchor" aria-label="anchor" href="#important-notes"></a></h2>
-<ol style="list-style-type: decimal"><li>The locations endpoint is not on the test server yet.</li>
-<li>More endpoints are coming by the end of 2022, rumored to include one for application data.</li>
+<ol style="list-style-type: decimal"><li>There is a new endpoint, patent/otherreference/, mentioned in the OpenAPI object but I can’t get it do anything other than throw errors. The returned entity, other_references, breaks the singular/plural pattern.</li>
+<li>There are still API bugs, see the test cases, several will fail when API bugs are fixed</li>
+</ol></div>
+<div class="section level2">
+<h2 id="changes-here-not-in-pr-29--not-yet-in-mustberussmaster">Changes here not in <a href="https://github.com/ropensci/patentsview/pull/29" class="external-link">PR 29</a> / not yet in mustberuss/master<a class="anchor" aria-label="anchor" href="#changes-here-not-in-pr-29--not-yet-in-mustberussmaster"></a></h2>
+<ol style="list-style-type: decimal"><li>upgraded build versions</li>
+<li>upgraded testthat to 3e</li>
+<li>changed skipped tests to working ones</li>
 </ol></div>
 <div class="section level2">
 <h2 id="required-further-reading">Required Further Reading:<a class="anchor" aria-label="anchor" href="#required-further-reading"></a></h2>
@@ -138,8 +146,7 @@
 <div class="section level2">
 <h2 id="general-upheaval">General Upheaval<a class="anchor" aria-label="anchor" href="#general-upheaval"></a></h2>
 <p>The villagers may revolt over some of these API changes…      Or, the R package will become even more useful and relevant and there will be a parade.</p>
-<ol style="list-style-type: decimal"><li>The overall paged result set size limit is now 10,000, down from 100,000 (see the <a href="articles/converting-an-existing-script.html">converting-an-existing-script vignette</a>).</li>
-<li>The size/per_page maximum on a single request changes from 10,000 to 1,000. Maximum check and message changed in validate-args.R, it could or should throw a warning when per_page is set above 1,000 and send to API as 1,000.<br></li>
+<ol style="list-style-type: decimal"><li>The size/per_page maximum on a single request changes from 10,000 to 1,000. Maximum check and message changed in validate-args.R, it could or should throw a warning when per_page is set above 1,000 and send to API as 1,000.<br></li>
 <li>A lot of fields seem to have gone away, like the governmental interests ones. Some, but not all, are lists in the Discontinued Fields section of <a href="https://patentsview.org/data-in-action/whats-new-patentsview-july-2021" class="external-link">this page</a>. The swagger definition (<a href="https://search.patentsview.org/static/openapi.json" class="external-link uri">https://search.patentsview.org/static/openapi.json</a>) does not contain government interest fields, ipc fields, wipo fields, lawyer fields, foreign_priority fields, examiner fields, pct fields, raw inventor fields, coinventor fields, patent_firstnamed fields or patent_num_claims. Assuming all these fields are going away, though more, unspecified, endpoints are supposed to be coming before the end of 2022.</li>
 <li>The options matched_subentities_only and include_subentity_total_counts seem to have gone away, but they don’t seem to throw errors when requested. The R package should probably throw an error or warning when set, the behavior of an old script may be different than what the user expects. From <a href="https://patentsview.org/api-v01-information-page" class="external-link uri">https://patentsview.org/api-v01-information-page</a><br>
 &gt; Owing to de-normalized and split API design, sub-entity information is not available directly via each endpoint. As a consequence, “matched_subentity” option parameters are not valid.</li>
@@ -172,13 +179,14 @@ Also note that total_hits comes back from all endpoints, previously there was an
 </ol></li>
 </ol><pre class="{r}"><code><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html" class="external-link">patentsview</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span>assignees_at_grant.assignee_id <span class="op">=</span> <span class="st">"35"</span><span class="op">)</span></span>
-<span><span class="va">example</span> <span class="op">&lt;-</span><span class="fu"><a href="reference/search_pv.html">search_pv</a></span><span class="op">(</span>query<span class="op">=</span><span class="va">query</span>, fields<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"assignees_at_grant.assignee_id"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span><span class="fu">text_phrase</span><span class="op">(</span>assignees.assignee_organization <span class="op">=</span> <span class="st">"Johnson &amp; Johnson"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">example</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/search_pv.html">search_pv</a></span><span class="op">(</span>query<span class="op">=</span><span class="va">query</span>, fields<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"assignees.assignee_id"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">example</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span><span class="op">$</span><span class="va">assignees_at_grant</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">example</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span><span class="op">$</span><span class="va">assignees</span>, <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="co"># [[1]]</span></span>
-<span><span class="co">#                                            assignee</span></span>
-<span><span class="co"># 1 https://search.patentsview.org/api/v1/assignee/35/</span></span></code></pre>
+<span><span class="co">#                                                                              assignee</span></span>
+<span><span class="co">#1 https://search.patentsview.org/api/v1/assignee/4cc92231-2f00-11ed-aea8-1234bde3cd05/</span></span></code></pre>
+<p>It’s also an example where the fields parameter specifies a field ending in _id but field in the entity that is returned does not have the _id in it.</p>
 <ol start="2" style="list-style-type: decimal"><li>
 <strong>General Choices</strong>
 <ol style="list-style-type: decimal"><li><p>Now there are new, get-only convience endpoints that take a url parameter (what the HATEOAS links hit). The R package ignores these and just uses the ones that do posts and gets using q,f,s and o parameters, as the original version of the API did.</p></li>

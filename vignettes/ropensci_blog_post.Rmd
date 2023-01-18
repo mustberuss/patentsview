@@ -76,8 +76,8 @@ Or  from GitHub:
 
 ```r
 if (!require(devtools)) install.packages("devtools")
+   devtools::install_github("mustberuss/patentsview@api-redesign")
 
-devtools::install_github("mustberuss/patentsview@api-redesign")
 ```
 
 ## Getting started

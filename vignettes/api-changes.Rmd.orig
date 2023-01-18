@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
  
 In July of 2021 the Patentview API team announced upcoming API changes here https://patentsview.org/data-in-action/whats-new-patentsview-july-2021.  This page will explain the impact to the r package and any existing code.
  
-The Patentsview API team has provided a Swagger UI page for the new version of the API at https://search.patentsview.org/swagger-ui/. It shows all the available endpoints and their responses.  Each field in the 200 response sections could be requested in the fields/f: parameter and each field is supposed to be queryable (usable in the query/q: parameter).  The Swagger UI page can be used to make requests, if you have an API key to enter in the authorization screen, more about the new API key below.  The Swagger UI definition at https://patentsview.historicip.com/swagger/openapi_v2.yml can be imported into Postman to give you a nicely loaded collection for the changed API. You'll just need to set a global variable PVIEW_KEY and set the authorization's value to {{PVIEW_KEY}} to your API key. (The patentsview's Swagger UI definition https://search.patentsview.org/static/openapi_v2.yml could be imported into Postman but it currently contains errors and does not contain a servers entry.  This was reported to the API team.)
+The Patentsview API team has provided a Swagger UI page for the new version of the API at https://search.patentsview.org/swagger-ui/. It shows all the available endpoints and their responses.  Each field in the 200 response sections could be requested in the fields/f: parameter and each field is supposed to be queryable (usable in the query/q: parameter).  The Swagger UI page can be used to make requests, if you have an API key to enter in the authorization screen, more about the new API key below.  The Swagger UI definition at https://patentsview.historicip.com/swagger/openapi_even_newer.json can be imported into Postman to give you a nicely loaded collection for the changed API. You'll just need to set a global variable PVIEW_KEY and set the authorization's value to {{PVIEW_KEY}} to your API key. (The patentsview's Swagger UI definition https://search.patentsview.org/static/openapi.json could be imported into Postman but it currently contains errors and does not contain a servers entry.  This was reported to the API team.)
 
 ## An API Key is required
 Perhaps the most important change, without an API key your queries will be rejected.  Request an API key using this link: https://patentsview.org/apis/keyrequest  Once you have one, you'll need to set an environmental variable PATENTSVIEW_API_KEY to the value of your API key for the R package to use.
@@ -127,5 +127,5 @@ when including them in your query.  Example: assignee organization is renamed or
 
 * Nested fields seem to need to be fully qualified in the f:parameter. Here are all the patents endpoint's fields:
 ```{r}
-get_fields("patents")
+sort(get_fields("patents"))
 ```

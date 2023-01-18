@@ -47,6 +47,31 @@
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-flag"></span>
+     
+    API Changes
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li>
+      <a href="../articles/api-changes.html">
+        <span class="fa fa-exclamation"></span>
+         
+        2023 API Changes
+      </a>
+    </li>
+    <li>
+      <a href="../articles/converting-an-existing-script.html">
+        <span class="fa fa-sync"></span>
+         
+        Converting an Existing Script
+      </a>
+    </li>
+  </ul>
+</li>
 <li>
   <a href="../articles/getting-started.html">
     <span class="fa fa-play"></span>
@@ -196,7 +221,7 @@ using one of the functions in the DSL, <code>qry_funs$gte()</code>:</p>
 <p>More complex queries are also possible:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>  <span class="fu">and</span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
 <span>    <span class="fu">gte</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2007-01-01"</span><span class="op">)</span>,</span>
 <span>    <span class="fu">text_phrase</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"computer program"</span>, <span class="st">"dog leash"</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
@@ -374,11 +399,27 @@ fields to their preferred R types using <code><a href="../reference/cast_pv_data
 <span><span class="co">#&gt; Error in prsd_resp[[4]]: subscript out of bounds</span></span>
 <span></span>
 <span><span class="va">res</span></span>
-<span><span class="co">#&gt; Error in eval(expr, envir, enclos): object 'res' not found</span></span>
+<span><span class="co">#&gt; $data</span></span>
+<span><span class="co">#&gt; #### A list with a single data frame on us_patent_citations level:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; List of 1</span></span>
+<span><span class="co">#&gt;  $ us_patent_citations:'data.frame': 1037 obs. of  2 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id         : chr [1:1037] "10095778" ...</span></span>
+<span><span class="co">#&gt;   ..$ citation_patent_id: chr [1:1037] "6430539" ...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $query_results</span></span>
+<span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; total_hits = 1,066</span></span>
 <span><span class="co"># [&lt;span style="color: red;"&gt;trouble here&lt;/span&gt;]</span></span>
 <span><span class="co"># Use more appropriate data types:</span></span>
 <span><span class="fu"><a href="../reference/cast_pv_data.html">cast_pv_data</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in "pv_data_result" %in% class(data): object 'res' not found</span></span></code></pre></div>
+<span><span class="co">#&gt; #### A list with a single data frame on us_patent_citations level:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; List of 1</span></span>
+<span><span class="co">#&gt;  $ us_patent_citations:'data.frame': 1037 obs. of  2 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id         : chr [1:1037] "10095778" ...</span></span>
+<span><span class="co">#&gt;   ..$ citation_patent_id: chr [1:1037] "6430539" ...</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="faqs">FAQs<a class="anchor" aria-label="anchor" href="#faqs"></a>
@@ -420,21 +461,21 @@ split it into three pieces and make three calls to
 <code><a href="../reference/search_pv.html">search_pv()</a></code>, each with all_pages = TRUE:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">query_1a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>  <span class="fu">and</span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">'game'</span><span class="op">)</span>,</span>
 <span>    <span class="fu">lte</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2010-05-17"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">query_1b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>  <span class="fu">and</span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">'game'</span><span class="op">)</span>,</span>
 <span>    <span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span>patent_date<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2010-05-18"</span>, <span class="st">"2021-05-10"</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">query_1c</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>  <span class="fu">and</span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">'game'</span><span class="op">)</span>,</span>
 <span>    <span class="fu">gte</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2021-05-11"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
@@ -479,6 +520,11 @@ choice of the two).</li>
 </ol>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'tidyr'</span></span>
+<span><span class="co">#&gt; The following object is masked from 'package:magrittr':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     extract</span></span>
 <span></span>
 <span><span class="co"># Get assignee data:</span></span>
 <span><span class="va">res</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>

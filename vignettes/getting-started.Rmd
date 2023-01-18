@@ -180,11 +180,27 @@ res <- search_pv(
 #> Error in prsd_resp[[4]]: subscript out of bounds
 
 res
-#> Error in eval(expr, envir, enclos): object 'res' not found
+#> $data
+#> #### A list with a single data frame on us_patent_citations level:
+#> 
+#> List of 1
+#>  $ us_patent_citations:'data.frame':	1037 obs. of  2 variables:
+#>   ..$ patent_id         : chr [1:1037] "10095778" ...
+#>   ..$ citation_patent_id: chr [1:1037] "6430539" ...
+#> 
+#> $query_results
+#> #### Distinct entity counts across all downloadable pages of output:
+#> 
+#> total_hits = 1,066
 # [<span style="color: red;">trouble here</span>]
 # Use more appropriate data types:
 cast_pv_data(res$data)
-#> Error in "pv_data_result" %in% class(data): object 'res' not found
+#> #### A list with a single data frame on us_patent_citations level:
+#> 
+#> List of 1
+#>  $ us_patent_citations:'data.frame':	1037 obs. of  2 variables:
+#>   ..$ patent_id         : chr [1:1037] "10095778" ...
+#>   ..$ citation_patent_id: chr [1:1037] "6430539" ...
 ```
 
 ## FAQs
@@ -265,6 +281,11 @@ res$data
 
 ```r
 library(tidyr)
+#> 
+#> Attaching package: 'tidyr'
+#> The following object is masked from 'package:magrittr':
+#> 
+#>     extract
 
 # Get assignee data:
 res$data$patents %>% 
