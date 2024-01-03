@@ -2,7 +2,10 @@ test_that("We can print the returns from all endpoints ", {
   skip_on_cran()
 
   eps <- get_endpoints()
-  lapply(eps, function(x) {
+  bad_eps <- c("cpc_subclasses", "uspc_subclasses", "uspc_mainclasses", "wipo")
+  good_eps <- eps[!eps %in% bad_eps]
+
+  lapply(good_eps, function(x) {
     Sys.sleep(1)
     print(x)
     j <- search_pv(query = TEST_QUERIES[[x]], endpoint = x)
@@ -11,4 +14,15 @@ test_that("We can print the returns from all endpoints ", {
   })
 
   expect_true(TRUE)
+
+  # this will fail when the api is fixed
+  z <- lapply(bad_eps, function(x) {
+    expect_error(
+       j <- search_pv(query = TEST_QUERIES[[x]], endpoint = x)
+    )
+  })
+
+  # make it noticeable that all is not right with the API
+  skip("Skip for API bugs") # TODO: remove when the API is fixed
+
 })
