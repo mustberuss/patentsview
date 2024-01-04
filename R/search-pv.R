@@ -84,6 +84,9 @@ one_request <- function(method, query, base_url, arg_list, api_key, ...) {
 
     one_request(method, query, base_url, arg_list, api_key, ...)
   } else {
+
+    if (httr::http_error(resp)) throw_er(resp)
+
     resp
   }
 }
