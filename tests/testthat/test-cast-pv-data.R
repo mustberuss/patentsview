@@ -1,6 +1,5 @@
 test_that("cast_pv_data casts patent fields as expected", {
   skip_on_cran()
-  skip_on_ci()
 
   pv_out <- search_pv(
     query = '{"patent_id":"5116621"}', fields = get_fields("patents")

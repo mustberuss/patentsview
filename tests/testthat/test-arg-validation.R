@@ -4,6 +4,9 @@ test_that("validate_args throws errors for all bad args", {
   # make sure deprecated warnings are always thrown- bypass 8 hour suppression
   rlang::local_options(lifecycle_verbosity = "warning")
 
+  # TODO(any): Remove:
+  # skip("Temp skip for API redesign PR")
+
   expect_error(
     search_pv('{"patent_date":["1976-01-06"]}', endpoint = "patent"),
     "endpoint"
