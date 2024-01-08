@@ -64,7 +64,7 @@ Each endpoint has a different set of _queryable_ and _retrievable_ fields. Query
 # search_pv defaults the endpoint parameter to "patents" if not specified
 result = search_pv(
   query = '{"_gte":{"patent_date":"2007-01-01"}}',
-  fields = c("patent_number", "patent_title")
+  fields = c("patent_id", "patent_title")
 )
 result
 
@@ -91,7 +91,7 @@ You can download all pages of output in one call by setting `all_pages = TRUE`. 
 
 ```{r}
 search_pv(
-  query = qry_funs$eq(inventors.inventors_name_last = "chambers"),
+  query = qry_funs$eq(inventors.inventor_name_last = "Chambers"),
   all_pages = TRUE, per_page = 1000
 )
 ```
@@ -106,12 +106,12 @@ With the recent API change, the patents endpoint supplies the basic patent data 
 
 ```{r}
 
-query <- qry_funs$eq(inventors.inventor_name_last = "chambers")
+query <- qry_funs$eq(inventors.inventor_name_last = "Chambers")
 
-# Here we'll request patent_number and the inventor fields from the patents endpoint
+# Here we'll request patent_id and the inventor fields from the patents endpoint
 inv_fields <- get_fields(endpoint = "patents", groups ="inventors")
 inv_fields
-fields <- c(inv_fields, "patent_number")
+fields <- c(inv_fields, "patent_id")
 
 result <- search_pv(query, endpoint = "patents", fields = fields)
 result
@@ -120,8 +120,12 @@ result
 result$data$patents$inventors[[1]]
 
 # Now we will see what the inventors endpoint returns for a similar query.  We use get_fields() to get all the available for the inventors endpoint.
-query <- qry_funs$eq(name_last = "chambers")
-fields = get_fields(endpoint = "inventors")
+query <- qry_funs$eq(inventor_name_last = "Chambers")
+fields <- get_fields(endpoint = "inventors")
+
+# temporary workaround for 
+# API Error: Invalid field: inventor_gender_attr_status and inventor_male_flag
+fields <- fields[! fields %in% c("inventor_gender_attr_status","inventor_male_flag")]
 
 search_pv(query, endpoint = "inventors", fields = fields)
 
@@ -142,7 +146,7 @@ integers woudl be more appropriate.   You can cast all fields to their preferred
 
 ```{r}
 res <- search_pv(
-  query = "{\"patent_number\":\"5116621\"}", 
+  query = "{\"patent_id\":\"5116621\"}", 
   fields = c("patent_date", "patent_title", "patent_year")
 )
 
@@ -210,7 +214,7 @@ fields <- get_fields("patents")
 
 # Pull data
 res <- search_pv(
-  query = qry_funs$text_any(inventors.inventor_name_last = "smith"), 
+  query = qry_funs$text_any(inventors.inventor_name_last = "Smith"), 
   endpoint = "patents", 
   fields = fields
 )
@@ -234,7 +238,7 @@ res$data$patents %>%
 2. **Use patentsview::unnest_pv_data.** `unnest_pv_data()` creates a series of data frames (one for each entity level) that are like tables in a relational database. You provide it with the data returned by `search_pv()` and a field that can act as a unique identifier for the primary entities:
 
 ```{r}
-unnest_pv_data(data = res$data, pk = "patent_number")
+unnest_pv_data(data = res$data, pk = "patent_id")
 ```
 
 Now we are left with a series of flat data frames instead of having a single data frame with other data frames nested inside of it. These flat data frames can be joined together as needed via the primary key (`assignee_id`).

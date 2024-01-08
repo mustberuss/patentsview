@@ -106,7 +106,7 @@ search_pv(query = qry_1, fields = NULL) # This will retrieve a default set of fi
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 4,459,040
+#> total_hits = 4,896,259
 ```
 
 ...Or you can use the domain specific language (DSL) provided in the `patentsview` package to help you write the query:
@@ -130,7 +130,7 @@ search_pv(query = qry_2)
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 4,459,040
+#> total_hits = 4,896,259
 ```
 
 `qry_1` and `qry_2` will result in the same HTTP call to the API. Both queries search for patents in USPTO that were published after 2007. There are three gotchas to look out for when writing a query:
@@ -164,7 +164,7 @@ search_pv(
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 4,459,040
+#> total_hits = 4,896,259
 ```
 
 The fields that you can retrieve depends on the endpoint that you are hitting. We've been using the "patents" endpoint thus far, so all of these are retrievable: `fieldsdf[fieldsdf$endpoint == "patents", "field"]`. You can also use `get_fields()` to list the retrievable fields for a given endpoint:
@@ -186,7 +186,7 @@ search_pv(
 #>   ..$ patent_date                                                 : chr [1:10"..
 #>   ..$ patent_year                                                 : int [1:100..
 #>   ..$ patent_abstract                                             : chr [1:10"..
-#>   ..$ patent_cpc_current_group_average_patent_processing_days     : logi [1:10..
+#>   ..$ patent_cpc_current_group_average_patent_processing_days     : int [1:100..
 #>   ..$ patent_detail_desc_length                                   : int [1:100..
 #>   ..$ patent_earliest_application_date                            : chr [1:10"..
 #>   ..$ patent_num_foreign_documents_cited                          : int [1:100..
@@ -203,7 +203,7 @@ search_pv(
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 4,459,040
+#> total_hits = 4,896,259
 ```
 
 ## Example
@@ -216,7 +216,75 @@ Let's look at a quick example of pulling and analyzing patent data. We'll look a
 ```r
 library(patentsview)
 
-# Write a query:
+# The original post's query is not currently possible with the current version of the new API.
+# This may be reworked if/when the patents endpoint is fixed.  The patents endpoint is supposed 
+# to assignees.assignee_location_id which we could then look up its latitude and longitude
+# at the location endpoint.  The problem is that currently the assignees.assignee_location_id
+# is not being returned by the new version of the API.
+
+# Here we'll use a query that is currently possible, one which returns latitudes and longitudes
+# We'll query the assignees endpoint for non-empty assignee_organization, where their assignee_individual_name_first and assignee_individual_name_last should be empty
+# The sort will be by assignee_num_patents descending so we'll get a list of the most proflic assignee_organizations
+
+query <- with_qfuns( # with_qfuns is basically just: with(qry_funs, ...)
+  neq("assignee_organization" = "")
+)
+
+# Create a list of fields:
+# We request the fields we will use below rather than requesting them all and 
+# then filtering to get just the ones we want
+fields <- c("assignee_id", "assignee_organization", "assignee_num_patents",
+   "assignee_lastknown_latitude", "assignee_lastknown_longitude")
+
+# Send HTTP request to API's server:
+pv_res <- search_pv(endpoint = "assignees", query = query, fields = fields, 
+   sort = c("assignee_num_patents" = "desc"), all_pages = FALSE)
+```
+
+2. See where the assignees are coming from (geographically) 
+
+
+```r
+library(leaflet)
+library(htmltools)
+library(dplyr)
+library(tidyr)
+library(stringr)
+
+# my mom was an English teacher, so below we singularize/pluralize Patents
+# or maybe Patents:1 was ok?  Here because of the sort it will be unlikely
+# that there will be a single patent in our results.
+
+data <-
+  pv_res$data$assignees %>%
+  mutate(popup = paste0(
+    "<font color='Black'>",
+    htmlEscape(assignee_organization), "<br><br>Patent",
+    ifelse(assignee_num_patents == 1, ":", "s:"), # singular/plural
+    assignee_num_patents, "</font>"
+  )) %>%
+  filter_at(vars(assignee_lastknown_latitude, assignee_lastknown_longitude), any_vars(!is.na(.))) # seeing NA lats and longs
+
+leaflet(data) %>%
+  addProviderTiles(providers$CartoDB.DarkMatterNoLabels) %>%
+  addCircleMarkers(
+    lng = ~assignee_lastknown_longitude, lat = ~assignee_lastknown_latitude,
+    popup = ~popup, radius=2, color = "yellow"
+  )
+```
+
+![](figure/blogleaflet-1.png)
+
+<br>
+
+3. Plot the growth of the field's topics over time
+
+
+```r
+library(ggplot2)
+library(RColorBrewer)
+
+# Here we issue the original post's query, rewritten for the new version of the API
 query <- with_qfuns( # with_qfuns is basically just: with(qry_funs, ...)
   and(
     begins(cpc_current.cpc_group_id = "H04L63/02"),
@@ -230,77 +298,13 @@ fields <- c(
   get_fields(endpoint = "patents", groups = c("assignees", "cpc_current"))
 )
 
-# Send HTTP request to API's server:
 pv_res <- search_pv(query = query, fields = fields, all_pages = TRUE)
-```
 
-2. See where the patents are coming from (geographically) 
-
-
-```r
-library(leaflet)
-library(htmltools)
-library(dplyr)
-library(tidyr)
-library(stringr)
-
-# Now we don't get assignee latitude/longitude from the patent endpoint
-# We're supposed to get assignee_location_id but the API isn't returning them
-# we'd need over 14,000 locations, impractical to call another endpoint
-# anyway.
-
-# my mom was an English teacher, so below we singularize/pluralize Patents
-# or maybe Patents:1 was ok?
-
-data <-
-  pv_res$data$patents %>%
-  unnest(assignees) %>%
-  mutate(assignee_id = str_extract(assignee, "([\\w-]+)(?=/$)")) %>%
-  select(
-    assignee_id, assignee_organization, patent_id,
-    assignee_lastknown_longitude, assignee_lastknown_latitude
-  ) %>%
-  group_by_at(vars(-matches("pat"))) %>%
-  mutate(num_pats = n()) %>%
-  ungroup() %>%
-  select(-patent_id) %>%
-  distinct() %>%
-  mutate(popup = paste0(
-    "<font color='Black'>",
-    htmlEscape(organization), "<br><br>Patent",
-    ifelse(num_pats == 1, ":", "s:"), # singular/plural
-    num_pats, "</font>"
-  )) %>%
-  filter_at(vars(latitude, longitude), any_vars(!is.na(.))) # seeing NA lats and longs
-#> Error in `select()`:
-#> ! Can't subset columns that don't exist.
-#> ✖ Column `assignee_lastknown_longitude` doesn't exist.
-
-leaflet(data) %>%
-  addProviderTiles(providers$CartoDB.DarkMatterNoLabels) %>%
-  addCircleMarkers(
-    lng = ~longitude, lat = ~latitude,
-    popup = ~popup, ~ sqrt(num_pats), color = "yellow"
-  )
-#> Error in UseMethod("metaData"): no applicable method for 'metaData' applied to an object of class "function"
-```
-
-<br>
-
-3. Plot the growth of the field's topics over time
-
-
-```r
-library(ggplot2)
-library(RColorBrewer)
-
-# In the new version of the API, we don't get the title back from the patents endpoint
+# In the new version of the API, we don't get the CPC title back from the patents endpoint
 # we have to call, you guessed it, the cpc_group endpoint now
-qry <- qry_funs$text_any(cpc_group_id = "H04L63/02")
+qry <- qry_funs$begins(cpc_group_id = "H04L63/02")
 qry
-#> {"_text_any":{"cpc_group_id":"H04L63/02"}}
-
-qry <- '{"_begins":{"cpc_group_id":"H04L63/02"}}'
+#> {"_begins":{"cpc_group_id":"H04L63/02"}}
 
 cpc_info <- search_pv(query = qry, fields = get_fields("cpc_groups"), endpoint = "cpc_groups")
 
@@ -315,7 +319,7 @@ data <-
   mutate(cpc_group = sub(".*/([\\w:]+)/$", "\\1", cpc_group, perl = TRUE)) %>% # unHATEOAS cpc_group, funky colon and all
   filter(cpc_group != "H04L63:02") %>% # remove patents categorized into only top-level category of H04L63/02
   mutate(cpc_group = sub(":", "/", cpc_group)) %>% # back to normality, ahead of a join
-  inner_join(cpc_info$data$cpc_groups, by = c("cpc_group" = "cpc_group_id")) %>% # highlighting name inconsistency
+  inner_join(cpc_info$data$cpc_groups, by = "cpc_group_id") %>%
   ungroup() %>%
   mutate(
     title = case_when(
@@ -334,19 +338,20 @@ data <-
   count() %>%
   ungroup()
 
-# Here the line graph looks a bit anemic since our data set was only 300 patents and
-# the y scale was limits = c(0, 700)).
+max_year <- max(data$patent_year)
+y_limit <- max(data$n) + 100 - (max(data$n) %% 100) # even hundred past the max
 
 ggplot(data = data) +
   geom_smooth(aes(x = patent_year, y = n, colour = title), se = FALSE) +
   scale_x_continuous("\nGrant year",
-    limits = c(2007, 2016),
-    breaks = 2007:2016
+    limits = c(2007, max_year),
+    breaks = 2007:max_year
   ) +
-  scale_y_continuous("Patents\n", limits = c(0, 25)) +
+  scale_y_continuous("Patents\n", limits = c(0, y_limit)) +
   scale_colour_manual("", values = brewer.pal(5, "Set2")) +
   theme_bw() + # theme inspired by https://hrbrmstr.github.io/hrbrthemes/
-  theme(panel.border = element_blank(), axis.ticks = element_blank())
+  theme(panel.border = element_blank(), axis.ticks = element_blank()) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 ```
 
 ![](figure/blogplot-1.png)

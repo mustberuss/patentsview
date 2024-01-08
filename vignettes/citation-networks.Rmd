@@ -60,19 +60,19 @@ res_lst
 #> List of 1
 #>  $ us_patent_citations:'data.frame':	1037 obs. of  2 variables:
 #>   ..$ patent_id         : chr [1:1037] "10095778" ...
-#>   ..$ citation_patent_id: chr [1:1037] "6430539" ...
+#>   ..$ citation_patent_id: chr [1:1037] "7242217" ...
 
 res_lst2 <- unnest_pv_data(res2$data, pk = "patent_id")
 res_lst2
 #> List of 1
-#>  $ us_patent_citations:'data.frame':	893 obs. of  2 variables:
-#>   ..$ patent_id         : chr [1:893] "10007946" ...
-#>   ..$ citation_patent_id: chr [1:893] "7716226" ...
+#>  $ us_patent_citations:'data.frame':	954 obs. of  2 variables:
+#>   ..$ patent_id         : chr [1:954] "10007946" ...
+#>   ..$ citation_patent_id: chr [1:954] "7716226" ...
 ```
 
 # Count the distinct patent_id and cited_patent_id
 
-There are only 11 PCA patents. These patents cite 1037 patents and are cited by 893 patents. Let's visualize the citations among the PCA patents. We'll create our visualization using the `visNetwork` package, which requires us to create a data frame of nodes and a data frame of edges.
+There are only 11 PCA patents. These patents cite 1037 patents and are cited by 954 patents. Let's visualize the citations among the PCA patents. We'll create our visualization using the `visNetwork` package, which requires us to create a data frame of nodes and a data frame of edges.
 
 
 ```r

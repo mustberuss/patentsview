@@ -70,17 +70,17 @@ pv_out
 #> #### A list with a single data frame (with list column(s) inside) on patents level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	7894 obs. of  5 variables:
-#>   ..$ patent_id                  : chr [1:7894] "10000987" ...
-#>   ..$ patent_date                : chr [1:7894] "2018-06-19" ...
-#>   ..$ patent_year                : int [1:7894] 2018 2018 ...
-#>   ..$ patent_num_us_patents_cited: int [1:7894] 163 7 ...
-#>   ..$ assignees                  :List of 7894
+#>  $ patents:'data.frame':	8515 obs. of  5 variables:
+#>   ..$ patent_id                  : chr [1:8515] "10000987" ...
+#>   ..$ patent_date                : chr [1:8515] "2018-06-19" ...
+#>   ..$ patent_year                : int [1:8515] 2018 2018 ...
+#>   ..$ patent_num_us_patents_cited: int [1:8515] 163 7 ...
+#>   ..$ assignees                  :List of 8515
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 7,894
+#> total_hits = 8,515
 ```
 
 2. Now let's identify who the top assignees are based on how many patents they have in our data set. We'll also calculate how many total patents these assignees have and what fraction of their total patents relate to databases.
@@ -91,15 +91,15 @@ pv_out
 dl <- unnest_pv_data(pv_out$data, "patent_id")
 dl
 #> List of 2
-#>  $ assignees:'data.frame':	7438 obs. of  3 variables:
-#>   ..$ patent_id            : chr [1:7438] "10000987" ...
-#>   ..$ assignee             : chr [1:7438] "https://search.patentsview.org/api"..
-#>   ..$ assignee_organization: chr [1:7438] "National Oilwell Varco, L.P." ...
-#>  $ patents  :'data.frame':	7894 obs. of  4 variables:
-#>   ..$ patent_id                  : chr [1:7894] "10000987" ...
-#>   ..$ patent_date                : chr [1:7894] "2018-06-19" ...
-#>   ..$ patent_year                : int [1:7894] 2018 2018 ...
-#>   ..$ patent_num_us_patents_cited: int [1:7894] 163 7 ...
+#>  $ assignees:'data.frame':	8038 obs. of  3 variables:
+#>   ..$ patent_id            : chr [1:8038] "10000987" ...
+#>   ..$ assignee             : chr [1:8038] "https://search.patentsview.org/api"..
+#>   ..$ assignee_organization: chr [1:8038] "National Oilwell Varco, L.P." ...
+#>  $ patents  :'data.frame':	8515 obs. of  4 variables:
+#>   ..$ patent_id                  : chr [1:8515] "10000987" ...
+#>   ..$ patent_date                : chr [1:8515] "2018-06-19" ...
+#>   ..$ patent_year                : int [1:8515] 2018 2018 ...
+#>   ..$ patent_num_us_patents_cited: int [1:8515] 163 7 ...
 
 # We shouldn't need the filter (we queried for non empty string orginazations) but
 # some are NA somehow
@@ -147,10 +147,10 @@ assignee_out <- search_pv(assignee_query , fields = assignee_fields, all_pages =
 assignee_counts <- unnest_pv_data(assignee_out$data, "assignee_id")
 assignee_counts
 #> List of 1
-#>  $ assignees:'data.frame':	72 obs. of  3 variables:
-#>   ..$ assignee_id          : chr [1:72] "00501db1-74e4-4dc5-a2a3-ba81577d157e"..
-#>   ..$ assignee_organization: chr [1:72] "Lucent Technologies Inc." ...
-#>   ..$ assignee_num_patents : int [1:72] 9435 7431 ...
+#>  $ assignees:'data.frame':	75 obs. of  3 variables:
+#>   ..$ assignee_id          : chr [1:75] "00bbd2c6-ccfc-4f71-80a9-9363e11d7ca2"..
+#>   ..$ assignee_organization: chr [1:75] "ORACLE INTERNATIONAL CORPORATION" ...
+#>   ..$ assignee_num_patents : int [1:75] 9519 30227 ...
 
 # Here we redo top_asgns now that we have all the fields we need.
 # We join in the total counts and mutate in the percentages 
@@ -249,12 +249,12 @@ kable(head(asng_p_dat), row.names = FALSE)
 
 |assignee_organization                       | mean_perc| db_pats| ttl_pats| frac_db_pats|color   |
 |:-------------------------------------------|---------:|-------:|--------:|------------:|:-------|
-|International Business Machines Corporation | 0.4671046|     769|   153889|        0.005|#f1c40f |
-|Canon Kabushiki Kaisha                      | 0.4955864|      12|    81768|        0.000|#f1c40f |
-|Sony Corporation                            | 0.3594824|      24|    61802|        0.000|#f1c40f |
-|General Electric Company                    | 0.4476709|      24|    49483|        0.000|#f1c40f |
-|Intel Corporation                           | 0.3521320|      20|    47722|        0.000|#f1c40f |
-|Hitachi, Ltd.                               | 0.3605432|      50|    42726|        0.001|#f1c40f |
+|International Business Machines Corporation | 0.4675192|     789|   158577|        0.005|#f1c40f |
+|SONY CORPORATION                            | 0.3683009|      25|    59883|        0.000|#f1c40f |
+|FUJITSU LIMITED                             | 0.4012919|      44|    55866|        0.001|#f1c40f |
+|General Electric Company                    | 0.4488619|      24|    50519|        0.000|#f1c40f |
+|Intel Corporation                           | 0.3463383|      20|    48691|        0.000|#f1c40f |
+|Hitachi, Ltd.                               | 0.3608380|      50|    43165|        0.001|#f1c40f |
 
 Now let's visualize the data. Each assignee will be represented by a point/bubble. The x-value of the point will represent the total number of patents the assignee has published in the field of databases (on a log scale), while the y-value will represent its average normalized citation rate. The size of the bubble will be proportional to the percent of the assignee's patents that relate to databases.
 

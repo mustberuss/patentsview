@@ -73,27 +73,6 @@ pv_data
 #> #### A list with a single data frame on cpc_groups level:
 #> 
 #> List of 1
-#>  $ cpc_groups:'data.frame':	100 obs. of  4 variables:
-#>   ..$ cpc_class      : chr [1:100] "https://search.patentsview.org/api/v1/cpc"..
-#>   ..$ cpc_subclass   : chr [1:100] "https://search.patentsview.org/api/v1/cpc"..
-#>   ..$ cpc_group_id   : chr [1:100] "A01B1/00" ...
-#>   ..$ cpc_group_title: chr [1:100] "Hand tools" ...
-#> 
-#> $query_results
-#> #### Distinct entity counts across all downloadable pages of output:
-#> 
-#> total_hits = 242,232
-
-if(pv_data$query_results$total_hits != 1){
-   print("something is wrong with the API.  Response should match this:")
-   query <- qry_funs$eq("cpc_group_id" = "G01S7/4865")
-   search_pv(query, endpoint = "cpc_groups")
-}
-#> [1] "something is wrong with the API.  Response should match this:"
-#> $data
-#> #### A list with a single data frame on cpc_groups level:
-#> 
-#> List of 1
 #>  $ cpc_groups:'data.frame':	1 obs. of  4 variables:
 #>   ..$ cpc_class      : chr "https://search.patentsview.org/api/v1/cpc_class/G"..
 #>   ..$ cpc_subclass   : chr "https://search.patentsview.org/api/v1/cpc_subclas"..
@@ -104,6 +83,12 @@ if(pv_data$query_results$total_hits != 1){
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
 #> total_hits = 1
+
+if(pv_data$query_results$total_hits != 1){
+   print("something is wrong with the API.  Response should match this:")
+   query <- qry_funs$eq("cpc_group_id" = "G01S7/4865")
+   search_pv(query, endpoint = "cpc_groups")
+}
 ```
 
 ## Throttling

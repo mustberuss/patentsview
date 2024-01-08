@@ -49,12 +49,16 @@ pv_out$data$assignees$assignee_organization
 
 Where geographically have Microsoft inventors been coming from over the past few years?
 
+Note that the api currently returns no results for "Microsoft Corporation" but will return
+"Microsoft Corporation", 
+"Microsoft Corporation—One Microsoft Way"
+
 ```{r}
 # Write the query
 query <- with_qfuns(
   and(
-    gte(patent_date = "2019-07-30"), # Dates are in yyyy-mm-dd format
-    begins(assignees.assignee_organization = "Microsoft Corporat")
+    gte(patent_date = "2022-07-26"), # Dates are in yyyy-mm-dd format
+    begins(assignees.assignee_organization = "Microsoft")
   )
 )
 

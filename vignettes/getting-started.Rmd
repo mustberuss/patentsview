@@ -39,7 +39,7 @@ search_pv(
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 4,642,018
+#> total_hits = 5,079,237
 ```
 
 This call to `search_pv()` sends our query to the patents endpoint (the default). The API has 13 different endpoints, corresponding to 13 different entity types (application_citation, assignee, cpc_group, cpc_subgroup, cpc_subsection, inventor, location, nber_category, nber_subcategory, patent, patent_citation, uspc_mainclass and uspc_subclass).[^1] Your choice of endpoint determines which entity your query is applied to, as well as the structure of the data that is returned (more on this in the "13 endpoints for 13 entities section"). For now, let's turn our attention to the `query` parameter. 
@@ -78,11 +78,21 @@ Each endpoint has a different set of _queryable_ and _retrievable_ fields. Query
 # search_pv defaults the endpoint parameter to "patents" if not specified
 result = search_pv(
   query = '{"_gte":{"patent_date":"2007-01-01"}}',
-  fields = c("patent_number", "patent_title")
+  fields = c("patent_id", "patent_title")
 )
-#> Error: Bad field(s): patent_number
 result
-#> Error in eval(expr, envir, enclos): object 'result' not found
+#> $data
+#> #### A list with a single data frame on patents level:
+#> 
+#> List of 1
+#>  $ patents:'data.frame':	1000 obs. of  2 variables:
+#>   ..$ patent_id   : chr [1:1000] "10000000" ...
+#>   ..$ patent_title: chr [1:1000] "Coherent LADAR using intra-pixel quadrature"..
+#> 
+#> $query_results
+#> #### Distinct entity counts across all downloadable pages of output:
+#> 
+#> total_hits = 5,079,237
 ```
 
 To list all of the retrievable fields for a given endpoint, use `get_fields()`:
@@ -91,12 +101,9 @@ To list all of the retrievable fields for a given endpoint, use `get_fields()`:
 ```r
 retrvble_flds <- get_fields(endpoint = "patents")
 head(retrvble_flds)
-#> [1] "patent_id"                                
-#> [2] "patent_num_us_applications_cited"         
-#> [3] "applicants.applicant_organization"        
-#> [4] "attorneys.attorney_sequence"              
-#> [5] "us_related_documents.published_country"   
-#> [6] "us_related_documents.related_doc_sequence"
+#> [1] "applicants.applicant_designation"  "applicants.applicant_name_first"  
+#> [3] "applicants.applicant_name_last"    "applicants.applicant_organization"
+#> [5] "applicants.applicant_sequence"     "applicants.applicant_type"
 ```
 See the [Swagger UI page](https://search.patentsview.org/swagger-ui/) for the API, the fields returned are listed for each endpoint in the 200 Response body sections.
 
@@ -113,10 +120,20 @@ You can download all pages of output in one call by setting `all_pages = TRUE`. 
 
 ```r
 search_pv(
-  query = qry_funs$eq(inventors.inventors_name_last = "chambers"),
+  query = qry_funs$eq(inventors.inventor_name_last = "Chambers"),
   all_pages = TRUE, per_page = 1000
 )
-#> Error: inventors.inventors_name_last is not a valid field to query for your endpoint
+#> $data
+#> #### A list with a single data frame on patents level:
+#> 
+#> List of 1
+#>  $ patents:'data.frame':	2402 obs. of  1 variable:
+#>   ..$ patent_id: chr [1:2402] "10000988" ...
+#> 
+#> $query_results
+#> #### Distinct entity counts across all downloadable pages of output:
+#> 
+#> total_hits = 2,402
 ```
 
 ## Entity counts
@@ -130,32 +147,87 @@ With the recent API change, the patents endpoint supplies the basic patent data 
 
 ```r
 
-query <- qry_funs$eq(inventors.inventor_name_last = "chambers")
+query <- qry_funs$eq(inventors.inventor_name_last = "Chambers")
 
-# Here we'll request patent_number and the inventor fields from the patents endpoint
+# Here we'll request patent_id and the inventor fields from the patents endpoint
 inv_fields <- get_fields(endpoint = "patents", groups ="inventors")
 inv_fields
-#> [1] "inventors.inventor_sequence"    "inventors.inventor_city"       
-#> [3] "inventors.inventor_state"       "inventors.inventor_name_first" 
-#> [5] "inventors.inventor_country"     "inventors.inventor_id"         
-#> [7] "inventors.inventor_name_last"   "inventors.inventor_location_id"
-fields <- c(inv_fields, "patent_number")
+#> [1] "inventors.inventor_city"        "inventors.inventor_country"    
+#> [3] "inventors.inventor_id"          "inventors.inventor_location_id"
+#> [5] "inventors.inventor_name_first"  "inventors.inventor_name_last"  
+#> [7] "inventors.inventor_sequence"    "inventors.inventor_state"
+fields <- c(inv_fields, "patent_id")
 
 result <- search_pv(query, endpoint = "patents", fields = fields)
-#> Error: Bad field(s): patent_number
 result
-#> Error in eval(expr, envir, enclos): object 'result' not found
+#> $data
+#> #### A list with a single data frame (with list column(s) inside) on patents level:
+#> 
+#> List of 1
+#>  $ patents:'data.frame':	1000 obs. of  2 variables:
+#>   ..$ patent_id: chr [1:1000] "10000988" ...
+#>   ..$ inventors:List of 1000
+#> 
+#> $query_results
+#> #### Distinct entity counts across all downloadable pages of output:
+#> 
+#> total_hits = 2,402
 
 # Here's the first inventors
 result$data$patents$inventors[[1]]
-#> Error in eval(expr, envir, enclos): object 'result' not found
+#>                                                               inventor
+#> 1   https://search.patentsview.org/api/v1/inventor/fl:si_ln:harrall-1/
+#> 2   https://search.patentsview.org/api/v1/inventor/fl:da_ln:wagoner-1/
+#> 3   https://search.patentsview.org/api/v1/inventor/fl:th_ln:bailey-10/
+#> 4     https://search.patentsview.org/api/v1/inventor/fl:an_ln:barry-8/
+#> 5 https://search.patentsview.org/api/v1/inventor/fl:ja_ln:chambers-11/
+#>   inventor_name_first inventor_name_last inventor_city inventor_state
+#> 1            Simon J.            Harrall       Houston             TX
+#> 2            Danny W.            Wagoner       Cypress             TX
+#> 3           Thomas F.             Bailey       Houston             TX
+#> 4        Andrew A. W.              Barry Missouri City             TX
+#> 5            James W.           Chambers       Hackett             AR
+#>   inventor_country inventor_sequence
+#> 1               US                 4
+#> 2               US                 1
+#> 3               US                 0
+#> 4               US                 3
+#> 5               US                 2
 
 # Now we will see what the inventors endpoint returns for a similar query.  We use get_fields() to get all the available for the inventors endpoint.
-query <- qry_funs$eq(name_last = "chambers")
-fields = get_fields(endpoint = "inventors")
+query <- qry_funs$eq(inventor_name_last = "Chambers")
+fields <- get_fields(endpoint = "inventors")
+
+# temporary workaround for 
+# API Error: Invalid field: inventor_gender_attr_status and inventor_male_flag
+fields <- fields[! fields %in% c("inventor_gender_attr_status","inventor_male_flag")]
 
 search_pv(query, endpoint = "inventors", fields = fields)
-#> Error: name_last is not a valid field to query for your endpoint
+#> $data
+#> #### A list with a single data frame (with list column(s) inside) on inventors level:
+#> 
+#> List of 1
+#>  $ inventors:'data.frame':	432 obs. of  15 variables:
+#>   ..$ inventor_id                 : chr [1:432] "1vk0dcohf8r1vofo538cfxl2g" ...
+#>   ..$ inventor_name_first         : chr [1:432] "Gilbert V." ...
+#>   ..$ inventor_name_last          : chr [1:432] "Chambers" ...
+#>   ..$ inventor_lastknown_city     : chr [1:432] "Baytown" ...
+#>   ..$ inventor_lastknown_state    : chr [1:432] "TX" ...
+#>   ..$ inventor_lastknown_country  : chr [1:432] "US" ...
+#>   ..$ inventor_lastknown_latitude : num [1:432] 29.7 ...
+#>   ..$ inventor_lastknown_longitude: num [1:432] -95 ...
+#>   ..$ inventor_lastknown_location : chr [1:432] "https://search.patentsview.o"..
+#>   ..$ inventor_num_patents        : int [1:432] 1 1 ...
+#>   ..$ inventor_num_assignees      : int [1:432] 1 2 ...
+#>   ..$ inventor_first_seen_date    : chr [1:432] "1995-10-17" ...
+#>   ..$ inventor_last_seen_date     : chr [1:432] "1995-10-17" ...
+#>   ..$ inventor_years_active       : num [1:432] 1 1 ...
+#>   ..$ inventor_years              :List of 432
+#> 
+#> $query_results
+#> #### Distinct entity counts across all downloadable pages of output:
+#> 
+#> total_hits = 432
 ```
 
 Your choice of endpoint determines two things:
@@ -174,33 +246,34 @@ integers woudl be more appropriate.   You can cast all fields to their preferred
 
 ```r
 res <- search_pv(
-  query = "{\"patent_number\":\"5116621\"}", 
+  query = "{\"patent_id\":\"5116621\"}", 
   fields = c("patent_date", "patent_title", "patent_year")
 )
-#> Error in prsd_resp[[4]]: subscript out of bounds
 
 res
 #> $data
-#> #### A list with a single data frame on us_patent_citations level:
+#> #### A list with a single data frame on patents level:
 #> 
 #> List of 1
-#>  $ us_patent_citations:'data.frame':	1037 obs. of  2 variables:
-#>   ..$ patent_id         : chr [1:1037] "10095778" ...
-#>   ..$ citation_patent_id: chr [1:1037] "6430539" ...
+#>  $ patents:'data.frame':	1 obs. of  3 variables:
+#>   ..$ patent_title: chr "Anti-inflammatory analgesic patch"
+#>   ..$ patent_date : chr "1992-05-26"
+#>   ..$ patent_year : int 1992
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 1,066
+#> total_hits = 1
 # [<span style="color: red;">trouble here</span>]
 # Use more appropriate data types:
 cast_pv_data(res$data)
-#> #### A list with a single data frame on us_patent_citations level:
+#> #### A list with a single data frame on patents level:
 #> 
 #> List of 1
-#>  $ us_patent_citations:'data.frame':	1037 obs. of  2 variables:
-#>   ..$ patent_id         : chr [1:1037] "10095778" ...
-#>   ..$ citation_patent_id: chr [1:1037] "6430539" ...
+#>  $ patents:'data.frame':	1 obs. of  3 variables:
+#>   ..$ patent_title: chr "Anti-inflammatory analgesic patch"
+#>   ..$ patent_date : Date[1:1], format: "1992-05-26"
+#>   ..$ patent_year : int 1992
 ```
 
 ## FAQs
@@ -263,15 +336,51 @@ fields <- get_fields("patents")
 
 # Pull data
 res <- search_pv(
-  query = qry_funs$text_any(inventors.inventor_name_last = "smith"), 
+  query = qry_funs$text_any(inventors.inventor_name_last = "Smith"), 
   endpoint = "patents", 
   fields = fields
 )
 res$data
-#> #### A list with a single data frame on patents level:
+#> #### A list with a single data frame (with list column(s) inside) on patents level:
 #> 
 #> List of 1
-#>  $ patents: list()
+#>  $ patents:'data.frame':	1000 obs. of  36 variables:
+#>   ..$ patent_id                                                   : chr [1:10"..
+#>   ..$ patent_title                                                : chr [1:10"..
+#>   ..$ patent_type                                                 : chr [1:10"..
+#>   ..$ patent_date                                                 : chr [1:10"..
+#>   ..$ patent_year                                                 : int [1:100..
+#>   ..$ patent_abstract                                             : chr [1:10"..
+#>   ..$ patent_cpc_current_group_average_patent_processing_days     : int [1:100..
+#>   ..$ patent_detail_desc_length                                   : int [1:100..
+#>   ..$ patent_earliest_application_date                            : chr [1:10"..
+#>   ..$ patent_num_foreign_documents_cited                          : int [1:100..
+#>   ..$ patent_num_times_cited_by_us_patents                        : int [1:100..
+#>   ..$ patent_num_total_documents_cited                            : int [1:100..
+#>   ..$ patent_num_us_applications_cited                            : int [1:100..
+#>   ..$ patent_num_us_patents_cited                                 : int [1:100..
+#>   ..$ patent_processing_days                                      : int [1:100..
+#>   ..$ patent_term_extension                                       : int [1:100..
+#>   ..$ gov_interest_statement                                      : chr [1:10"..
+#>   ..$ patent_uspc_current_mainclass_average_patent_processing_days: logi [1:10..
+#>   ..$ application                                                 :List of 1000
+#>   ..$ applicants                                                  :List of 1000
+#>   ..$ assignees                                                   :List of 1000
+#>   ..$ attorneys                                                   :List of 1000
+#>   ..$ cpc_at_issue                                                :List of 1000
+#>   ..$ cpc_current                                                 :List of 1000
+#>   ..$ examiners                                                   :List of 1000
+#>   ..$ figures                                                     :List of 1000
+#>   ..$ gov_interest_organizations                                  :List of 1000
+#>   ..$ granted_pregrant_crosswalk                                  :List of 1000
+#>   ..$ inventors                                                   :List of 1000
+#>   ..$ ipcr                                                        :List of 1000
+#>   ..$ us_related_documents                                        :List of 1000
+#>   ..$ us_term_of_grant                                            :List of 1000
+#>   ..$ wipo                                                        :List of 1000
+#>   ..$ foreign_priority                                            :List of 1000
+#>   ..$ pct_data                                                    :List of 1000
+#>   ..$ gov_interest_contract_award_numbers                         :List of 1000
 ```
 
 `res$data` has vector columns for those fields that belong to the primary entity (e.g., `res$data$patent_year`) and list columns for those fields that belong to any secondary entity (e.g., `res$data$assignees$assignee_organization`). You have two good ways to pull out the data frames that are nested inside these list columns: 
@@ -291,15 +400,179 @@ library(tidyr)
 res$data$patents %>% 
   unnest(assignees) %>%
   head()
-#> Error in UseMethod("unnest"): no applicable method for 'unnest' applied to an object of class "list"
+#> # A tibble: 6 × 44
+#>   patent_id patent_title paten…¹ paten…² paten…³ paten…⁴ paten…⁵ paten…⁶ paten…⁷
+#>   <chr>     <chr>        <chr>   <chr>     <int> <chr>     <int>   <int> <chr>  
+#> 1 10000036  High kineti… utility 2018-0…    2018 Boron …    1281   11286 2015-0…
+#> 2 10000466  Substituted… utility 2018-0…    2018 The pr…     896  290583 2017-0…
+#> 3 10000693  Methods and… utility 2018-0…    2018 Method…    1228  156395 2014-0…
+#> 4 10000750  Method of i… utility 2018-0…    2018 Disclo…    1210   81511 2015-1…
+#> 5 10000975  Cutting ele… utility 2018-0…    2018 A cutt…    1264    6690 2014-0…
+#> 6 10000976  Cutting ele… utility 2018-0…    2018 A cutt…    1264   15136 2014-0…
+#> # … with 35 more variables: patent_num_foreign_documents_cited <int>,
+#> #   patent_num_times_cited_by_us_patents <int>,
+#> #   patent_num_total_documents_cited <int>,
+#> #   patent_num_us_applications_cited <int>, patent_num_us_patents_cited <int>,
+#> #   patent_processing_days <int>, patent_term_extension <int>,
+#> #   gov_interest_statement <chr>,
+#> #   patent_uspc_current_mainclass_average_patent_processing_days <lgl>, …
 ```
 
 2. **Use patentsview::unnest_pv_data.** `unnest_pv_data()` creates a series of data frames (one for each entity level) that are like tables in a relational database. You provide it with the data returned by `search_pv()` and a field that can act as a unique identifier for the primary entities:
 
 
 ```r
-unnest_pv_data(data = res$data, pk = "patent_number")
-#> Error: patent_number not in primary entity data frame...Did you include it in your fields list?
+unnest_pv_data(data = res$data, pk = "patent_id")
+#> List of 19
+#>  $ application                        :'data.frame':	1000 obs. of  7 variables:
+#>   ..$ patent_id       : chr [1:1000] "10000036" ...
+#>   ..$ application_id  : chr [1:1000] "14/753848" ...
+#>   ..$ application_type: chr [1:1000] "14" ...
+#>   ..$ filing_date     : chr [1:1000] "2015-06-29" ...
+#>   ..$ series_code     : chr [1:1000] "14" ...
+#>   ..$ rule_47_flag    : logi [1:1000] FALSE ...
+#>   ..$ filing_type     : chr [1:1000] "14" ...
+#>  $ applicants                         :'data.frame':	1215 obs. of  8 variables:
+#>   ..$ patent_id             : chr [1:1215] "10000036" ...
+#>   ..$ applicant_name_first  : chr [1:1215] NA ...
+#>   ..$ applicant_name_last   : chr [1:1215] NA ...
+#>   ..$ applicant_organization: chr [1:1215] "The United States of America repr"..
+#>   ..$ applicant_sequence    : int [1:1215] 1 1 ...
+#>   ..$ applicant_designation : chr [1:1215] "us-only" ...
+#>   ..$ applicant_type        : chr [1:1215] "applicant" ...
+#>   ..$ location_id           : chr [1:1215] "fe1dd7c7-16c7-11ed-9b5f-1234bde3c"..
+#>  $ assignees                          :'data.frame':	975 obs. of  10 variables:
+#>   ..$ patent_id                     : chr [1:975] "10000036" ...
+#>   ..$ assignee                      : chr [1:975] "https://search.patentsview"..
+#>   ..$ assignee_type                 : chr [1:975] "6" ...
+#>   ..$ assignee_individual_name_first: chr [1:975] NA ...
+#>   ..$ assignee_individual_name_last : chr [1:975] NA ...
+#>   ..$ assignee_organization         : chr [1:975] "The United States of Ameri"..
+#>   ..$ assignee_city                 : chr [1:975] "Washington" ...
+#>   ..$ assignee_state                : chr [1:975] "DC" ...
+#>   ..$ assignee_country              : chr [1:975] "US" ...
+#>   ..$ assignee_sequence             : int [1:975] 0 0 ...
+#>  $ attorneys                          :'data.frame':	1131 obs. of  6 variables:
+#>   ..$ patent_id            : chr [1:1131] "10000036" ...
+#>   ..$ attorney_id          : chr [1:1131] "3f82077f3559b6f685a391bfbcb2202e" ...
+#>   ..$ attorney_sequence    : int [1:1131] 0 1 ...
+#>   ..$ attorney_name_first  : chr [1:1131] "Jennifer L." ...
+#>   ..$ attorney_name_last   : chr [1:1131] "Riley" ...
+#>   ..$ attorney_organization: chr [1:1131] NA ...
+#>  $ cpc_at_issue                       :'data.frame':	7715 obs. of  5 variables:
+#>   ..$ patent_id      : chr [1:7715] "10000036" ...
+#>   ..$ cpc_sequence   : int [1:7715] 1 2 ...
+#>   ..$ cpc_class_id   : chr [1:7715] "B32" ...
+#>   ..$ cpc_subclass_id: chr [1:7715] "B32B" ...
+#>   ..$ cpc_group_id   : chr [1:7715] "B32B5/26" ...
+#>  $ cpc_current                        :'data.frame':	9472 obs. of  8 variables:
+#>   ..$ patent_id      : chr [1:9472] "10000036" ...
+#>   ..$ cpc_sequence   : int [1:9472] 0 1 ...
+#>   ..$ cpc_class      : chr [1:9472] "https://search.patentsview.org/api/v1/cp"..
+#>   ..$ cpc_class_id   : chr [1:9472] "B32" ...
+#>   ..$ cpc_subclass   : chr [1:9472] "https://search.patentsview.org/api/v1/cp"..
+#>   ..$ cpc_subclass_id: chr [1:9472] "B32B" ...
+#>   ..$ cpc_group      : chr [1:9472] "https://search.patentsview.org/api/v1/cp"..
+#>   ..$ cpc_group_id   : chr [1:9472] "B32B5/26" ...
+#>  $ examiners                          :'data.frame':	1227 obs. of  6 variables:
+#>   ..$ patent_id          : chr [1:1227] "10000036" ...
+#>   ..$ examiner_id        : chr [1:1227] "l5ntkof8nrlpiyj3rcmiiln2g" ...
+#>   ..$ examiner_first_name: chr [1:1227] "Daniel H" ...
+#>   ..$ examiner_last_name : chr [1:1227] "Lee" ...
+#>   ..$ examiner_role      : chr [1:1227] "primary" ...
+#>   ..$ art_group          : chr [1:1227] "1746" ...
+#>  $ figures                            :'data.frame':	968 obs. of  3 variables:
+#>   ..$ patent_id  : chr [1:968] "10000036" ...
+#>   ..$ num_figures: int [1:968] 19 1 ...
+#>   ..$ num_sheets : int [1:968] 6 1 ...
+#>  $ gov_interest_organizations         :'data.frame':	43 obs. of  5 variables:
+#>   ..$ patent_id     : chr [1:43] "10000036" ...
+#>   ..$ fedagency_name: chr [1:43] "National Aeronautics and Space Administrati"..
+#>   ..$ level_one     : chr [1:43] "National Aeronautics and Space Administrati"..
+#>   ..$ level_two     : chr [1:43] NA ...
+#>   ..$ level_three   : chr [1:43] NA ...
+#>  $ granted_pregrant_crosswalk         :'data.frame':	1004 obs. of  3 variables:
+#>   ..$ patent_id         : chr [1:1004] "10000036" ...
+#>   ..$ document_number   : chr [1:1004] "20170190143" ...
+#>   ..$ application_number: chr [1:1004] "14753848" ...
+#>  $ inventors                          :'data.frame':	4153 obs. of  8 variables:
+#>   ..$ patent_id          : chr [1:4153] "10000036" ...
+#>   ..$ inventor           : chr [1:4153] "https://search.patentsview.org/api/v"..
+#>   ..$ inventor_name_first: chr [1:4153] "Cheol" ...
+#>   ..$ inventor_name_last : chr [1:4153] "Park" ...
+#>   ..$ inventor_city      : chr [1:4153] "Yorktown" ...
+#>   ..$ inventor_state     : chr [1:4153] "VA" ...
+#>   ..$ inventor_country   : chr [1:4153] "US" ...
+#>   ..$ inventor_sequence  : int [1:4153] 1 3 ...
+#>  $ ipcr                               :'data.frame':	5383 obs. of  11 variables:
+#>   ..$ patent_id                     : chr [1:5383] "10000036" ...
+#>   ..$ ipc_sequence                  : int [1:5383] 0 1 ...
+#>   ..$ ipc_action_date               : chr [1:5383] "2018-06-19" ...
+#>   ..$ ipc_section                   : chr [1:5383] "B" ...
+#>   ..$ ipc_class                     : chr [1:5383] "32" ...
+#>   ..$ ipc_subclass                  : chr [1:5383] "B" ...
+#>   ..$ ipc_main_group                : chr [1:5383] "5" ...
+#>   ..$ ipc_subgroup                  : chr [1:5383] "26" ...
+#>   ..$ ipc_symbol_position           : chr [1:5383] "F" ...
+#>   ..$ ipc_classification_data_source: chr [1:5383] "H" ...
+#>   ..$ ipc_classification_value      : chr [1:5383] "I" ...
+#>  $ us_related_documents               :'data.frame':	4349 obs. of  9 variables:
+#>   ..$ patent_id                 : chr [1:4349] "10000036" ...
+#>   ..$ related_doc_type          : chr [1:4349] "division" ...
+#>   ..$ related_doc_kind          : chr [1:4349] NA ...
+#>   ..$ related_doc_number        : chr [1:4349] "13136216" ...
+#>   ..$ published_country         : chr [1:4349] "US" ...
+#>   ..$ related_doc_published_date: chr [1:4349] "2011-07-26" ...
+#>   ..$ related_doc_status        : chr [1:4349] NA ...
+#>   ..$ related_doc_sequence      : int [1:4349] 0 1 ...
+#>   ..$ wipo_kind                 : chr [1:4349] NA ...
+#>  $ us_term_of_grant                   :'data.frame':	658 obs. of  5 variables:
+#>   ..$ patent_id      : chr [1:658] "10000036" ...
+#>   ..$ term_grant     : logi [1:658] NA ...
+#>   ..$ term_extension : chr [1:658] "85" ...
+#>   ..$ term_disclaimer: chr [1:658] NA ...
+#>   ..$ disclaimer_date: logi [1:658] NA ...
+#>  $ wipo                               :'data.frame':	1745 obs. of  3 variables:
+#>   ..$ patent_id    : chr [1:1745] "10000036" ...
+#>   ..$ wipo_field_id: chr [1:1745] "29" ...
+#>   ..$ wipo_sequence: int [1:1745] 0 1 ...
+#>  $ foreign_priority                   :'data.frame':	87 obs. of  6 variables:
+#>   ..$ patent_id              : chr [1:87] "10000975" ...
+#>   ..$ priority_claim_sequence: int [1:87] 0 0 ...
+#>   ..$ priority_claim_kind    : chr [1:87] "national" ...
+#>   ..$ foreign_application_id : chr [1:87] "1301647.2" ...
+#>   ..$ filing_date            : chr [1:87] "2013-01-30" ...
+#>   ..$ foreign_country_filed  : chr [1:87] "GB" ...
+#>  $ pct_data                           :'data.frame':	218 obs. of  7 variables:
+#>   ..$ patent_id           : chr [1:218] "10000975" ...
+#>   ..$ published_filed_date: chr [1:218] "2014-01-28" ...
+#>   ..$ pct_102_date        : logi [1:218] NA ...
+#>   ..$ pct_371_date        : chr [1:218] "2015-07-28" ...
+#>   ..$ application_kind    : chr [1:218] "00" ...
+#>   ..$ pct_doc_number      : chr [1:218] "PCT/GB2014/050210" ...
+#>   ..$ pct_doc_type        : chr [1:218] "pct_application" ...
+#>  $ gov_interest_contract_award_numbers:'data.frame':	36 obs. of  2 variables:
+#>   ..$ patent_id   : chr [1:36] "10004797" ...
+#>   ..$ award_number: chr [1:36] "2007-33610-18035" ...
+#>  $ patents                            :'data.frame':	1000 obs. of  18 variables:
+#>   ..$ patent_id                                                   : chr [1:10"..
+#>   ..$ patent_title                                                : chr [1:10"..
+#>   ..$ patent_type                                                 : chr [1:10"..
+#>   ..$ patent_date                                                 : chr [1:10"..
+#>   ..$ patent_year                                                 : int [1:100..
+#>   ..$ patent_abstract                                             : chr [1:10"..
+#>   ..$ patent_cpc_current_group_average_patent_processing_days     : int [1:100..
+#>   ..$ patent_detail_desc_length                                   : int [1:100..
+#>   ..$ patent_earliest_application_date                            : chr [1:10"..
+#>   ..$ patent_num_foreign_documents_cited                          : int [1:100..
+#>   ..$ patent_num_times_cited_by_us_patents                        : int [1:100..
+#>   ..$ patent_num_total_documents_cited                            : int [1:100..
+#>   ..$ patent_num_us_applications_cited                            : int [1:100..
+#>   ..$ patent_num_us_patents_cited                                 : int [1:100..
+#>   ..$ patent_processing_days                                      : int [1:100..
+#>   ..$ patent_term_extension                                       : int [1:100..
+#>   ..$ gov_interest_statement                                      : chr [1:10"..
+#>   ..$ patent_uspc_current_mainclass_average_patent_processing_days: logi [1:10..
 ```
 
 Now we are left with a series of flat data frames instead of having a single data frame with other data frames nested inside of it. These flat data frames can be joined together as needed via the primary key (`assignee_id`).

@@ -22,7 +22,30 @@
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav"><li>
+      <ul class="nav navbar-nav"><li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-flag"></span>
+     
+    API Changes
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu"><li>
+      <a href="articles/api-changes.html">
+        <span class="fa fa-exclamation"></span>
+         
+        2023 API Changes
+      </a>
+    </li>
+    <li>
+      <a href="articles/converting-an-existing-script.html">
+        <span class="fa fa-sync"></span>
+         
+        Converting an Existing Script
+      </a>
+    </li>
+  </ul></li>
+<li>
   <a href="articles/getting-started.html">
     <span class="fa fa-play"></span>
      
@@ -192,7 +215,7 @@ Also note that total_hits comes back from all endpoints, previously there was an
 <ol style="list-style-type: decimal"><li><p>Now there are new, get-only convience endpoints that take a url parameter (what the HATEOAS links hit). The R package ignores these and just uses the ones that do posts and gets using q,f,s and o parameters, as the original version of the API did.</p></li>
 <li><p>The online documentation is lagging. The two new endpoints are documented on <a href="https://patentsview.org/data-in-action/whats-new-patentsview-july-2021" class="external-link uri">https://patentsview.org/data-in-action/whats-new-patentsview-july-2021</a> but they’re missing the Query column (all fields queryable now). Pages for the other endpoint haven’t been changed yet. I created fake pages for data-raw/mbr_fieldsdf.R to consume. They’re on a site I control <a href="https://patentsview.historicip.com/api/" class="external-link uri">https://patentsview.historicip.com/api/</a>. In the fake pages, “integer” fields get cast as_is while “int” fields (integers still sent as strings) get cast as.integer. <em>Update:</em> The documentation has been updated but the fields are in an image. Ex <a href="https://patentsview.org/apis/api-endpoints/patentsbeta" class="external-link uri">https://patentsview.org/apis/api-endpoints/patentsbeta</a></p></li>
 <li><p>As an alternative to scraping the fake pages just mentioned, I created data-raw/yml_extract.R to try to create the csv by parsing the API’s Swagger definition. <em>Update:</em> data-raw/definition_extract.R parses the new json Swagger definition.</p></li>
-<li><p>Now only 3 of the 13 endpoints are searchable by patent number, which affected a few of the test cases. I wound up adding R/test-helpers.R to generate a test query per endpoint. Initially I had it as tests/testthat/helper-queries.R but I thought that caused the ubuntu-20.04 build failure.</p></li>
+<li><p>Now only 3 of the 15 endpoints are searchable by patent number, which affected a few of the test cases. I wound up adding R/test-helpers.R to generate a test query per endpoint. Initially I had it as tests/testthat/helper-queries.R but I thought that caused the ubuntu-20.04 build failure.</p></li>
 <li><p>I set my API key as asecret in my repo so tests will run and the vignettes can be half rendered etc. It’s retrieved in R-CMD-check.yaml.</p></li>
 <li><p>I had to add dev = “png” to the knitr::opts_chunk$set in citation-networks.Rmd.orig to get it to render locally.</p></li>
 <li><p>See the new vignette <a href="articles/converting-an-existing-script.html#additions-to-the-r-package-1">converting-an-existing-script.html#additions-to-the-r-package-1</a> I wrote a function that uses the API to determine date ranges for a query returning more than 10,000 rows. I think it should be added to the R package, but I wasn’t sure if it’s a good idea..</p></li>
