@@ -7,6 +7,7 @@ name: R-CMD-check
 jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
+    timeout-minutes: 60
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
 
@@ -82,6 +83,15 @@ jobs:
           options(crayon.enabled = TRUE)
           remotes::install_cran("devtools")
           devtools::run_examples(run_dontrun = TRUE)
+        shell: Rscript {0}
+
+      - name: Check pkgdown
+        env:
+          _R_CHECK_CRAN_INCOMING_REMOTE_: false
+        run: |
+          options(crayon.enabled = TRUE)
+          remotes::install_cran("pkgdown")
+          pkgdown::check_pkgdown()
         shell: Rscript {0}
 
       - name: Upload check results
