@@ -2,7 +2,8 @@ test_that("We can print the returns from all endpoints ", {
   skip_on_cran()
 
   eps <- get_endpoints()
-  bad_eps <- c("cpc_subclasses", "uspc_subclasses", "uspc_mainclasses", "wipo")
+  bad_eps <- c("cpc_subclasses", "uspc_subclasses", "uspc_mainclasses", "wipo"
+  )
   good_eps <- eps[!eps %in% bad_eps]
 
   lapply(good_eps, function(x) {

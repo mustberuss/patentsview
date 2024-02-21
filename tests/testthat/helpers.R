@@ -16,8 +16,10 @@ TEST_QUERIES <- c(
   "uspc_subclasses" = '{"uspc_subclass_id": "100/1"}',
   "patent/attorneys" = '{"attorney_id":"005dd718f3b829bab9e7e7714b3804a5"}',
   "patent/foreign_citations" = '{"patent_id": "10000001"}',
-  "patent/rel_app_texts" = '{"patent_id": "10000007"}',
+  "patent/rel_app_texts" =  '{"patent_id": "10000007"}',
   "ipcs" = '{"ipc_id": "1"}',
   "locations" = '{"location_name":"Chicago"}',
-  "wipo" = '{"wipo_id": "1"}'
+  "wipo" = '{"wipo_id": "1"}',
+  "publications" = '{"document_number": 20010000002}',
+  "publication/rel_app_texts" = '{"document_number": 20010000001}'
 )

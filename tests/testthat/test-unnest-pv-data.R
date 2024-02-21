@@ -8,16 +8,21 @@ test_that("", {
 
   # locations endpoint is back but it fails this test
   bad_eps <- c("locations", "patent/attorneys", "cpc_subclasses",
-               "inventors", "uspc_subclasses", "uspc_mainclasses", "wipo")
+               "uspc_subclasses" , "uspc_mainclasses" , "wipo"
+  )
 
   good_eps <- eps[!eps %in% bad_eps]
 
   z <- lapply(good_eps, function(x) {
-    #print(x)
+    print(x)
+
+    # group for is publication/rel_app_texts is publication/rel_appp_text_publications
+    g <- if (x == "publication/rel_app_texts") "publication/rel_app_text_publications" else x
+
     pv_out <- search_pv(
       query = TEST_QUERIES[[x]],
       endpoint = x,
-      fields = get_fields(x, group = (x)) # requesting non-nested attributes
+      fields = get_fields(x, group = (g)) # requesting non-nested attributes
     )
     unnest_pv_data(pv_out[["data"]])
   })
@@ -37,5 +42,5 @@ test_that("", {
   })
 
   # make it noticeable that all is not right with the API
-  skip("Skip for API bugs") # TODO: remove when the API is fixed
+  skip("Skip for API bugs") # TODO: remove when the API is fixed/bad_eps removed
 })

@@ -37,6 +37,11 @@ test_that("API returns expected df names for all endpoints", {
 
   # remove nesting
   plain_endpoints <- gsub("patent/", "", goodendpoints) # should be endpoints
+  plain_endpoints <- gsub("publication/", "", plain_endpoints)
+
+  # publication/rel_app_text's entity is rel_app_text_publications
+  df_names <- gsub("rel_app_text_publications", "rel_app_texts", df_names)
+
   expect_equal(plain_endpoints, df_names)
 })
 
@@ -73,12 +78,13 @@ test_that("You can download up to 9,000+ records", {
 test_that("search_pv can pull all fields for all endpoints", {
   skip_on_cran()
 
-  troubled_endpoints <- c("locations", "patent/attorneys", "inventors", "cpc_subclasses",
-     "uspc_subclasses", "uspc_mainclasses", "wipo"
+  troubled_endpoints <- c("locations", "patent/attorneys", "cpc_subclasses",
+     "uspc_subclasses", "uspc_mainclasses", "wipo" # , "inventors"
   )
 
   # these tests will fail when the API is fixed
   dev_null <- lapply(troubled_endpoints, function(x) {
+    print(x)
     expect_error(
       search_pv(
         query = TEST_QUERIES[[x]],
@@ -189,7 +195,8 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
     "patent/10757852/",
     "uspc_mainclass/30/",
     "uspc_subclass/30:100/",
-    "wipo/1/"
+    "wipo/1/",
+    "publication/20010000001/"
   )
 
   # these currently throw Error: Internal Server Error

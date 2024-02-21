@@ -16,17 +16,16 @@ test_that("API returns all requested groups", {
 
   # TODO: remove the trickery to get this test to pass, once the API is fixed
   bad_eps <- c("cpc_subclasses"
-    ,"inventors"         # Error: Invalid field: inventor_gender_attr_status
     , "locations"        # Error: Invalid field: location_latitude
     , "patent/attorneys" # Error: Invalid field: attorney_first_seen_date
-    , "cpc_subclasses"   # Error: Internal Server Error
     , "uspc_subclasses"  # Error: Internal Server Error
     , "uspc_mainclasses" # Error: Internal Server Error
     , "wipo"             # Error: Internal Server Error
    )
 
   mismatched_returns <- c(
-     "patents"
+     "patents",
+     "publications"
   ) 
 
   good_eps <- eps[!eps %in% bad_eps]
@@ -47,6 +46,9 @@ test_that("API returns all requested groups", {
 
     # we now need to unnest the endpoints for the comparison to work
     expected_groups <- sub("patent/","",expected_groups)
+
+    # same deal for publication/
+    expected_groups <- sub("publication/","",expected_groups)
 
     expect_setequal(actual_groups, expected_groups)
     show_failure(expect_setequal(actual_groups, expected_groups))
@@ -76,6 +78,7 @@ test_that("API returns all requested groups", {
 
     # we now need to unnest the endpoints for the comparison to work
     expected_groups <- sub("patent/","",expected_groups)
+    expected_groups <- sub("publication/","",expected_groups)
 
     # better way to do this?  want to expect_set_not_equal
     expect_false(isTRUE(all.equal(length(actual_groups), length(expected_groups))))

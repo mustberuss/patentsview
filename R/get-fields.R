@@ -61,11 +61,13 @@ get_fields <- function(endpoint, groups = NULL) {
 #' @return A character vector with the names of each endpoint.
 #' @export
 get_endpoints <- function() {
+
+  # note that now there are two rel_app_texts, one under patents and one under publications
   c(
     "patent/us_application_citations", "assignees", "cpc_subclasses", "cpc_groups",
     "cpc_classes", "inventors", "patent/us_patent_citations", "patents",
     "uspc_subclasses", "uspc_mainclasses", "locations",
     "patent/attorneys", "patent/foreign_citations", "patent/rel_app_texts",
-    "wipo", "ipcs"
+    "wipo", "ipcs", "publications", "publication/rel_app_texts"
   )
 }

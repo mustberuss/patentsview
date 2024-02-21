@@ -19,17 +19,30 @@
 #' @export
 get_ok_pk <- function(endpoint) {
 
-# most of the nested endpoints use patent_id, patent/attorneys is the exception
+# most of the nested endpoints use patent_id, except patent/attorneys uses "attorney_id"
+# publications (unnested) uses document_number
+use_document_number <- c(
+  # if endpoint is passed
+  "publications", "publication/rel_app_texts",
+
+  # if names(pv_out[["data"]]) passed
+  "rel_app_text_publications"
+)
+
 use_patent_id <- c(
   # if endpoint passed
   "patent/us_application_citations", "patent/us_patent_citations",
   "patent/rel_app_texts", "patent/foreign_citations", "patent/rel_app_texts",
+  "publication/rel_app_texts",
 
   # if names(pv_out[["data"]]) passed
   "us_application_citations", "us_patent_citations", "foreign_citations",
   "rel_app_texts", "patents"
 )
-  if (endpoint %in% use_patent_id ) {
+  if (endpoint %in% use_document_number) {
+    "document_number"
+  }
+  else if (endpoint %in% use_patent_id ) {
     "patent_id"
   } else {
     key <- sub("^patent/", "", endpoint)

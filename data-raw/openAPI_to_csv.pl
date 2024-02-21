@@ -13,6 +13,10 @@ use LWP::Simple;
 # an error when included in the fields parameter.  Not positive if this is
 # a bug or a feature, ie whether the code should remain or not.
 
+# Now there are two rel_app_texts one is publication/rel_app_text/ and the other is
+# patent/rel_app_text/ the messes up putting the last part of the paths
+# in a hashmap
+
 my $data = get('https://search.patentsview.org/static/openapi.json');
 open my $url_fh, '<', \$data or die $!;
 
@@ -45,10 +49,24 @@ while($line = <$url_fh>)
 
       $unnested = $endpoint;
       $unnested = $' if($unnested =~ m|/|);
+
+      # now there are two rel_app_texts endpoints, one under patents and one
+      # under publications.  the publications one has an entity of 
+      # rel_app_text_publications so we'll set that as unnested to avoid a collision
+      if($endpoint eq "publication/rel_app_texts")
+      {
+         $unnested = "rel_app_text_publications"; # avoids "trouble" below
+      }
+
       $endpoints{$unnested} = $endpoint;
    }
 
    last if($line =~ /"components":/);
+}
+
+foreach $key (sort keys %endpoints)
+{
+   print "$key $endpoints{$key}\n";
 }
 
 # another OpenAPI mistake - the returned entity is other_references but the endpoint is otherreference
@@ -129,6 +147,12 @@ while($line = <$url_fh>)
                            # temp test:
                            # use the endpoint when the group is not set (non nested attribute)
                            $ggroup = $group eq "" ? $output_entity : $group;
+
+                           # api weirdness, the entity for publication/rel_app_texts
+                           # is publication/rel_app_text_applications
+                           if($ggroup eq "publication/rel_app_texts") {
+                              $ggroup = "publication/rel_app_text_publications";
+                           }
 
                            $output = << "DAT";
 "$output_entity","$field","$type","$ggroup","$common"
