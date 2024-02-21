@@ -184,7 +184,7 @@ required.</p>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 12,056</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 12,416</span></span></code></pre></div>
 <p>How many distinct inventors are represented by these highly-cited
 patents?</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -204,33 +204,36 @@ patents?</p>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 12,056</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 12,416</span></span></code></pre></div>
 <p>What assignee’s organizations start Microsoft?</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">begins</span><span class="op">(</span>assignee_organization <span class="op">=</span> <span class="st">"Microsoft"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">pv_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query</span>, endpoint <span class="op">=</span> <span class="st">"assignees"</span><span class="op">)</span></span>
 <span><span class="va">pv_out</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">assignees</span><span class="op">$</span><span class="va">assignee_organization</span></span>
-<span><span class="co">#&gt;  [1] "Microsoft Licensing Technology, LLC."            </span></span>
-<span><span class="co">#&gt;  [2] "Microsoft Technology Beaming, LLC"               </span></span>
-<span><span class="co">#&gt;  [3] "Microsoft Corporation"                           </span></span>
-<span><span class="co">#&gt;  [4] "Hitachi Microsoftware Systems, Inc."             </span></span>
-<span><span class="co">#&gt;  [5] "Microsoft Israel Research and Development (2002)"</span></span>
-<span><span class="co">#&gt;  [6] "Microsoft Orthopedics Holdings Inc."             </span></span>
-<span><span class="co">#&gt;  [7] "Microsoft Technology Licensing, LLC"             </span></span>
-<span><span class="co">#&gt;  [8] "Microsoft Mobile Oy"                             </span></span>
+<span><span class="co">#&gt;  [1] "Microsoft Mobile Oy"                             </span></span>
+<span><span class="co">#&gt;  [2] "Microsoft Technology Licensing, KKC"             </span></span>
+<span><span class="co">#&gt;  [3] "Microsoft Technology Licensing, LC"              </span></span>
+<span><span class="co">#&gt;  [4] "Microsoft Technology Licensing, LLD"             </span></span>
+<span><span class="co">#&gt;  [5] "Microsoft Mobile Internet AB"                    </span></span>
+<span><span class="co">#&gt;  [6] "Microsoft Israel Research and Development LTD"   </span></span>
+<span><span class="co">#&gt;  [7] "Microsoft Israel Research and Development (2002)"</span></span>
+<span><span class="co">#&gt;  [8] "Microsoft Patent Licensing, LLC"                 </span></span>
 <span><span class="co">#&gt;  [9] "Microsoft Technology Learning, LLC"              </span></span>
-<span><span class="co">#&gt; [10] "MICROSOFT INTERNATIONAL HOLDINGS B.V."           </span></span>
-<span><span class="co">#&gt; [11] "Microsoft Mobile Internet AB"                    </span></span>
-<span><span class="co">#&gt; [12] "Microsoft Corporation—One Microsoft Way"         </span></span>
-<span><span class="co">#&gt; [13] "Tangis Corporation Microsoft Corporation"        </span></span>
-<span><span class="co">#&gt; [14] "Microsoft Systems Inc."                          </span></span>
-<span><span class="co">#&gt; [15] "MS1 - Microsoft Corporation"                     </span></span>
-<span><span class="co">#&gt; [16] "Sun Microsoft, Inc."                             </span></span>
-<span><span class="co">#&gt; [17] "MICROSOFT TECHNOLOGY, LLC"                       </span></span>
-<span><span class="co">#&gt; [18] "Microsoft Licencing Corporation, LLC"            </span></span>
-<span><span class="co">#&gt; [19] "Microsoft Patent Licensing, LLC"                 </span></span>
-<span><span class="co">#&gt; [20] "WebTV Networks Inc. (Microsoft)"</span></span></code></pre></div>
+<span><span class="co">#&gt; [10] "Microsoft Corporation—One Microsoft Way"         </span></span>
+<span><span class="co">#&gt; [11] "Microsoft Technologicy Licensing, LLC"           </span></span>
+<span><span class="co">#&gt; [12] "Microsoft Licencing Corporation, LLC"            </span></span>
+<span><span class="co">#&gt; [13] "Microsoft Corporation"                           </span></span>
+<span><span class="co">#&gt; [14] "Microsoft Corporate"                             </span></span>
+<span><span class="co">#&gt; [15] "Microsoft Technology Licensing, LLC"             </span></span>
+<span><span class="co">#&gt; [16] "Microsoft Orthopedics Holdings Inc."             </span></span>
+<span><span class="co">#&gt; [17] "Microsoft Technology Beaming, LLC"               </span></span>
+<span><span class="co">#&gt; [18] "Microsoft Licensing Technology, LLC."            </span></span>
+<span><span class="co">#&gt; [19] "Microsoft Technology Licensing, LCC"             </span></span>
+<span><span class="co">#&gt; [20] "MICROSOFT TECHNOLOGY LICENSING, L.L.C."          </span></span>
+<span><span class="co">#&gt; [21] "MICROSOFT TECHNOLOGY, LLC"                       </span></span>
+<span><span class="co">#&gt; [22] "MICROSOFT INTERNATIONAL HOLDINGS B.V."           </span></span>
+<span><span class="co">#&gt; [23] "Microsoft Systems Inc."</span></span></code></pre></div>
 <p>Where geographically have Microsoft inventors been coming from over
 the past few years?</p>
 <p>Note that the api currently returns no results for “Microsoft
@@ -255,17 +258,17 @@ Corporation—One Microsoft Way”</p>
 <span><span class="co"># Unnest the inventor list column</span></span>
 <span><span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">pv_out</span><span class="op">$</span><span class="va">data</span>, <span class="st">"patent_id"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; List of 2</span></span>
-<span><span class="co">#&gt;  $ inventors:'data.frame':   8779 obs. of  8 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id          : chr [1:8779] "11397055" ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor           : chr [1:8779] "https://search.patentsview.org/api/v"..</span></span>
-<span><span class="co">#&gt;   ..$ inventor_name_first: chr [1:8779] "Tzu-Yuan" ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor_name_last : chr [1:8779] "Lin" ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor_city      : chr [1:8779] "San Jose" ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor_state     : chr [1:8779] "CA" ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor_country   : chr [1:8779] "US" ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor_sequence  : int [1:8779] 1 2 ...</span></span>
-<span><span class="co">#&gt;  $ patents  :'data.frame':   2184 obs. of  1 variable:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id: chr [1:2184] "11397055" ...</span></span></code></pre></div>
+<span><span class="co">#&gt;  $ inventors:'data.frame':   10931 obs. of  8 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id          : chr [1:10931] "11397055" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor           : chr [1:10931] "https://search.patentsview.org/api/"..</span></span>
+<span><span class="co">#&gt;   ..$ inventor_name_first: chr [1:10931] "Tzu-Yuan" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_name_last : chr [1:10931] "Lin" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_city      : chr [1:10931] "San Jose" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_state     : chr [1:10931] "CA" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_country   : chr [1:10931] "US" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_sequence  : int [1:10931] 1 2 ...</span></span>
+<span><span class="co">#&gt;  $ patents  :'data.frame':   2717 obs. of  1 variable:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id: chr [1:2717] "11397055" ...</span></span></code></pre></div>
 <p>Which inventors have Chicago, IL listed as their location on at least
 one patent.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -300,15 +303,15 @@ one patent.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
 <span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ patents:'data.frame': 577 obs. of  3 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id   : chr [1:577] "10000326" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_title: chr [1:577] "Plastic beer keg" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_date : chr [1:577] "2018-06-19" ...</span></span>
+<span><span class="co">#&gt;  $ patents:'data.frame': 584 obs. of  3 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id   : chr [1:584] "10000326" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_title: chr [1:584] "Plastic beer keg" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_date : chr [1:584] "2018-06-19" ...</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 577</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 584</span></span></code></pre></div>
 </div>
 <div class="footnotes footnotes-end-of-document">
 <hr>

@@ -234,17 +234,17 @@ PatentsView API:</li>
 <span><span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ patents:'data.frame': 8515 obs. of  5 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id                  : chr [1:8515] "10000987" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_date                : chr [1:8515] "2018-06-19" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_year                : int [1:8515] 2018 2018 ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_num_us_patents_cited: int [1:8515] 163 7 ...</span></span>
-<span><span class="co">#&gt;   ..$ assignees                  :List of 8515</span></span>
+<span><span class="co">#&gt;  $ patents:'data.frame': 8662 obs. of  5 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id                  : chr [1:8662] "10000987" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_date                : chr [1:8662] "2018-06-19" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_year                : int [1:8662] 2018 2018 ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_num_us_patents_cited: int [1:8662] 163 7 ...</span></span>
+<span><span class="co">#&gt;   ..$ assignees                  :List of 8662</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 8,515</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 8,662</span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Now let’s identify who the top assignees are based on how many
 patents they have in our data set. We’ll also calculate how many total
@@ -256,15 +256,15 @@ relate to databases.</li>
 <span><span class="va">dl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">pv_out</span><span class="op">$</span><span class="va">data</span>, <span class="st">"patent_id"</span><span class="op">)</span></span>
 <span><span class="va">dl</span></span>
 <span><span class="co">#&gt; List of 2</span></span>
-<span><span class="co">#&gt;  $ assignees:'data.frame':   8038 obs. of  3 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id            : chr [1:8038] "10000987" ...</span></span>
-<span><span class="co">#&gt;   ..$ assignee             : chr [1:8038] "https://search.patentsview.org/api"..</span></span>
-<span><span class="co">#&gt;   ..$ assignee_organization: chr [1:8038] "National Oilwell Varco, L.P." ...</span></span>
-<span><span class="co">#&gt;  $ patents  :'data.frame':   8515 obs. of  4 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id                  : chr [1:8515] "10000987" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_date                : chr [1:8515] "2018-06-19" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_year                : int [1:8515] 2018 2018 ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_num_us_patents_cited: int [1:8515] 163 7 ...</span></span>
+<span><span class="co">#&gt;  $ assignees:'data.frame':   8177 obs. of  3 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id            : chr [1:8177] "10000987" ...</span></span>
+<span><span class="co">#&gt;   ..$ assignee             : chr [1:8177] "https://search.patentsview.org/api"..</span></span>
+<span><span class="co">#&gt;   ..$ assignee_organization: chr [1:8177] "National Oilwell Varco, L.P." ...</span></span>
+<span><span class="co">#&gt;  $ patents  :'data.frame':   8662 obs. of  4 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id                  : chr [1:8662] "10000987" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_date                : chr [1:8662] "2018-06-19" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_year                : int [1:8662] 2018 2018 ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_num_us_patents_cited: int [1:8662] 163 7 ...</span></span>
 <span></span>
 <span><span class="co"># We shouldn't need the filter (we queried for non empty string orginazations) but</span></span>
 <span><span class="co"># some are NA somehow</span></span>
@@ -313,9 +313,9 @@ relate to databases.</li>
 <span><span class="va">assignee_counts</span></span>
 <span><span class="co">#&gt; List of 1</span></span>
 <span><span class="co">#&gt;  $ assignees:'data.frame':   75 obs. of  3 variables:</span></span>
-<span><span class="co">#&gt;   ..$ assignee_id          : chr [1:75] "00bbd2c6-ccfc-4f71-80a9-9363e11d7ca2"..</span></span>
-<span><span class="co">#&gt;   ..$ assignee_organization: chr [1:75] "ORACLE INTERNATIONAL CORPORATION" ...</span></span>
-<span><span class="co">#&gt;   ..$ assignee_num_patents : int [1:75] 9519 30227 ...</span></span>
+<span><span class="co">#&gt;   ..$ assignee_id          : chr [1:75] "02e56eeb-7980-44b2-a374-704019adea73"..</span></span>
+<span><span class="co">#&gt;   ..$ assignee_organization: chr [1:75] "i2 Technologies US, Inc." ...</span></span>
+<span><span class="co">#&gt;   ..$ assignee_num_patents : int [1:75] 197 1519 ...</span></span>
 <span></span>
 <span><span class="co"># Here we redo top_asgns now that we have all the fields we need.</span></span>
 <span><span class="co"># We join in the total counts and mutate in the percentages </span></span>
@@ -429,25 +429,25 @@ time to accumulate citations).</li>
 <tbody>
 <tr class="odd">
 <td align="left">International Business Machines Corporation</td>
-<td align="right">0.4675192</td>
-<td align="right">789</td>
-<td align="right">158577</td>
+<td align="right">0.4673187</td>
+<td align="right">794</td>
+<td align="right">159333</td>
 <td align="right">0.005</td>
 <td align="left">#f1c40f</td>
 </tr>
 <tr class="even">
 <td align="left">SONY CORPORATION</td>
-<td align="right">0.3683009</td>
-<td align="right">25</td>
-<td align="right">59883</td>
+<td align="right">0.3615332</td>
+<td align="right">26</td>
+<td align="right">60198</td>
 <td align="right">0.000</td>
 <td align="left">#f1c40f</td>
 </tr>
 <tr class="odd">
 <td align="left">FUJITSU LIMITED</td>
-<td align="right">0.4012919</td>
+<td align="right">0.4012456</td>
 <td align="right">44</td>
-<td align="right">55866</td>
+<td align="right">55858</td>
 <td align="right">0.001</td>
 <td align="left">#f1c40f</td>
 </tr>
@@ -455,7 +455,7 @@ time to accumulate citations).</li>
 <td align="left">General Electric Company</td>
 <td align="right">0.4488619</td>
 <td align="right">24</td>
-<td align="right">50519</td>
+<td align="right">50730</td>
 <td align="right">0.000</td>
 <td align="left">#f1c40f</td>
 </tr>
@@ -463,15 +463,15 @@ time to accumulate citations).</li>
 <td align="left">Intel Corporation</td>
 <td align="right">0.3463383</td>
 <td align="right">20</td>
-<td align="right">48691</td>
+<td align="right">49196</td>
 <td align="right">0.000</td>
 <td align="left">#f1c40f</td>
 </tr>
 <tr class="even">
-<td align="left">Hitachi, Ltd.</td>
+<td align="left">HITACHI, LTD.</td>
 <td align="right">0.3608380</td>
 <td align="right">50</td>
-<td align="right">43165</td>
+<td align="right">45547</td>
 <td align="right">0.001</td>
 <td align="left">#f1c40f</td>
 </tr>

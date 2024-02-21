@@ -197,10 +197,10 @@ exception is the patents endpoint. It now can return assignees,
 inventors, cpc_current along with patent specific fields. Note that now
 subsequent queries would have to be made to the USPC specific endpoints
 if you are looking for these fields.</p>
-<p>Currently there are 16 endpoints, up from the original 7. The urls
+<p>Currently there are 18 endpoints, up from the original 7. The urls
 changed slightly but the R package takes care of that for you.</p>
 <ol style="list-style-type: decimal">
-<li>There are 8 totally new endpoints
+<li>There are 10 totally new endpoints
 <ul>
 <li>/api/v1/ipcs/<br>
 </li>
@@ -213,6 +213,8 @@ changed slightly but the R package takes care of that for you.</p>
 </li>
 <li>/api/v1/patent/us_patent_citation/<br>
 </li>
+<li>/api/v1/publication/rel_app_texts</li>
+<li>/api/v1/publications</li>
 </ul>
 </li>
 <li>5 of the original api’s endpoints have singular names but lighter
@@ -1053,6 +1055,296 @@ full text fields.</p>
 <tr class="even">
 <td align="left">patents</td>
 <td align="left">wipo_kind</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publication/rel_app_texts</td>
+<td align="left">document_number</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publication/rel_app_texts</td>
+<td align="left">related_text</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">assignees.assignee_city</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">assignees.assignee_country</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">assignees.assignee_id</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">assignees.assignee_individual_name_first</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">assignees.assignee_individual_name_last</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">assignees.assignee_location_id</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">assignees.assignee_organization</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">assignees.assignee_state</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">cpc_at_issue.cpc_class_id</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">cpc_at_issue.cpc_group_id</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">cpc_at_issue.cpc_section</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">cpc_at_issue.cpc_subclass_id</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">cpc_at_issue.cpc_type</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">cpc_current.cpc_class_id</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">cpc_current.cpc_group_id</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">cpc_current.cpc_section</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">cpc_current.cpc_subclass_id</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">cpc_current.cpc_type</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">foreign_priority.foreign_application_id</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">foreign_priority.foreign_country_filed</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">foreign_priority.priority_claim_kind</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">gov_interest_organizations.fedagency_name</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">gov_interest_organizations.level_one</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">gov_interest_organizations.level_three</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">gov_interest_organizations.level_two</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">granted_pregrant_crosswalk.application_number</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">inventors.inventor_city</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">inventors.inventor_country</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">inventors.inventor_id</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">inventors.inventor_location_id</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">inventors.inventor_name_first</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">inventors.inventor_name_last</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">inventors.inventor_state</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">ipcr.ipc_class</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">ipcr.ipc_classification_data_source</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">ipcr.ipc_classification_value</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">ipcr.ipc_id</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">ipcr.ipc_main_group</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">ipcr.ipc_section</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">ipcr.ipc_subclass</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">ipcr.ipc_subgroup</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">ipcr.ipc_symbol_position</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">pct_data.application_kind</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">pct_data.pct_doc_number</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">pct_data.pct_doc_type</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">publication_abstract</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">publication_title</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">publication_type</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">rule_47_flag</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">us_related_documents.published_country</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">us_related_documents.related_doc_kind</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">us_related_documents.related_doc_number</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">us_related_documents.related_doc_type</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">uspc_at_issue.uspc_mainclass_id</td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">publications</td>
+<td align="left">uspc_at_issue.uspc_subclass_id</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">publications</td>
+<td align="left">wipo.wipo_field_id</td>
 <td align="left">string</td>
 </tr>
 <tr class="odd">

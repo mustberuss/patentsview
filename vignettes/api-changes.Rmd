@@ -21,9 +21,9 @@ Perhaps the most important change, without an API key your queries will be rejec
 ## Philosophical Changes
 These changes are likely to break existing code.  Now there are more endpoints and each returns a smaller, more specific data structure pertinent to that endpoint. As an example, previously the inventor endpoint could return assignee information, it no longer does that.  The exception is the patents endpoint.  It now can return assignees, inventors, cpc_current along with patent specific fields. Note that now subsequent queries would have to be made to the USPC specific endpoints if you are looking for these fields.
 
-Currently there are 16 endpoints, up from the original 7.  The urls changed slightly but the R package takes care of that for you.  
+Currently there are 18 endpoints, up from the original 7.  The urls changed slightly but the R package takes care of that for you.  
 
-1. There are 8 totally new endpoints
+1. There are 10 totally new endpoints
    -  /api/v1/ipcs/  
    -  /api/v1/uspc_subclass/
    -  /api/v1/patent/attorneys
@@ -32,6 +32,8 @@ Currently there are 16 endpoints, up from the original 7.  The urls changed slig
    -  /api/v1/patent/patent/rel_app_texts/
    -  /api/v1/patent/us_application_citation/  
    -  /api/v1/patent/us_patent_citation/  
+   -  /api/v1/publication/rel_app_texts
+   -  /api/v1/publications
 2. 5 of the original api's endpoints have singular names but lighter responses and fewer queryable fields as mentioned above.  
    -  /api/v1/assignee/  
    -  /api/v1/inventor/ 
@@ -261,6 +263,64 @@ Table: String Fields
 |patents                         |uspc_at_issue.uspc_subclass_id                   |string    |
 |patents                         |wipo.wipo_field_id                               |string    |
 |patents                         |wipo_kind                                        |string    |
+|publication/rel_app_texts       |document_number                                  |string    |
+|publication/rel_app_texts       |related_text                                     |string    |
+|publications                    |assignees.assignee_city                          |string    |
+|publications                    |assignees.assignee_country                       |string    |
+|publications                    |assignees.assignee_id                            |string    |
+|publications                    |assignees.assignee_individual_name_first         |string    |
+|publications                    |assignees.assignee_individual_name_last          |string    |
+|publications                    |assignees.assignee_location_id                   |string    |
+|publications                    |assignees.assignee_organization                  |string    |
+|publications                    |assignees.assignee_state                         |string    |
+|publications                    |cpc_at_issue.cpc_class_id                        |string    |
+|publications                    |cpc_at_issue.cpc_group_id                        |string    |
+|publications                    |cpc_at_issue.cpc_section                         |string    |
+|publications                    |cpc_at_issue.cpc_subclass_id                     |string    |
+|publications                    |cpc_at_issue.cpc_type                            |string    |
+|publications                    |cpc_current.cpc_class_id                         |string    |
+|publications                    |cpc_current.cpc_group_id                         |string    |
+|publications                    |cpc_current.cpc_section                          |string    |
+|publications                    |cpc_current.cpc_subclass_id                      |string    |
+|publications                    |cpc_current.cpc_type                             |string    |
+|publications                    |foreign_priority.foreign_application_id          |string    |
+|publications                    |foreign_priority.foreign_country_filed           |string    |
+|publications                    |foreign_priority.priority_claim_kind             |string    |
+|publications                    |gov_interest_organizations.fedagency_name        |string    |
+|publications                    |gov_interest_organizations.level_one             |string    |
+|publications                    |gov_interest_organizations.level_three           |string    |
+|publications                    |gov_interest_organizations.level_two             |string    |
+|publications                    |granted_pregrant_crosswalk.application_number    |string    |
+|publications                    |inventors.inventor_city                          |string    |
+|publications                    |inventors.inventor_country                       |string    |
+|publications                    |inventors.inventor_id                            |string    |
+|publications                    |inventors.inventor_location_id                   |string    |
+|publications                    |inventors.inventor_name_first                    |string    |
+|publications                    |inventors.inventor_name_last                     |string    |
+|publications                    |inventors.inventor_state                         |string    |
+|publications                    |ipcr.ipc_class                                   |string    |
+|publications                    |ipcr.ipc_classification_data_source              |string    |
+|publications                    |ipcr.ipc_classification_value                    |string    |
+|publications                    |ipcr.ipc_id                                      |string    |
+|publications                    |ipcr.ipc_main_group                              |string    |
+|publications                    |ipcr.ipc_section                                 |string    |
+|publications                    |ipcr.ipc_subclass                                |string    |
+|publications                    |ipcr.ipc_subgroup                                |string    |
+|publications                    |ipcr.ipc_symbol_position                         |string    |
+|publications                    |pct_data.application_kind                        |string    |
+|publications                    |pct_data.pct_doc_number                          |string    |
+|publications                    |pct_data.pct_doc_type                            |string    |
+|publications                    |publication_abstract                             |string    |
+|publications                    |publication_title                                |string    |
+|publications                    |publication_type                                 |string    |
+|publications                    |rule_47_flag                                     |string    |
+|publications                    |us_related_documents.published_country           |string    |
+|publications                    |us_related_documents.related_doc_kind            |string    |
+|publications                    |us_related_documents.related_doc_number          |string    |
+|publications                    |us_related_documents.related_doc_type            |string    |
+|publications                    |uspc_at_issue.uspc_mainclass_id                  |string    |
+|publications                    |uspc_at_issue.uspc_subclass_id                   |string    |
+|publications                    |wipo.wipo_field_id                               |string    |
 |uspc_mainclasses                |uspc_mainclass_id                                |string    |
 |uspc_mainclasses                |uspc_mainclass_title                             |string    |
 |uspc_subclasses                 |uspc_mainclass_id                                |string    |

@@ -33,7 +33,7 @@ search_pv(
 )
 ```
 
-This call to `search_pv()` sends our query to the patents endpoint (the default). The API has 13 different endpoints, corresponding to 13 different entity types (application_citation, assignee, cpc_group, cpc_subgroup, cpc_subsection, inventor, location, nber_category, nber_subcategory, patent, patent_citation, uspc_mainclass and uspc_subclass).[^1] Your choice of endpoint determines which entity your query is applied to, as well as the structure of the data that is returned (more on this in the "13 endpoints for 13 entities section"). For now, let's turn our attention to the `query` parameter. 
+This call to `search_pv()` sends our query to the patents endpoint (the default). The API has 18 different endpoints, corresponding to 18 different entity types (application_citation, assignee, cpc_group, cpc_subgroup, cpc_subsection, inventor, location, nber_category, nber_subcategory, patent, patent_citation, uspc_mainclass and uspc_subclass).[^1] Your choice of endpoint determines which entity your query is applied to, as well as the structure of the data that is returned (more on this in the "18 endpoints for 18 entities section"). For now, let's turn our attention to the `query` parameter. 
 
 ## Writing queries
 
@@ -100,7 +100,7 @@ search_pv(
 
 Our last two calls to `search_pv()` gave the same value for `total_hits`, even though we got a lot more data from the second call. This is because the entity counts returned by the API refer to the number of distinct entities across all *downloadable pages of output*, not just the page that was returned. Downloadable pages of output is an important phrase here, as the API limits us to 10,000 records per query. For example, we got `total_patent_count = 10,000` when we searched for patents published on or after 2007, even though there are way more than 10,000 such patents. See the FAQs below for details on how to overcome the 10,000 record restriction.
 
-## 13 endpoints for 13 entities
+## 18 endpoints for 18 entities
 
 With the recent API change, the patents endpoint supplies the basic patent data and the other endponts return more specific data for those patents.
 
@@ -122,10 +122,6 @@ result$data$patents$inventors[[1]]
 # Now we will see what the inventors endpoint returns for a similar query.  We use get_fields() to get all the available for the inventors endpoint.
 query <- qry_funs$eq(inventor_name_last = "Chambers")
 fields <- get_fields(endpoint = "inventors")
-
-# temporary workaround for 
-# API Error: Invalid field: inventor_gender_attr_status and inventor_male_flag
-fields <- fields[! fields %in% c("inventor_gender_attr_status","inventor_male_flag")]
 
 search_pv(query, endpoint = "inventors", fields = fields)
 

@@ -291,7 +291,7 @@ to <code><a href="../reference/search_pv.html">search_pv()</a></code>:</p>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 4,896,259</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 4,990,833</span></span></code></pre></div>
 <p>…Or you can use the domain specific language (DSL) provided in the
 <code>patentsview</code> package to help you write the query:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -312,7 +312,7 @@ to <code><a href="../reference/search_pv.html">search_pv()</a></code>:</p>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 4,896,259</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 4,990,833</span></span></code></pre></div>
 <p><code>qry_1</code> and <code>qry_2</code> will result in the same
 HTTP call to the API. Both queries search for patents in USPTO that were
 published after 2007. There are three gotchas to look out for when
@@ -370,7 +370,7 @@ fields are no longer available from the patents endpoint.</p>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 4,896,259</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 4,990,833</span></span></code></pre></div>
 <p>The fields that you can retrieve depends on the endpoint that you are
 hitting. We’ve been using the “patents” endpoint thus far, so all of
 these are retrievable:
@@ -410,7 +410,7 @@ given endpoint:</p>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 4,896,259</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 4,990,833</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -477,9 +477,9 @@ be tricky.</p>
 <span>  <span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter_all.html" class="external-link">filter_at</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">assignee_lastknown_latitude</span>, <span class="va">assignee_lastknown_longitude</span><span class="op">)</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/all_vars.html" class="external-link">any_vars</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="co"># seeing NA lats and longs</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/leaflet/man/leaflet.html" class="external-link">leaflet</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/leaflet/man/addProviderTiles.html" class="external-link">addProviderTiles</a></span><span class="op">(</span><span class="va">providers</span><span class="op">$</span><span class="va">CartoDB.DarkMatterNoLabels</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/leaflet/man/map-layers.html" class="external-link">addCircleMarkers</a></span><span class="op">(</span></span>
+<span><span class="fu"><a href="https://rstudio.github.io/leaflet/reference/leaflet.html" class="external-link">leaflet</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/leaflet/reference/addProviderTiles.html" class="external-link">addProviderTiles</a></span><span class="op">(</span><span class="va">providers</span><span class="op">$</span><span class="va">CartoDB.DarkMatterNoLabels</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/leaflet/reference/map-layers.html" class="external-link">addCircleMarkers</a></span><span class="op">(</span></span>
 <span>    lng <span class="op">=</span> <span class="op">~</span><span class="va">assignee_lastknown_longitude</span>, lat <span class="op">=</span> <span class="op">~</span><span class="va">assignee_lastknown_latitude</span>,</span>
 <span>    popup <span class="op">=</span> <span class="op">~</span><span class="va">popup</span>, radius<span class="op">=</span><span class="fl">2</span>, color <span class="op">=</span> <span class="st">"yellow"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>

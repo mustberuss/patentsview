@@ -106,7 +106,7 @@ search_pv(query = qry_1, fields = NULL) # This will retrieve a default set of fi
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 4,896,259
+#> total_hits = 4,990,833
 ```
 
 ...Or you can use the domain specific language (DSL) provided in the `patentsview` package to help you write the query:
@@ -130,7 +130,7 @@ search_pv(query = qry_2)
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 4,896,259
+#> total_hits = 4,990,833
 ```
 
 `qry_1` and `qry_2` will result in the same HTTP call to the API. Both queries search for patents in USPTO that were published after 2007. There are three gotchas to look out for when writing a query:
@@ -164,7 +164,7 @@ search_pv(
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 4,896,259
+#> total_hits = 4,990,833
 ```
 
 The fields that you can retrieve depends on the endpoint that you are hitting. We've been using the "patents" endpoint thus far, so all of these are retrievable: `fieldsdf[fieldsdf$endpoint == "patents", "field"]`. You can also use `get_fields()` to list the retrievable fields for a given endpoint:
@@ -203,7 +203,7 @@ search_pv(
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 4,896,259
+#> total_hits = 4,990,833
 ```
 
 ## Example

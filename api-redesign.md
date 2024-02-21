@@ -15,8 +15,8 @@ The changes comprising an MVP have been masterfully merged onto ropensci by crew
 The problem is that the most recent API change has broken it, possibly irrevocably (assignee_lastknown_latitude/assignee_lastknown_longitude are supposed to 
 come back from the API but aren't currently)
 2. possibly add qry_funs$in_range() to the r package
-3. paging's after parameter needs work - when there is more than a primary sort.  Could use the idea of the Patentsview Wrapper
-where it sends in only a primary sort field to the api and uses the dataframe to 
+3. paging's after parameter needs work - when there is more than a primary sort.  Could use the idea of the [Patentsview Wrapper](https://github.com/mustberuss/PatentsView-APIWrapper/blob/master/api_wrapper.py)
+where it sends in only a primary sort field to the api and sorts the dataframe returned. 
 4. Change the endpoints to singular and do a soft deprecate the current plural ones?
 5. fieldsdf.R needs to be fixed to work with the [updated OpenAPI spec](https://search.patentsview.org/static/openapi.json)
 
