@@ -79,7 +79,7 @@ test_that("search_pv can pull all fields for all endpoints", {
   skip_on_cran()
 
   troubled_endpoints <- c("locations", "patent/attorneys", "cpc_subclasses",
-     "uspc_subclasses", "uspc_mainclasses", "wipo" # , "inventors"
+     "uspc_subclasses", "uspc_mainclasses", "wipo", "claims", "draw_desc_texts"
   )
 
   # these tests will fail when the API is fixed

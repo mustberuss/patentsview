@@ -8,7 +8,8 @@ test_that("", {
 
   # locations endpoint is back but it fails this test
   bad_eps <- c("locations", "patent/attorneys", "cpc_subclasses",
-               "uspc_subclasses" , "uspc_mainclasses" , "wipo"
+               "uspc_subclasses" , "uspc_mainclasses" , "wipo", 
+               "claims","draw_desc_texts"
   )
 
   good_eps <- eps[!eps %in% bad_eps]

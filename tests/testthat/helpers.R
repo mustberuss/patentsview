@@ -21,5 +21,11 @@ TEST_QUERIES <- c(
   "locations" = '{"location_name":"Chicago"}',
   "wipo" = '{"wipo_id": "1"}',
   "publications" = '{"document_number": 20010000002}',
-  "publication/rel_app_texts" = '{"document_number": 20010000001}'
+  "publication/rel_app_texts" = '{"document_number": 20010000001}',
+
+  "brf_sum_texts" = '{"patent_id": "11530080"}',
+  "claims" = '{"patent_id": "11530080"}',
+  "detail_desc_texts" = '{"patent_id": "11530080"}',
+  "draw_desc_texts" = '{"patent_id": "11530080"}'
+   
 )

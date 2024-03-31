@@ -68,6 +68,8 @@ get_endpoints <- function() {
     "cpc_classes", "inventors", "patent/us_patent_citations", "patents",
     "uspc_subclasses", "uspc_mainclasses", "locations",
     "patent/attorneys", "patent/foreign_citations", "patent/rel_app_texts",
-    "wipo", "ipcs", "publications", "publication/rel_app_texts"
+    "wipo", "ipcs", "publications", "publication/rel_app_texts",
+
+    "brf_sum_texts","claims","detail_desc_texts","draw_desc_texts"
   )
 }

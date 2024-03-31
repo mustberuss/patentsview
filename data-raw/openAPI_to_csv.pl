@@ -28,6 +28,14 @@ print OUT << "HEADERS";
 "endpoint","field","data_type","group","common_name"
 HEADERS
 
+# now a handful of endpoints besides just wipo return singular entities
+%singular = ( 
+   "brf_sum_texts" => "brf_sum_text",
+   "claims" => "claim",
+   "detail_desc_texts" => "detail_desc_text",
+   "draw_desc_texts" => "draw_desc_text"
+);
+
 while($line = <$url_fh>)
 {
    # figure out which endpoints are nested, ignoring the hateoas ones
@@ -57,6 +65,15 @@ while($line = <$url_fh>)
       {
          $unnested = "rel_app_text_publications"; # avoids "trouble" below
       }
+
+      # now a handful of endpoints besides just wipo return singular entities
+      if(exists $singular{$endpoint})
+      {
+         $unnested = $singular{$endpoint};
+
+      }
+
+      print "endpoint: $endpoint unnested: $unnested\n";
 
       $endpoints{$unnested} = $endpoint;
    }

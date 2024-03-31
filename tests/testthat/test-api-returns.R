@@ -21,6 +21,8 @@ test_that("API returns all requested groups", {
     , "uspc_subclasses"  # Error: Internal Server Error
     , "uspc_mainclasses" # Error: Internal Server Error
     , "wipo"             # Error: Internal Server Error
+    , "claims"           # Error: Invalid field: claim_dependent
+    , "draw_desc_texts"  # Error: Invalid field: description_sequence
    )
 
   mismatched_returns <- c(

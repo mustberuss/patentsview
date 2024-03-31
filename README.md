@@ -13,6 +13,14 @@ output: github_document
 [![CRAN version](http://www.r-pkg.org/badges/version/patentsview)](https://cran.r-project.org/package=patentsview)
 [![](https://mustberuss.r-universe.dev/badges/patentsview)](https://mustberuss.r-universe.dev/ui#package:patentsview)
 
+This is the R package for the new beta version of the patentsview API
+To get a sense of what's going on with the API, check out the following
+
+* the skips() in the unit tests test/testthat/*.R
+* the try/catch block in test/testthat/test-fetch-each-field.R
+* comments in data-raw/openAPI_to_csv.pl
+
+
 ## Installation
 
 You can get the stable version for the original version of the API from CRAN:
@@ -51,7 +59,7 @@ install.packages("patentsview")
 ```
 ## Important API Change
 
-The new version of the API requires an api key, or all of your requests will be blocked.  An API key can be optained [here](https://patentsview.org/apis/keyrequest).  The updated R package will look for an environmental variable PATENTSVIEW_API_KEY set to the value of your key. For windows it would be
+The new version of the API requires an api key, or all of your requests will be blocked.  An API key can be optained [here](https://patentsview-support.atlassian.net/servicedesk/customer/portal/1/group/1/create/18).  The updated R package will look for an environmental variable PATENTSVIEW_API_KEY set to the value of your key. For windows it would be
 ```
 set PATENTSVIEW_API_KEY=my_keys_value_without quotes
 ```

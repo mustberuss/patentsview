@@ -37,7 +37,8 @@ use_patent_id <- c(
 
   # if names(pv_out[["data"]]) passed
   "us_application_citations", "us_patent_citations", "foreign_citations",
-  "rel_app_texts", "patents"
+  "rel_app_texts", "patents","brf_sum_texts","detail_desc_texts", 
+  "draw_desc_texts"
 )
   if (endpoint %in% use_document_number) {
     "document_number"
