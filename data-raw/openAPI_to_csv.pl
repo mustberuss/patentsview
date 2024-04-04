@@ -146,6 +146,9 @@ while($line = <$url_fh>)
                            $type = "integer" if($type eq "number");
                            $type = "number" if($field =~ /latitude|longitude/);  # strings in the openapi definition
                            $type = "int" if($field eq "assignee_type");  # string that needs to be cast as integers
+
+                           # mistake in 4/3/24 on applicant_authority 
+                           $type = "string" if($type eq "keyword");
                            $common = $field;
                            $field = "$group.$field" if($group ne "");
 
