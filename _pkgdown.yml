@@ -23,22 +23,9 @@ reference:
     - get_ok_pk
     - cast_pv_data
     - retrieve_linked_data
+
 navbar:
   components:
-    changes:
-      text: "API Changes"
-      icon: fa-flag
-      menu:
-        - text: "2023 API Changes"
-          icon: fa-exclamation
-          href: articles/api-changes.html
-        - text: "Converting an Existing Script"
-          icon: fa-sync
-          href: articles/converting-an-existing-script.html
-    starting:
-      text: "Getting started"
-      icon: fa-play
-      href: articles/getting-started.html
     queries:
       text: "Writing queries"
       icon: fa-pencil
@@ -58,7 +45,7 @@ navbar:
           icon: fa-long-arrow-left
           href: articles/citation-networks.html
   structure:
-    left:  [intro, changes, starting, queries, examples, applications, news]
+    left:  [intro, queries, examples, applications, news]
     right: [reference, search, github, lightswitch]
 
 extra_packages:
