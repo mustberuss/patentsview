@@ -271,7 +271,35 @@ search_pv <- function(query,
   result <- process_resp(result)
   if (!all_pages) return(result)
 
+  # Here we ignore the user's sort and instead have the API sort by the primary
+  # key for the requested endpoint.  This simplifies the paging's after parameter.
+  # If we call the API with more than a primary sort, the after parameter would
+  # have to be an array of all the sort fields' values.
+  # After we've retrieved all the data we'll sort using the user's sort
+
+  # Doing this also protects users from needing to know the peculiarities
+  # of the API's sort.  Example: if a user requests a sort of
+  # {"patent_date":"asc"}, on paging the after parameter may skip
+  # to the next issue date before having retured all the data for the last
+  # patent_date in the previous request - depending on where the
+  # patent_dates change relative to the API's page breaks.
+  # (Say the last patent in a retrieved page is the first patent
+  # of a particular date, we wouldn't want the after parameter to
+  # to begin the next page of data after this date.)
+
+  # We also need to insure we'll have the value of the primary sort field.
+  # The API throws an error if the sort field is not present in the fields list
+  # **Should we remember if we added the primary_sort_key and remove it before
+  # returning data to the user?
+  primary_sort_key <-  get_default_sort(endpoint)
+
+  if (!names(primary_sort_key) %in% fields) fields <- c(fields, names(primary_sort_key))
+
+  arg_list <- to_arglist(fields, page, per_page, primary_sort_key)
   full_data <- request_apply(result, method, query, base_url, arg_list, api_key, ...)
+
+  # apply the user's sort
+  data.table::setorderv(full_data, names(sort), ifelse(as.vector(sort)=="asc", 1, -1))
   result$data[[1]] <- full_data
 
   result
