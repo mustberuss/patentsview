@@ -17,6 +17,10 @@ use LWP::Simple;
 # patent/rel_app_text/ the messes up putting the last part of the paths
 # in a hashmap
 
+# latest weirdness: patents endpoint request inventors.inventor_id and
+# assignees.assignee_id to receive inventors.inventor and assignees.assignee,
+# their respective HATEOAS links
+
 my $data = get('https://search.patentsview.org/static/openapi.json');
 open my $url_fh, '<', \$data or die $!;
 
@@ -172,6 +176,14 @@ while($line = <$url_fh>)
                            # is publication/rel_app_text_applications
                            if($ggroup eq "publication/rel_app_texts") {
                               $ggroup = "publication/rel_app_text_publications";
+                           }
+
+                           # latest weirdness mentioned at the top
+                           if("assignees.assignee" eq $field || 
+                              "inventors.inventor" eq $field)
+                           {
+                              $field .= "_id";
+                              $common .= "_id";
                            }
 
                            $output = << "DAT";

@@ -17,7 +17,6 @@ test_that("API returns all requested groups", {
   # TODO: remove the trickery to get this test to pass, once the API is fixed
   bad_eps <- c("cpc_subclasses"
     , "locations"        # Error: Invalid field: location_latitude
-    , "patent/attorneys" # Error: Invalid field: attorney_first_seen_date
     , "uspc_subclasses"  # Error: Internal Server Error
     , "uspc_mainclasses" # Error: Internal Server Error
     , "wipo"             # Error: Internal Server Error

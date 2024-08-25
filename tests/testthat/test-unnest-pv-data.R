@@ -7,7 +7,7 @@ test_that("", {
   # API throws 500s if some nested fields are included
 
   # locations endpoint is back but it fails this test
-  bad_eps <- c("locations", "patent/attorneys", "cpc_subclasses",
+  bad_eps <- c("locations", "cpc_subclasses",
                "uspc_subclasses" , "uspc_mainclasses" , "wipo", 
                "claims","draw_desc_texts"
   )

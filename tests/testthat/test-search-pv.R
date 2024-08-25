@@ -78,7 +78,7 @@ test_that("You can download up to 9,000+ records", {
 test_that("search_pv can pull all fields for all endpoints", {
   skip_on_cran()
 
-  troubled_endpoints <- c("locations", "patent/attorneys", "cpc_subclasses",
+  troubled_endpoints <- c("locations", "cpc_subclasses",
      "uspc_subclasses", "uspc_mainclasses", "wipo", "claims", "draw_desc_texts"
   )
 
@@ -234,6 +234,8 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
 
   # We'll make a call to get an inventor and assignee HATEOAS link
   # in case their ids are not persistent
+  # new weirdness; we request inventor_id and assignee_id but the
+  # fields come back without the _id
   res <- search_pv('{"patent_id":"10000000"}',
     fields = c("inventors.inventor_id", "assignees.assignee_id")
   )
