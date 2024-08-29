@@ -124,17 +124,27 @@ test_that("search_pv properly URL encodes queries", {
   skip_on_cran()
 
   # Covers https://github.com/ropensci/patentsview/issues/24
-  # need to use the assignee endpoint now and the field is full_text
-  text_query <- with_qfuns(text_phrase(assignee_organization = "Johnson & Johnson International"))
+  # need to use the assignee endpoint now
+  organization <- "Johnson & Johnson International"
+  text_query <- with_qfuns(text_phrase(assignee_organization = organization))
   phrase_search <- search_pv(text_query, endpoint = "assignees")
-  expect_true(TRUE)
+  expect_true(phrase_search$query_results$total_hits == 1)
 
-  # apparently no longer true
   # also test that the string operator does not matter now
-  #eq_query <- with_qfuns(eq(assignee_organization = "Johnson & Johnson"))
-  #eq_search <- search_pv(eq_query, endpoint = "assignees")
-  #expect_identical(eq_search$data, phrase_search$data)
+  eq_query <- with_qfuns(eq(assignee_organization = organization ))
+  eq_search <- search_pv(eq_query, endpoint = "assignees")
+  expect_identical(eq_search$data, phrase_search$data)
 
+  # text_phrase seems to be case insensitive but equal is not
+  organization = tolower(organization)
+
+  text_query <- with_qfuns(text_phrase(assignee_organization = organization))
+  phrase_search <- search_pv(text_query, endpoint = "assignees")
+  expect_true(phrase_search$query_results$total_hits == 1)
+
+  eq_query <- with_qfuns(eq(assignee_organization = organization ))
+  eq_search <- search_pv(eq_query, endpoint = "assignees")
+  expect_true(eq_search$query_results$total_hits == 0)
 })
 
 # Below we request the same data in built_singly and result_all, with the only
