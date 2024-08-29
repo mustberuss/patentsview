@@ -17,7 +17,13 @@ test_that("", {
   z <- lapply(good_eps, function(x) {
     print(x)
 
-    # group for is publication/rel_app_texts is publication/rel_appp_text_publications
+    # the groups are different for the two rel_app_texts endpoints
+    # from the current OpenAPI object
+    #      "rel_app_texts": {
+    #      "rel_app_text_publications": {
+
+    # group for publication/rel_app_texts is publication/rel_app_text_publications
+    # which doesn't match the endpoint as it does for the endpoints
     g <- if (x == "publication/rel_app_texts") "publication/rel_app_text_publications" else x
 
     pv_out <- search_pv(
