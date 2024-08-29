@@ -217,7 +217,6 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
     "wipo/1/"
   )
 
-  # TODO: remove when this is fixed
   single_item_queries <-											single_item_queries [! single_item_queries %in% broken_single_item_queries]
 
   dev_null <- lapply(single_item_queries, function(q) {
@@ -226,6 +225,7 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
     expect_equal(j$query_results$total_hits, 1)
   })
 
+  # TODO: remove when this is fixed
   # we'll know the api is fixed when this fails
   dev_null <- lapply(broken_single_item_queries, function(q) {
     expect_error(
