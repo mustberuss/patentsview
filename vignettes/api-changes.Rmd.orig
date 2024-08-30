@@ -28,9 +28,13 @@ Perhaps the most important change, without an API key your queries will be rejec
 ## Philosophical Changes
 These changes are likely to break existing code.  Now there are more endpoints and each returns a smaller, more specific data structure pertinent to that endpoint. As an example, previously the inventor endpoint could return assignee information, it no longer does that.  The exception is the patents endpoint.  It now can return assignees, inventors, cpc_current along with patent specific fields. Note that now subsequent queries would have to be made to the USPC specific endpoints if you are looking for these fields.
 
-Currently there are 18 endpoints, up from the original 7.  The urls changed slightly but the R package takes care of that for you.  
+Currently there are 23 endpoints, up from the original 7.  The urls changed slightly but the R package takes care of that for you.  
 
-1. There are 10 totally new endpoints
+1. There are 15 totally new endpoints
+   -  /api/v1/brf_sum_texts
+   -  /api/v1/claims/
+   -  /api/v1/detail_desc_texts/
+   -  /api/v1/draw_desc_texts/
    -  /api/v1/ipcs/  
    -  /api/v1/uspc_subclass/
    -  /api/v1/patent/attorneys
@@ -41,6 +45,7 @@ Currently there are 18 endpoints, up from the original 7.  The urls changed slig
    -  /api/v1/patent/us_patent_citation/  
    -  /api/v1/publication/rel_app_texts
    -  /api/v1/publications
+   -  /api/v1/wipo
 2. 5 of the original api's endpoints have singular names but lighter responses and fewer queryable fields as mentioned above.  
    -  /api/v1/assignee/  
    -  /api/v1/inventor/ 
@@ -51,7 +56,7 @@ Currently there are 18 endpoints, up from the original 7.  The urls changed slig
    -  /api/v1/cpc_class/
    -  /api/v1/cpc_subclass/
    -  /api/v1/cpc_group/
-4. The nber_subcategory endpoint seem to be gone now.
+4. The nber_subcategory endpoint seems to be gone now.
 
 
 ## Data Reduction
