@@ -28,7 +28,7 @@ Another new thing is a throttling limit. The new version of the API only allows 
 
 The new versions of the API's endpoints are less Swiss Army Knife-like than before, where you could get nearly any data field from any endpoint.  Now they have substantially lighter responses and they generally focus on data pertinent to that endpoint.  In other words, you can only get uspc fields from the uspc endpoints.  This may mean you'll have to make multiple calls to different endpoints to get the same data the old version of API used to return in a single call.
 
-Take a look at the top [assignees application](../top-assignees.html). It has to blend together information from separate calls that used to be returned by a single call. This may push your dplyr knowlegde to the limit.
+Take a look at the top [assignees application](top-assignees.html). It has to blend together information from separate calls that used to be returned by a single call. This may push your dplyr knowlegde to the limit.
 
 ## Changed Field Names and Types
 The fields selected in the original stript not be available from the new version's endpoints. Fields like the government interests are no longer available (see https://patentsview.org/data-in-action/whats-new-patentsview-july-2021). Also, some attributes have new names, like name_last in the nested inventor object.  Now in the fields parameter it would be specified as "inventor.name_last" where formerly it was "inventor_last_name" when using the patents endpoint.
