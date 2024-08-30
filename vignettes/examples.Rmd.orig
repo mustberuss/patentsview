@@ -77,7 +77,7 @@ Which inventors have Chicago, IL listed as their location on at least one patent
 
 ```{r}
 pv_out <- search_pv(
-  query = '{"_and":[{"_text_phrase": {"inventors.city":"Chicago"}},{"_text_phrase": {"inventors.state":"IL"}}]}',
+  query = '{"_and":[{"_text_phrase": {"inventors.inventor_city":"Chicago"}},{"_text_phrase": {"inventors.inventor_state":"IL"}}]}',
   endpoint = "patents"
 )
 
