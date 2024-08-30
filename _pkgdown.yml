@@ -46,14 +46,13 @@ navbar:
       text: "Writing queries"
       icon: fa-pencil
       href: articles/writing-queries.html
-    examples:
-      text: "Examples"
-      icon: fa-code
-      href: articles/examples.html
     applications:
       text: "Applications"
       icon: fa-bar-chart
       menu:
+        - text: "Examples"
+          icon: fa-code
+          href: articles/examples.html
         - text: "Top assignees"
           icon: fa-university
           href: articles/top-assignees.html
