@@ -21,9 +21,13 @@ Perhaps the most important change, without an API key your queries will be rejec
 ## Philosophical Changes
 These changes are likely to break existing code.  Now there are more endpoints and each returns a smaller, more specific data structure pertinent to that endpoint. As an example, previously the inventor endpoint could return assignee information, it no longer does that.  The exception is the patents endpoint.  It now can return assignees, inventors, cpc_current along with patent specific fields. Note that now subsequent queries would have to be made to the USPC specific endpoints if you are looking for these fields.
 
-Currently there are 18 endpoints, up from the original 7.  The urls changed slightly but the R package takes care of that for you.  
+Currently there are 23 endpoints, up from the original 7.  The urls changed slightly but the R package takes care of that for you.  
 
-1. There are 10 totally new endpoints
+1. There are 15 totally new endpoints
+   -  /api/v1/brf_sum_texts
+   -  /api/v1/claims/
+   -  /api/v1/detail_desc_texts/
+   -  /api/v1/draw_desc_texts/
    -  /api/v1/ipcs/  
    -  /api/v1/uspc_subclass/
    -  /api/v1/patent/attorneys
@@ -34,6 +38,7 @@ Currently there are 18 endpoints, up from the original 7.  The urls changed slig
    -  /api/v1/patent/us_patent_citation/  
    -  /api/v1/publication/rel_app_texts
    -  /api/v1/publications
+   -  /api/v1/wipo
 2. 5 of the original api's endpoints have singular names but lighter responses and fewer queryable fields as mentioned above.  
    -  /api/v1/assignee/  
    -  /api/v1/inventor/ 
@@ -44,7 +49,7 @@ Currently there are 18 endpoints, up from the original 7.  The urls changed slig
    -  /api/v1/cpc_class/
    -  /api/v1/cpc_subclass/
    -  /api/v1/cpc_group/
-4. The nber_subcategory endpoint seem to be gone now.
+4. The nber_subcategory endpoint seems to be gone now.
 
 
 ## Data Reduction
@@ -66,7 +71,7 @@ Note that going to that link in a browser will result in a 403 Unauthorized, as 
 There is a new method in the R package to retrive data from the HATEOAS links, just pass the returned
 link and the R package will retrieve the data for you.  
 
-```r
+``` r
 library(patentsview)
 
 pv_data <- retrieve_linked_data("https://search.patentsview.org/api/v1/cpc_group/G01S7:4865/")
@@ -100,7 +105,7 @@ The API will now allow 45 requests per minute, making more requests will anger t
 
 fieldsdf will show you the field types, names and endpoints in the new version of the API.  There are different operators for string and full text fields.
 
-```r
+``` r
 library(knitr)
 library(dplyr)
 
@@ -127,6 +132,13 @@ Table: String Fields
 |assignees                       |assignee_lastknown_location                      |string    |
 |assignees                       |assignee_lastknown_state                         |string    |
 |assignees                       |assignee_organization                            |string    |
+|brf_sum_texts                   |patent_id                                        |string    |
+|brf_sum_texts                   |summary_text                                     |string    |
+|claims                          |claim_dependent                                  |string    |
+|claims                          |claim_number                                     |string    |
+|claims                          |claim_text                                       |string    |
+|claims                          |patent_id                                        |string    |
+|claims                          |patent_zero_prefix                               |string    |
 |cpc_classes                     |cpc_class_id                                     |string    |
 |cpc_classes                     |cpc_class_title                                  |string    |
 |cpc_groups                      |cpc_class_id                                     |string    |
@@ -136,6 +148,11 @@ Table: String Fields
 |cpc_subclasses                  |cpc_class_id                                     |string    |
 |cpc_subclasses                  |cpc_subclass_id                                  |string    |
 |cpc_subclasses                  |cpc_subclass_title                               |string    |
+|detail_desc_texts               |description_text                                 |string    |
+|detail_desc_texts               |patent_id                                        |string    |
+|draw_desc_texts                 |description_text                                 |string    |
+|draw_desc_texts                 |patent_id                                        |string    |
+|inventors                       |inventor_gender_code                             |string    |
 |inventors                       |inventor_id                                      |string    |
 |inventors                       |inventor_lastknown_city                          |string    |
 |inventors                       |inventor_lastknown_country                       |string    |
@@ -193,7 +210,6 @@ Table: String Fields
 |patents                         |assignees.assignee_id                            |string    |
 |patents                         |assignees.assignee_individual_name_first         |string    |
 |patents                         |assignees.assignee_individual_name_last          |string    |
-|patents                         |assignees.assignee_location_id                   |string    |
 |patents                         |assignees.assignee_organization                  |string    |
 |patents                         |assignees.assignee_state                         |string    |
 |patents                         |attorneys.attorney_id                            |string    |
@@ -230,7 +246,6 @@ Table: String Fields
 |patents                         |inventors.inventor_city                          |string    |
 |patents                         |inventors.inventor_country                       |string    |
 |patents                         |inventors.inventor_id                            |string    |
-|patents                         |inventors.inventor_location_id                   |string    |
 |patents                         |inventors.inventor_name_first                    |string    |
 |patents                         |inventors.inventor_name_last                     |string    |
 |patents                         |inventors.inventor_state                         |string    |
@@ -270,7 +285,6 @@ Table: String Fields
 |publications                    |assignees.assignee_id                            |string    |
 |publications                    |assignees.assignee_individual_name_first         |string    |
 |publications                    |assignees.assignee_individual_name_last          |string    |
-|publications                    |assignees.assignee_location_id                   |string    |
 |publications                    |assignees.assignee_organization                  |string    |
 |publications                    |assignees.assignee_state                         |string    |
 |publications                    |cpc_at_issue.cpc_class_id                        |string    |
@@ -294,11 +308,12 @@ Table: String Fields
 |publications                    |inventors.inventor_city                          |string    |
 |publications                    |inventors.inventor_country                       |string    |
 |publications                    |inventors.inventor_id                            |string    |
-|publications                    |inventors.inventor_location_id                   |string    |
 |publications                    |inventors.inventor_name_first                    |string    |
 |publications                    |inventors.inventor_name_last                     |string    |
 |publications                    |inventors.inventor_state                         |string    |
 |publications                    |ipcr.ipc_class                                   |string    |
+|publications                    |ipcr.ipc_class_level                             |string    |
+|publications                    |ipcr.ipc_class_status                            |string    |
 |publications                    |ipcr.ipc_classification_data_source              |string    |
 |publications                    |ipcr.ipc_classification_value                    |string    |
 |publications                    |ipcr.ipc_id                                      |string    |
@@ -308,12 +323,20 @@ Table: String Fields
 |publications                    |ipcr.ipc_subgroup                                |string    |
 |publications                    |ipcr.ipc_symbol_position                         |string    |
 |publications                    |pct_data.application_kind                        |string    |
+|publications                    |pct_data.filed_country                           |string    |
 |publications                    |pct_data.pct_doc_number                          |string    |
 |publications                    |pct_data.pct_doc_type                            |string    |
 |publications                    |publication_abstract                             |string    |
 |publications                    |publication_title                                |string    |
 |publications                    |publication_type                                 |string    |
 |publications                    |rule_47_flag                                     |string    |
+|publications                    |us_parties.applicant_authority                   |string    |
+|publications                    |us_parties.location_id                           |string    |
+|publications                    |us_parties.us_party_designation                  |string    |
+|publications                    |us_parties.us_party_name_first                   |string    |
+|publications                    |us_parties.us_party_name_last                    |string    |
+|publications                    |us_parties.us_party_organization                 |string    |
+|publications                    |us_parties.us_party_type                         |string    |
 |publications                    |us_related_documents.published_country           |string    |
 |publications                    |us_related_documents.related_doc_kind            |string    |
 |publications                    |us_related_documents.related_doc_number          |string    |
@@ -321,6 +344,7 @@ Table: String Fields
 |publications                    |uspc_at_issue.uspc_mainclass_id                  |string    |
 |publications                    |uspc_at_issue.uspc_subclass_id                   |string    |
 |publications                    |wipo.wipo_field_id                               |string    |
+|publications                    |wipo.wipo_sector_title                           |string    |
 |uspc_mainclasses                |uspc_mainclass_id                                |string    |
 |uspc_mainclasses                |uspc_mainclass_title                             |string    |
 |uspc_subclasses                 |uspc_mainclass_id                                |string    |
@@ -330,7 +354,9 @@ Table: String Fields
 |wipo                            |sector_title                                     |string    |
 |wipo                            |wipo_id                                          |string    |
 
-```r
+
+
+``` r
 
 fulltext_fields <-
    fieldsdf %>%
@@ -348,6 +374,8 @@ Table: Full Text Fields
 |endpoint |field |data_type |
 |:--------|:-----|:---------|
 
+
+
 ## Other Changes
 
 * Some of the fields names changed.  assignee_last_name is now name_last in the assignees data structure.
@@ -363,7 +391,7 @@ when including them in your query.  Example: assignee organization is renamed or
 
 * Nested fields seem to need to be fully qualified in the f:parameter. Here are all the patents endpoint's fields:
 
-```r
+``` r
 sort(get_fields("patents"))
 #>   [1] "applicants.applicant_designation"                            
 #>   [2] "applicants.applicant_name_first"                             
@@ -383,108 +411,106 @@ sort(get_fields("patents"))
 #>  [16] "assignees.assignee_id"                                       
 #>  [17] "assignees.assignee_individual_name_first"                    
 #>  [18] "assignees.assignee_individual_name_last"                     
-#>  [19] "assignees.assignee_location_id"                              
-#>  [20] "assignees.assignee_organization"                             
-#>  [21] "assignees.assignee_sequence"                                 
-#>  [22] "assignees.assignee_state"                                    
-#>  [23] "assignees.assignee_type"                                     
-#>  [24] "attorneys.attorney_id"                                       
-#>  [25] "attorneys.attorney_name_first"                               
-#>  [26] "attorneys.attorney_name_last"                                
-#>  [27] "attorneys.attorney_organization"                             
-#>  [28] "attorneys.attorney_sequence"                                 
-#>  [29] "botanic.latin_name"                                          
-#>  [30] "botanic.variety"                                             
-#>  [31] "cpc_at_issue.cpc_class_id"                                   
-#>  [32] "cpc_at_issue.cpc_group_id"                                   
-#>  [33] "cpc_at_issue.cpc_section"                                    
-#>  [34] "cpc_at_issue.cpc_sequence"                                   
-#>  [35] "cpc_at_issue.cpc_subclass_id"                                
-#>  [36] "cpc_at_issue.cpc_type"                                       
-#>  [37] "cpc_current.cpc_class_id"                                    
-#>  [38] "cpc_current.cpc_group_id"                                    
-#>  [39] "cpc_current.cpc_section"                                     
-#>  [40] "cpc_current.cpc_sequence"                                    
-#>  [41] "cpc_current.cpc_subclass_id"                                 
-#>  [42] "cpc_current.cpc_type"                                        
-#>  [43] "examiners.art_group"                                         
-#>  [44] "examiners.examiner_first_name"                               
-#>  [45] "examiners.examiner_id"                                       
-#>  [46] "examiners.examiner_last_name"                                
-#>  [47] "examiners.examiner_role"                                     
-#>  [48] "figures.num_figures"                                         
-#>  [49] "figures.num_sheets"                                          
-#>  [50] "foreign_priority.filing_date"                                
-#>  [51] "foreign_priority.foreign_application_id"                     
-#>  [52] "foreign_priority.foreign_country_filed"                      
-#>  [53] "foreign_priority.priority_claim_kind"                        
-#>  [54] "foreign_priority.priority_claim_sequence"                    
-#>  [55] "gov_interest_contract_award_numbers.award_number"            
-#>  [56] "gov_interest_organizations.fedagency_name"                   
-#>  [57] "gov_interest_organizations.level_one"                        
-#>  [58] "gov_interest_organizations.level_three"                      
-#>  [59] "gov_interest_organizations.level_two"                        
-#>  [60] "gov_interest_statement"                                      
-#>  [61] "granted_pregrant_crosswalk.application_number"               
-#>  [62] "granted_pregrant_crosswalk.document_number"                  
-#>  [63] "inventors.inventor_city"                                     
-#>  [64] "inventors.inventor_country"                                  
-#>  [65] "inventors.inventor_id"                                       
-#>  [66] "inventors.inventor_location_id"                              
-#>  [67] "inventors.inventor_name_first"                               
-#>  [68] "inventors.inventor_name_last"                                
-#>  [69] "inventors.inventor_sequence"                                 
-#>  [70] "inventors.inventor_state"                                    
-#>  [71] "ipcr.ipc_action_date"                                        
-#>  [72] "ipcr.ipc_class"                                              
-#>  [73] "ipcr.ipc_classification_data_source"                         
-#>  [74] "ipcr.ipc_classification_value"                               
-#>  [75] "ipcr.ipc_id"                                                 
-#>  [76] "ipcr.ipc_main_group"                                         
-#>  [77] "ipcr.ipc_section"                                            
-#>  [78] "ipcr.ipc_sequence"                                           
-#>  [79] "ipcr.ipc_subclass"                                           
-#>  [80] "ipcr.ipc_subgroup"                                           
-#>  [81] "ipcr.ipc_symbol_position"                                    
-#>  [82] "patent_abstract"                                             
-#>  [83] "patent_cpc_current_group_average_patent_processing_days"     
-#>  [84] "patent_date"                                                 
-#>  [85] "patent_detail_desc_length"                                   
-#>  [86] "patent_earliest_application_date"                            
-#>  [87] "patent_id"                                                   
-#>  [88] "patent_num_foreign_documents_cited"                          
-#>  [89] "patent_num_times_cited_by_us_patents"                        
-#>  [90] "patent_num_total_documents_cited"                            
-#>  [91] "patent_num_us_applications_cited"                            
-#>  [92] "patent_num_us_patents_cited"                                 
-#>  [93] "patent_processing_days"                                      
-#>  [94] "patent_term_extension"                                       
-#>  [95] "patent_title"                                                
-#>  [96] "patent_type"                                                 
-#>  [97] "patent_uspc_current_mainclass_average_patent_processing_days"
-#>  [98] "patent_year"                                                 
-#>  [99] "pct_data.application_kind"                                   
-#> [100] "pct_data.pct_102_date"                                       
-#> [101] "pct_data.pct_371_date"                                       
-#> [102] "pct_data.pct_doc_number"                                     
-#> [103] "pct_data.pct_doc_type"                                       
-#> [104] "pct_data.published_filed_date"                               
-#> [105] "us_related_documents.published_country"                      
-#> [106] "us_related_documents.related_doc_kind"                       
-#> [107] "us_related_documents.related_doc_number"                     
-#> [108] "us_related_documents.related_doc_published_date"             
-#> [109] "us_related_documents.related_doc_sequence"                   
-#> [110] "us_related_documents.related_doc_status"                     
-#> [111] "us_related_documents.related_doc_type"                       
-#> [112] "us_related_documents.wipo_kind"                              
-#> [113] "us_term_of_grant.disclaimer_date"                            
-#> [114] "us_term_of_grant.term_disclaimer"                            
-#> [115] "us_term_of_grant.term_extension"                             
-#> [116] "us_term_of_grant.term_grant"                                 
-#> [117] "uspc_at_issue.uspc_mainclass_id"                             
-#> [118] "uspc_at_issue.uspc_sequence"                                 
-#> [119] "uspc_at_issue.uspc_subclass_id"                              
-#> [120] "wipo.wipo_field_id"                                          
-#> [121] "wipo.wipo_sequence"                                          
-#> [122] "wipo_kind"
+#>  [19] "assignees.assignee_organization"                             
+#>  [20] "assignees.assignee_sequence"                                 
+#>  [21] "assignees.assignee_state"                                    
+#>  [22] "assignees.assignee_type"                                     
+#>  [23] "attorneys.attorney_id"                                       
+#>  [24] "attorneys.attorney_name_first"                               
+#>  [25] "attorneys.attorney_name_last"                                
+#>  [26] "attorneys.attorney_organization"                             
+#>  [27] "attorneys.attorney_sequence"                                 
+#>  [28] "botanic.latin_name"                                          
+#>  [29] "botanic.variety"                                             
+#>  [30] "cpc_at_issue.cpc_class_id"                                   
+#>  [31] "cpc_at_issue.cpc_group_id"                                   
+#>  [32] "cpc_at_issue.cpc_section"                                    
+#>  [33] "cpc_at_issue.cpc_sequence"                                   
+#>  [34] "cpc_at_issue.cpc_subclass_id"                                
+#>  [35] "cpc_at_issue.cpc_type"                                       
+#>  [36] "cpc_current.cpc_class_id"                                    
+#>  [37] "cpc_current.cpc_group_id"                                    
+#>  [38] "cpc_current.cpc_section"                                     
+#>  [39] "cpc_current.cpc_sequence"                                    
+#>  [40] "cpc_current.cpc_subclass_id"                                 
+#>  [41] "cpc_current.cpc_type"                                        
+#>  [42] "examiners.art_group"                                         
+#>  [43] "examiners.examiner_first_name"                               
+#>  [44] "examiners.examiner_id"                                       
+#>  [45] "examiners.examiner_last_name"                                
+#>  [46] "examiners.examiner_role"                                     
+#>  [47] "figures.num_figures"                                         
+#>  [48] "figures.num_sheets"                                          
+#>  [49] "foreign_priority.filing_date"                                
+#>  [50] "foreign_priority.foreign_application_id"                     
+#>  [51] "foreign_priority.foreign_country_filed"                      
+#>  [52] "foreign_priority.priority_claim_kind"                        
+#>  [53] "foreign_priority.priority_claim_sequence"                    
+#>  [54] "gov_interest_contract_award_numbers.award_number"            
+#>  [55] "gov_interest_organizations.fedagency_name"                   
+#>  [56] "gov_interest_organizations.level_one"                        
+#>  [57] "gov_interest_organizations.level_three"                      
+#>  [58] "gov_interest_organizations.level_two"                        
+#>  [59] "gov_interest_statement"                                      
+#>  [60] "granted_pregrant_crosswalk.application_number"               
+#>  [61] "granted_pregrant_crosswalk.document_number"                  
+#>  [62] "inventors.inventor_city"                                     
+#>  [63] "inventors.inventor_country"                                  
+#>  [64] "inventors.inventor_id"                                       
+#>  [65] "inventors.inventor_name_first"                               
+#>  [66] "inventors.inventor_name_last"                                
+#>  [67] "inventors.inventor_sequence"                                 
+#>  [68] "inventors.inventor_state"                                    
+#>  [69] "ipcr.ipc_action_date"                                        
+#>  [70] "ipcr.ipc_class"                                              
+#>  [71] "ipcr.ipc_classification_data_source"                         
+#>  [72] "ipcr.ipc_classification_value"                               
+#>  [73] "ipcr.ipc_id"                                                 
+#>  [74] "ipcr.ipc_main_group"                                         
+#>  [75] "ipcr.ipc_section"                                            
+#>  [76] "ipcr.ipc_sequence"                                           
+#>  [77] "ipcr.ipc_subclass"                                           
+#>  [78] "ipcr.ipc_subgroup"                                           
+#>  [79] "ipcr.ipc_symbol_position"                                    
+#>  [80] "patent_abstract"                                             
+#>  [81] "patent_cpc_current_group_average_patent_processing_days"     
+#>  [82] "patent_date"                                                 
+#>  [83] "patent_detail_desc_length"                                   
+#>  [84] "patent_earliest_application_date"                            
+#>  [85] "patent_id"                                                   
+#>  [86] "patent_num_foreign_documents_cited"                          
+#>  [87] "patent_num_times_cited_by_us_patents"                        
+#>  [88] "patent_num_total_documents_cited"                            
+#>  [89] "patent_num_us_applications_cited"                            
+#>  [90] "patent_num_us_patents_cited"                                 
+#>  [91] "patent_processing_days"                                      
+#>  [92] "patent_term_extension"                                       
+#>  [93] "patent_title"                                                
+#>  [94] "patent_type"                                                 
+#>  [95] "patent_uspc_current_mainclass_average_patent_processing_days"
+#>  [96] "patent_year"                                                 
+#>  [97] "pct_data.application_kind"                                   
+#>  [98] "pct_data.pct_102_date"                                       
+#>  [99] "pct_data.pct_371_date"                                       
+#> [100] "pct_data.pct_doc_number"                                     
+#> [101] "pct_data.pct_doc_type"                                       
+#> [102] "pct_data.published_filed_date"                               
+#> [103] "us_related_documents.published_country"                      
+#> [104] "us_related_documents.related_doc_kind"                       
+#> [105] "us_related_documents.related_doc_number"                     
+#> [106] "us_related_documents.related_doc_published_date"             
+#> [107] "us_related_documents.related_doc_sequence"                   
+#> [108] "us_related_documents.related_doc_status"                     
+#> [109] "us_related_documents.related_doc_type"                       
+#> [110] "us_related_documents.wipo_kind"                              
+#> [111] "us_term_of_grant.disclaimer_date"                            
+#> [112] "us_term_of_grant.term_disclaimer"                            
+#> [113] "us_term_of_grant.term_extension"                             
+#> [114] "us_term_of_grant.term_grant"                                 
+#> [115] "uspc_at_issue.uspc_mainclass_id"                             
+#> [116] "uspc_at_issue.uspc_sequence"                                 
+#> [117] "uspc_at_issue.uspc_subclass_id"                              
+#> [118] "wipo.wipo_field_id"                                          
+#> [119] "wipo.wipo_sequence"                                          
+#> [120] "wipo_kind"
 ```

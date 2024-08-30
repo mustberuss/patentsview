@@ -62,7 +62,7 @@ The `patentsview` R package is a wrapper around the PatentsView API. It contains
 You can install the stable version of `patentsview` from r-universe:
 
 
-```r
+``` r
 options(repos = c(
   patentsview = "https://mustberuss.r-universe.dev/",
   CRAN = "https://cloud.r-project.org"
@@ -74,7 +74,7 @@ install.packages("patentsview")
 Or  from GitHub:
 
 
-```r
+``` r
 if (!require(devtools)) install.packages("devtools")
    devtools::install_github("mustberuss/patentsview@api-redesign")
 
@@ -89,7 +89,7 @@ The package has one main function, `search_pv()`, that makes it easy to send req
 Your query has to use the [PatentsView query language](https://patentsview.org/apis/api-query-language), which is a JSON-based syntax that is similar to the one used by Lucene. You can write the query directly and pass it as a string to `search_pv()`:
 
 
-```r
+``` r
 library(patentsview)
 
 qry_1 <- '{"_gt":{"patent_year":2007}}'
@@ -106,13 +106,13 @@ search_pv(query = qry_1, fields = NULL) # This will retrieve a default set of fi
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 4,990,833
+#> total_hits = 5,179,313
 ```
 
 ...Or you can use the domain specific language (DSL) provided in the `patentsview` package to help you write the query:
 
 
-```r
+``` r
 qry_2 <- qry_funs$gt(patent_year = 2007) # All DSL functions are in the qry_funs list
 qry_2 # qry_2 is the same as qry_1
 #> {"_gt":{"patent_year":2007}}
@@ -130,7 +130,7 @@ search_pv(query = qry_2)
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 4,990,833
+#> total_hits = 5,179,313
 ```
 
 `qry_1` and `qry_2` will result in the same HTTP call to the API. Both queries search for patents in USPTO that were published after 2007. There are three gotchas to look out for when writing a query:
@@ -148,7 +148,7 @@ Up until now we have been using the default value for `fields`. This results in 
 With the original verison of the API we requested patent_average_processing_time and inventor_total_num_patents.  These fields are no longer available from the patents endpoint.
 
 
-```r
+``` r
 search_pv(
   query = qry_funs$gt(patent_year = 2007),
   fields = c("patent_abstract", "inventors.inventor_name_first")
@@ -164,13 +164,13 @@ search_pv(
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 4,990,833
+#> total_hits = 5,179,313
 ```
 
 The fields that you can retrieve depends on the endpoint that you are hitting. We've been using the "patents" endpoint thus far, so all of these are retrievable: `fieldsdf[fieldsdf$endpoint == "patents", "field"]`. You can also use `get_fields()` to list the retrievable fields for a given endpoint:
 
 
-```r
+``` r
 search_pv(
   query = qry_funs$gt(patent_year = 2007),
   fields = get_fields(endpoint = "patents", groups = c("patents", "inventors"))
@@ -203,7 +203,7 @@ search_pv(
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 4,990,833
+#> total_hits = 5,179,313
 ```
 
 ## Example
@@ -213,7 +213,7 @@ Let's look at a quick example of pulling and analyzing patent data. We'll look a
 1. Download the data
 
 
-```r
+``` r
 library(patentsview)
 
 # The original post's query is not currently possible with the current version of the new API.
@@ -244,7 +244,7 @@ pv_res <- search_pv(endpoint = "assignees", query = query, fields = fields,
 2. See where the assignees are coming from (geographically) 
 
 
-```r
+``` r
 library(leaflet)
 library(htmltools)
 library(dplyr)
@@ -271,16 +271,15 @@ leaflet(data) %>%
     lng = ~assignee_lastknown_longitude, lat = ~assignee_lastknown_latitude,
     popup = ~popup, radius=2, color = "yellow"
   )
+#> Error in launch_chrome(path, args): Failed to start chrome. Error:
 ```
-
-![](figure/blogleaflet-1.png)
 
 <br>
 
 3. Plot the growth of the field's topics over time
 
 
-```r
+``` r
 library(ggplot2)
 library(RColorBrewer)
 

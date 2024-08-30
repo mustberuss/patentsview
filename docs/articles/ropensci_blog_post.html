@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Accessing patent data with the patentsview package • patentsview</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
@@ -12,150 +12,75 @@
 <link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/united/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
-<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Accessing patent data with the patentsview package">
-<meta property="og:description" content="patentsview">
-<meta property="og:image" content="/logo.png">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
 </head>
-<body data-spy="scroll" data-target="#toc">
-    
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
-    <div class="container template-article">
-      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">patentsview</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
-      </span>
-    </div>
 
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    <span class="fa fa-flag"></span>
-     
-    API Changes
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="../articles/api-changes.html">
-        <span class="fa fa-exclamation"></span>
-         
-        2023 API Changes
-      </a>
-    </li>
-    <li>
-      <a href="../articles/converting-an-existing-script.html">
-        <span class="fa fa-sync"></span>
-         
-        Converting an Existing Script
-      </a>
-    </li>
+    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">patentsview</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-api-changes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true"><span class="fa fa-flag"></span> API Changes</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-api-changes">
+<li><a class="dropdown-item" href="../articles/api-changes.html"><span class="fa fa-exclamation"></span> 2024 API Changes</a></li>
+    <li><a class="dropdown-item" href="../articles/converting-an-existing-script.html"><span class="fa fa-sync"></span> Converting an Existing Script</a></li>
   </ul>
 </li>
-<li>
-  <a href="../articles/getting-started.html">
-    <span class="fa fa-play"></span>
-     
-    Getting started
-  </a>
-</li>
-<li>
-  <a href="../articles/writing-queries.html">
-    <span class="fa fa-pencil"></span>
-     
-    Writing queries
-  </a>
-</li>
-<li>
-  <a href="../articles/examples.html">
-    <span class="fa fa-code"></span>
-     
-    Examples
-  </a>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    <span class="fa fa-bar-chart"></span>
-     
-    Applications
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="../articles/top-assignees.html">
-        <span class="fa fa-university"></span>
-         
-        Top assignees
-      </a>
-    </li>
-    <li>
-      <a href="../articles/citation-networks.html">
-        <span class="fa fa-long-arrow-left"></span>
-         
-        Citation networks
-      </a>
-    </li>
+<li class="nav-item"><a class="nav-link" href="../articles/getting-started.html"><span class="fa fa-play"></span> Getting started</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/writing-queries.html"><span class="fa fa-pencil"></span> Writing queries</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-applications" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true"><span class="fa fa-bar-chart"></span> Applications</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-applications">
+<li><a class="dropdown-item" href="../articles/examples.html"><span class="fa fa-code"></span> Examples</a></li>
+    <li><a class="dropdown-item" href="../articles/top-assignees.html"><span class="fa fa-university"></span> Top assignees</a></li>
+    <li><a class="dropdown-item" href="../articles/citation-networks.html"><span class="fa fa-long-arrow-left"></span> Citation networks</a></li>
   </ul>
 </li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="../reference/index.html">
-    <span class="fa fa-info-circle"></span>
-     
-    Reference
-  </a>
-</li>
-<li>
-  <a href="https://github.com/ropensci/patentsview" class="external-link">
-    <span class="fa fa-github fa-lg"></span>
-     
-  </a>
-</li>
+<ul class="navbar-nav">
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/ropensci/patentsview/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
-<!--/.nav-collapse -->
+
+
   </div>
-<!--/.container -->
-</div>
-<!--/.navbar -->
+</nav><div class="container template-article">
 
-      
 
-      </header><div class="row">
-  <div class="col-md-9 contents">
-    <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Accessing patent data with the patentsview
-package</h1>
+
+
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Accessing patent data with the patentsview package</h1>
                         <h4 data-toc-skip class="author">Chris
 Baker</h4>
                         
             <h4 data-toc-skip class="date">2017-09-12</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/ropensci/patentsview/blob/HEAD/vignettes/ropensci_blog_post.Rmd" class="external-link"><code>vignettes/ropensci_blog_post.Rmd</code></a></small>
-      <div class="hidden name"><code>ropensci_blog_post.Rmd</code></div>
-
+      <div class="d-none name"><code>ropensci_blog_post.Rmd</code></div>
     </div>
 
     
@@ -231,7 +156,10 @@ for those who want to be closest to the data.</li>
 <li>Both the API and the bulk download data contain disambiguated
 entities such as inventors, assignees, organizations, etc. In other
 words, the API will tell you whether it thinks that John Smith on patent
-X is the same person as John Smith on patent Y.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>
+X is the same person as John Smith on patent Y.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;This is both good and bad, as there are errors in the
+disambiguation. The algorithm that is responsible for the disambiguation
+was created by the winner of the &lt;a href="http://www.patentsview.org/workshop/" class="external-link"&gt;PatentsView Inventor
+Disambiguation Technical Workshop&lt;/a&gt;.&lt;/p&gt;'><sup>1</sup></a>
 </li>
 </ul>
 <p>The <code>patentsview</code> R package is a wrapper around the
@@ -265,7 +193,11 @@ makes it easy to send requests to the API. There are two parameters to
 about every time you call it - <code>query</code> and
 <code>fields</code>. You tell the API how you want to filter the patent
 data with <code>query</code>, and which fields you want to retrieve with
-<code>fields</code>.<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></p>
+<code>fields</code>.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;These two parameters end up getting translated into a
+MySQL query by the API’s server, which then gets sent to a back-end
+database. &lt;code&gt;query&lt;/code&gt; and &lt;code&gt;fields&lt;/code&gt; are used to create
+the query’s &lt;code&gt;WHERE&lt;/code&gt; and &lt;code&gt;SELECT&lt;/code&gt; clauses,
+respectively.&lt;/p&gt;"><sup>2</sup></a></p>
 <div class="section level3">
 <h3 id="query">
 <code>query</code><a class="anchor" aria-label="anchor" href="#query"></a>
@@ -275,7 +207,7 @@ language</a>, which is a JSON-based syntax that is similar to the one
 used by Lucene. You can write the query directly and pass it as a string
 to <code><a href="../reference/search_pv.html">search_pv()</a></code>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html" class="external-link">patentsview</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">qry_1</span> <span class="op">&lt;-</span> <span class="st">'{"_gt":{"patent_year":2007}}'</span></span>
 <span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span>query <span class="op">=</span> <span class="va">qry_1</span>, fields <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="co"># This will retrieve a default set of fields</span></span>
@@ -291,7 +223,7 @@ to <code><a href="../reference/search_pv.html">search_pv()</a></code>:</p>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 4,990,833</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 5,179,313</span></span></code></pre></div>
 <p>…Or you can use the domain specific language (DSL) provided in the
 <code>patentsview</code> package to help you write the query:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -312,7 +244,7 @@ to <code><a href="../reference/search_pv.html">search_pv()</a></code>:</p>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 4,990,833</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 5,179,313</span></span></code></pre></div>
 <p><code>qry_1</code> and <code>qry_2</code> will result in the same
 HTTP call to the API. Both queries search for patents in USPTO that were
 published after 2007. There are three gotchas to look out for when
@@ -370,7 +302,7 @@ fields are no longer available from the patents endpoint.</p>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 4,990,833</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 5,179,313</span></span></code></pre></div>
 <p>The fields that you can retrieve depends on the endpoint that you are
 hitting. We’ve been using the “patents” endpoint thus far, so all of
 these are retrievable:
@@ -410,7 +342,7 @@ given endpoint:</p>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 4,990,833</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 5,179,313</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -421,14 +353,16 @@ We’ll look at patents from the last ten years that are classified below
 the <a href="https://worldwide.espacenet.com/classification#!/CPC=H04L63/02" class="external-link">H04L63/00
 CPC code</a>. Patents in this area relate to “network architectures or
 network communication protocols for separating internal from external
-traffic.”<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> CPC codes offer a quick and dirty way to
+traffic.”<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;There is a slightly more in-depth definition that says
+that these are patents “related to the (logical) separation of
+traffic/(sub-) networks to achieve protection.”&lt;/p&gt;"><sup>3</sup></a> CPC codes offer a quick and dirty way to
 find patents of interest, though getting a sense of their hierarchy can
 be tricky.</p>
 <ol style="list-style-type: decimal">
 <li>Download the data</li>
 </ol>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html" class="external-link">patentsview</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># The original post's query is not currently possible with the current version of the new API.</span></span>
 <span><span class="co"># This may be reworked if/when the patents endpoint is fixed.  The patents endpoint is supposed </span></span>
@@ -471,7 +405,7 @@ be tricky.</p>
 <span>  <span class="va">pv_res</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">assignees</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>popup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
 <span>    <span class="st">"&lt;font color='Black'&gt;"</span>,</span>
-<span>    <span class="fu"><a href="https://rdrr.io/pkg/htmltools/man/htmlEscape.html" class="external-link">htmlEscape</a></span><span class="op">(</span><span class="va">assignee_organization</span><span class="op">)</span>, <span class="st">"&lt;br&gt;&lt;br&gt;Patent"</span>,</span>
+<span>    <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/htmlEscape.html" class="external-link">htmlEscape</a></span><span class="op">(</span><span class="va">assignee_organization</span><span class="op">)</span>, <span class="st">"&lt;br&gt;&lt;br&gt;Patent"</span>,</span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">assignee_num_patents</span> <span class="op">==</span> <span class="fl">1</span>, <span class="st">":"</span>, <span class="st">"s:"</span><span class="op">)</span>, <span class="co"># singular/plural</span></span>
 <span>    <span class="va">assignee_num_patents</span>, <span class="st">"&lt;/font&gt;"</span></span>
 <span>  <span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -482,8 +416,8 @@ be tricky.</p>
 <span>  <span class="fu"><a href="https://rstudio.github.io/leaflet/reference/map-layers.html" class="external-link">addCircleMarkers</a></span><span class="op">(</span></span>
 <span>    lng <span class="op">=</span> <span class="op">~</span><span class="va">assignee_lastknown_longitude</span>, lat <span class="op">=</span> <span class="op">~</span><span class="va">assignee_lastknown_latitude</span>,</span>
 <span>    popup <span class="op">=</span> <span class="op">~</span><span class="va">popup</span>, radius<span class="op">=</span><span class="fl">2</span>, color <span class="op">=</span> <span class="st">"yellow"</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="figure/blogleaflet-1.png"></p>
+<span>  <span class="op">)</span></span>
+<span><span class="co">#&gt; Error in launch_chrome(path, args): Failed to start chrome. Error:</span></span></code></pre></div>
 <p><br></p>
 <ol start="3" style="list-style-type: decimal">
 <li>Plot the growth of the field’s topics over time</li>
@@ -582,52 +516,27 @@ like to thank <a href="http://www.masalmon.eu/" class="external-link">Maëlle Sa
 shepherding the package along the rOpenSci review process, as well <a href="https://scottchamberlain.info/" class="external-link">Scott Chamberlain</a> and <a href="https://twitter.com/stefaniebutland" class="external-link">Stefanie Butland</a> for
 their miscellaneous help.</p>
 </div>
-<div class="footnotes footnotes-end-of-document">
-<hr>
-<ol>
-<li id="fn1"><p>This is both good and bad, as there are errors in the
-disambiguation. The algorithm that is responsible for the disambiguation
-was created by the winner of the <a href="http://www.patentsview.org/workshop/" class="external-link">PatentsView Inventor
-Disambiguation Technical Workshop</a>.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
-<li id="fn2"><p>These two parameters end up getting translated into a
-MySQL query by the API’s server, which then gets sent to a back-end
-database. <code>query</code> and <code>fields</code> are used to create
-the query’s <code>WHERE</code> and <code>SELECT</code> clauses,
-respectively.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
-<li id="fn3"><p>There is a slightly more in-depth definition that says
-that these are patents “related to the (logical) separation of
-traffic/(sub-) networks to achieve protection.”<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
-</ol>
-</div>
-  </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
-
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
 
-      <footer><div class="copyright">
-  <p></p>
-<p>Developed by Christopher Baker.</p>
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by Christopher Baker.</p>
 </div>
 
-<div class="pkgdown">
-  <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
 </div>
 
-      </footer>
+    </footer>
 </div>
 
-  
 
 
-  
+
 
   </body>
 </html>

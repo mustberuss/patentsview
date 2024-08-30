@@ -19,7 +19,7 @@ endpoints supply additional information.  Also note that an API key is required.
 Which patents have been cited by more than 500 US patents?
 
 
-```r
+``` r
 library(patentsview)
 
 search_pv(query = qry_funs$gt(patent_num_times_cited_by_us_patents = 500))
@@ -35,13 +35,13 @@ search_pv(query = qry_funs$gt(patent_num_times_cited_by_us_patents = 500))
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 12,416
+#> total_hits = 13,199
 ```
 
 How many distinct inventors are represented by these highly-cited patents?
 
 
-```r
+``` r
 
 search_pv(
   query = qry_funs$gt(patent_num_times_cited_by_us_patents = 500),
@@ -58,39 +58,31 @@ search_pv(
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 12,416
+#> total_hits = 13,199
 ```
 What assignee's organizations start Microsoft?
 
 
-```r
+``` r
 query <- qry_funs$begins(assignee_organization = "Microsoft")
 
 pv_out <- search_pv(query, endpoint = "assignees")
 pv_out$data$assignees$assignee_organization
-#>  [1] "Microsoft Mobile Oy"                             
-#>  [2] "Microsoft Technology Licensing, KKC"             
-#>  [3] "Microsoft Technology Licensing, LC"              
-#>  [4] "Microsoft Technology Licensing, LLD"             
-#>  [5] "Microsoft Mobile Internet AB"                    
-#>  [6] "Microsoft Israel Research and Development LTD"   
-#>  [7] "Microsoft Israel Research and Development (2002)"
+#>  [1] "Microsoft Technology Beaming, LLC"               
+#>  [2] "MICROSOFT INTERNATIONAL HOLDINGS B.V."           
+#>  [3] "Microsoft Mobile Oy"                             
+#>  [4] "Microsoft Technology, LLC."                      
+#>  [5] "Microsoft Systems Inc."                          
+#>  [6] "Microsoft Technology Licensing, LLC"             
+#>  [7] "Microsoft Corporation"                           
 #>  [8] "Microsoft Patent Licensing, LLC"                 
-#>  [9] "Microsoft Technology Learning, LLC"              
-#> [10] "Microsoft Corporation—One Microsoft Way"         
-#> [11] "Microsoft Technologicy Licensing, LLC"           
-#> [12] "Microsoft Licencing Corporation, LLC"            
-#> [13] "Microsoft Corporation"                           
-#> [14] "Microsoft Corporate"                             
-#> [15] "Microsoft Technology Licensing, LLC"             
-#> [16] "Microsoft Orthopedics Holdings Inc."             
-#> [17] "Microsoft Technology Beaming, LLC"               
-#> [18] "Microsoft Licensing Technology, LLC."            
-#> [19] "Microsoft Technology Licensing, LCC"             
-#> [20] "MICROSOFT TECHNOLOGY LICENSING, L.L.C."          
-#> [21] "MICROSOFT TECHNOLOGY, LLC"                       
-#> [22] "MICROSOFT INTERNATIONAL HOLDINGS B.V."           
-#> [23] "Microsoft Systems Inc."
+#>  [9] "Microsoft Corporation—One Microsoft Way"         
+#> [10] "Microsoft Licencing Corporation, LLC"            
+#> [11] "Microsoft Mobile Internet AB"                    
+#> [12] "Microsoft Licensing Technology, LLC"             
+#> [13] "Microsoft Technology Learning, LLC"              
+#> [14] "Microsoft Israel Research and Development (2002)"
+#> [15] "Microsoft Orthopedics Holdings Inc."
 ```
 
 Where geographically have Microsoft inventors been coming from over the past few years?
@@ -100,7 +92,7 @@ Note that the api currently returns no results for "Microsoft Corporation" but w
 "Microsoft Corporation—One Microsoft Way"
 
 
-```r
+``` r
 # Write the query
 query <- with_qfuns(
   and(
@@ -119,25 +111,25 @@ pv_out <- search_pv(query, fields = fields, all_pages = TRUE, per_page = 1000)
 # Unnest the inventor list column
 unnest_pv_data(pv_out$data, "patent_id")
 #> List of 2
-#>  $ inventors:'data.frame':	10931 obs. of  8 variables:
-#>   ..$ patent_id          : chr [1:10931] "11397055" ...
-#>   ..$ inventor           : chr [1:10931] "https://search.patentsview.org/api/"..
-#>   ..$ inventor_name_first: chr [1:10931] "Tzu-Yuan" ...
-#>   ..$ inventor_name_last : chr [1:10931] "Lin" ...
-#>   ..$ inventor_city      : chr [1:10931] "San Jose" ...
-#>   ..$ inventor_state     : chr [1:10931] "CA" ...
-#>   ..$ inventor_country   : chr [1:10931] "US" ...
-#>   ..$ inventor_sequence  : int [1:10931] 1 2 ...
-#>  $ patents  :'data.frame':	2717 obs. of  1 variable:
-#>   ..$ patent_id: chr [1:2717] "11397055" ...
+#>  $ inventors:'data.frame':	14533 obs. of  8 variables:
+#>   ..$ patent_id          : chr [1:14533] "11397055" ...
+#>   ..$ inventor           : chr [1:14533] "https://search.patentsview.org/api/"..
+#>   ..$ inventor_name_first: chr [1:14533] "Tzu-Yuan" ...
+#>   ..$ inventor_name_last : chr [1:14533] "Lin" ...
+#>   ..$ inventor_city      : chr [1:14533] "San Jose" ...
+#>   ..$ inventor_state     : chr [1:14533] "CA" ...
+#>   ..$ inventor_country   : chr [1:14533] "US" ...
+#>   ..$ inventor_sequence  : int [1:14533] 1 2 ...
+#>  $ patents  :'data.frame':	3600 obs. of  1 variable:
+#>   ..$ patent_id: chr [1:3600] "11397055" ...
 ```
 
 Which inventors have Chicago, IL listed as their location on at least one patent.[^1]
 
 
-```r
+``` r
 pv_out <- search_pv(
-  query = '{"_and":[{"_text_phrase": {"inventors.city":"Chicago"}},{"_text_phrase": {"inventors.state":"IL"}}]}',
+  query = '{"_and":[{"_text_phrase": {"inventors.inventor_city":"Chicago"}},{"_text_phrase": {"inventors.inventor_state":"IL"}}]}',
   endpoint = "patents"
 )
 
@@ -146,23 +138,25 @@ pv_out
 #> #### A list with a single data frame on patents level:
 #> 
 #> List of 1
-#>  $ patents: list()
+#>  $ patents:'data.frame':	1000 obs. of  3 variables:
+#>   ..$ patent_id   : chr [1:1000] "10000578" ...
+#>   ..$ patent_title: chr [1:1000] "Method for production of cellulose nanocrys"..
+#>   ..$ patent_date : chr [1:1000] "2018-06-19" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 0
+#> total_hits = 46,544
 
 if (pv_out$query_results$total_hits == 0) {
   print("something seems to be wrong with the API")
 }
-#> [1] "something seems to be wrong with the API"
 ```
 
 Which assignees have an interest in beer?
 
 
-```r
+``` r
 search_pv(
   query = qry_funs$contains(patent_title = "beer"),
   endpoint = "patents"
@@ -171,15 +165,15 @@ search_pv(
 #> #### A list with a single data frame on patents level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	584 obs. of  3 variables:
-#>   ..$ patent_id   : chr [1:584] "10000326" ...
-#>   ..$ patent_title: chr [1:584] "Plastic beer keg" ...
-#>   ..$ patent_date : chr [1:584] "2018-06-19" ...
+#>  $ patents:'data.frame':	592 obs. of  3 variables:
+#>   ..$ patent_id   : chr [1:592] "10000326" ...
+#>   ..$ patent_title: chr [1:592] "Plastic beer keg" ...
+#>   ..$ patent_date : chr [1:592] "2018-06-19" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 584
+#> total_hits = 592
 ```
 
 [^1]: Example taken from https://patentsview.org/apis/api-endpoints/inventors.

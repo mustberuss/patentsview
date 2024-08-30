@@ -20,7 +20,7 @@ an environmental variable PATENTSVIEW_API_KEY to the value of your API key for t
 Let's start with a basic example of how to use the package's primary function, `search_pv()`:
 
 
-```r
+``` r
 library(patentsview)
 
 search_pv(
@@ -39,7 +39,7 @@ search_pv(
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 5,173,811
+#> total_hits = 5,362,291
 ```
 
 This call to `search_pv()` sends our query to the patents endpoint (the default). The API has 18 different endpoints, corresponding to 18 different entity types (application_citation, assignee, cpc_group, cpc_subgroup, cpc_subsection, inventor, location, nber_category, nber_subcategory, patent, patent_citation, uspc_mainclass and uspc_subclass).[^1] Your choice of endpoint determines which entity your query is applied to, as well as the structure of the data that is returned (more on this in the "18 endpoints for 18 entities section"). For now, let's turn our attention to the `query` parameter. 
@@ -49,7 +49,7 @@ This call to `search_pv()` sends our query to the patents endpoint (the default)
 The PatentsView query syntax is documented on their [query language page](https://patentsview.org/apis/api-query-language#query_string_format) note also the change to the Options parameter for the new version of the API mentioned on that page.[^2] However, it can be difficult to get your query right if you're writing it by hand (i.e., just writing the query in a string like `'{"_gte":{"patent_date":"2007-01-01"}}'`, as we did in the example shown above). The `patentsview` package comes with a simple domain specific language (DSL) to make writing queries a breeze. I recommend using the functions in this DSL for all but the most basic queries, especially if you're encountering errors and don't understand why. To get a feel for how it works, let's rewrite the query shown above using one of the functions in the DSL, `qry_funs$gte()`:
 
 
-```r
+``` r
 qry_funs$gte(patent_date = "2007-01-01")
 #> {"_gte":{"patent_date":"2007-01-01"}}
 ```
@@ -57,7 +57,7 @@ qry_funs$gte(patent_date = "2007-01-01")
 More complex queries are also possible:
 
 
-```r
+``` r
 with_qfuns(
   and(
     gte(patent_date = "2007-01-01"),
@@ -74,7 +74,7 @@ Check out the [writing queries vignette](https://docs.ropensci.org/patentsview/a
 Each endpoint has a different set of _queryable_ and _retrievable_ fields. Queryable fields are those that you can include in your query (e.g., `patent_date` shown in the first example). Retrievable fields are those that you can get data on (i.e., fields returned by `search_pv()`). The new version of the API allows all retrievable fields to be queried. In the first example, we didn't specify which fields we wanted to retrieve so we were given the default set. You can specify which fields you want using the `fields` argument:
 
 
-```r
+``` r
 # search_pv defaults the endpoint parameter to "patents" if not specified
 result = search_pv(
   query = '{"_gte":{"patent_date":"2007-01-01"}}',
@@ -92,13 +92,13 @@ result
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 5,173,811
+#> total_hits = 5,362,291
 ```
 
 To list all of the retrievable fields for a given endpoint, use `get_fields()`:
 
 
-```r
+``` r
 retrvble_flds <- get_fields(endpoint = "patents")
 head(retrvble_flds)
 #> [1] "applicants.applicant_designation"  "applicants.applicant_name_first"  
@@ -118,7 +118,7 @@ By default, `search_pv()` returns 1,000 records per page and only gives you the 
 You can download all pages of output in one call by setting `all_pages = TRUE`. This will set `per_page` equal to 1,000 and loop over all pages of output (downloading up to 10 pages, or 10,000 records total):
 
 
-```r
+``` r
 search_pv(
   query = qry_funs$eq(inventors.inventor_name_last = "Chambers"),
   all_pages = TRUE, per_page = 1000
@@ -127,13 +127,13 @@ search_pv(
 #> #### A list with a single data frame on patents level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	2418 obs. of  1 variable:
-#>   ..$ patent_id: chr [1:2418] "10000988" ...
+#>  $ patents:'data.frame':	2459 obs. of  1 variable:
+#>   ..$ patent_id: chr [1:2459] "10000988" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 2,418
+#> total_hits = 2,459
 ```
 
 ## Entity counts
@@ -145,17 +145,17 @@ Our last two calls to `search_pv()` gave the same value for `total_hits`, even t
 With the recent API change, the patents endpoint supplies the basic patent data and the other endponts return more specific data for those patents.
 
 
-```r
+``` r
 
 query <- qry_funs$eq(inventors.inventor_name_last = "Chambers")
 
 # Here we'll request patent_id and the inventor fields from the patents endpoint
 inv_fields <- get_fields(endpoint = "patents", groups ="inventors")
 inv_fields
-#> [1] "inventors.inventor_city"        "inventors.inventor_country"    
-#> [3] "inventors.inventor_id"          "inventors.inventor_location_id"
-#> [5] "inventors.inventor_name_first"  "inventors.inventor_name_last"  
-#> [7] "inventors.inventor_sequence"    "inventors.inventor_state"
+#> [1] "inventors.inventor_city"       "inventors.inventor_country"   
+#> [3] "inventors.inventor_id"         "inventors.inventor_name_first"
+#> [5] "inventors.inventor_name_last"  "inventors.inventor_sequence"  
+#> [7] "inventors.inventor_state"
 fields <- c(inv_fields, "patent_id")
 
 result <- search_pv(query, endpoint = "patents", fields = fields)
@@ -171,7 +171,7 @@ result
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 2,418
+#> total_hits = 2,459
 
 # Here's the first inventors
 result$data$patents$inventors[[1]]
@@ -241,7 +241,7 @@ The API now returns most data fields as an appropriate data type (e.g., numeric)
 integers woudl be more appropriate.   You can cast all fields to their preferred R types using `cast_pv_data()`:
 
 
-```r
+``` r
 res <- search_pv(
   query = "{\"patent_id\":\"5116621\"}", 
   fields = c("patent_date", "patent_title", "patent_year")
@@ -290,14 +290,14 @@ Your best bet is to split your query into pieces based on dates, then concatenat
 For example, the below query would return more than 10,000 records for the patents endpoint:
 
 
-```r
+``` r
 query <- with_qfuns(contains(patent_title = 'game'))
 ```
 
 To download all of the records associated with this query, we could split it into three pieces and make three calls to `search_pv()`, each with all_pages = TRUE:
 
 
-```r
+``` r
 query_1a <- with_qfuns(
   and(
     contains(patent_title = 'game'),
@@ -327,7 +327,7 @@ Let’s consider the following data, in which assignees are the primary entity w
 Government interests fields are no longer present
 
 
-```r
+``` r
 # Create field list -
 fields <- get_fields("patents")
 
@@ -385,8 +385,13 @@ res$data
 1. **Use tidyr::unnest.** (This is probably the easier choice of the two). 
 
 
-```r
+``` r
 library(tidyr)
+#> 
+#> Attaching package: 'tidyr'
+#> The following object is masked from 'package:magrittr':
+#> 
+#>     extract
 
 # Get assignee data:
 res$data$patents %>% 
@@ -395,10 +400,10 @@ res$data$patents %>%
 #> # A tibble: 6 × 44
 #>   patent_id patent_title paten…¹ paten…² paten…³ paten…⁴ paten…⁵ paten…⁶ paten…⁷
 #>   <chr>     <chr>        <chr>   <chr>     <int> <chr>     <int>   <int> <chr>  
-#> 1 10000036  High kineti… utility 2018-0…    2018 Boron …    1285   11286 2015-0…
-#> 2 10000466  Substituted… utility 2018-0…    2018 The pr…     900  290583 2017-0…
-#> 3 10000693  Methods and… utility 2018-0…    2018 Method…    1228  156395 2014-0…
-#> 4 10000750  Method of i… utility 2018-0…    2018 Disclo…    1214   81511 2015-1…
+#> 1 10000036  High kineti… utility 2018-0…    2018 Boron …    1286   11286 2015-0…
+#> 2 10000466  Substituted… utility 2018-0…    2018 The pr…     904  290583 2017-0…
+#> 3 10000693  Methods and… utility 2018-0…    2018 Method…    1229  156395 2014-0…
+#> 4 10000750  Method of i… utility 2018-0…    2018 Disclo…    1221   81511 2015-1…
 #> 5 10000975  Cutting ele… utility 2018-0…    2018 A cutt…    1263    6690 2014-0…
 #> 6 10000976  Cutting ele… utility 2018-0…    2018 A cutt…    1263   15136 2014-0…
 #> # … with 35 more variables: patent_num_foreign_documents_cited <int>,
@@ -413,7 +418,7 @@ res$data$patents %>%
 2. **Use patentsview::unnest_pv_data.** `unnest_pv_data()` creates a series of data frames (one for each entity level) that are like tables in a relational database. You provide it with the data returned by `search_pv()` and a field that can act as a unique identifier for the primary entities:
 
 
-```r
+``` r
 unnest_pv_data(data = res$data, pk = "patent_id")
 #> List of 19
 #>  $ application                        :'data.frame':	1000 obs. of  7 variables:
@@ -457,15 +462,15 @@ unnest_pv_data(data = res$data, pk = "patent_id")
 #>   ..$ cpc_class_id   : chr [1:7715] "B32" ...
 #>   ..$ cpc_subclass_id: chr [1:7715] "B32B" ...
 #>   ..$ cpc_group_id   : chr [1:7715] "B32B5/26" ...
-#>  $ cpc_current                        :'data.frame':	9483 obs. of  8 variables:
-#>   ..$ patent_id      : chr [1:9483] "10000036" ...
-#>   ..$ cpc_sequence   : int [1:9483] 0 1 ...
-#>   ..$ cpc_class      : chr [1:9483] "https://search.patentsview.org/api/v1/cp"..
-#>   ..$ cpc_class_id   : chr [1:9483] "B32" ...
-#>   ..$ cpc_subclass   : chr [1:9483] "https://search.patentsview.org/api/v1/cp"..
-#>   ..$ cpc_subclass_id: chr [1:9483] "B32B" ...
-#>   ..$ cpc_group      : chr [1:9483] "https://search.patentsview.org/api/v1/cp"..
-#>   ..$ cpc_group_id   : chr [1:9483] "B32B5/26" ...
+#>  $ cpc_current                        :'data.frame':	9497 obs. of  8 variables:
+#>   ..$ patent_id      : chr [1:9497] "10000036" ...
+#>   ..$ cpc_sequence   : int [1:9497] 0 1 ...
+#>   ..$ cpc_class      : chr [1:9497] "https://search.patentsview.org/api/v1/cp"..
+#>   ..$ cpc_class_id   : chr [1:9497] "B32" ...
+#>   ..$ cpc_subclass   : chr [1:9497] "https://search.patentsview.org/api/v1/cp"..
+#>   ..$ cpc_subclass_id: chr [1:9497] "B32B" ...
+#>   ..$ cpc_group      : chr [1:9497] "https://search.patentsview.org/api/v1/cp"..
+#>   ..$ cpc_group_id   : chr [1:9497] "B32B5/26" ...
 #>  $ examiners                          :'data.frame':	1227 obs. of  6 variables:
 #>   ..$ patent_id          : chr [1:1227] "10000036" ...
 #>   ..$ examiner_id        : chr [1:1227] "l5ntkof8nrlpiyj3rcmiiln2g" ...
@@ -524,10 +529,10 @@ unnest_pv_data(data = res$data, pk = "patent_id")
 #>   ..$ term_extension : chr [1:658] "85" ...
 #>   ..$ term_disclaimer: chr [1:658] NA ...
 #>   ..$ disclaimer_date: logi [1:658] NA ...
-#>  $ wipo                               :'data.frame':	1743 obs. of  3 variables:
-#>   ..$ patent_id    : chr [1:1743] "10000036" ...
-#>   ..$ wipo_field_id: chr [1:1743] "29" ...
-#>   ..$ wipo_sequence: int [1:1743] 0 1 ...
+#>  $ wipo                               :'data.frame':	1748 obs. of  3 variables:
+#>   ..$ patent_id    : chr [1:1748] "10000036" ...
+#>   ..$ wipo_field_id: chr [1:1748] "29" ...
+#>   ..$ wipo_sequence: int [1:1748] 0 1 ...
 #>  $ foreign_priority                   :'data.frame':	87 obs. of  6 variables:
 #>   ..$ patent_id              : chr [1:87] "10000975" ...
 #>   ..$ priority_claim_sequence: int [1:87] 0 0 ...

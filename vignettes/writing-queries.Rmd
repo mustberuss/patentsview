@@ -16,7 +16,7 @@ Let's say you want to find all patents published in the last 10 years that have 
 1. Use a string:
 
 
-```r
+``` r
 query_v_1 <-
   '{"_and":[
           {"_gte":{"patent_date":"2007-03-01"}},
@@ -34,7 +34,7 @@ query_v_1 <-
 2. Use a list:
 
 
-```r
+``` r
 query_v_2 <- 
   list("_and" = 
        list(
@@ -58,7 +58,7 @@ query_v_2 <-
 3. Use the `patentsview` domain specific language (DSL): 
 
 
-```r
+``` r
 library(patentsview)
 
 query_v_3 <- 
@@ -82,7 +82,7 @@ query_v_3 <-
 We can see that all three versions of the query shown above are equivalent:
 
 
-```r
+``` r
 jsonlite::minify(query_v_1)
 #> {"_and":[{"_gte":{"patent_date":"2007-03-01"}},{"_or":[{"_contains":{"patent_title":"dog"}},{"_text_all":{"patent_abstract":"dog"}}]},{"_or":[{"_text_phrase":{"inventors.inventor_country":"US"}},{"_text_phrase":{"inventors.inventor_country":"CA"}}]}]}
 jsonlite::toJSON(query_v_2, auto_unbox = TRUE)
@@ -122,7 +122,7 @@ All of the functions that make up the DSL are found in the `qry_funs` list (e.g.
 Patents linked to an assignee with 10 or fewer distinct (and disambiguated) inventors:
 
 
-```r
+``` r
 qry_funs$lte(num_inventors = 10)
 #> {"_lte":{"num_inventors":10}}
 ```
@@ -130,7 +130,7 @@ qry_funs$lte(num_inventors = 10)
 Patents assigned to the "CPC class" of G12 (physics instruments):
 
 
-```r
+``` r
 qry_funs$eq(cpc_current.cpc_class_id = "G12")
 #> {"_eq":{"cpc_current.cpc_class_id":"G12"}}
 ```
@@ -142,7 +142,7 @@ Patents that:
 * Have an abstract that doesn't have the phrase "dog chain" in it:
 
 
-```r
+``` r
 
 with_qfuns(
   and(
@@ -167,7 +167,7 @@ OR
 * Have “COBOL” in their title 
 
 
-```r
+``` r
 with_qfuns(
   or(
     and(
