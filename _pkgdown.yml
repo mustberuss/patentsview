@@ -3,8 +3,8 @@ url: https://mustberuss.github.io/patentsview/index.html
 title: patentsview
 
 template:
-  params:
-    bootswatch: united
+  bootstrap: 5
+  bootswatch: united
 
 reference:
   - title: The API client
@@ -32,7 +32,7 @@ navbar:
       text: "API Changes"
       icon: fa-flag
       menu:
-        - text: "2023 API Changes"
+        - text: "2024 API Changes"
           icon: fa-exclamation
           href: articles/api-changes.html
         - text: "Converting an Existing Script"
