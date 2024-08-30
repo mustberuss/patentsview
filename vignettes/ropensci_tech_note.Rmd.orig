@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# New release of the Patentsview Package <img src="../logo.png" align="right" height="200" style="float:right; height:200px;" />
+# New release of the Patentsview Package 
 
 In this API arms race, changes in the underlying Patentsview API will break the original version of the R package. Where possible the new version of the R package handles some of the API team's changes.  The new version of the API requires an API key however.  The original and new versions of the API will both be available for a while, but
 eventually the Patentsview API team plans to shutdown the original version of the API.
