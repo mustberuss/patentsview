@@ -13,15 +13,15 @@
 #'   endpoint's fields (i.e., do not filter the field list based on group
 #'   membership). See the field tables located online to see which groups you
 #'   can specify for a given endpoint (e.g., the
-#'   \href{https://patentsview.org/apis/api-endpoints/patents}{patents
+#'   \href{https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#patent}{patents
 #'   endpoint table}), or use the \code{fieldsdf} table
-#'   (e.g., \code{unique(fieldsdf[fieldsdf$endpoint == "patents", "group"])}).
+#'   (e.g., \code{unique(fieldsdf[fieldsdf$endpoint == "patent", "group"])}).
 #'
 #' @return A character vector with field names.
 #'
 #' @examples
-#' # Get all assignee-level fields for the patents endpoint:
-#' fields <- get_fields(endpoint = "patents", groups = "assignees")
+#' # Get all assignee-level fields for the patent endpoint:
+#' fields <- get_fields(endpoint = "patent", groups = "assignees")
 #'
 #' # ...Then pass to search_pv:
 #' \dontrun{

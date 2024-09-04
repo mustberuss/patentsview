@@ -151,7 +151,7 @@ get_default_sort <- function(endpoint) {
 #'  A value of \code{NULL} indicates that the default fields should be
 #'  returned. Acceptable fields for a given endpoint can be found at the API's
 #'  online documentation (e.g., check out the field list for the
-#'  \href{https://patentsview.org/apis/api-endpoints/patents}{patents
+#'  \href{https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference#patent}{patents
 #'  endpoint}) or by viewing the \code{fieldsdf} data frame
 #'  (\code{View(fieldsdf)}). You can also use \code{\link{get_fields}} to list
 #'  out the fields available for a given endpoint.
