@@ -1,5 +1,5 @@
 pandoc: '2.18'
-pkgdown: 2.0.7
+pkgdown: 2.0.9
 pkgdown_sha: ~
 articles:
   api-changes: api-changes.html
@@ -11,5 +11,8 @@ articles:
   ropensci_tech_note: ropensci_tech_note.html
   top-assignees: top-assignees.html
   writing-queries: writing-queries.html
-last_built: 2024-07-17T22:20Z
+last_built: 2024-09-04T01:37Z
+urls:
+  reference: https://mustberuss.github.io/patentsview/index.html/reference
+  article: https://mustberuss.github.io/patentsview/index.html/articles
 

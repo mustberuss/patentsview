@@ -5,6 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="patentsview">
 <title>Examples • patentsview</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
@@ -14,22 +15,28 @@
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
+<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js" integrity="sha512-7O5pXpc0oCRrxk8RUfDYFgn0nO1t+jLuIOQdOMRp4APB7uZ4vSjspzp5y6YDtDs4VzUSTbWzBFZ/LKJhnyFOKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Examples">
+<meta property="og:description" content="patentsview">
+<meta property="og:image" content="https://mustberuss.github.io/patentsview/index.html/logo.png">
+<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+    
 
-
-    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
-
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary" data-bs-theme="dark"><div class="container">
+    
     <a class="navbar-brand me-2" href="../index.html">patentsview</a>
 
     <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
-
+    
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -37,34 +44,84 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-api-changes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true"><span class="fa fa-flag"></span> API Changes</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-api-changes">
-<li><a class="dropdown-item" href="../articles/api-changes.html"><span class="fa fa-exclamation"></span> 2024 API Changes</a></li>
-    <li><a class="dropdown-item" href="../articles/converting-an-existing-script.html"><span class="fa fa-sync"></span> Converting an Existing Script</a></li>
-  </ul>
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown--api-changes">
+    <span class="fa fa-flag"></span>
+     
+    API Changes
+  </a>
+  <div class="dropdown-menu" aria-labelledby="dropdown--api-changes">
+    <a class="dropdown-item" href="../articles/api-changes.html">
+      <span class="fa fa-exclamation"></span>
+       
+      2024 API Changes
+    </a>
+    <a class="dropdown-item" href="../articles/converting-an-existing-script.html">
+      <span class="fa fa-sync"></span>
+       
+      Converting an Existing Script
+    </a>
+  </div>
 </li>
-<li class="nav-item"><a class="nav-link" href="../articles/getting-started.html"><span class="fa fa-play"></span> Getting started</a></li>
-<li class="nav-item"><a class="nav-link" href="../articles/writing-queries.html"><span class="fa fa-pencil"></span> Writing queries</a></li>
+<li class="nav-item">
+  <a class="nav-link" href="../articles/getting-started.html">
+    <span class="fa fa-play"></span>
+     
+    Getting started
+  </a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="../articles/writing-queries.html">
+    <span class="fa fa-pencil"></span>
+     
+    Writing queries
+  </a>
+</li>
 <li class="active nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-applications" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true"><span class="fa fa-bar-chart"></span> Applications</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-applications">
-<li><a class="dropdown-item" href="../articles/examples.html"><span class="fa fa-code"></span> Examples</a></li>
-    <li><a class="dropdown-item" href="../articles/top-assignees.html"><span class="fa fa-university"></span> Top assignees</a></li>
-    <li><a class="dropdown-item" href="../articles/citation-networks.html"><span class="fa fa-long-arrow-left"></span> Citation networks</a></li>
-  </ul>
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown--applications">
+    <span class="fa fa-bar-chart"></span>
+     
+    Applications
+  </a>
+  <div class="dropdown-menu" aria-labelledby="dropdown--applications">
+    <a class="dropdown-item" href="../articles/examples.html">
+      <span class="fa fa-code"></span>
+       
+      Examples
+    </a>
+    <a class="dropdown-item" href="../articles/top-assignees.html">
+      <span class="fa fa-university"></span>
+       
+      Top assignees
+    </a>
+    <a class="dropdown-item" href="../articles/citation-networks.html">
+      <span class="fa fa-long-arrow-left"></span>
+       
+      Citation networks
+    </a>
+  </div>
 </li>
-<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
+<li class="nav-item">
+  <a class="nav-link" href="../news/index.html">Changelog</a>
+</li>
       </ul>
-<ul class="navbar-nav">
-<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item"><form class="form-inline" role="search">
- <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
-</form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/ropensci/patentsview/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<form class="form-inline my-2 my-lg-0" role="search">
+        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
+</form>
+
+      <ul class="navbar-nav">
+<li class="nav-item">
+  <a class="nav-link" href="../reference/index.html">Reference</a>
+</li>
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/ropensci/patentsview/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
 </div>
 
-
+    
   </div>
 </nav><div class="container template-article">
 
@@ -135,7 +192,7 @@ patents?</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">begins</span><span class="op">(</span>assignee_organization <span class="op">=</span> <span class="st">"Microsoft"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">pv_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query</span>, endpoint <span class="op">=</span> <span class="st">"assignees"</span><span class="op">)</span></span>
+<span><span class="va">pv_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query</span>, endpoint <span class="op">=</span> <span class="st">"assignee"</span><span class="op">)</span></span>
 <span><span class="va">pv_out</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">assignees</span><span class="op">$</span><span class="va">assignee_organization</span></span>
 <span><span class="co">#&gt;  [1] "Microsoft Technology Beaming, LLC"               </span></span>
 <span><span class="co">#&gt;  [2] "MICROSOFT INTERNATIONAL HOLDINGS B.V."           </span></span>
@@ -167,7 +224,7 @@ Corporation—One Microsoft Way”</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Create a field list</span></span>
-<span><span class="va">inv_fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"patents"</span>, groups <span class="op">=</span> <span class="st">"inventors"</span><span class="op">)</span></span>
+<span><span class="va">inv_fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"patent"</span>, groups <span class="op">=</span> <span class="st">"inventors"</span><span class="op">)</span></span>
 <span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">inv_fields</span>, <span class="st">"patent_id"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Pull the data</span></span>
@@ -192,7 +249,7 @@ one patent.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pv_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span></span>
 <span>  query <span class="op">=</span> <span class="st">'{"_and":[{"_text_phrase": {"inventors.inventor_city":"Chicago"}},{"_text_phrase": {"inventors.inventor_state":"IL"}}]}'</span>,</span>
-<span>  endpoint <span class="op">=</span> <span class="st">"patents"</span></span>
+<span>  endpoint <span class="op">=</span> <span class="st">"patent"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">pv_out</span></span>
@@ -217,7 +274,7 @@ one patent.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span></span>
 <span>  query <span class="op">=</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">contains</span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"beer"</span><span class="op">)</span>,</span>
-<span>  endpoint <span class="op">=</span> <span class="st">"patents"</span></span>
+<span>  endpoint <span class="op">=</span> <span class="st">"patent"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; $data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
@@ -234,7 +291,7 @@ one patent.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs
 <span><span class="co">#&gt; total_hits = 592</span></span></code></pre></div>
 </div>
 
-  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
 </div>
 
@@ -245,15 +302,15 @@ one patent.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
 </div>
 
     </footer>
 </div>
 
+  
 
-
-
+  
 
   </body>
 </html>
