@@ -2,12 +2,11 @@ test_that("We can print the returns from all endpoints ", {
   skip_on_cran()
 
   eps <- get_endpoints()
-  bad_eps <- c("cpc_subclasses", "uspc_subclasses", "uspc_mainclasses", "wipo"
+  bad_eps <- c("cpc_subclass", "uspc_subclass", "uspc_mainclass", "wipo"
   )
   good_eps <- eps[!eps %in% bad_eps]
 
   lapply(good_eps, function(x) {
-    Sys.sleep(1)
     print(x)
     j <- search_pv(query = TEST_QUERIES[[x]], endpoint = x)
     print(j)
@@ -18,6 +17,7 @@ test_that("We can print the returns from all endpoints ", {
 
   # this will fail when the api is fixed
   z <- lapply(bad_eps, function(x) {
+    print(x)
     expect_error(
        j <- search_pv(query = TEST_QUERIES[[x]], endpoint = x)
     )

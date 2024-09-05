@@ -33,11 +33,14 @@ print OUT << "HEADERS";
 HEADERS
 
 # now a handful of endpoints besides just wipo return singular entities
+# plus an oddity
 %singular = ( 
    "brf_sum_texts" => "brf_sum_text",
    "claims" => "claim",
    "detail_desc_texts" => "detail_desc_text",
-   "draw_desc_texts" => "draw_desc_text"
+   "draw_desc_texts" => "draw_desc_text",
+   "wipo" => "wipo",
+   "patent/otherreference" => "other_references"  # endpoint is currently broken
 );
 
 while($line = <$url_fh>)
@@ -47,18 +50,6 @@ while($line = <$url_fh>)
    {
       $endpoint = $1;
       
-      # aarg, we need to make it plural
-      if($endpoint =~ /s$/)
-      {
-         $endpoint .= "es";
-      }
-      else
-      {
-         $endpoint .= "s";
-      }
-
-      $endpoint = "wipo" if($endpoint eq "wipos");  # api returned entity is singular
-
       $unnested = $endpoint;
       $unnested = $' if($unnested =~ m|/|);
 
@@ -67,37 +58,68 @@ while($line = <$url_fh>)
       # rel_app_text_publications so we'll set that as unnested to avoid a collision
       if($endpoint eq "publication/rel_app_texts")
       {
-         $unnested = "rel_app_text_publications"; # avoids "trouble" below
+         $returned_entity = "rel_app_text_publications"; 
+         $unnested = $returned_entity; # avoids "trouble" below
       }
 
       # now a handful of endpoints besides just wipo return singular entities
-      if(exists $singular{$endpoint})
+      elsif(exists $singular{$endpoint})
       {
-         $unnested = $singular{$endpoint};
-
+         $returned_entity = $singular{$endpoint};
+         $unnested = $returned_entity;
+      }
+      elsif($unnested =~ /s$/)
+      {
+         $returned_entity = "${unnested}es";
+      }
+      else
+      {
+         $returned_entity = "${unnested}s";
       }
 
-      print "endpoint: $endpoint unnested: $unnested\n";
+      print "$endpoint!$unnested!$returned_entity\n";
 
       $endpoints{$unnested} = $endpoint;
+
+      # now we want to find the 200 response's entity reference
+      # "$ref": "#/components/schemas/BrfSumTextSuccessResponse"
+      while($line = <$url_fh>)
+      {
+         if($line =~ m|/(\w+)SuccessResponse"|)
+         {
+            $successResponse{$1} = $endpoint;
+            last;
+         }
+      }
    }
 
    last if($line =~ /"components":/);
 }
+
+print "\n";
 
 foreach $key (sort keys %endpoints)
 {
    print "$key $endpoints{$key}\n";
 }
 
+print "successResponses:\n";
+foreach $key (sort keys %successResponse)
+{
+   print "$key!$successResponse{$key}!\n";
+}
+
+
 # another OpenAPI mistake - the returned entity is other_references but the endpoint is otherreference
 $endpoints{'other_references'} = $endpoints{'otherreferences'} if(!exists $endpoints{'other_references'});
 
 while($line = <$url_fh>)
 {
-   if($line =~ /"(\w+)SuccessResponse"/)
+   if($line =~ /"((\w+)SuccessResponse)"/)
    {
       $entity = lc($1);
+      $response = $2;
+
       next if($entity eq "api");  # don't want "APISuccessResponse"
 
       $line = <$url_fh>;
@@ -159,18 +181,20 @@ while($line = <$url_fh>)
                            # keep track of the types, if a new type shows up cast-pv-data will need code for it
                            $types{$type}++;
 
-                           $output_entity = $endpoints{$entity};  # need to nest where needed
+                           # was $output_entity = $endpoints{$entity};  # need to nest where needed
+                           $output_endpoint = $successResponse{$response};
 
-                           if(!exists $endpoints{$entity})
+                           if(!exists $successResponse{$response})
                            {
-                              print "trouble with entity $entity\n";
+                              print "trouble with entity response $response!\n";
                               $endpoints{$entity} = "trouble";
                               <STDIN>;
                            }
 
                            # temp test:
                            # use the endpoint when the group is not set (non nested attribute)
-                           $ggroup = $group eq "" ? $output_entity : $group;
+                           # was $ggroup = $group eq "" ? $output_entity : $group;
+                           $ggroup = $group eq "" ? $output_endpoint : $group;
 
                            # api weirdness, the entity for publication/rel_app_texts
                            # is publication/rel_app_text_applications
@@ -187,9 +211,10 @@ while($line = <$url_fh>)
                            }
 
                            $output = << "DAT";
-"$output_entity","$field","$type","$ggroup","$common"
+"$output_endpoint","$field","$type","$ggroup","$common"
 DAT
-                           $save{$output_entity}{$field} = $output;
+                          # was $save{$output_entity}{$field} = $output;
+                          $save{$output_endpoint}{$field} = $output;
 
                         }
                         else
@@ -230,7 +255,7 @@ foreach my $endpoint (sort keys %save ) {
     }
 }
 
-close (DAT);
+close ($url_fh);
 close (OUT);
 
 # warn if there's a type we don't know about- would need to add 

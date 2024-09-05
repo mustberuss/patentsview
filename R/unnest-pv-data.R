@@ -4,7 +4,7 @@
 #' in \code{\link{unnest_pv_data}}, based on the endpoint you searched.
 #' It will return a potential unique identifier for a given entity (i.e., a
 #' given endpoint). For example, it will return "patent_id" when
-#' \code{endpoint = "patents"}.
+#' \code{endpoint = "patent"}.
 #'
 #' @param endpoint The endpoint which you would like to know a potential primary
 #'   key for.
@@ -13,27 +13,27 @@
 #'   \code{\link{unnest_pv_data}}.
 #'
 #' @examples
-#' get_ok_pk(endpoint = "inventors") # Returns "inventor_id"
-#' get_ok_pk(endpoint = "cpc_groups") # Returns "cpc_group_id"
+#' get_ok_pk(endpoint = "inventor") # Returns "inventor_id"
+#' get_ok_pk(endpoint = "cpc_group") # Returns "cpc_group_id"
 #'
 #' @export
 get_ok_pk <- function(endpoint) {
 
-# most of the nested endpoints use patent_id, except patent/attorneys uses "attorney_id"
+# most of the nested endpoints use patent_id, except patent/attorney uses "attorney_id"
 # publications (unnested) uses document_number
 use_document_number <- c(
   # if endpoint is passed
-  "publications", "publication/rel_app_texts",
+  "publication", "publication/rel_app_text",
 
   # if names(pv_out[["data"]]) passed
-  "rel_app_text_publications"
+  "publications", "rel_app_text_publications"
 )
 
 use_patent_id <- c(
   # if endpoint passed
-  "patent/us_application_citations", "patent/us_patent_citations",
-  "patent/rel_app_texts", "patent/foreign_citations", "patent/rel_app_texts",
-  "publication/rel_app_texts",
+  "patent/us_application_citation", "patent/us_patent_citation",
+  "patent/rel_app_text", "patent/foreign_citation", "patent/rel_app_text",
+  "publication/rel_app_text",
 
   # if names(pv_out[["data"]]) passed
   "us_application_citations", "us_patent_citations", "foreign_citations",
@@ -46,8 +46,7 @@ use_patent_id <- c(
   else if (endpoint %in% use_patent_id ) {
     "patent_id"
   } else {
-    key <- sub("^patent/", "", endpoint)
-    key <- to_singular(key)
+    key <- to_singular(endpoint)
     paste0(key, "_id")
   }
 }
@@ -67,7 +66,7 @@ use_patent_id <- c(
 #'   inside it. See examples.
 #' @param pk The column/field name that will link the data frames together. This
 #'   should be the unique identifier for the primary entity. For example, if you
-#'   used the patents endpoint in your call to \code{search_pv}, you could
+#'   used the patent endpoint in your call to \code{search_pv}, you could
 #'   specify \code{pk = "patent_id"}. \strong{This identifier has to have
 #'   been included in your \code{fields} vector when you called
 #'   \code{search_pv}}. You can use \code{\link{get_ok_pk}} to suggest a

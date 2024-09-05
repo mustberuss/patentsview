@@ -136,7 +136,7 @@ The fields that you can retrieve depends on the endpoint that you are hitting. W
 ```{r}
 search_pv(
   query = qry_funs$gt(patent_year = 2007),
-  fields = get_fields(endpoint = "patents", groups = c("patents", "inventors"))
+  fields = get_fields(endpoint = "patent", groups = c("patent", "inventors"))
 )
 ```
 
@@ -170,7 +170,7 @@ fields <- c("assignee_id", "assignee_organization", "assignee_num_patents",
    "assignee_lastknown_latitude", "assignee_lastknown_longitude")
 
 # Send HTTP request to API's server:
-pv_res <- search_pv(endpoint = "assignees", query = query, fields = fields, 
+pv_res <- search_pv(endpoint = "assignee", query = query, fields = fields, 
    sort = c("assignee_num_patents" = "desc"), all_pages = FALSE)
 ```
 
@@ -224,7 +224,7 @@ query <- with_qfuns( # with_qfuns is basically just: with(qry_funs, ...)
 # Create a list of fields:
 fields <- c(
   c("patent_id", "patent_year"),
-  get_fields(endpoint = "patents", groups = c("assignees", "cpc_current"))
+  get_fields(endpoint = "patent", groups = c("assignees", "cpc_current"))
 )
 
 pv_res <- search_pv(query = query, fields = fields, all_pages = TRUE)
@@ -234,7 +234,7 @@ pv_res <- search_pv(query = query, fields = fields, all_pages = TRUE)
 qry <- qry_funs$begins(cpc_group_id = "H04L63/02")
 qry
 
-cpc_info <- search_pv(query = qry, fields = get_fields("cpc_groups"), endpoint = "cpc_groups")
+cpc_info <- search_pv(query = qry, fields = get_fields("cpc_group"), endpoint = "cpc_group")
 
 # More API craziness, in the HATEAS link from the patents endpoint, the separator is
 # inexplicably a colon.  In the data that comes back from the cpc_groups endpoint, the

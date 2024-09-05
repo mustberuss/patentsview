@@ -31,8 +31,8 @@
 #'   fields = fields
 #' )
 #' }
-#' # Get all patent and assignee-level fields for the patents endpoint:
-#' fields <- get_fields(endpoint = "patents", groups = c("assignees", "patents"))
+#' # Get all patent and assignee-level fields for the patent endpoint:
+#' fields <- get_fields(endpoint = "patent", groups = c("assignees", "patent"))
 #'
 #' \dontrun{
 #' # ...Then pass to search_pv:
@@ -55,21 +55,21 @@ get_fields <- function(endpoint, groups = NULL) {
 
 #' Get endpoints
 #'
-#' This function reminds the user what the possible PatentsView API endpoints
-#' are.
+#' This function reminds the user what the possible PatentSearch API endpoints
+#' are.  (Note that the API was originally know as the PatentsView API.)
 #'
 #' @return A character vector with the names of each endpoint.
 #' @export
 get_endpoints <- function() {
 
+  # now the endpoints are singular
   # note that now there are two rel_app_texts, one under patents and one under publications
   c(
-    "patent/us_application_citations", "assignees", "cpc_subclasses", "cpc_groups",
-    "cpc_classes", "inventors", "patent/us_patent_citations", "patents",
-    "uspc_subclasses", "uspc_mainclasses", "locations",
-    "patent/attorneys", "patent/foreign_citations", "patent/rel_app_texts",
-    "wipo", "ipcs", "publications", "publication/rel_app_texts",
-
-    "brf_sum_texts","claims","detail_desc_texts","draw_desc_texts"
+    "patent/us_application_citation", "assignee", "cpc_subclass", "cpc_group",
+    "cpc_class", "inventor", "patent/us_patent_citation", "patent",
+    "uspc_subclass", "uspc_mainclass", "location",
+    "patent/attorney", "patent/foreign_citation", "patent/rel_app_text",
+    "wipo", "ipc", "publication", "publication/rel_app_text",
+    "brf_sum_text","claim","detail_desc_text","draw_desc_text"
   )
 }

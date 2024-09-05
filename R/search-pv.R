@@ -1,6 +1,6 @@
 #' @noRd
 get_base <- function(endpoint) {
-  sprintf("https://search.patentsview.org/api/v1/%s/", to_singular(endpoint))
+  sprintf("https://search.patentsview.org/api/v1/%s/", endpoint)
 }
 
 #' @noRd
@@ -206,7 +206,7 @@ get_default_sort <- function(endpoint) {
 #'
 #' search_pv(
 #'   query = qry_funs$gt(patent_year = 2010),
-#'   fields = get_fields("patents", c("patents", "assignees"))
+#'   fields = get_fields("patent", c("patent", "assignees"))
 #' )
 #'
 #' search_pv(
@@ -218,18 +218,18 @@ get_default_sort <- function(endpoint) {
 #'
 #' search_pv(
 #'   query = qry_funs$eq(inventor_name_last = "Crew"),
-#'   endpoint = "inventors",
+#'   endpoint = "inventor",
 #'   all_pages = TRUE
 #' )
 #'
 #' search_pv(
 #'   query = qry_funs$contains(assignee_individual_name_last = "Smith"),
-#'   endpoint = "assignees"
+#'   endpoint = "assignee"
 #' )
 #'
 #' search_pv(
 #'   query = qry_funs$contains(inventors.inventor_name_last = "Smith"),
-#'   endpoint = "patents",
+#'   endpoint = "patent",
 #'   config = httr::timeout(40)
 #' )
 #' }
@@ -237,7 +237,7 @@ get_default_sort <- function(endpoint) {
 #' @export
 search_pv <- function(query,
                       fields = NULL,
-                      endpoint = "patents",
+                      endpoint = "patent",
                       subent_cnts = FALSE,
                       mtchd_subent_only,
                       page,

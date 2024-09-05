@@ -27,7 +27,7 @@ knitr::opts_chunk$set(
 >
 > In the original version of this page we searched for database (singular) but now that produces a result set of over 10,000 rows.  Instead, we'll search for databases (plural) which will make our result set smaller.  
 >
-> We start by calling the patents endpoint to get the patents where "databases" is in the title or abstract and there is an assignee. We make a subsequent call to the assignees endpoint to get assignee_num_patents (total number of patents) for the top 75 assignees, then we blend in the assignee_num_patents and compute the percentages. Then life, and the script, goes on as normal (as the original script did). 
+> We start by calling the patents endpoint to get the patents where "databases" is in the title or abstract and there is an assignee. We make a subsequent call to the assignee endpoint to get assignee_num_patents (total number of patents) for the top 75 assignees, then we blend in the assignee_num_patents and compute the percentages. Then life, and the script, goes on as normal (as the original script did). 
 
 The following is a quick analysis of the top organizations patenting in the field of databases.
 
@@ -123,7 +123,7 @@ assignee_fields <- c(
 
 # we'll post to the API, the query is a pretty large string (an "or" of 75 assignee_ids)
 assignee_out <- search_pv(assignee_query , fields = assignee_fields, all_pages = TRUE, 
-   per_page = 1000, endpoint = "assignees", method = "POST")
+   per_page = 1000, endpoint = "assignee", method = "POST")
 
 assignee_counts <- unnest_pv_data(assignee_out$data, "assignee_id")
 assignee_counts

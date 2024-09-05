@@ -10,14 +10,15 @@ test_that("API returns expected df names for all endpoints", {
   skip_on_cran()
 
   broken_endpoints <- c(
-     "cpc_subclasses",
-     "uspc_subclasses",
-     "uspc_mainclasses",
+     "cpc_subclass",
+     "uspc_subclass",
+     "uspc_mainclass",
      "wipo"
   )
 
   # this will fail when the api is fixed
   dev_null <- lapply(broken_endpoints, function(x) {
+    print(x)
     expect_error(
       search_pv(
         query = TEST_QUERIES[[x]],
@@ -32,17 +33,19 @@ test_that("API returns expected df names for all endpoints", {
   df_names <- vapply(goodendpoints, function(x) {
     print(x)
     out <- search_pv(query = TEST_QUERIES[[x]], endpoint = x)
-    names(out[[1]])
+
+    # now the endpoints are singular and most entites are plural
+    to_singular(names(out[[1]]))
   }, FUN.VALUE = character(1), USE.NAMES = FALSE)
 
   # remove nesting
-  plain_endpoints <- gsub("patent/", "", goodendpoints) # should be endpoints
-  plain_endpoints <- gsub("publication/", "", plain_endpoints)
+  plain_endpoints <- gsub("^(patent|publication)/","", goodendpoints);
 
   # publication/rel_app_text's entity is rel_app_text_publications
-  df_names <- gsub("rel_app_text_publications", "rel_app_texts", df_names)
+  df_names <- gsub("rel_app_text_publication", "rel_app_text", df_names)
 
   expect_equal(plain_endpoints, df_names)
+
 })
 
 test_that("DSL-based query returns expected results", {
@@ -78,8 +81,8 @@ test_that("You can download up to 9,000+ records", {
 test_that("search_pv can pull all fields for all endpoints", {
   skip_on_cran()
 
-  troubled_endpoints <- c("locations", "cpc_subclasses",
-     "uspc_subclasses", "uspc_mainclasses", "wipo", "claims", "draw_desc_texts"
+  troubled_endpoints <- c("cpc_subclass", "location",
+     "uspc_subclass", "uspc_mainclass", "wipo", "claim", "draw_desc_text"
   )
 
   # these tests will fail when the API is fixed
@@ -111,8 +114,8 @@ test_that("Sort option works as expected", {
 
   out <- search_pv(
     qry_funs$neq(assignee_id = ""),
-    fields = get_fields("assignees"),
-    endpoint = "assignees",
+    fields = get_fields("assignee"),
+    endpoint = "assignee",
     sort = c("assignee_lastknown_latitude" = "desc"),
     per_page = 100
   )
@@ -127,23 +130,23 @@ test_that("search_pv properly URL encodes queries", {
   # need to use the assignee endpoint now
   organization <- "Johnson & Johnson International"
   text_query <- with_qfuns(text_phrase(assignee_organization = organization))
-  phrase_search <- search_pv(text_query, endpoint = "assignees")
+  phrase_search <- search_pv(text_query, endpoint = "assignee")
   expect_true(phrase_search$query_results$total_hits == 1)
 
   # also test that the string operator does not matter now
   eq_query <- with_qfuns(eq(assignee_organization = organization ))
-  eq_search <- search_pv(eq_query, endpoint = "assignees")
+  eq_search <- search_pv(eq_query, endpoint = "assignee")
   expect_identical(eq_search$data, phrase_search$data)
 
   # text_phrase seems to be case insensitive but equal is not
   organization = tolower(organization)
 
   text_query <- with_qfuns(text_phrase(assignee_organization = organization))
-  phrase_search <- search_pv(text_query, endpoint = "assignees")
+  phrase_search <- search_pv(text_query, endpoint = "assignee")
   expect_true(phrase_search$query_results$total_hits == 1)
 
   eq_query <- with_qfuns(eq(assignee_organization = organization ))
-  eq_search <- search_pv(eq_query, endpoint = "assignees")
+  eq_search <- search_pv(eq_query, endpoint = "assignee")
   expect_true(eq_search$query_results$total_hits == 0)
 })
 
@@ -161,7 +164,7 @@ test_that("Throttled requests are automatically retried", {
     built_singly <- lapply(patent_ids, function(patent_id) {
       search_pv(
         query = qry_funs$eq(patent_id = patent_id),
-        endpoint = "patent/us_patent_citations",
+        endpoint = "patent/us_patent_citation",
         fields = c("patent_id", "citation_patent_id"),
         sort = c("citation_patent_id" = "asc")
       )[["data"]][["us_patent_citations"]]
@@ -173,7 +176,7 @@ test_that("Throttled requests are automatically retried", {
 
   result_all <- search_pv(
     query = qry_funs$eq(patent_id = patent_ids),
-    endpoint = "patent/us_patent_citations",
+    endpoint = "patent/us_patent_citation",
     fields = c("patent_id", "citation_patent_id"),
     sort = c("patent_id" = "asc", "citation_patent_id" = "asc"),
     per_page = 1000,
@@ -242,6 +245,7 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
     expect_true(j$query_results$total_hits > 1)
   })
 
+
   # We'll make a call to get an inventor and assignee HATEOAS link
   # in case their ids are not persistent
   # new weirdness: we request inventor_id and assignee_id but the
@@ -259,7 +263,7 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
   # Query to get a location HATEOAS link in case location_ids are not persistent
   res <- search_pv('{"location_name":"Chicago"}',
     fields = c("location_id"),
-    endpoint = "locations"
+    endpoint = "location"
   )
 
   location <- retrieve_linked_data(add_base_url(paste0("location/", res$data$locations$location_id, "/")))
@@ -274,13 +278,13 @@ test_that("individual fields are still broken", {
   # they are the only field requested.  Other individual fields at these
   # same endpoints throw errors.  Check fields again when these fail.
   sample_bad_fields <- c(
-    "assignee_organization" = "assignees", 
-    "inventor_lastknown_longitude" = "inventors",
-    "inventor_gender_attr_status"  = "inventors",
-    "location_name" = "locations", 
-    "attorney_name_last" = "patent/attorneys",
-    "citation_country" = "patent/foreign_citations",
-    "ipc_id" = "ipcs"
+    "assignee_organization" = "assignee", 
+    "inventor_lastknown_longitude" = "inventor",
+    "inventor_gender_attr_status"  = "inventor",
+    "location_name" = "location", 
+    "attorney_name_last" = "patent/attorney",
+    "citation_country" = "patent/foreign_citation",
+    "ipc_id" = "ipc"
   )
 
   dev_null <- lapply(names(sample_bad_fields), function(x) {

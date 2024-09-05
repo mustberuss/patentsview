@@ -8,7 +8,7 @@ test_that("validate_args throws errors for all bad args", {
   # skip("Temp skip for API redesign PR")
 
   expect_error(
-    search_pv('{"patent_date":["1976-01-06"]}', endpoint = "patent"),
+    search_pv('{"patent_date":["1976-01-06"]}', endpoint = "patents"),
     "endpoint"
   )
   expect_error(
@@ -45,7 +45,7 @@ test_that("validate_args throws errors for all bad args", {
   )
 
   expect_error(
-    get_fields("assignees", groups="cpc_current"),  # valid group for a different endpoint
+    get_fields("assignee", groups="cpc_current"),  # valid group for a different endpoint
     "groups"
   )
 })

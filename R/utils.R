@@ -71,14 +71,15 @@ to_plural <- function(singular) {
   # wipo endpoint returns singluar wipo as the entity
   # attorneys not attorneies
 
-  # remove the patent/ from nested endpoints when present
+  # remove the patent/ and publication/ from nested endpoints when present
   singular <- sub("^patent/", "", singular)
+  singular <- sub("^publication/", "", singular)
 
   if(singular  == "wipo") {
      plural = singular
   } 
   else if (singular == "attorney") {
-     plural = "attorneys"
+     plural <- "attorneys"
   } else if (endsWith(singular, "y")) {
     plural <- sub("y$", "ies", singular)
   } else if (endsWith(singular, "s")) {
@@ -86,5 +87,26 @@ to_plural <- function(singular) {
   } else {
     plural <- paste0(singular, "s")
   }
+}
+
+#' @noRd
+endpoint_from_entity <- function(entity) {
+   # needed for casting to work with singular endpoints and mostly plural entities
+
+   if(entity == "rel_app_text_publications") {
+      "publication/rel_app_texts"
+   } else if (entity == "rel_app_text") {
+      "publication/rel_app_text"
+   } else if (entity == "other_reference") {
+      "patent/otherreference"
+   } else {
+      singular <- to_singular(entity)
+
+      # figure out if the endpoint is nested
+      nested <- c("attorney", "foreign_citation", "us_application_citation",
+                  "us_patent_citation", "rel_app_text")
+
+      if(singular %in% nested) paste0("patent/", singular) else singular
+   }
 }
 

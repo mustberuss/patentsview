@@ -31,7 +31,7 @@ The new versions of the API's endpoints are less Swiss Army Knife-like than befo
 Take a look at the top [assignees application](top-assignees.html). It has to blend together information from separate calls that used to be returned by a single call. This may push your dplyr knowlegde to the limit.
 
 ## Changed Field Names and Types
-The fields selected in the original stript not be available from the new version's endpoints. Fields like the government interests are no longer available (see https://patentsview.org/data-in-action/whats-new-patentsview-july-2021). Also, some attributes have new names, like name_last in the nested inventor object.  Now in the fields parameter it would be specified as "inventor.name_last" where formerly it was "inventor_last_name" when using the patents endpoint.
+The fields selected in the original stript may not be available from the new version's endpoints. Fields like the government interests are no longer available (see https://patentsview.org/data-in-action/whats-new-patentsview-july-2021). Also, some attributes have new names, like name_last in the nested inventor object.  Now in the fields parameter it would be specified as "inventor.name_last" where formerly it was "inventor_last_name" when using the patents endpoint.
 
 Also note that some field's types have changed, meaning you'll need to use different operators within your query.  Ex. assignee.organization is now a full text field, formerly it was a string.  
 
@@ -62,7 +62,7 @@ range
 
 ## Conclusion
 
-So there you have it, our attempt at listing what's changed and what to do about it.  [Request](https://patentsview.org/apis/keyrequest) an API key and get going with the new version of the R package! The two API versions will coexist for a while but API team plans to shutdown the original version of the API in February 2025.
+So there you have it, our attempt at listing what's changed and what to do about it.  [Request](https://patentsview.org/apis/keyrequest) an API key and get going with the new version of the R package! The two API versions will coexist for a while but the API team plans to shutdown the original version of the API in February 2025.
 
 
 

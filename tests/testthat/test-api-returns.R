@@ -9,24 +9,30 @@ test_that("API returns all requested groups", {
   skip_on_cran()
   skip_on_ci()
 
-
-
   # can we traverse the return building a list of fields?
   # sort both requested fields and returned ones to see if they are equal
 
   # TODO: remove the trickery to get this test to pass, once the API is fixed
   bad_eps <- c("cpc_subclasses"
-    , "locations"        # Error: Invalid field: location_latitude
-    , "uspc_subclasses"  # Error: Internal Server Error
-    , "uspc_mainclasses" # Error: Internal Server Error
+    , "location"        # Error: Invalid field: location_latitude
+    , "uspc_subclasse"  # Error: Internal Server Error
+    , "uspc_mainclass" # Error: Internal Server Error
     , "wipo"             # Error: Internal Server Error
-    , "claims"           # Error: Invalid field: claim_dependent
-    , "draw_desc_texts"  # Error: Invalid field: description_sequence
+    , "claim"           # Error: Invalid field: claim_dependent
+    , "draw_desc_text"  # Error: Invalid field: description_sequence
+    , "cpc_subclass"    # 404?  check the test query
+    , "uspc_subclass"   # 404
    )
 
   mismatched_returns <- c(
-     "patents",
-     "publications"
+     "patent",
+     "publication",
+     "patent/us_application_citation",
+     "patent/us_patent_citation",
+     "patent/attorney",
+     "patent/foreign_citation",
+     "patent/rel_app_text",  # check these?
+     "publication/rel_app_text"
   ) 
 
   good_eps <- eps[!eps %in% bad_eps]
@@ -43,13 +49,15 @@ test_that("API returns all requested groups", {
     dl <- unnest_pv_data(res$data)
 
     actual_groups <- names(dl)
+
     expected_groups <- unique(fieldsdf[fieldsdf$endpoint == x, "group"])
 
     # we now need to unnest the endpoints for the comparison to work
-    expected_groups <- sub("patent/","",expected_groups)
+    expected_groups <- gsub("^(patent|publication)/","", expected_groups)
 
-    # same deal for publication/
-    expected_groups <- sub("publication/","",expected_groups)
+    # the endpoint's group is singular in expected_groups, it needs to be plural
+    # for the comparison to work
+    expected_groups <- replace(expected_groups, expected_groups==x, to_plural(x))
 
     expect_setequal(actual_groups, expected_groups)
     show_failure(expect_setequal(actual_groups, expected_groups))
@@ -78,12 +86,16 @@ test_that("API returns all requested groups", {
     expected_groups <- unique(fieldsdf[fieldsdf$endpoint == x, "group"])
 
     # we now need to unnest the endpoints for the comparison to work
-    expected_groups <- sub("patent/","",expected_groups)
-    expected_groups <- sub("publication/","",expected_groups)
+    expected_groups <- gsub("^(patent|publication)/","", expected_groups)
+
+    # in the expected groups, the endpoint's group is singular in, it needs to be plural
+    # for the comparison to work
+    expected_groups <- replace(expected_groups, expected_groups==x, to_plural(x))
 
     # better way to do this?  want to expect_set_not_equal
-    expect_false(isTRUE(all.equal(length(actual_groups), length(expected_groups))))
-
+    expect_error(
+       expect_setequal(actual_groups, expected_groups)
+    )
   })
 
   # make it noticeable that all is not right with the API

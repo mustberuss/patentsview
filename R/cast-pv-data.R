@@ -97,7 +97,8 @@ cast_one <- function(one, name, typesdf) UseMethod("cast_one")
 cast_pv_data <- function(data) {
   validate_pv_data(data)
 
-  endpoint <- names(data)
+  entity_name <- names(data)  # preserve insanity, singular/plural/nonsensical name
+  endpoint <- endpoint_from_entity(entity_name)
 
   typesdf <- fieldsdf[fieldsdf$endpoint == endpoint, c("common_name", "data_type")]
 
@@ -109,7 +110,7 @@ cast_pv_data <- function(data) {
 
   df[] <- list_out
   out_data <- list(x = df)
-  names(out_data) <- endpoint
+  names(out_data) <- entity_name  # preserve entity's name
 
   structure(
     out_data,
