@@ -311,7 +311,7 @@ search_pv <- function(query,
 #' the inventors endpoint may return a link such as:
 #' "https://search.patentsview.org/api/v1/inventor/252373/"
 #'
-#' @param url The link that was returned by the API on a previous call.
+#' @param url The link that was returned by the API on a previous call or an example in the documentation.
 #'
 #' @inherit search_pv return
 #' @inheritParams search_pv
@@ -322,6 +322,10 @@ search_pv <- function(query,
 #' retrieve_linked_data(
 #'   "https://search.patentsview.org/api/v1/cpc_group/G01S7:4811/"
 #'  )
+#'
+#' retrieve_linked_data(
+#'   'https://search.patentsview.org/api/v1/patent/?q={"_text_any":{"patent_title":"COBOL cotton gin"}}&s=[{"patent_id": "asc" }]&o={"size":50}&f=["inventors.inventor_name_last","patent_id","patent_date","patent_title"]'
+#'  )
 #' }
 #'
 #' @export
@@ -330,13 +334,37 @@ retrieve_linked_data <- function(url,
                                  ...
                                 ) {
 
-  # Don't sent the API key to any domain other than patentsview.org
-  if (!grepl("^https://[^/]*\\.patentsview.org/", url)) {
+  # There wouldn't be url parameters on a HATEOAS link but we'll also accept
+  # example urls from the documentation, where there could be parameters
+  url_peices <- httr::parse_url(url)
+  params <- list()
+  query <- ''
+
+  if(!is.null(url_peices$query))
+  {
+     url = paste0(url_peices$scheme,'://',url_peices$hostname, '/', url_peices$path)
+
+     # need to change f to fields, s to sort and o to opts 
+     # probably a whizbangy better way to do this in R
+     if(!is.null(url_peices$query$f))
+        params$fields = jsonlite::fromJSON(url_peices$query$f)
+
+     if(!is.null(url_peices$query$s))
+        params$sort = jsonlite::fromJSON(url_peices$query$s)
+
+     if(!is.null(url_peices$query$o))
+        params$opts = jsonlite::fromJSON(url_peices$query$o)
+
+     query <- if(!is.null(url_peices$query$q)) url_peices$query$q else ''
+  }
+
+  # Only send the API key to subdomains of patentsview.org
+  if (!grepl("^.*\\.patentsview.org$", url_peices$hostname)) {
     stop2("retrieve_linked_data is only for patentsview.org urls")
   }
 
   # Go through one_request, which handles resend on throttle errors
-  # The API doesn't seem to mind ?q=&f=&o=&s= appended to the URL
-  res <- one_request("GET", "", url, list(), api_key, ...)
+  # The API doesn't seem to mind ?q=&f=&o=&s= appended to HATEOAS URLs
+  res <- one_request("GET", query, url, params, api_key, ...)
   process_resp(res)
 }
