@@ -7,7 +7,7 @@
 retrieve_linked_data(url, api_key = Sys.getenv("PATENTSVIEW_API_KEY"), ...)
 }
 \arguments{
-\item{url}{The link that was returned by the API on a previous call.}
+\item{url}{The link that was returned by the API on a previous call or an example in the documentation.}
 
 \item{api_key}{API key. See \href{https://patentsview.org/apis/keyrequest}{
 Here} for info on creating a key.}
@@ -44,6 +44,10 @@ the inventors endpoint may return a link such as:
 
 retrieve_linked_data(
   "https://search.patentsview.org/api/v1/cpc_group/G01S7:4811/"
+ )
+
+retrieve_linked_data(
+  'https://search.patentsview.org/api/v1/patent/?q={"_text_any":{"patent_title":"COBOL cotton gin"}}&s=[{"patent_id": "asc" }]&o={"size":50}&f=["inventors.inventor_name_last","patent_id","patent_date","patent_title"]'
  )
 }
 

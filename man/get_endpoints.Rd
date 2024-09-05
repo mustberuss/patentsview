@@ -10,6 +10,6 @@ get_endpoints()
 A character vector with the names of each endpoint.
 }
 \description{
-This function reminds the user what the possible PatentsView API endpoints
-are.
+This function reminds the user what the possible PatentSearch API endpoints
+are.  (Note that the API was originally know as the PatentsView API.)
 }

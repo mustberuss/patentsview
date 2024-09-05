@@ -25,7 +25,7 @@ library(patentsview)
 
 search_pv(
   query = '{"_gte":{"patent_date":"2007-01-01"}}',
-  endpoint = "patents"
+  endpoint = "patent"
 )
 #> $data
 #> #### A list with a single data frame on patents level:
@@ -99,7 +99,7 @@ To list all of the retrievable fields for a given endpoint, use `get_fields()`:
 
 
 ``` r
-retrvble_flds <- get_fields(endpoint = "patents")
+retrvble_flds <- get_fields(endpoint = "patent")
 head(retrvble_flds)
 #> [1] "applicants.applicant_designation"  "applicants.applicant_name_first"  
 #> [3] "applicants.applicant_name_last"    "applicants.applicant_organization"
@@ -150,7 +150,7 @@ With the recent API change, the patents endpoint supplies the basic patent data 
 query <- qry_funs$eq(inventors.inventor_name_last = "Chambers")
 
 # Here we'll request patent_id and the inventor fields from the patents endpoint
-inv_fields <- get_fields(endpoint = "patents", groups ="inventors")
+inv_fields <- get_fields(endpoint = "patent", groups ="inventors")
 inv_fields
 #> [1] "inventors.inventor_city"       "inventors.inventor_country"   
 #> [3] "inventors.inventor_id"         "inventors.inventor_name_first"
@@ -158,7 +158,7 @@ inv_fields
 #> [7] "inventors.inventor_state"
 fields <- c(inv_fields, "patent_id")
 
-result <- search_pv(query, endpoint = "patents", fields = fields)
+result <- search_pv(query, endpoint = "patent", fields = fields)
 result
 #> $data
 #> #### A list with a single data frame (with list column(s) inside) on patents level:
@@ -196,9 +196,9 @@ result$data$patents$inventors[[1]]
 
 # Now we will see what the inventors endpoint returns for a similar query.  We use get_fields() to get all the available for the inventors endpoint.
 query <- qry_funs$eq(inventor_name_last = "Chambers")
-fields <- get_fields(endpoint = "inventors")
+fields <- get_fields(endpoint = "inventor")
 
-search_pv(query, endpoint = "inventors", fields = fields)
+search_pv(query, endpoint = "inventor", fields = fields)
 #> $data
 #> #### A list with a single data frame (with list column(s) inside) on inventors level:
 #> 
@@ -329,12 +329,12 @@ Government interests fields are no longer present
 
 ``` r
 # Create field list -
-fields <- get_fields("patents")
+fields <- get_fields("patent")
 
 # Pull data
 res <- search_pv(
   query = qry_funs$text_any(inventors.inventor_name_last = "Smith"), 
-  endpoint = "patents", 
+  endpoint = "patent", 
   fields = fields
 )
 res$data
@@ -387,11 +387,6 @@ res$data
 
 ``` r
 library(tidyr)
-#> 
-#> Attaching package: 'tidyr'
-#> The following object is masked from 'package:magrittr':
-#> 
-#>     extract
 
 # Get assignee data:
 res$data$patents %>% 

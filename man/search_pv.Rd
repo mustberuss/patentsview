@@ -7,7 +7,7 @@
 search_pv(
   query,
   fields = NULL,
-  endpoint = "patents",
+  endpoint = "patent",
   subent_cnts = FALSE,
   mtchd_subent_only,
   page,
@@ -41,7 +41,7 @@ E.g., \code{qry_funs$gte(patent_date = "2007-01-04")}
 A value of \code{NULL} indicates that the default fields should be
 returned. Acceptable fields for a given endpoint can be found at the API's
 online documentation (e.g., check out the field list for the
-\href{https://patentsview.org/apis/api-endpoints/patents}{patents
+\href{https://search.patentsview.org/docs/docs/Search\%20API/SearchAPIReference#patent}{patents
 endpoint}) or by viewing the \code{fieldsdf} data frame
 (\code{View(fieldsdf)}). You can also use \code{\link{get_fields}} to list
 out the fields available for a given endpoint.}
@@ -112,7 +112,7 @@ search_pv(query = '{"_gt":{"patent_year":2010}}')
 
 search_pv(
   query = qry_funs$gt(patent_year = 2010),
-  fields = get_fields("patents", c("patents", "assignees"))
+  fields = get_fields("patent", c("patent", "assignees"))
 )
 
 search_pv(
@@ -124,18 +124,18 @@ search_pv(
 
 search_pv(
   query = qry_funs$eq(inventor_name_last = "Crew"),
-  endpoint = "inventors",
+  endpoint = "inventor",
   all_pages = TRUE
 )
 
 search_pv(
   query = qry_funs$contains(assignee_individual_name_last = "Smith"),
-  endpoint = "assignees"
+  endpoint = "assignee"
 )
 
 search_pv(
   query = qry_funs$contains(inventors.inventor_name_last = "Smith"),
-  endpoint = "patents",
+  endpoint = "patent",
   config = httr::timeout(40)
 )
 }

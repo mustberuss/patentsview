@@ -66,7 +66,7 @@ What assignee's organizations start Microsoft?
 ``` r
 query <- qry_funs$begins(assignee_organization = "Microsoft")
 
-pv_out <- search_pv(query, endpoint = "assignees")
+pv_out <- search_pv(query, endpoint = "assignee")
 pv_out$data$assignees$assignee_organization
 #>  [1] "Microsoft Technology Beaming, LLC"               
 #>  [2] "MICROSOFT INTERNATIONAL HOLDINGS B.V."           
@@ -102,7 +102,7 @@ query <- with_qfuns(
 )
 
 # Create a field list
-inv_fields <- get_fields(endpoint = "patents", groups = "inventors")
+inv_fields <- get_fields(endpoint = "patent", groups = "inventors")
 fields <- c(inv_fields, "patent_id")
 
 # Pull the data
@@ -130,7 +130,7 @@ Which inventors have Chicago, IL listed as their location on at least one patent
 ``` r
 pv_out <- search_pv(
   query = '{"_and":[{"_text_phrase": {"inventors.inventor_city":"Chicago"}},{"_text_phrase": {"inventors.inventor_state":"IL"}}]}',
-  endpoint = "patents"
+  endpoint = "patent"
 )
 
 pv_out
@@ -159,7 +159,7 @@ Which assignees have an interest in beer?
 ``` r
 search_pv(
   query = qry_funs$contains(patent_title = "beer"),
-  endpoint = "patents"
+  endpoint = "patent"
 )
 #> $data
 #> #### A list with a single data frame on patents level:
