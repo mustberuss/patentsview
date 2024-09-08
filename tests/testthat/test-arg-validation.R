@@ -7,6 +7,7 @@ test_that("validate_args throws errors for all bad args", {
   # TODO(any): Remove:
   # skip("Temp skip for API redesign PR")
 
+  # requesting the old plural endpoint should now throw an error
   expect_error(
     search_pv('{"patent_date":["1976-01-06"]}', endpoint = "patents"),
     "endpoint"
