@@ -112,7 +112,7 @@ search_pv(query = '{"_gt":{"patent_year":2010}}')
 
 search_pv(
   query = qry_funs$gt(patent_year = 2010),
-  fields = get_fields("patent", c("patent", "assignees"))
+  fields = get_fields("patent", c("", "assignees"))
 )
 
 search_pv(
