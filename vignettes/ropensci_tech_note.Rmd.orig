@@ -38,9 +38,10 @@ The original version of the R package is on CRAN with the new version available 
 5. A hex logo was created using GuangchuangYu's [hexSticker](https://github.com/GuangchuangYu/hexSticker)
 
 The API team has provided a Swagger UI page for the new version of the API at https://search.patentsview.org/swagger-ui/
-to help in the transition.    It is unlikely that an existing script will work as is with the new version of the R package and API.  As shown in the updated Top Assignees vignette, there will be occasions where multiple API calls are needed to retrieve the same data as in a single API call in the original version of the API and R package.
+to help in the transition.  As shown in the updated Top Assignees vignette, there will be occasions where multiple API calls are needed to retrieve the same data as in a single API call in the original version of the API and R package.
 
-Please open issues in https://github.com/ropensci/patentsview/issues for the R package.  Issues or questions about the API itself can be raised in the API's forum https://patentsview.org/forum
+Please open issues for the R package [here](https://github.com/ropensci/patentsview/issues).  Issues or questions about the API itself can be raised [here](https://patentsview-support.atlassian.net/servicedesk/customer/portals) or in the
+API's [forum](https://patentsview.org/forum).
 
 
 

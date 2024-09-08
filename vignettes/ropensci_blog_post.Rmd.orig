@@ -25,7 +25,8 @@ knitr::opts_chunk$set(
   comment = "#>",
   warning = FALSE,
   message = FALSE,
-  fig.cap = ""
+  fig.cap = "",
+  dev = "png"
 )
 ```
 
@@ -92,7 +93,7 @@ The package has one main function, `search_pv()`, that makes it easy to send req
 
 ### `query`
 
-Your query has to use the [PatentsView query language](https://patentsview.org/apis/api-query-language), which is a JSON-based syntax that is similar to the one used by Lucene. You can write the query directly and pass it as a string to `search_pv()`:
+Your query has to use the [PatentsView query language](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#api-query-language), which is a JSON-based syntax that is similar to the one used by Lucene. You can write the query directly and pass it as a string to `search_pv()`:
 
 ```{r}
 library(patentsview)
@@ -112,7 +113,7 @@ search_pv(query = qry_2)
 
 `qry_1` and `qry_2` will result in the same HTTP call to the API. Both queries search for patents in USPTO that were published after 2007. There are three gotchas to look out for when writing a query:
 
-1. **All Fields are now queryable.** The API has 12 endpoints (the default endpoint is "patents"), and each endpoint has its own set of fields that you can filter on. 
+1. **All Fields are now queryable.** The API has 23 endpoints (the default endpoint is "patent"), and each endpoint has its own set of fields that you can filter on. 
 2. **Correct data type for field.** If you're filtering on a field in your query, you have to make sure that the value you are filtering on is consistent with the field's data type. For example, `patent_year` has type "integer," so if you pass 2007 as a string then you're going to get an error (`patent_year = 2007` is good, `patent_year = "2007"` is no good). You can find a field's data type in the `fieldsdf` data frame.
 3. **Comparison function works with field's data type.** The comparison function(s) that you use (e.g., the greater-than function shown above, `qry_funs$gt()`) must be consistent with the field's data type. For example, you can't use the "contains" function on fields of type "integer" (`qry_funs$contains(patent_year = 2007)` will throw an error). See `?qry_funs` for more details.
 

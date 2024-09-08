@@ -62,12 +62,10 @@ query <- with_qfuns(
   )
 )
 
-# Create a field list
-inv_fields <- get_fields(endpoint = "patent", groups = "inventors")
-fields <- c(inv_fields, "patent_id")
-
+# Create a field list by getting the inventors fields
+inv_fields <- get_fields(endpoint = "patent", groups="inventors")
 # Pull the data
-pv_out <- search_pv(query, fields = fields, all_pages = TRUE, per_page = 1000)
+pv_out <- search_pv(query, fields = inv_fields, all_pages = TRUE, per_page = 1000)
 
 # Unnest the inventor list column
 unnest_pv_data(pv_out$data, "patent_id")
