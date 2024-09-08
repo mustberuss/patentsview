@@ -101,34 +101,25 @@ query <- with_qfuns(
   )
 )
 
-# Create a field list by getting the top level (non nested) fields
-inv_fields <- get_fields(endpoint = "patent", groups = "")
-
+# Create a field list by getting the inventors fields
+inv_fields <- get_fields(endpoint = "patent", groups="inventors")
 # Pull the data
 pv_out <- search_pv(query, fields = inv_fields, all_pages = TRUE, per_page = 1000)
 
 # Unnest the inventor list column
 unnest_pv_data(pv_out$data, "patent_id")
-#> List of 1
-#>  $ patents:'data.frame':	3600 obs. of  18 variables:
-#>   ..$ patent_id                                                   : chr [1:36"..
-#>   ..$ patent_title                                                : chr [1:36"..
-#>   ..$ patent_type                                                 : chr [1:36"..
-#>   ..$ patent_date                                                 : chr [1:36"..
-#>   ..$ patent_year                                                 : int [1:360..
-#>   ..$ patent_abstract                                             : chr [1:36"..
-#>   ..$ patent_cpc_current_group_average_patent_processing_days     : int [1:360..
-#>   ..$ patent_detail_desc_length                                   : int [1:360..
-#>   ..$ patent_earliest_application_date                            : chr [1:36"..
-#>   ..$ patent_num_foreign_documents_cited                          : int [1:360..
-#>   ..$ patent_num_times_cited_by_us_patents                        : int [1:360..
-#>   ..$ patent_num_total_documents_cited                            : int [1:360..
-#>   ..$ patent_num_us_applications_cited                            : int [1:360..
-#>   ..$ patent_num_us_patents_cited                                 : int [1:360..
-#>   ..$ patent_processing_days                                      : int [1:360..
-#>   ..$ patent_term_extension                                       : int [1:360..
-#>   ..$ gov_interest_statement                                      : chr [1:360..
-#>   ..$ patent_uspc_current_mainclass_average_patent_processing_days: logi [1:36..
+#> List of 2
+#>  $ inventors:'data.frame':	14533 obs. of  8 variables:
+#>   ..$ patent_id          : chr [1:14533] "11397055" ...
+#>   ..$ inventor           : chr [1:14533] "https://search.patentsview.org/api/"..
+#>   ..$ inventor_name_first: chr [1:14533] "Tzu-Yuan" ...
+#>   ..$ inventor_name_last : chr [1:14533] "Lin" ...
+#>   ..$ inventor_city      : chr [1:14533] "San Jose" ...
+#>   ..$ inventor_state     : chr [1:14533] "CA" ...
+#>   ..$ inventor_country   : chr [1:14533] "US" ...
+#>   ..$ inventor_sequence  : int [1:14533] 1 2 ...
+#>  $ patents  :'data.frame':	3600 obs. of  1 variable:
+#>   ..$ patent_id: chr [1:3600] "11397055" ...
 ```
 
 Which inventors have Chicago, IL listed as their location on at least one patent.[^1]
