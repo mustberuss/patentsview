@@ -259,10 +259,10 @@ respectively.&lt;/p&gt;"><sup>2</sup></a></p>
 <h3 id="query">
 <code>query</code><a class="anchor" aria-label="anchor" href="#query"></a>
 </h3>
-<p>Your query has to use the <a href="https://patentsview.org/apis/api-query-language" class="external-link">PatentsView query
-language</a>, which is a JSON-based syntax that is similar to the one
-used by Lucene. You can write the query directly and pass it as a string
-to <code><a href="../reference/search_pv.html">search_pv()</a></code>:</p>
+<p>Your query has to use the <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#api-query-language" class="external-link">PatentsView
+query language</a>, which is a JSON-based syntax that is similar to the
+one used by Lucene. You can write the query directly and pass it as a
+string to <code><a href="../reference/search_pv.html">search_pv()</a></code>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
 <span></span>
@@ -308,8 +308,8 @@ published after 2007. There are three gotchas to look out for when
 writing a query:</p>
 <ol style="list-style-type: decimal">
 <li>
-<strong>All Fields are now queryable.</strong> The API has 12
-endpoints (the default endpoint is “patents”), and each endpoint has its
+<strong>All Fields are now queryable.</strong> The API has 23
+endpoints (the default endpoint is “patent”), and each endpoint has its
 own set of fields that you can filter on.</li>
 <li>
 <strong>Correct data type for field.</strong> If you’re filtering on
@@ -361,15 +361,16 @@ fields are no longer available from the patents endpoint.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; total_hits = 5,179,313</span></span></code></pre></div>
 <p>The fields that you can retrieve depends on the endpoint that you are
-hitting. We’ve been using the “patents” endpoint thus far, so all of
+hitting. We’ve been using the “patent” endpoint thus far, so all of
 these are retrievable:
-<code>fieldsdf[fieldsdf$endpoint == "patents", "field"]</code>. You can
+<code>fieldsdf[fieldsdf$endpoint == "patent", "field"]</code>. You can
 also use <code><a href="../reference/get_fields.html">get_fields()</a></code> to list the retrievable fields for a
-given endpoint:</p>
+given endpoint, optionally imited to specific groups of nested or top
+level (the “” in groups) fields</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span></span>
 <span>  query <span class="op">=</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">gt</span><span class="op">(</span>patent_year <span class="op">=</span> <span class="fl">2007</span><span class="op">)</span>,</span>
-<span>  fields <span class="op">=</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"patent"</span>, groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patent"</span>, <span class="st">"inventors"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  fields <span class="op">=</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"patent"</span>, groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"inventors"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; $data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on patents level:</span></span>
@@ -473,8 +474,8 @@ be tricky.</p>
 <span>  <span class="fu"><a href="https://rstudio.github.io/leaflet/reference/map-layers.html" class="external-link">addCircleMarkers</a></span><span class="op">(</span></span>
 <span>    lng <span class="op">=</span> <span class="op">~</span><span class="va">assignee_lastknown_longitude</span>, lat <span class="op">=</span> <span class="op">~</span><span class="va">assignee_lastknown_latitude</span>,</span>
 <span>    popup <span class="op">=</span> <span class="op">~</span><span class="va">popup</span>, radius<span class="op">=</span><span class="fl">2</span>, color <span class="op">=</span> <span class="st">"yellow"</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; Error in launch_chrome(path, args): Failed to start chrome. Error:</span></span></code></pre></div>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p><img src="figure/blogleaflet-1.png"></p>
 <p><br></p>
 <ol start="3" style="list-style-type: decimal">
 <li>Plot the growth of the field’s topics over time</li>
@@ -485,7 +486,7 @@ be tricky.</p>
 <span></span>
 <span><span class="co"># Here we issue the original post's query, rewritten for the new version of the API</span></span>
 <span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span> <span class="co"># with_qfuns is basically just: with(qry_funs, ...)</span></span>
-<span>  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
+<span>  <span class="fu">and</span><span class="op">(</span></span>
 <span>    <span class="fu">begins</span><span class="op">(</span>cpc_current.cpc_group_id <span class="op">=</span> <span class="st">"H04L63/02"</span><span class="op">)</span>,</span>
 <span>    <span class="fu">gte</span><span class="op">(</span>patent_year <span class="op">=</span> <span class="fl">2007</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>

@@ -193,13 +193,13 @@ you could write such a query:</p>
 <span></span>
 <span><span class="va">query_v_3</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
+<span>    <span class="fu">and</span><span class="op">(</span></span>
 <span>      <span class="fu">gte</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2007-03-01"</span><span class="op">)</span>,</span>
-<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">or</a></span><span class="op">(</span></span>
+<span>      <span class="fu">or</span><span class="op">(</span></span>
 <span>        <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"dog"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_all</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="st">"dog"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span>,</span>
-<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">or</a></span><span class="op">(</span></span>
+<span>      <span class="fu">or</span><span class="op">(</span></span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_country <span class="op">=</span> <span class="st">"US"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_country <span class="op">=</span> <span class="st">"CA"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span></span>
@@ -287,10 +287,10 @@ These functions are used to compare a field to a value. For example,
 using the “less than or equal to” function (<code>lte</code>), we can
 filter out patents published after some date (e.g.,
 <code>query = qry_funs$lte(patent_date = "2001-01-05")</code>). See the
-“comparison operators” section of the API’s <a href="https://patentsview.org/apis/api-query-language" class="external-link">query language
-page</a> for a description of the 11 comparison operators. One important
-thing to keep in mind is that certain comparison operators only work
-with certain data types. For example, you can’t use the
+“comparison operators” section of the API’s <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#api-query-language" class="external-link">query
+language page</a> for a description of the 11 comparison operators. One
+important thing to keep in mind is that certain comparison operators
+only work with certain data types. For example, you can’t use the
 <code>begins</code> function on <code>patent_abstract</code> because
 <code>patent_abstract</code> is of data type “full text” and
 <code>begins</code> only works with fields of data type “string.”</li>
@@ -333,10 +333,10 @@ it:</li>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
+<span>  <span class="fu">and</span><span class="op">(</span></span>
 <span>    <span class="fu">text_any</span><span class="op">(</span>inventors.inventor_name_first <span class="op">=</span> <span class="st">"kevin"</span><span class="op">)</span>,  <span class="co"># inventor names are now full text</span></span>
 <span>    <span class="fu">text_phrase</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dog bark"</span>, <span class="st">"cat meow"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">not</a></span><span class="op">(</span></span>
+<span>    <span class="fu">not</span><span class="op">(</span></span>
 <span>      <span class="fu">text_phrase</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dog chain"</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
@@ -354,12 +354,12 @@ it:</li>
 </ul>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">or</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
+<span>  <span class="fu">or</span><span class="op">(</span></span>
+<span>    <span class="fu">and</span><span class="op">(</span></span>
 <span>      <span class="fu">eq</span><span class="op">(</span>inventors.inventor_name_last <span class="op">=</span> <span class="st">"smith"</span><span class="op">)</span>,</span>
 <span>      <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"cotton gin"</span><span class="op">)</span></span>
 <span>    <span class="op">)</span>,</span>
-<span>    <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
+<span>    <span class="fu">and</span><span class="op">(</span></span>
 <span>      <span class="fu">eq</span><span class="op">(</span>inventors.inventor_name_last <span class="op">=</span> <span class="st">"turner"</span><span class="op">)</span>,</span>
 <span>      <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"COBOL"</span><span class="op">)</span></span>
 <span>    <span class="op">)</span></span>

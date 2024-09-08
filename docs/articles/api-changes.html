@@ -139,46 +139,95 @@
 
     
     
+<p>In July of 2021 the Patentview API team announced <a href="https://patentsview.org/data-in-action/whats-new-patentsview-july-2021" class="external-link">upcoming
+API changes</a>. This page will explain the changes and impact to the <a href="#r-package-changes">R package</a>. Note that these are
+<strong>breaking changes</strong>, existing scripts will no longer run
+as-is using the new version of the API and the new version of the R
+package.</p>
 <div class="section level2">
-<h2 id="summary-of-the-api-changes-announced-in-2021">Summary of the API changes announced in 2021<a class="anchor" aria-label="anchor" href="#summary-of-the-api-changes-announced-in-2021"></a>
+<h2 id="summary-of-the-api-changes">Summary of the API changes<a class="anchor" aria-label="anchor" href="#summary-of-the-api-changes"></a>
 </h2>
-<p>In July of 2021 the Patentview API team announced upcoming API
-changes here <a href="https://patentsview.org/data-in-action/whats-new-patentsview-july-2021" class="external-link uri">https://patentsview.org/data-in-action/whats-new-patentsview-july-2021</a>.
-This page will explain the impact to the r package and any existing
-code.</p>
+<ul>
+<li><p>Probably most importanly, the current shutdown date for the
+original version of the API is February 12, 2025, as communicated in the
+August 2024 newsletter.</p></li>
+<li><p>An <a href="#api-key-required">API key</a> is now
+required.</p></li>
+<li><p>All fields can be queried now and there is seemingly <a href="#operators">no distinction</a> between using string and full text
+operators now, with a new <a href="#case-sensitivity-caveat">case
+sensitivity caveat</a> though. Note that now some fields are returned in
+nested objects and would need to be fully qualified in the query/q: and
+fields/f: paramters. Ex. fields=c( “cpc_current.cpc_group_id”) is used
+below.</p></li>
+<li><p>A result set’s size seems unbounded now, you can now retrieve
+more than 100,000 rows. You’d need to be careful when setting all_pages
+= TRUE as the R package will page until the entire result set is
+retrieved which could be a million or more rows. Ex.
+search_pv(‘{“patent_type”:“utility”}’, all_pages=TRUE)</p></li>
+<li>
+<p>Endpoint Changes</p>
+<ul>
+<li>nber_subcategories went away- it was an endpoint in the original
+verson of the API</li>
+<li>Endpoints are now singular, ex. patent not patents. The returned
+entities are still plural for the most part.</li>
+<li>Now there are <a href="#endpoints">23 endpoints</a>, up from the
+original 7</li>
+</ul>
+</li>
+<li><p>The API team added an ultra-helpful <a href="#swagger-ui-page">Swagger UI page</a>. Think of it as an online
+version of Postman already loaded with the API’s endpoints and returns.
+Note that you’ll need an API key in order to make requests.</p></li>
+<li><p>These options parameters went away: matched_subentities_only,
+subent_cnts and page (paging now uses ‘after’ instead of page)</p></li>
+<li>
+<p>Changes your uber-helpful R package handles for you:</p>
+<ul>
+<li>The API now <a href="#throttling">throttles requests</a>.</li>
+<li>
+<a href="#a-note-on-paging">Paging</a> is completely different</li>
+<li>The subdomain of the API changed from <a href="https://api.patentsview.org/" class="external-link uri">https://api.patentsview.org/</a> to <a href="https://search.patentsview.org" class="external-link uri">https://search.patentsview.org</a> and the paths to the
+endpoints changed.<br>
+</li>
+<li>The API team changed the name of the API. PatentsView’s Search API
+is now the PatentSearch API, as announced <a href="https://search.patentsview.org/docs/#naming-update" class="external-link">here</a>. Note
+that the R package will retain its name. Continue to use
+library(patentsview)</li>
+</ul>
+</li>
+</ul>
+<div class="section level3">
+<h3 id="an-api-key-is-required">An API Key is required <a name="api-key-required"></a><a class="anchor" aria-label="anchor" href="#an-api-key-is-required"></a>
+</h3>
+<p>Perhaps the most important change, without an API key your queries
+will be rejected. Request an API key using this link: <a href="https://patentsview.org/apis/keyrequest" class="external-link uri">https://patentsview.org/apis/keyrequest</a> Once you have
+one, you’ll need to set an environmental variable PATENTSVIEW_API_KEY to
+the value of your API key for the R package to use.</p>
+</div>
+<div class="section level3">
+<h3 id="swagger-ui-page">Swagger UI Page <a name="swagger-ui-page"></a><a class="anchor" aria-label="anchor" href="#swagger-ui-page"></a>
+</h3>
 <p>The Patentsview API team has provided a Swagger UI page for the new
 version of the API at <a href="https://search.patentsview.org/swagger-ui/" class="external-link uri">https://search.patentsview.org/swagger-ui/</a>. It shows all
 the available endpoints and their responses. Each field in the 200
 response sections could be requested in the fields/f: parameter and each
 field is supposed to be queryable (usable in the query/q: parameter).
 The Swagger UI page can be used to make requests, if you have an API key
-to enter in the authorization screen, more about the new API key below.
-The Swagger UI definition at <a href="https://search.patentsview.org/static/openapi.json" class="external-link uri">https://search.patentsview.org/static/openapi.json</a> can
+to enter in the authorization screen. The Swagger UI definition at <a href="https://search.patentsview.org/static/openapi.json" class="external-link uri">https://search.patentsview.org/static/openapi.json</a> can
 be imported into Postman to give you a nicely loaded collection for the
 changed API. You’ll just need to set a global variable PVIEW_KEY and set
 the authorization’s value to {{PVIEW_KEY}} to your API key.</p>
 </div>
-<div class="section level2">
-<h2 id="an-api-key-is-required">An API Key is required<a class="anchor" aria-label="anchor" href="#an-api-key-is-required"></a>
-</h2>
-<p>Perhaps the most important change, without an API key your queries
-will be rejected. Request an API key using this link: <a href="https://patentsview.org/apis/keyrequest" class="external-link uri">https://patentsview.org/apis/keyrequest</a> Once you have
-one, you’ll need to set an environmental variable PATENTSVIEW_API_KEY to
-the value of your API key for the R package to use.</p>
-</div>
-<div class="section level2">
-<h2 id="philosophical-changes">Philosophical Changes<a class="anchor" aria-label="anchor" href="#philosophical-changes"></a>
-</h2>
-<p>These changes are likely to break existing code. Now there are more
-endpoints and each returns a smaller, more specific data structure
-pertinent to that endpoint. As an example, previously the inventor
-endpoint could return assignee information, it no longer does that. The
-exception is the patents endpoint. It now can return assignees,
-inventors, cpc_current along with patent specific fields. Note that now
-subsequent queries would have to be made to the USPC specific endpoints
-if you are looking for these fields.</p>
-<p>Currently there are 23 endpoints, up from the original 7. The urls
-changed slightly but the R package takes care of that for you.</p>
+<div class="section level3">
+<h3 id="endpoints">Endpoints <a name="endpoints"></a><a class="anchor" aria-label="anchor" href="#endpoints"></a>
+</h3>
+<p>Now there are 23 endpoints, up from the original 7, and each returns
+a smaller, more specific data structure pertinent to that endpoint. As
+an example, previously the inventor endpoint could return assignee
+information, it no longer does that. The exception is the patents
+endpoint. It now can return assignees, inventors, cpc_current along with
+patent specific fields. Note that some new endpoints are nested under
+patent/ and one is under publication/</p>
 <ol style="list-style-type: decimal">
 <li>There are 15 totally new endpoints
 <ul>
@@ -199,7 +248,7 @@ changed slightly but the R package takes care of that for you.</p>
 <li>/api/v1/wipo/</li>
 </ul>
 </li>
-<li>5 of the original api’s endpoints have singular names but lighter
+<li>Five of the original api’s endpoints have singular names but lighter
 responses and fewer queryable fields as mentioned above.
 <ul>
 <li>/api/v1/assignee/</li>
@@ -209,7 +258,7 @@ responses and fewer queryable fields as mentioned above.
 <li>/api/v1/uspc_mainclass/</li>
 </ul>
 </li>
-<li>The original cpc endpoint has a new name and there are two new cpc
+<li>The original CPC endpoint has a new name and there are two new CPC
 endpoints
 <ul>
 <li>/api/v1/cpc_class/</li>
@@ -219,40 +268,66 @@ endpoints
 </li>
 <li>The nber_subcategory endpoint seems to be gone now.</li>
 </ol>
+<p>Things to note</p>
+<ol style="list-style-type: decimal">
+<li>Four of the new endpoints, brf_sum_text, claims, draw_desc_text and
+detail_desc_text, are marked ‘beta’ on the Swagger UI page and their
+data is not fully populated. See this <a href="https://search.patentsview.org/docs/docs/Search%20API/TextEndpointStatus" class="external-link">page</a>
+to see what data is currently populated.</li>
+<li>Currently some endpoints do not return all the attributes listed in
+the API’s OpenAPI object. Some throw 500 errors when requested (see
+test-search-pv.R)</li>
+<li>There are two rel_app_text endpoints, one under patent/ and one
+under publication/ They return different entities, rel_app_texts
+(patent) and rel_app_text_publications (publication)</li>
+<li>attributes went away, some have new names. Most significantly,
+patent_number is now patent_id. Requesting patent_number will result in
+an error being thrown. Note also that the CPC related attributes have
+new names.</li>
+<li>Some endpoints now return <a href="#HATEOAS">HATEOAS links</a>
+</li>
+</ol>
 </div>
-<div class="section level2">
-<h2 id="data-reduction">Data Reduction<a class="anchor" aria-label="anchor" href="#data-reduction"></a>
-</h2>
-<p>Some fields seem to have gone away, raw inventor fields, coinventor
-fields, patent_firstnamed fields and patent_num_claims. There’s a link
-to a spreadsheet of the fields returned by endpoint at the bottom of <a href="https://patentsview.org/apis/purpose" class="external-link uri">https://patentsview.org/apis/purpose</a> though the Swagger
-UI page should be more current.</p>
-</div>
-<div class="section level2">
-<h2 id="hateoas">HATEOAS<a class="anchor" aria-label="anchor" href="#hateoas"></a>
-</h2>
+<div class="section level3">
+<h3 id="hateoas-links">HATEOAS Links <a name="HATEOAS"></a><a class="anchor" aria-label="anchor" href="#hateoas-links"></a>
+</h3>
 <p>Some of the returned fields are HATEOAS (Hypermedia as the Engine of
 Application State) links to retrieve more information about that field.
 Slightly funky is the cpc_current’s cpc_group, returned by the patents
-endpoint. Here the slash in the cpc is turned into a colon. This is a
+endpoint. Here the slash in the CPC is turned into a colon. This is a
 peculiarity of two of the new convience urls that shouldn’t be noticable
-in the r package, unless you are trying to infer the uspc and cpc values
-from the returned urls, without actually calling back for this data.
-There is something slightly funky with these fields. They have an _id
-when in the q:/query and f:/fields parameters but they are returned
-without the _id. Example: cpc_group_id is returned as the HATEOAS link
-cpc_group.</p>
-<p>Example link returned by the patents endpoint</p>
-<pre><code><span> <span class="st">"cpc_current"</span><span class="op">:</span> <span class="op">{</span></span>
-<span>     <span class="st">"cpc_group"</span><span class="op">:</span> <span class="st">"https://search.patentsview.org/api/v1/cpc_group/G01S7:4865/"</span>  </span>
-<span>  <span class="op">}</span></span></code></pre>
-<p>Note that going to that link in a browser will result in a 403
+in the r package, unless you are trying to infer the USPC and CPC values
+from the returned urls, without actually calling back for this data.</p>
+<p>Here we’ll call the patent endpoint to get cpc_group HATEOAS
+links:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"patent_id": "11530080"}'</span>, fields<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"cpc_current.cpc_group_id"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="co"># as noted below, the returned attribute is cpc_group, not the requested cpc_group_id</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span> <span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span><span class="op">$</span><span class="va">cpc_current</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cpc_group</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/cpc_group/B65D71:0033/"   </span></span>
+<span><span class="co">#&gt; [2] "https://search.patentsview.org/api/v1/cpc_group/B65D71:004/"    </span></span>
+<span><span class="co">#&gt; [3] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:00141/"</span></span>
+<span><span class="co">#&gt; [4] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:0029/" </span></span>
+<span><span class="co">#&gt; [5] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:00351/"</span></span>
+<span><span class="co">#&gt; [6] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:00462/"</span></span>
+<span><span class="co">#&gt; [7] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:00481/"</span></span>
+<span><span class="co">#&gt; [8] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:0066/" </span></span>
+<span><span class="co">#&gt; [9] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:00716/"</span></span></code></pre></div>
+<p>Note that going to these links in a browser will result in a 403
 Unauthorized, as no API key is sent.</p>
 <p>There is a new method in the R package to retrive data from the
 HATEOAS links, just pass the returned link and the R package will
-retrieve the data for you.</p>
+retrieve the data for you. You can also pass an arbitrary link that hits
+the API. This can be particualarly useful if you want to see what the
+response would be from a link found in the <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/" class="external-link">API’s
+documentation</a>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">pv_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/retrieve_linked_data.html">retrieve_linked_data</a></span><span class="op">(</span><span class="st">"https://search.patentsview.org/api/v1/cpc_group/G01S7:4865/"</span><span class="op">)</span></span>
 <span><span class="va">pv_data</span></span>
@@ -275,11 +350,61 @@ retrieve the data for you.</p>
 <span>   <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"something is wrong with the API.  Response should match this:"</span><span class="op">)</span></span>
 <span>   <span class="va">query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span><span class="st">"cpc_group_id"</span> <span class="op">=</span> <span class="st">"G01S7/4865"</span><span class="op">)</span></span>
 <span>   <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query</span>, endpoint <span class="op">=</span> <span class="st">"cpc_group"</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># Here we'll use an example url from the documentation</span></span>
+<span><span class="co"># Note that going to that link in a browser will result in a 403 Unauthorized, as no API key is sent.</span></span>
+<span><span class="fu"><a href="../reference/retrieve_linked_data.html">retrieve_linked_data</a></span><span class="op">(</span><span class="st">'https://search.patentsview.org/api/v1/patent/?q={"patent_id":"7861317"}'</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $data</span></span>
+<span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; List of 1</span></span>
+<span><span class="co">#&gt;  $ patents:'data.frame': 1 obs. of  3 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id   : chr "7861317"</span></span>
+<span><span class="co">#&gt;   ..$ patent_title: chr "Nose cover"</span></span>
+<span><span class="co">#&gt;   ..$ patent_date : chr "2011-01-04"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $query_results</span></span>
+<span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; total_hits = 1</span></span></code></pre></div>
+<p>Note that when calling the cpc_group endpoint instead of using the
+HATEOAS link, you’d use a slash instead of a colon.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"cpc_group_id": "A01B1/00"}'</span>, endpoint <span class="op">=</span> <span class="st">'cpc_group'</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $data</span></span>
+<span><span class="co">#&gt; #### A list with a single data frame on cpc_groups level:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; List of 1</span></span>
+<span><span class="co">#&gt;  $ cpc_groups:'data.frame':  1 obs. of  4 variables:</span></span>
+<span><span class="co">#&gt;   ..$ cpc_class      : chr "https://search.patentsview.org/api/v1/cpc_class/A"..</span></span>
+<span><span class="co">#&gt;   ..$ cpc_subclass   : chr "https://search.patentsview.org/api/v1/cpc_subclas"..</span></span>
+<span><span class="co">#&gt;   ..$ cpc_group_id   : chr "A01B1/00"</span></span>
+<span><span class="co">#&gt;   ..$ cpc_group_title: chr "Hand tools"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $query_results</span></span>
+<span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; total_hits = 1</span></span></code></pre></div>
+<p>Slight weirdness/sleight of hand where the returned field name looses
+the _id of the requested field</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span>  <span class="co"># We'll make a call to the patent endpoint to get inventor and assignee HATEOAS links</span></span>
+<span>  <span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"patent_id":"10000000"}'</span>,</span>
+<span>    fields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"inventors.inventor_id"</span>, <span class="st">"assignees.assignee_id"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span>  <span class="co"># but note that the fields came back without the _id</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span><span class="op">$</span><span class="va">assignees</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">assignee</span><span class="op">)</span> <span class="co"># not $assignee_id as requested</span></span>
+<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/assignee/aeef7c1f-e757-467f-8e07-289dc8c6ed95/"</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span><span class="op">$</span><span class="va">inventors</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">inventor</span><span class="op">)</span> <span class="co"># not $inventor_id as requested</span></span>
+<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/inventor/fl:jo_ln:marron-5/"</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="throttling">Throttling<a class="anchor" aria-label="anchor" href="#throttling"></a>
-</h2>
+<div class="section level3">
+<h3 id="throttling">Throttling <a name="throttling"></a><a class="anchor" aria-label="anchor" href="#throttling"></a>
+</h3>
 <p>The API will now allow 45 requests per minute, making more requests
 will anger the API. It will send back an error code with a header
 indicating how many seconds to wait before sending more queries. The R
@@ -287,1227 +412,186 @@ package will take care of this for you. It will sleep for the required
 number of seconds before resubmitting your query, seemlessly to your
 script.</p>
 </div>
-<div class="section level2">
-<h2 id="alpha-fields">Alpha Fields<a class="anchor" aria-label="anchor" href="#alpha-fields"></a>
-</h2>
-<p>fieldsdf will show you the field types, names and endpoints in the
-new version of the API. There are different operators for string and
-full text fields.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/" class="external-link">knitr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<div class="section level3">
+<h3 id="a-note-on-paging">A Note on Paging <a name="a-note-on-paging"></a><a class="anchor" aria-label="anchor" href="#a-note-on-paging"></a>
+</h3>
+<p>The API team changed how paging works and there is an important
+subtility that the R package<br>
+handles for you. This screams for a python library so python users don’t
+need to worry about this and throttling! Here’s a comment in search-pv.R
+that tries to explain the danger.</p>
+<pre><code><span>  <span class="co"># Here we ignore the user's sort and instead have the API sort by the primary</span></span>
+<span>  <span class="co"># key for the requested endpoint.  This simplifies the paging's after parameter.</span></span>
+<span>  <span class="co"># If we call the API with more than a primary sort, the after parameter would</span></span>
+<span>  <span class="co"># have to be an array of all the sort fields' last values.</span></span>
+<span>  <span class="co"># After we've retrieved all the data we'll sort in R using the sort the user requested</span></span>
 <span></span>
-<span><span class="va">string_fields</span> <span class="op">&lt;-</span></span>
-<span>   <span class="va">fieldsdf</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data_type</span> <span class="op">==</span> <span class="st">"string"</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">endpoint</span>, <span class="va">field</span>, <span class="va">data_type</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">`endpoint`</span>, <span class="va">`field`</span><span class="op">)</span>  </span>
-<span> </span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">string_fields</span>,  row.names <span class="op">=</span> <span class="cn">FALSE</span>, caption <span class="op">=</span> <span class="st">'String Fields'</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<caption>String Fields</caption>
-<colgroup>
-<col width="34%">
-<col width="54%">
-<col width="11%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">endpoint</th>
-<th align="left">field</th>
-<th align="left">data_type</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">assignee</td>
-<td align="left">assignee_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">assignee</td>
-<td align="left">assignee_individual_name_first</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">assignee</td>
-<td align="left">assignee_individual_name_last</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">assignee</td>
-<td align="left">assignee_lastknown_city</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">assignee</td>
-<td align="left">assignee_lastknown_country</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">assignee</td>
-<td align="left">assignee_lastknown_location</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">assignee</td>
-<td align="left">assignee_lastknown_state</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">assignee</td>
-<td align="left">assignee_organization</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">brf_sum_text</td>
-<td align="left">patent_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">brf_sum_text</td>
-<td align="left">summary_text</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">claim</td>
-<td align="left">claim_dependent</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">claim</td>
-<td align="left">claim_number</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">claim</td>
-<td align="left">claim_text</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">claim</td>
-<td align="left">patent_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">claim</td>
-<td align="left">patent_zero_prefix</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">cpc_class</td>
-<td align="left">cpc_class_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">cpc_class</td>
-<td align="left">cpc_class_title</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">cpc_group</td>
-<td align="left">cpc_class_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">cpc_group</td>
-<td align="left">cpc_group_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">cpc_group</td>
-<td align="left">cpc_group_title</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">cpc_group</td>
-<td align="left">cpc_subclass_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">cpc_subclass</td>
-<td align="left">cpc_class_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">cpc_subclass</td>
-<td align="left">cpc_subclass_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">cpc_subclass</td>
-<td align="left">cpc_subclass_title</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">detail_desc_text</td>
-<td align="left">description_text</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">detail_desc_text</td>
-<td align="left">patent_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">draw_desc_text</td>
-<td align="left">description_text</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">draw_desc_text</td>
-<td align="left">patent_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">inventor</td>
-<td align="left">inventor_gender_code</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">inventor</td>
-<td align="left">inventor_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">inventor</td>
-<td align="left">inventor_lastknown_city</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">inventor</td>
-<td align="left">inventor_lastknown_country</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">inventor</td>
-<td align="left">inventor_lastknown_location</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">inventor</td>
-<td align="left">inventor_lastknown_state</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">inventor</td>
-<td align="left">inventor_name_first</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">inventor</td>
-<td align="left">inventor_name_last</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">ipc</td>
-<td align="left">ipc_class</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">ipc</td>
-<td align="left">ipc_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">ipc</td>
-<td align="left">ipc_section</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">ipc</td>
-<td align="left">ipc_subclass</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">location</td>
-<td align="left">location_country</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">location</td>
-<td align="left">location_county</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">location</td>
-<td align="left">location_county_fips</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">location</td>
-<td align="left">location_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">location</td>
-<td align="left">location_name</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">location</td>
-<td align="left">location_place_type</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">location</td>
-<td align="left">location_state</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">location</td>
-<td align="left">location_state_fips</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">applicants.applicant_designation</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">applicants.applicant_name_first</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">applicants.applicant_name_last</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">applicants.applicant_organization</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">applicants.applicant_type</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">applicants.location_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">application.application_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">application.application_type</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">application.filing_type</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">application.series_code</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">assignees.assignee_city</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">assignees.assignee_country</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">assignees.assignee_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">assignees.assignee_individual_name_first</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">assignees.assignee_individual_name_last</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">assignees.assignee_organization</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">assignees.assignee_state</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">attorneys.attorney_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">attorneys.attorney_name_first</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">attorneys.attorney_name_last</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">attorneys.attorney_organization</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">botanic.latin_name</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">botanic.variety</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">cpc_at_issue.cpc_class_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">cpc_at_issue.cpc_group_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">cpc_at_issue.cpc_section</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">cpc_at_issue.cpc_subclass_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">cpc_at_issue.cpc_type</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">cpc_current.cpc_class_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">cpc_current.cpc_group_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">cpc_current.cpc_section</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">cpc_current.cpc_subclass_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">cpc_current.cpc_type</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">examiners.art_group</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">examiners.examiner_first_name</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">examiners.examiner_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">examiners.examiner_last_name</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">examiners.examiner_role</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">foreign_priority.foreign_application_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">foreign_priority.foreign_country_filed</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">foreign_priority.priority_claim_kind</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">gov_interest_contract_award_numbers.award_number</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">gov_interest_organizations.fedagency_name</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">gov_interest_organizations.level_one</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">gov_interest_organizations.level_three</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">gov_interest_organizations.level_two</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">gov_interest_statement</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">granted_pregrant_crosswalk.application_number</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">inventors.inventor_city</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">inventors.inventor_country</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">inventors.inventor_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">inventors.inventor_name_first</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">inventors.inventor_name_last</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">inventors.inventor_state</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">ipcr.ipc_class</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">ipcr.ipc_classification_data_source</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">ipcr.ipc_classification_value</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">ipcr.ipc_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">ipcr.ipc_main_group</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">ipcr.ipc_section</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">ipcr.ipc_subclass</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">ipcr.ipc_subgroup</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">ipcr.ipc_symbol_position</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">patent_abstract</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">patent_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">patent_title</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">patent_type</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">pct_data.application_kind</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">pct_data.pct_doc_number</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">pct_data.pct_doc_type</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">us_related_documents.published_country</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">us_related_documents.related_doc_kind</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">us_related_documents.related_doc_number</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">us_related_documents.related_doc_status</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">us_related_documents.related_doc_type</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">us_related_documents.wipo_kind</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">us_term_of_grant.term_disclaimer</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">us_term_of_grant.term_extension</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">us_term_of_grant.term_grant</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">uspc_at_issue.uspc_mainclass_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">uspc_at_issue.uspc_subclass_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent</td>
-<td align="left">wipo.wipo_field_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent</td>
-<td align="left">wipo_kind</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent/attorney</td>
-<td align="left">attorney_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent/attorney</td>
-<td align="left">attorney_name_first</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent/attorney</td>
-<td align="left">attorney_name_last</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent/attorney</td>
-<td align="left">attorney_organization</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent/foreign_citation</td>
-<td align="left">citation_category</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent/foreign_citation</td>
-<td align="left">citation_country</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent/foreign_citation</td>
-<td align="left">citation_number</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent/foreign_citation</td>
-<td align="left">patent_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent/otherreference</td>
-<td align="left">patent_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent/otherreference</td>
-<td align="left">reference_sequence</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent/otherreference</td>
-<td align="left">reference_text</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent/rel_app_text</td>
-<td align="left">patent_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent/rel_app_text</td>
-<td align="left">related_text</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent/us_application_citation</td>
-<td align="left">citation_category</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent/us_application_citation</td>
-<td align="left">citation_document_number</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent/us_application_citation</td>
-<td align="left">citation_name</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent/us_application_citation</td>
-<td align="left">citation_wipo_kind</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent/us_application_citation</td>
-<td align="left">patent_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent/us_patent_citation</td>
-<td align="left">citation_category</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent/us_patent_citation</td>
-<td align="left">citation_name</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent/us_patent_citation</td>
-<td align="left">citation_patent_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">patent/us_patent_citation</td>
-<td align="left">citation_wipo_kind</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">patent/us_patent_citation</td>
-<td align="left">patent_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">assignees.assignee_city</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">assignees.assignee_country</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">assignees.assignee_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">assignees.assignee_individual_name_first</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">assignees.assignee_individual_name_last</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">assignees.assignee_organization</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">assignees.assignee_state</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">cpc_at_issue.cpc_class_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">cpc_at_issue.cpc_group_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">cpc_at_issue.cpc_section</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">cpc_at_issue.cpc_subclass_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">cpc_at_issue.cpc_type</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">cpc_current.cpc_class_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">cpc_current.cpc_group_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">cpc_current.cpc_section</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">cpc_current.cpc_subclass_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">cpc_current.cpc_type</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">foreign_priority.foreign_application_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">foreign_priority.foreign_country_filed</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">foreign_priority.priority_claim_kind</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">gov_interest_organizations.fedagency_name</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">gov_interest_organizations.level_one</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">gov_interest_organizations.level_three</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">gov_interest_organizations.level_two</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">granted_pregrant_crosswalk.application_number</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">inventors.inventor_city</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">inventors.inventor_country</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">inventors.inventor_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">inventors.inventor_name_first</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">inventors.inventor_name_last</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">inventors.inventor_state</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">ipcr.ipc_class</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">ipcr.ipc_class_level</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">ipcr.ipc_class_status</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">ipcr.ipc_classification_data_source</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">ipcr.ipc_classification_value</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">ipcr.ipc_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">ipcr.ipc_main_group</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">ipcr.ipc_section</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">ipcr.ipc_subclass</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">ipcr.ipc_subgroup</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">ipcr.ipc_symbol_position</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">pct_data.application_kind</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">pct_data.filed_country</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">pct_data.pct_doc_number</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">pct_data.pct_doc_type</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">publication_abstract</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">publication_title</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">publication_type</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">rule_47_flag</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">us_parties.applicant_authority</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">us_parties.location_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">us_parties.us_party_designation</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">us_parties.us_party_name_first</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">us_parties.us_party_name_last</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">us_parties.us_party_organization</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">us_parties.us_party_type</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">us_related_documents.published_country</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">us_related_documents.related_doc_kind</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">us_related_documents.related_doc_number</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">us_related_documents.related_doc_type</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">uspc_at_issue.uspc_mainclass_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">uspc_at_issue.uspc_subclass_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication</td>
-<td align="left">wipo.wipo_field_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication</td>
-<td align="left">wipo.wipo_sector_title</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">publication/rel_app_text</td>
-<td align="left">document_number</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">publication/rel_app_text</td>
-<td align="left">related_text</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">uspc_mainclass</td>
-<td align="left">uspc_mainclass_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">uspc_mainclass</td>
-<td align="left">uspc_mainclass_title</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">uspc_subclass</td>
-<td align="left">uspc_mainclass_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">uspc_subclass</td>
-<td align="left">uspc_subclass_id</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">uspc_subclass</td>
-<td align="left">uspc_subclass_title</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">wipo</td>
-<td align="left">field_title</td>
-<td align="left">string</td>
-</tr>
-<tr class="even">
-<td align="left">wipo</td>
-<td align="left">sector_title</td>
-<td align="left">string</td>
-</tr>
-<tr class="odd">
-<td align="left">wipo</td>
-<td align="left">wipo_id</td>
-<td align="left">string</td>
-</tr>
-</tbody>
-</table>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<span>  <span class="co"># Doing this also protects users from needing to know the peculiarities</span></span>
+<span>  <span class="co"># of the API's paging.  Example: if a user requests a sort of</span></span>
+<span>  <span class="co"># {"patent_date":"asc"}, on paging the after parameter may skip</span></span>
+<span>  <span class="co"># to the next issue date before having retured all the data for the last</span></span>
+<span>  <span class="co"># patent_date in the previous request - depending on where the</span></span>
+<span>  <span class="co"># patent_dates change relative to the API's page breaks.</span></span>
+<span>  <span class="co"># (Say the last patent in a retrieved page is the first patent</span></span>
+<span>  <span class="co"># of a particular date, we wouldn't want the after parameter to</span></span>
+<span>  <span class="co"># to begin the next page of data after this date.)</span></span></code></pre>
+<p>See the paging discussion in this <a href="https://github.com/ropensci/patentsview/pull/29#discussion_r1059137212" class="external-link">PR</a></p>
+</div>
+<div class="section level3">
+<h3 id="string-and-full-text-operators">String and Full Text Operators <a name="operators"></a><a class="anchor" aria-label="anchor" href="#string-and-full-text-operators"></a>
+</h3>
+<p>The Tip below “Syntax” in the API’s <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#syntax" class="external-link">documentation</a>
+says</p>
+<p>When working with text data fields, wherever possible, we recommend
+using _text* operators over the _contains and _begins operator. The text
+operators treat these fields as full text data and hence are more
+performant. The “full text” fields are identified in the API Endpoint
+specification with the value “text” for the data type.</p>
+<p>Not sure if that only applies to the beta endpoints or not. Also not
+sure what to make of the result set size differences, total_hits, noting
+that no errors were thrown by the API:</p>
+<p>hitting the patent endpoint:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">query1</span> <span class="op">&lt;-</span> <span class="st">'{"_contains":{"patent_title":"dog"}}'</span></span>
+<span><span class="va">query2</span> <span class="op">&lt;-</span> <span class="st">'{"_text_any":{"patent_title":"dog"}}'</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $data</span></span>
+<span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; List of 1</span></span>
+<span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  3 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id   : chr [1:1000] "10000747" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_title: chr [1:1000] "Endoglycosidase mutants for glycoprotein re"..</span></span>
+<span><span class="co">#&gt;   ..$ patent_date : chr [1:1000] "2018-06-19" ...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $query_results</span></span>
+<span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; total_hits = 3,652</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $data</span></span>
+<span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; List of 1</span></span>
+<span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  3 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id   : chr [1:1000] "10028486" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_title: chr [1:1000] "Lightweight flexible dog shoes" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_date : chr [1:1000] "2018-07-24" ...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $query_results</span></span>
+<span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; total_hits = 2,075</span></span></code></pre></div>
+<p>hitting the brf_sum_text endpoint:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">query1</span> <span class="op">&lt;-</span> <span class="st">'{"_contains":{"summary_text":"paper cup holder"}}'</span></span>
+<span><span class="va">query2</span> <span class="op">&lt;-</span> <span class="st">'{"_text_phrase":{"summary_text":"paper cup holder"}}'</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query1</span>, endpoint<span class="op">=</span><span class="st">"brf_sum_text"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $data</span></span>
+<span><span class="co">#&gt; #### A list with a single data frame on brf_sum_texts level:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; List of 1</span></span>
+<span><span class="co">#&gt;  $ brf_sum_texts: list()</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $query_results</span></span>
+<span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; total_hits = 0</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query2</span>, endpoint<span class="op">=</span><span class="st">"brf_sum_text"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $data</span></span>
+<span><span class="co">#&gt; #### A list with a single data frame on brf_sum_texts level:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; List of 1</span></span>
+<span><span class="co">#&gt;  $ brf_sum_texts:'data.frame':   1 obs. of  3 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id      : chr "11530080"</span></span>
+<span><span class="co">#&gt;   ..$ summary_text   : chr "FIELD OF THE INVENTION\n\nThe invention relates t"..</span></span>
+<span><span class="co">#&gt;   ..$ document_number: num 2.02e+10</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $query_results</span></span>
+<span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; total_hits = 1</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="case-sensitivity-caveat">Case Sensitivity Caveat <a name="case-sensitivity-caveat"></a><a class="anchor" aria-label="anchor" href="#case-sensitivity-caveat"></a>
+</h3>
+<p>The original version of the API seemed to be case insensitive. Not
+sure if this is a bug or feature in the new version of the API but it’s
+something to be aware of.</p>
+<p>As you’ll see from the queries below, the two forms of equal now seem
+to be case senstive.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">fulltext_fields</span> <span class="op">&lt;-</span></span>
-<span>   <span class="va">fieldsdf</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data_type</span> <span class="op">==</span> <span class="st">"fulltext"</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">endpoint</span>, <span class="va">field</span>, <span class="va">data_type</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">endpoint</span>, <span class="va">field</span><span class="op">)</span>  </span>
-<span> </span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">fulltext_fields</span> ,  row.names <span class="op">=</span> <span class="cn">FALSE</span>, caption <span class="op">=</span> <span class="st">'Full Text Fields'</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<caption>Full Text Fields</caption>
-<thead><tr class="header">
-<th align="left">endpoint</th>
-<th align="left">field</th>
-<th align="left">data_type</th>
-</tr></thead>
-<tbody></tbody>
-</table>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"assignee_organization": "Johnson &amp; Johnson International"}'</span>, endpoint<span class="op">=</span><span class="st">"assignee"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span> <span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">query_results</span><span class="op">$</span><span class="va">total_hits</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1</span></span>
+<span></span>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"assignee_organization": "johnson &amp; Johnson International"}'</span>, endpoint<span class="op">=</span><span class="st">"assignee"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span> <span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">query_results</span><span class="op">$</span><span class="va">total_hits</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 0</span></span>
+<span></span>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"_eq":{"assignee_organization": "Johnson &amp; Johnson International"}}'</span>, endpoint<span class="op">=</span><span class="st">"assignee"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span> <span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">query_results</span><span class="op">$</span><span class="va">total_hits</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1</span></span>
+<span></span>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"_eq":{"assignee_organization": "johnson &amp; Johnson International"}}'</span>, endpoint<span class="op">=</span><span class="st">"assignee"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span> <span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">query_results</span><span class="op">$</span><span class="va">total_hits</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
-<h2 id="other-changes">Other Changes<a class="anchor" aria-label="anchor" href="#other-changes"></a>
+<h2 id="summary-of-the-r-package-changes">Summary of the R Package Changes <a name="r-package-changes"></a><a class="anchor" aria-label="anchor" href="#summary-of-the-r-package-changes"></a>
 </h2>
 <ul>
-<li><p>Some of the fields names changed. assignee_last_name is now
-name_last in the assignees data structure.</p></li>
-<li><p>Some fields’ types have changed, some strings in the original
-version of the API have become a full text field and some full text
-fields have becomes strings. This means you’ll need to use different
-methods when including them in your query. Example: assignee
-organization is renamed organization and is now a full text field,
-formerly it had been a string.</p></li>
-<li><p>The API’s endpoints are now singular, instead of being plural. Ex
-/patents is now /patent The returned data structures are still plural,
-ex. patents.</p></li>
-<li><p>All fields are supposed to be queryable with the new version of
-the API.</p></li>
-<li><p>The subdomain of the API changed from <a href="https://api.patentsview.org/" class="external-link uri">https://api.patentsview.org/</a> to <a href="https://search.patentsview.org" class="external-link uri">https://search.patentsview.org</a>. The R package takes care
-of this for you.</p></li>
-<li><p>Nested fields seem to need to be fully qualified in the
-f:parameter. Here are all the patents endpoint’s fields:</p></li>
+<li>The version number ought to be bumped to 1.0.0 since there are
+breaking API changes</li>
+<li>Result set size seems unbounded now. Should we warn if a query would
+return more than 100,000 rows with all_pages = TRUE?</li>
+<li>
+<a href="#throttling">API throttling</a> is handled for users.</li>
+<li>The endpoints are now singluar, patent rather than patents</li>
+<li>The API team changed how <a href="#a-note-on-paging">paging</a>
+works but this is handled for users.</li>
+<li>New methods
+<ul>
+<li>HATEOAS and sample links can be retrieved using <a href="#HATEOAS">retrieve_linked_data()</a>
+</li>
+<li>qry_funs$in_range</li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span><span class="st">"patents"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: endpoint must be one of the following: patent/us_application_citation, assignee, cpc_subclass, cpc_group, cpc_class, inventor, patent/us_patent_citation, patent, uspc_subclass, uspc_mainclass, location, patent/attorney, patent/foreign_citation, patent/rel_app_text, wipo, ipc, publication, publication/rel_app_text, brf_sum_text, claim, detail_desc_text, draw_desc_text</span></span></code></pre></div>
+</li>
+</ul>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">range_query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span>patent_date<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1970-01-01"</span>,<span class="st">"1983-02-28"</span><span class="op">)</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="co"># which will generate this, so you don't have to do it by hand</span></span>
+<span><span class="va">range_query</span> </span>
+<span><span class="co">#&gt; {"_and":[{"_gte":{"patent_date":"1970-01-01"}},{"_lte":{"patent_date":"1983-02-28"}}]}</span></span>
+<span></span>
+<span><span class="va">range_query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span>patent_year<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2010</span>, <span class="fl">2021</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># or this</span></span>
+<span><span class="va">range_query</span></span>
+<span><span class="co">#&gt; {"_and":[{"_gte":{"patent_year":2010}},{"_lte":{"patent_year":2021}}]}</span></span></code></pre></div>
+<ul>
+<li>The matched_subentities_only option went away along with subent_cnts
+and page</li>
+<li>The R package uses the subdomain and paths for the new version of
+the API</li>
+<li>A hex logo was created using GuangchuangYu’s <a href="https://github.com/GuangchuangYu/hexSticker" class="external-link">hexSticker</a>
+</li>
+<li>The original <a href="ropensci_blog_post.html">ropensci_blog_post</a> was reworked using
+the new version of the API</li>
+<li>There’s a new <a href="ropensci_tech_note.html">tech note</a> that
+could be used when the new version of the R package is ready.<br>
+</li>
+<li>get_fields and search_pv - throw a specialized error if a plural
+endpoint is passed?</li>
+<li>have get_endpoints() come back in alphabetical order?</li>
+</ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

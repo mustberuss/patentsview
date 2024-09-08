@@ -241,8 +241,8 @@ frame of nodes and a data frame of edges.</p>
 <span>  main <span class="op">=</span> <span class="st">"Citations among patent citation analysis (PCA) patents"</span></span>
 <span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/visNetwork/man/visEdges.html" class="external-link">visEdges</a></span><span class="op">(</span>arrows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>enabled <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/visNetwork/man/visIgraphLayout.html" class="external-link">visIgraphLayout</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in launch_chrome(path, args): Failed to start chrome. Error:</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/visNetwork/man/visIgraphLayout.html" class="external-link">visIgraphLayout</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="figure/citationvis-1.png"></p>
 <p>It looks like several of the patents cite patent number 6,499,026,
 perhaps indicating that this patent contains technology that is
 foundational to the field. However, when we hover over the nodes we see
@@ -405,8 +405,8 @@ filter&lt;/a&gt; for a more systematic way to filter edges.&lt;/p&gt;'><sup>3</s
 <span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/visNetwork/man/visEdges.html" class="external-link">visEdges</a></span><span class="op">(</span>color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#343434"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/visNetwork/man/visOptions.html" class="external-link">visOptions</a></span><span class="op">(</span>highlightNearest <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>enabled <span class="op">=</span> <span class="cn">TRUE</span>, degree <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/visNetwork/man/visIgraphLayout.html" class="external-link">visIgraphLayout</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in launch_chrome(path, args): Failed to start chrome. Error:</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/visNetwork/man/visIgraphLayout.html" class="external-link">visIgraphLayout</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="figure/citationvis2-1.png"></p>
 </div>
 
   </main>

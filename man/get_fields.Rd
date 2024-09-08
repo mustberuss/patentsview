@@ -30,8 +30,8 @@ entity group(s) as well (which is recommended, given the large number of
 possible fields for each endpoint).
 }
 \examples{
-# Get all assignee-level fields for the patent endpoint:
-fields <- get_fields(endpoint = "patent", groups = "assignees")
+# Get all top level (non-nested) fields for the patent endpoint:
+fields <- get_fields(endpoint = "patent", groups = "")
 
 # ...Then pass to search_pv:
 \dontrun{
@@ -42,7 +42,7 @@ search_pv(
 )
 }
 # Get all patent and assignee-level fields for the patent endpoint:
-fields <- get_fields(endpoint = "patent", groups = c("assignees", "patent"))
+fields <- get_fields(endpoint = "patent", groups = c("assignees", ""))
 
 \dontrun{
 # ...Then pass to search_pv:

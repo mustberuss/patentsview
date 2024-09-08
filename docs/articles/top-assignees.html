@@ -323,8 +323,8 @@ relate to databases.</li>
 <span>    <span class="st">"Table 1: Top assignees in 'databases'"</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pageLength <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in launch_chrome(path, args): Failed to start chrome. Error:</span></span></code></pre></div>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="figure/topdatatable-1.png"></p>
 <p><br></p>
 <p>IBM is far and away the biggest player in the field. However, we can
 see that Oracle and Salesforce.com are relatively more interested in
@@ -359,8 +359,8 @@ changed over time.</li>
 <span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_xAxis.html" class="external-link">hc_xAxis</a></span><span class="op">(</span>title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Grant year"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_yAxis.html" class="external-link">hc_yAxis</a></span><span class="op">(</span>title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Patents"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_title.html" class="external-link">hc_title</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Top five assignees in 'databases'"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_subtitle.html" class="external-link">hc_subtitle</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Yearly granted patents over time"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in launch_chrome(path, args): Failed to start chrome. Error:</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_subtitle.html" class="external-link">hc_subtitle</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Yearly granted patents over time"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="figure/topchart-1.png"></p>
 <p>It’s hard to see any clear trends in this graph. What is clear is
 that the top assignees have all been patenting in the field for many
 years.</p>
@@ -485,8 +485,8 @@ percent of the assignee’s patents that relate to databases.</p>
 <span>    x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DB patents"</span>, <span class="st">"Mean cite percentile"</span>, <span class="st">"Fraction DB patents"</span><span class="op">)</span>,</span>
 <span>    y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"{point.db_pats:.0f}"</span>,<span class="st">"{point.mean_perc:.2f}"</span>, <span class="st">"{point.frac_db_pats:.3f}"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_legend.html" class="external-link">hc_legend</a></span><span class="op">(</span>enabled <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in launch_chrome(path, args): Failed to start chrome. Error:</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_legend.html" class="external-link">hc_legend</a></span><span class="op">(</span>enabled <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="figure/tophchart-1.png"></p>
 <p><br></p>
 <p>It looks like Microsoft has relatively high values across all three
 three metrics (average citation percentile, number of database patents,

@@ -139,59 +139,56 @@
 
     
     
-<div class="section level2">
-<h2 id="necessary-script-changes">Necessary Script Changes<a class="anchor" aria-label="anchor" href="#necessary-script-changes"></a>
-</h2>
 <p>If you have a script that worked with the original R package and
 original version of the API, chances are it will need some possibly
 substantial changes before it will work with the new version of the R
 package and API.</p>
-</div>
 <div class="section level2">
-<h2 id="the-one-required-change">The One Required Change<a class="anchor" aria-label="anchor" href="#the-one-required-change"></a>
+<h2 id="required-api-key">Required API Key<a class="anchor" aria-label="anchor" href="#required-api-key"></a>
 </h2>
 <p>First off you’ll need to <a href="https://patentsview.org/apis/keyrequest" class="external-link">request an API key</a>
 and then set the environmental variable PATENTSVIEW_API_KEY to the value
 of your API key. Ex. set PATENTSVIEW_API_KEY=My_api_key Without a valid
-API key, all your calls will be rejected by the API. There would be a
-small chance that that is all that is needed to convert a simple script
-to use the new R package and new version of the API.</p>
+API key, all your calls will be rejected by the API. ## The New
+Throttling Limit Another new thing is a throttling limit. The new
+version of the API only allows an individual API key to make 45 calls
+per minute. The call that exceeds that limit is rejected but does return
+the number of seconds to wait before calls would be allowed again.
+Fortunately, the R package handles this for you! Your script will be
+chugging along and if the API should return a throttling response, the R
+package will sleep for the required number of seconds before
+automatically resending your query! The only thing you may notice,
+besides a warning message, it that the script will pause when throttled
+before it picks right back up again.</p>
 </div>
 <div class="section level2">
-<h2 id="the-new-throttling-limit">The New Throttling Limit<a class="anchor" aria-label="anchor" href="#the-new-throttling-limit"></a>
+<h2 id="philosophical-change">Philosophical Change<a class="anchor" aria-label="anchor" href="#philosophical-change"></a>
 </h2>
-<p>Another new thing is a throttling limit. The new version of the API
-only allows an individual API key to make 45 calls per minute. The call
-that exceeds that limit is rejected but does return the number of
-seconds to wait before calls would be allowed again. Fortunately, the R
-package handles this for you! Your script will be chugging along and if
-the API should return a throttling response, the R package will sleep
-for the required number of seconds before automatically resending your
-query! The only thing you may notice, besides a warning message, it that
-the script will pause when throttled before it picks right back up
-again.</p>
-<p>The new versions of the API’s endpoints are less Swiss Army
-Knife-like than before, where you could get nearly any data field from
-any endpoint. Now they have substantially lighter responses and they
+<p>The new version of the API’s endpoints are less Swiss Army Knife-like
+than before, where you could get nearly any data field from any
+endpoint. Now they have substantially lighter responses and they
 generally focus on data pertinent to that endpoint. In other words, you
-can only get uspc fields from the uspc endpoints. This may mean you’ll
-have to make multiple calls to different endpoints to get the same data
-the old version of API used to return in a single call.</p>
-<p>Take a look at the top <a href="top-assignees.html">assignees
+can only get USPC fields from the USPC endpoints or from the patent
+endpoint. This may mean you’ll have to make multiple calls to different
+endpoints to get the same data the old version of API used to return in
+a single call.</p>
+<p>Take a look at the <a href="top-assignees.html">top assignees
 application</a>. It has to blend together information from separate
 calls that used to be returned by a single call. This may push your
-dplyr knowlegde to the limit.</p>
+dplyr skills to the limit.</p>
 </div>
 <div class="section level2">
 <h2 id="changed-field-names-and-types">Changed Field Names and Types<a class="anchor" aria-label="anchor" href="#changed-field-names-and-types"></a>
 </h2>
-<p>The fields selected in the original stript may not be available from
-the new version’s endpoints. Fields like the government interests are no
-longer available (see <a href="https://patentsview.org/data-in-action/whats-new-patentsview-july-2021" class="external-link uri">https://patentsview.org/data-in-action/whats-new-patentsview-july-2021</a>).
+<p>The fields requested by the original stript or used in its query may
+not be available from the new version’s endpoints. The nber attributes
+are no longer available as the nber_subcategories endpoint was removed.
 Also, some attributes have new names, like name_last in the nested
-inventor object. Now in the fields parameter it would be specified as
-“inventor.name_last” where formerly it was “inventor_last_name” when
-using the patents endpoint.</p>
+inventor object returned by the patent endpoint. Now in the fields
+parameter it would be specified as “inventor.name_last” where formerly
+it was “inventor_last_name” when using the patent endpoint. This also
+demonstrates how nested fields need to be fully qualified in the query
+or fields parameters.</p>
 <p>Also note that some field’s types have changed, meaning you’ll need
 to use different operators within your query. Ex. assignee.organization
 is now a full text field, formerly it was a string.</p>
@@ -206,18 +203,50 @@ is now a full text field, formerly it was a string.</p>
 <span><span class="co"># now you would have to do </span></span>
 <span><span class="va">qry_funs</span><span class="op">$</span><span class="fu">text_phrase</span><span class="op">(</span>assignees.assignee_organization<span class="op">=</span><span class="st">"Rice University"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; {"_text_phrase":{"assignees.assignee_organization":"Rice University"}}</span></span></code></pre></div>
+<p>Checkout the <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints" class="external-link">API
+documentation</a> and the <a href="https://search.patentsview.org/swagger-ui/" class="external-link">Swagger UI page</a> to
+see the returned fields and their types. The same information is
+available in the <code>fieldsdf</code> data frame but it is harder to
+read.</p>
+</div>
+<div class="section level2">
+<h2 id="singular-endpoints">Singular Endpoints<a class="anchor" aria-label="anchor" href="#singular-endpoints"></a>
+</h2>
+<p>The endpoints are now singular, ex: patent where previously it was
+patents.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="../reference/get_endpoints.html">get_endpoints</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] "assignee"                       "brf_sum_text"                  </span></span>
+<span><span class="co">#&gt;  [3] "claim"                          "cpc_class"                     </span></span>
+<span><span class="co">#&gt;  [5] "cpc_group"                      "cpc_subclass"                  </span></span>
+<span><span class="co">#&gt;  [7] "detail_desc_text"               "draw_desc_text"                </span></span>
+<span><span class="co">#&gt;  [9] "inventor"                       "ipc"                           </span></span>
+<span><span class="co">#&gt; [11] "location"                       "patent"                        </span></span>
+<span><span class="co">#&gt; [13] "patent/attorney"                "patent/foreign_citation"       </span></span>
+<span><span class="co">#&gt; [15] "patent/rel_app_text"            "patent/us_application_citation"</span></span>
+<span><span class="co">#&gt; [17] "patent/us_patent_citation"      "publication"                   </span></span>
+<span><span class="co">#&gt; [19] "publication/rel_app_text"       "uspc_mainclass"                </span></span>
+<span><span class="co">#&gt; [21] "uspc_subclass"                  "wipo"</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="additions-to-the-r-package">Additions to the R Package<a class="anchor" aria-label="anchor" href="#additions-to-the-r-package"></a>
 </h2>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># There is a new in_range query function</span></span>
 <span></span>
-<span><span class="va">range</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span>patent_date<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1970-01-01"</span>,<span class="st">"1983-02-28"</span><span class="op">)</span><span class="op">)</span> </span>
+<span><span class="va">range_query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span>patent_date<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1970-01-01"</span>,<span class="st">"1983-02-28"</span><span class="op">)</span><span class="op">)</span> </span>
 <span></span>
 <span><span class="co"># which will generate this, so you don't have to do it by hand</span></span>
-<span><span class="va">range</span></span>
-<span><span class="co">#&gt; {"_and":[{"_gte":{"patent_date":"1970-01-01"}},{"_lte":{"patent_date":"1983-02-28"}}]}</span></span></code></pre></div>
+<span><span class="va">range_query</span></span>
+<span><span class="co">#&gt; {"_and":[{"_gte":{"patent_date":"1970-01-01"}},{"_lte":{"patent_date":"1983-02-28"}}]}</span></span>
+<span></span>
+<span><span class="va">range_query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span>patent_year<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2010</span>, <span class="fl">2021</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">range_query</span></span>
+<span><span class="co">#&gt; {"_and":[{"_gte":{"patent_year":2010}},{"_lte":{"patent_year":2021}}]}</span></span></code></pre></div>
+<p>Some of the endpoints now return HATEOAS links, where you make a call
+back to the API to retrieve additional data. The new method
+retrieve_linked_data() does just that.<br>
+There is a lot more about this <a href="api-changes.html#hateoas-links">here</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
