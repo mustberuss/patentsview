@@ -194,7 +194,8 @@ while($line = <$url_fh>)
                            # temp test:
                            # use the endpoint when the group is not set (non nested attribute)
                            # was $ggroup = $group eq "" ? $output_entity : $group;
-                           $ggroup = $group eq "" ? $output_endpoint : $group;
+                           # $ggroup = $group eq "" ? $output_endpoint : $group;
+                           $ggroup = $group;
 
                            # api weirdness, the entity for publication/rel_app_texts
                            # is publication/rel_app_text_applications

@@ -20,8 +20,8 @@
 #' @return A character vector with field names.
 #'
 #' @examples
-#' # Get all assignee-level fields for the patent endpoint:
-#' fields <- get_fields(endpoint = "patent", groups = "assignees")
+#' # Get all top level (non-nested) fields for the patent endpoint:
+#' fields <- get_fields(endpoint = "patent", groups = "")
 #'
 #' # ...Then pass to search_pv:
 #' \dontrun{
@@ -32,7 +32,7 @@
 #' )
 #' }
 #' # Get all patent and assignee-level fields for the patent endpoint:
-#' fields <- get_fields(endpoint = "patent", groups = c("assignees", "patent"))
+#' fields <- get_fields(endpoint = "patent", groups = c("assignees", ""))
 #'
 #' \dontrun{
 #' # ...Then pass to search_pv:
