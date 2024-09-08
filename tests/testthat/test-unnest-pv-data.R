@@ -24,12 +24,12 @@ test_that("", {
 
     # group for publication/rel_app_texts is publication/rel_app_text_publications
     # which doesn't match the endpoint as it does for the endpoints
-    g <- if (x == "publication/rel_app_texts") "publication/rel_app_text_publications" else x
+    # g <- if (x == "publication/rel_app_texts") "publication/rel_app_text_publications" else x
 
     pv_out <- search_pv(
       query = TEST_QUERIES[[x]],
       endpoint = x,
-      fields = get_fields(x, group = g) # requesting non-nested attributes
+      fields = get_fields(x, group = "") # requesting non-nested attributes
     )
     unnest_pv_data(pv_out[["data"]])
   })
@@ -43,7 +43,7 @@ test_that("", {
       pv_out <- search_pv(
         query = TEST_QUERIES[[x]],
         endpoint = x,
-        fields = get_fields(x, group = (x)) # requesting non-nested attributes
+        fields = get_fields(x, group = "") # requesting non-nested attributes
       )
     )
   })
