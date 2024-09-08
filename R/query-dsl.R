@@ -78,9 +78,8 @@ create_between_fun <- function(fun) {
 #' List of query functions
 #'
 #' A list of functions that make it easy to write PatentsView queries. See the
-#' details section below for a list of the 14 functions, as well as the
-#' \href{https://docs.ropensci.org/patentsview/articles/writing-queries.html}{writing
-#' queries vignette} for further details.
+#' details section below for a list of the 15 functions, as well as the
+#' \href{../articles/writing-queries.html}{writing queries vignette} for further details.
 #'
 #' @details
 #'
@@ -130,6 +129,13 @@ create_between_fun <- function(fun) {
 #'    \item \code{not} - The comparison is not true
 #'  }
 #'
+#' \strong{4. Convenience function} \cr
+#'
+#' There is 1 convenience function:
+#' \itemize{
+#'    \item \code{in_range} - Builds a <= x <= b query 
+#'  }
+#'
 #' @return An object of class \code{pv_query}. This is basically just a simple
 #'   list with a print method attached to it.
 #'
@@ -138,6 +144,10 @@ create_between_fun <- function(fun) {
 #'
 #' qry_funs$not(qry_funs$eq(patent_date = "2001-01-01"))
 #'
+#' qry_funs$in_range(patent_year=c(2010, 2021))
+#'
+#' qry_funs$in_range(patent_date=c("1970-01-01","1983-02-28"))
+
 #' @export
 qry_funs <- c(
   lapply2(
