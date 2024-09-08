@@ -26,13 +26,7 @@ test_that("API returns all requested groups", {
 
   mismatched_returns <- c(
      "patent",
-     "publication",
-     "patent/us_application_citation",
-     "patent/us_patent_citation",
-     "patent/attorney",
-     "patent/foreign_citation",
-     "patent/rel_app_text",  # check these?
-     "publication/rel_app_text"
+     "publication"
   ) 
 
   good_eps <- eps[!eps %in% bad_eps]
@@ -55,9 +49,19 @@ test_that("API returns all requested groups", {
     # we now need to unnest the endpoints for the comparison to work
     expected_groups <- gsub("^(patent|publication)/","", expected_groups)
 
-    # the endpoint's group is singular in expected_groups, it needs to be plural
-    # for the comparison to work
-    expected_groups <- replace(expected_groups, expected_groups==x, to_plural(x))
+
+    # for "publication/rel_app_text" the expected group is really "rel_app_text_publications"
+    # which doesn't match the endpoint
+    if(x == "publication/rel_app_text") {
+       expected_groups <- replace(expected_groups, expected_groups=="", "rel_app_text_publications")
+    }
+    else
+    {
+       # the expected group for unnested attributes would be "" in actuality the come back
+       # in an entity matching the plural form of the unnested endpoint
+       expected_groups <- replace(expected_groups, expected_groups=="", to_plural(x))
+
+    }
 
     expect_setequal(actual_groups, expected_groups)
     show_failure(expect_setequal(actual_groups, expected_groups))
@@ -88,9 +92,9 @@ test_that("API returns all requested groups", {
     # we now need to unnest the endpoints for the comparison to work
     expected_groups <- gsub("^(patent|publication)/","", expected_groups)
 
-    # in the expected groups, the endpoint's group is singular in, it needs to be plural
-    # for the comparison to work
-    expected_groups <- replace(expected_groups, expected_groups==x, to_plural(x))
+    # the expected group for unnested attributes would be "" in actuality the come back
+    # in an entity matching the plural form of the unnested endpoint
+    expected_groups <- replace(expected_groups, expected_groups=="", to_plural(x))
 
     # better way to do this?  want to expect_set_not_equal
     expect_error(
