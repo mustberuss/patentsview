@@ -223,34 +223,25 @@ Corporation—One Microsoft Way”</p>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Create a field list by getting the top level (non nested) fields</span></span>
-<span><span class="va">inv_fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"patent"</span>, groups <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
-<span></span>
+<span><span class="co"># Create a field list by getting the inventors fields</span></span>
+<span><span class="va">inv_fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"patent"</span>, groups<span class="op">=</span><span class="st">"inventors"</span><span class="op">)</span></span>
 <span><span class="co"># Pull the data</span></span>
 <span><span class="va">pv_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query</span>, fields <span class="op">=</span> <span class="va">inv_fields</span>, all_pages <span class="op">=</span> <span class="cn">TRUE</span>, per_page <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Unnest the inventor list column</span></span>
 <span><span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">pv_out</span><span class="op">$</span><span class="va">data</span>, <span class="st">"patent_id"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ patents:'data.frame': 3600 obs. of  18 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id                                                   : chr [1:36"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_title                                                : chr [1:36"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_type                                                 : chr [1:36"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_date                                                 : chr [1:36"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_year                                                 : int [1:360..</span></span>
-<span><span class="co">#&gt;   ..$ patent_abstract                                             : chr [1:36"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_cpc_current_group_average_patent_processing_days     : int [1:360..</span></span>
-<span><span class="co">#&gt;   ..$ patent_detail_desc_length                                   : int [1:360..</span></span>
-<span><span class="co">#&gt;   ..$ patent_earliest_application_date                            : chr [1:36"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_num_foreign_documents_cited                          : int [1:360..</span></span>
-<span><span class="co">#&gt;   ..$ patent_num_times_cited_by_us_patents                        : int [1:360..</span></span>
-<span><span class="co">#&gt;   ..$ patent_num_total_documents_cited                            : int [1:360..</span></span>
-<span><span class="co">#&gt;   ..$ patent_num_us_applications_cited                            : int [1:360..</span></span>
-<span><span class="co">#&gt;   ..$ patent_num_us_patents_cited                                 : int [1:360..</span></span>
-<span><span class="co">#&gt;   ..$ patent_processing_days                                      : int [1:360..</span></span>
-<span><span class="co">#&gt;   ..$ patent_term_extension                                       : int [1:360..</span></span>
-<span><span class="co">#&gt;   ..$ gov_interest_statement                                      : chr [1:360..</span></span>
-<span><span class="co">#&gt;   ..$ patent_uspc_current_mainclass_average_patent_processing_days: logi [1:36..</span></span></code></pre></div>
+<span><span class="co">#&gt; List of 2</span></span>
+<span><span class="co">#&gt;  $ inventors:'data.frame':   14533 obs. of  8 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id          : chr [1:14533] "11397055" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor           : chr [1:14533] "https://search.patentsview.org/api/"..</span></span>
+<span><span class="co">#&gt;   ..$ inventor_name_first: chr [1:14533] "Tzu-Yuan" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_name_last : chr [1:14533] "Lin" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_city      : chr [1:14533] "San Jose" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_state     : chr [1:14533] "CA" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_country   : chr [1:14533] "US" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_sequence  : int [1:14533] 1 2 ...</span></span>
+<span><span class="co">#&gt;  $ patents  :'data.frame':   3600 obs. of  1 variable:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id: chr [1:3600] "11397055" ...</span></span></code></pre></div>
 <p>Which inventors have Chicago, IL listed as their location on at least
 one patent.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;Example taken from &lt;a href="https://patentsview.org/apis/api-endpoints/inventors" class="external-link uri"&gt;https://patentsview.org/apis/api-endpoints/inventors&lt;/a&gt;.&lt;/p&gt;'><sup>1</sup></a></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
