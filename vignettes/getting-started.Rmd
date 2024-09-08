@@ -42,11 +42,11 @@ search_pv(
 #> total_hits = 5,362,291
 ```
 
-This call to `search_pv()` sends our query to the patents endpoint (the default). The API has 18 different endpoints, corresponding to 18 different entity types (application_citation, assignee, cpc_group, cpc_subgroup, cpc_subsection, inventor, location, nber_category, nber_subcategory, patent, patent_citation, uspc_mainclass and uspc_subclass).[^1] Your choice of endpoint determines which entity your query is applied to, as well as the structure of the data that is returned (more on this in the "18 endpoints for 18 entities section"). For now, let's turn our attention to the `query` parameter. 
+This call to `search_pv()` sends our query to the patents endpoint (the default). The API has 23 different endpoints, corresponding to 23 different entity types (application_citation, assignee, cpc_group, cpc_subgroup, cpc_subsection, inventor, location, nber_category, nber_subcategory, patent, patent_citation, uspc_mainclass and uspc_subclass).[^1] Your choice of endpoint determines which entity your query is applied to, as well as the structure of the data that is returned (more on this in the "23 endpoints for 23 entities section"). For now, let's turn our attention to the `query` parameter. 
 
 ## Writing queries
 
-The PatentsView query syntax is documented on their [query language page](https://patentsview.org/apis/api-query-language#query_string_format) note also the change to the Options parameter for the new version of the API mentioned on that page.[^2] However, it can be difficult to get your query right if you're writing it by hand (i.e., just writing the query in a string like `'{"_gte":{"patent_date":"2007-01-01"}}'`, as we did in the example shown above). The `patentsview` package comes with a simple domain specific language (DSL) to make writing queries a breeze. I recommend using the functions in this DSL for all but the most basic queries, especially if you're encountering errors and don't understand why. To get a feel for how it works, let's rewrite the query shown above using one of the functions in the DSL, `qry_funs$gte()`:
+The PatentsView query syntax is documented on their [query language page](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#api-query-language) note also the change to the Options parameter for the new version of the API mentioned on that page.[^2] However, it can be difficult to get your query right if you're writing it by hand (i.e., just writing the query in a string like `'{"_gte":{"patent_date":"2007-01-01"}}'`, as we did in the example shown above). The `patentsview` package comes with a simple domain specific language (DSL) to make writing queries a breeze. I recommend using the functions in this DSL for all but the most basic queries, especially if you're encountering errors and don't understand why. To get a feel for how it works, let's rewrite the query shown above using one of the functions in the DSL, `qry_funs$gte()`:
 
 
 ``` r
@@ -67,7 +67,7 @@ with_qfuns(
 #> {"_and":[{"_gte":{"patent_date":"2007-01-01"}},{"_or":[{"_text_phrase":{"patent_abstract":"computer program"}},{"_text_phrase":{"patent_abstract":"dog leash"}}]}]}
 ```
 
-Check out the [writing queries vignette](https://docs.ropensci.org/patentsview/articles/writing-queries.html) for more details on using the DSL.
+Check out the [writing queries vignette](writing-queries.html) for more details on using the DSL.
 
 ## Fields
 
@@ -107,7 +107,7 @@ head(retrvble_flds)
 ```
 See the [Swagger UI page](https://search.patentsview.org/swagger-ui/) for the API, the fields returned are listed for each endpoint in the 200 Response body sections.
 
-You can also visit an endpoint's online documentation page to see a list of its retrievable fields (e.g., see the [inventor field list table](https://patentsview.org/apis/api-endpoints/inventorsbeta#field_list)). In earlier versions of the API not all fields were queryable as they are now. The field tables for all of the endpoints can be found in the `fieldsdf` data frame, which you can load using `data("fieldsdf")` or `View(patentsview::fieldsdf)`.
+You can also visit an endpoint's online documentation page to see a list of its retrievable fields (e.g., see the [inventor field list table](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#inventor)). In earlier versions of the API not all fields were queryable as they are now. The field tables for all of the endpoints can be found in the `fieldsdf` data frame, which you can load using `data("fieldsdf")` or `View(patentsview::fieldsdf)`.
 
 **An important note: By default, PatentsView uses disambiguted versions of assignees, inventors, and locations, instead of raw data.** For example, let's say you search for all inventors whose first name is "john." The PatentsView API is going to return all of the inventors who have a preferred first name (as per the disambiguation results) of john, which may not necessarily be their raw first name. You could be getting back inventors whose first name appears on the patent as, say, "jonathan," "johnn," or even "john jay." You can search on the raw inventor names instead of the preferred names by using the fields starting with "raw" in your query (e.g., `rawinventor_first_name`). The assignee and location raw data fields are not currently being offered by the API. To see the methods behind the disambiguation process, see the [PatentsView Inventor Disambiguation Technical Workshop website](https://patentsview.org/disambiguation).
 
@@ -115,7 +115,7 @@ You can also visit an endpoint's online documentation page to see a list of its 
 
 By default, `search_pv()` returns 1,000 records per page and only gives you the first page of results. I suggest starting with something smaler, like the `per_page` = 150 below, while you're figuring out the details of your request, such as the query you want to use and the fields you want returned. Once you have those items finalized, you can use the `per_page` argument to download up to 1,000 records per page. 
 
-You can download all pages of output in one call by setting `all_pages = TRUE`. This will set `per_page` equal to 1,000 and loop over all pages of output (downloading up to 10 pages, or 10,000 records total):
+You can download all pages of output in one call by setting `all_pages = TRUE`. This will set `per_page` equal to 1,000 and loop over all pages of output:
 
 
 ``` r
@@ -138,11 +138,12 @@ search_pv(
 
 ## Entity counts
 
-Our last two calls to `search_pv()` gave the same value for `total_hits`, even though we got a lot more data from the second call. This is because the entity counts returned by the API refer to the number of distinct entities across all *downloadable pages of output*, not just the page that was returned. Downloadable pages of output is an important phrase here, as the API limits us to 10,000 records per query. For example, we got `total_patent_count = 10,000` when we searched for patents published on or after 2007, even though there are way more than 10,000 such patents. See the FAQs below for details on how to overcome the 10,000 record restriction.
+Our last two calls to `search_pv()` gave the same value for `total_hits`, even though we got a lot more data from the second call. This is because the entity counts returned by the API refer to the number of distinct entities across all *downloadable pages of output*, not just the page that was returned.
 
-## 18 endpoints for 18 entities
 
-With the recent API change, the patents endpoint supplies the basic patent data and the other endponts return more specific data for those patents.
+## 23 endpoints for 23 entities
+
+With the recent API change, the patents endpoint supplies the basic patent data and the other endpoints return more specific data for those patents.
 
 
 ``` r
@@ -233,7 +234,7 @@ Your choice of endpoint determines two things:
 
 2. **The structure of the data frame that is returned.** The first call returned a data frame on the patent level, meaning that each row corresponded to a different patent. Fields that were not on the patent level (e.g., `inventors.inventor_name_last`) were returned in list columns that are named after the entity associated with the field (e.g., the `inventors` entity).[^3] Meanwhile, the second call gave us a data frame on the inventor level (one row for each inventor) because it used the inventors endpoint.
 
-Most of the time you will want to use the patents endpoint. Note that you can still effectively filter on fields that are not at the patent-level when using the patents endpoint (e.g., you can filter on assignee name or CPC category). This is because patents are relatively low-level entities. For higher level entities like assignees, if you filter on a field that is not at the assignee-level (e.g., inventor name), the API will return data on any assignee that has at least one inventor whose name matches your search, which is probably not what you want.
+Most of the time you will want to use the patent endpoint. Note that you can still effectively filter on fields that are not at the patent-level when using the patents endpoint (e.g., you can filter on assignee name or CPC category). This is because patents are relatively low-level entities. For higher level entities like assignees, if you filter on a field that is not at the assignee-level (e.g., inventor name), the API will return data on any assignee that has at least one inventor whose name matches your search, which is probably not what you want.
 
 ## Casting fields
 
@@ -277,49 +278,11 @@ cast_pv_data(res$data)
 
 #### I'm sure my query is well formatted and correct but I keep getting an error. What's the deal?
 
-The API query syntax guidelines do not cover all of the API's behavior. Specifically, there are several things that you cannot do which are not documented on the API's webpage. The [writing queries vignette](https://docs.ropensci.org/patentsview/articles/writing-queries.html) has more details on this. You can also try the string version of your query in the API's [Swagger UI page](https://search.patentsview.org/swagger-ui/).  Its error messages can sometimes help determine the problem.
+The API query syntax guidelines do not cover all of the API's behavior. Specifically, there are several things that you cannot do which are not documented on the API's webpage. The [writing queries vignette](writing-queries.html) has more details on this. You can also try the string version of your query in the API's [Swagger UI page](https://search.patentsview.org/swagger-ui/).  Its error messages can sometimes help determine the problem.
 
 #### Does the API have any rate limiting/throttling controls?
 
 Yes, the API currently allows 45 calls per minute for each API key.  If this limit is exceeded the API will return an http status of 429 with a response header Retry-After set to the number of seconds to wait until making subsequent requests.  The R package should handle this for you.  You will need to [request an API key](https://patentsview.org/apis/keyrequest) and set the environmental variable PATENTSVIEW_API_KEY to the value of your key.
-
-#### How do I download more than 10,000 records?
-
-Your best bet is to split your query into pieces based on dates, then concatenate the results together. There is more on this in the [Converting an existing script vignette](converting-an-existing-script.html#reduced-query-size-1)
-
-For example, the below query would return more than 10,000 records for the patents endpoint:
-
-
-``` r
-query <- with_qfuns(contains(patent_title = 'game'))
-```
-
-To download all of the records associated with this query, we could split it into three pieces and make three calls to `search_pv()`, each with all_pages = TRUE:
-
-
-``` r
-query_1a <- with_qfuns(
-  and(
-    contains(patent_title = 'game'),
-    lte(patent_date = "2010-05-17")
-  )
-)
-
-query_1b <- with_qfuns(
-  and(
-    contains(patent_title = 'game'),
-    qry_funs$in_range(patent_date=c("2010-05-18", "2021-05-10"))
-  )
-)
-
-query_1c <- with_qfuns(
-  and(
-    contains(patent_title = 'game'),
-    gte(patent_date = "2021-05-11")
-  )
-)
-```
-Note that at the time this was written, the original query returned 20,521 rows.  At some point in the future query_1c could return more than 10,000 rows.  
 
 #### How do I access the data frames inside the list columns returned by `search_pv()`?
 

@@ -9,19 +9,43 @@ vignette: >
 
 
 
-## Summary of the API changes announced in 2021
- 
-In July of 2021 the Patentview API team announced upcoming API changes here https://patentsview.org/data-in-action/whats-new-patentsview-july-2021.  This page will explain the impact to the r package and any existing code.
- 
-The Patentsview API team has provided a Swagger UI page for the new version of the API at https://search.patentsview.org/swagger-ui/. It shows all the available endpoints and their responses.  Each field in the 200 response sections could be requested in the fields/f: parameter and each field is supposed to be queryable (usable in the query/q: parameter).  The Swagger UI page can be used to make requests, if you have an API key to enter in the authorization screen, more about the new API key below.  The Swagger UI definition at https://search.patentsview.org/static/openapi.json can be imported into Postman to give you a nicely loaded collection for the changed API. You'll just need to set a global variable PVIEW_KEY and set the authorization's value to {{PVIEW_KEY}} to your API key. 
+In July of 2021 the Patentview API team announced [upcoming API changes]( https://patentsview.org/data-in-action/whats-new-patentsview-july-2021).  This page will explain the changes and impact to the 
+[R package](#r-package-changes).  Note that these are **breaking changes**, existing scripts will no longer run as-is using the new version of the API and the new version of the R package.
 
-## An API Key is required
+## Summary of the API changes
+* Probably most importanly, the current shutdown date for the original version of the API
+is February 12, 2025, as communicated in the August 2024 newsletter.
+* An [API key](#api-key-required) is now required.
+* All fields can be queried now and there is seemingly [no distinction](#operators) between using string and full text operators now, with a new [case sensitivity caveat](#case-sensitivity-caveat) though.  Note that now some
+fields are returned in nested objects and would need to be fully qualified in the query/q: and 
+fields/f: paramters.  Ex. fields=c( "cpc_current.cpc_group_id") is used below.
+* A result set's size seems unbounded now, you can now retrieve more than 100,000 rows. You'd need to be careful when setting all_pages = TRUE
+as the R package will page until the entire result set is retrieved which could be a million or more rows. Ex. search_pv('{"patent_type":"utility"}', all_pages=TRUE)
+
+* Endpoint Changes
+   - nber_subcategories went away- it was an endpoint in the original verson of the API
+   - Endpoints are now singular, ex. patent not patents.  The returned entities are still plural for the most part.
+   - Now there are [23 endpoints](#endpoints), up from the original 7
+
+
+* The API team added an ultra-helpful [Swagger UI page](#swagger-ui-page).  Think of it as an online version of Postman already loaded with the API's endpoints and returns.  Note that you'll need an API key in order to make requests.
+* These options parameters went away: matched_subentities_only, subent_cnts and page (paging now uses 'after' instead of page)
+* Changes your uber-helpful R package handles for you:
+   - The API now [throttles requests](#throttling).
+   - [Paging](#a-note-on-paging) is completely different
+   - The subdomain of the API changed from https://api.patentsview.org/ to https://search.patentsview.org and the paths to the endpoints changed.  
+   - The API team changed the name of the API.  PatentsView's Search API is now the PatentSearch API, as
+announced [here](https://search.patentsview.org/docs/#naming-update). Note that the R package will retain its name.  Continue to use library(patentsview)
+
+### An API Key is required <a name="api-key-required"></a>
 Perhaps the most important change, without an API key your queries will be rejected.  Request an API key using this link: https://patentsview.org/apis/keyrequest  Once you have one, you'll need to set an environmental variable PATENTSVIEW_API_KEY to the value of your API key for the R package to use.
 
-## Philosophical Changes
-These changes are likely to break existing code.  Now there are more endpoints and each returns a smaller, more specific data structure pertinent to that endpoint. As an example, previously the inventor endpoint could return assignee information, it no longer does that.  The exception is the patents endpoint.  It now can return assignees, inventors, cpc_current along with patent specific fields. Note that now subsequent queries would have to be made to the USPC specific endpoints if you are looking for these fields.
 
-Currently there are 23 endpoints, up from the original 7.  The urls changed slightly but the R package takes care of that for you.  
+### Swagger UI Page <a name="swagger-ui-page"></a>
+The Patentsview API team has provided a Swagger UI page for the new version of the API at https://search.patentsview.org/swagger-ui/. It shows all the available endpoints and their responses.  Each field in the 200 response sections could be requested in the fields/f: parameter and each field is supposed to be queryable (usable in the query/q: parameter).  The Swagger UI page can be used to make requests, if you have an API key to enter in the authorization screen.  The Swagger UI definition at https://search.patentsview.org/static/openapi.json can be imported into Postman to give you a nicely loaded collection for the changed API. You'll just need to set a global variable PVIEW_KEY and set the authorization's value to {{PVIEW_KEY}} to your API key. 
+
+### Endpoints <a name="endpoints">
+ Now there are 23 endpoints, up from the original 7, and each returns a smaller, more specific data structure pertinent to that endpoint. As an example, previously the inventor endpoint could return assignee information, it no longer does that.  The exception is the patents endpoint.  It now can return assignees, inventors, cpc_current along with patent specific fields.  Note that some new endpoints are nested under patent/ and one is under publication/
 
 1. There are 15 totally new endpoints
    -  /api/v1/brf_sum_text/
@@ -39,39 +63,60 @@ Currently there are 23 endpoints, up from the original 7.  The urls changed slig
    -  /api/v1/publication/rel_app_text/
    -  /api/v1/publications/
    -  /api/v1/wipo/
-2. 5 of the original api's endpoints have singular names but lighter responses and fewer queryable fields as mentioned above.  
+2. Five of the original api's endpoints have singular names but lighter responses and fewer queryable fields as mentioned above.  
    -  /api/v1/assignee/
    -  /api/v1/inventor/
    -  /api/v1/location/
    -  /api/v1/patent/
    -  /api/v1/uspc_mainclass/
-3. The original cpc endpoint has a new name and there are two new cpc endpoints
+3. The original CPC endpoint has a new name and there are two new CPC endpoints
    -  /api/v1/cpc_class/
    -  /api/v1/cpc_subclass/
    -  /api/v1/cpc_group/
 4. The nber_subcategory endpoint seems to be gone now.
 
+Things to note
 
-## Data Reduction
+1. Four of the new endpoints, brf_sum_text, claims, draw_desc_text and detail_desc_text, are marked 'beta' on the Swagger UI page and their data is not fully populated.  See this [page](https://search.patentsview.org/docs/docs/Search%20API/TextEndpointStatus) to see what data is currently populated.
+1. Currently some endpoints do not return all the attributes listed in the API’s OpenAPI object. Some throw 500 errors when requested (see test-search-pv.R)
+1. There are two rel_app_text endpoints, one under patent/ and one under publication/ They return different entities, rel_app_texts (patent) and rel_app_text_publications (publication)
+1. attributes went away, some have new names. Most significantly, patent_number is now patent_id. Requesting patent_number will result in an error being thrown. Note also that the CPC related attributes have new names.
+1. Some endpoints now return [HATEOAS links](#HATEOAS)
 
-Some fields seem to have gone away, raw inventor fields, coinventor fields, patent_firstnamed fields and patent_num_claims.  There's a link to a spreadsheet of the fields returned by endpoint at the bottom of https://patentsview.org/apis/purpose though the Swagger UI page should be more current.
+### HATEOAS Links <a name="HATEOAS">
+Some of the returned fields are HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more information about that field. Slightly funky is the cpc_current's cpc_group, returned by the patents endpoint.  Here the slash in the CPC is turned into a colon.  This is a peculiarity of two of the new convience urls that shouldn't be noticable in the r package, unless you are trying to infer the USPC and CPC values from the returned urls, without actually calling back for this data.
 
-## HATEOAS
-Some of the returned fields are HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more information about that field. Slightly funky is the cpc_current's cpc_group, returned by the patents endpoint.  Here the slash in the cpc is turned into a colon.  This is a peculiarity of two of the new convience urls that shouldn't be noticable in the r package, unless you are trying to infer the uspc and cpc values from the returned urls, without actually calling back for this data.
-There is something slightly funky with these fields.  They have an _id when in the q:/query and f:/fields parameters but they are returned without the _id.  Example: cpc_group_id is returned as the HATEOAS link cpc_group. 
-
-Example link returned by the patents endpoint
-```
- "cpc_current": {
-     "cpc_group": "https://search.patentsview.org/api/v1/cpc_group/G01S7:4865/"  
-  }
-```
-Note that going to that link in a browser will result in a 403 Unauthorized, as no API key is sent.
-
-There is a new method in the R package to retrive data from the HATEOAS links, just pass the returned
-link and the R package will retrieve the data for you.  
+Here we'll call the patent endpoint to get cpc_group HATEOAS links:
+ 
 
 ``` r
+
+library(patentsview)
+
+  result <- search_pv('{"patent_id": "11530080"}', fields=c( "cpc_current.cpc_group_id"))
+
+  # as noted below, the returned attribute is cpc_group, not the requested cpc_group_id
+  print (result$data$patents$cpc_current[[1]]$cpc_group)
+#> [1] "https://search.patentsview.org/api/v1/cpc_group/B65D71:0033/"   
+#> [2] "https://search.patentsview.org/api/v1/cpc_group/B65D71:004/"    
+#> [3] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:00141/"
+#> [4] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:0029/" 
+#> [5] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:00351/"
+#> [6] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:00462/"
+#> [7] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:00481/"
+#> [8] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:0066/" 
+#> [9] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:00716/"
+```
+Note that going to these links in a browser will result in a 403 Unauthorized, as no API key is sent.
+
+There is a new method in the R package to retrive data from the HATEOAS links, just pass the returned
+link and the R package will retrieve the data for you.  You can also pass an arbitrary link that hits 
+the API.  This can be particualarly useful if you want to see what the response would be from a link
+found in the [API's documentation](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/). 
+
+
+``` r
+
 library(patentsview)
 
 pv_data <- retrieve_linked_data("https://search.patentsview.org/api/v1/cpc_group/G01S7:4865/")
@@ -96,302 +141,235 @@ if(pv_data$query_results$total_hits != 1){
    query <- qry_funs$eq("cpc_group_id" = "G01S7/4865")
    search_pv(query, endpoint = "cpc_group")
 }
+
+# Here we'll use an example url from the documentation
+# Note that going to that link in a browser will result in a 403 Unauthorized, as no API key is sent.
+retrieve_linked_data('https://search.patentsview.org/api/v1/patent/?q={"patent_id":"7861317"}')
+#> $data
+#> #### A list with a single data frame on patents level:
+#> 
+#> List of 1
+#>  $ patents:'data.frame':	1 obs. of  3 variables:
+#>   ..$ patent_id   : chr "7861317"
+#>   ..$ patent_title: chr "Nose cover"
+#>   ..$ patent_date : chr "2011-01-04"
+#> 
+#> $query_results
+#> #### Distinct entity counts across all downloadable pages of output:
+#> 
+#> total_hits = 1
 ```
 
-## Throttling
+Note that when calling the cpc_group endpoint instead of using the HATEOAS link, you'd use a slash
+instead of a colon. 
+
+
+``` r
+
+search_pv('{"cpc_group_id": "A01B1/00"}', endpoint = 'cpc_group')
+#> $data
+#> #### A list with a single data frame on cpc_groups level:
+#> 
+#> List of 1
+#>  $ cpc_groups:'data.frame':	1 obs. of  4 variables:
+#>   ..$ cpc_class      : chr "https://search.patentsview.org/api/v1/cpc_class/A"..
+#>   ..$ cpc_subclass   : chr "https://search.patentsview.org/api/v1/cpc_subclas"..
+#>   ..$ cpc_group_id   : chr "A01B1/00"
+#>   ..$ cpc_group_title: chr "Hand tools"
+#> 
+#> $query_results
+#> #### Distinct entity counts across all downloadable pages of output:
+#> 
+#> total_hits = 1
+```
+
+Slight weirdness/sleight of hand where the returned field name looses the _id of the requested field
+
+
+``` r
+  # We'll make a call to the patent endpoint to get inventor and assignee HATEOAS links
+  res <- search_pv('{"patent_id":"10000000"}',
+    fields = c("inventors.inventor_id", "assignees.assignee_id")
+  )
+
+  # but note that the fields came back without the _id
+  print(res$data$patents$assignees[[1]]$assignee) # not $assignee_id as requested
+#> [1] "https://search.patentsview.org/api/v1/assignee/aeef7c1f-e757-467f-8e07-289dc8c6ed95/"
+
+  print(res$data$patents$inventors[[1]]$inventor) # not $inventor_id as requested
+#> [1] "https://search.patentsview.org/api/v1/inventor/fl:jo_ln:marron-5/"
+```
+
+### Throttling <a name="throttling"></a>
 The API will now allow 45 requests per minute, making more requests will anger the API.  It will send back an error code with a header indicating how many seconds to wait before sending more queries.  The R package will take care of this for you.  It will sleep for the required number of seconds before resubmitting your query, seemlessly to your script.
 
-## Alpha Fields
 
-fieldsdf will show you the field types, names and endpoints in the new version of the API.  There are different operators for string and full text fields.
+### A Note on Paging <a name="a-note-on-paging">
+The API team changed how paging works and there is an important subtility that the R package  
+handles for you.  This screams for a python library so python users don't need to worry about this and 
+throttling!  Here's a comment in search-pv.R that tries to explain the danger.
+```
+  # Here we ignore the user's sort and instead have the API sort by the primary
+  # key for the requested endpoint.  This simplifies the paging's after parameter.
+  # If we call the API with more than a primary sort, the after parameter would
+  # have to be an array of all the sort fields' last values.
+  # After we've retrieved all the data we'll sort in R using the sort the user requested
+
+  # Doing this also protects users from needing to know the peculiarities
+  # of the API's paging.  Example: if a user requests a sort of
+  # {"patent_date":"asc"}, on paging the after parameter may skip
+  # to the next issue date before having retured all the data for the last
+  # patent_date in the previous request - depending on where the
+  # patent_dates change relative to the API's page breaks.
+  # (Say the last patent in a retrieved page is the first patent
+  # of a particular date, we wouldn't want the after parameter to
+  # to begin the next page of data after this date.)
+
+```
+
+See the paging discussion in this [PR](https://github.com/ropensci/patentsview/pull/29#discussion_r1059137212)
+
+### String and Full Text Operators <a name="operators">
+The Tip below "Syntax" in the API's [documentation](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#syntax) says
+
+When working with text data fields, wherever possible, we recommend using _text* operators over the 
+_contains and _begins operator. The text operators treat these fields as full text data and hence 
+are more performant. The "full text" fields are identified in the API Endpoint specification 
+with the value "text" for the data type.
+
+Not sure if that only applies to the beta endpoints or not.  Also not sure what to make of the
+result set size differences, total_hits, noting that no errors were thrown by the API:
+
+hitting the patent endpoint:
 
 ``` r
-library(knitr)
-library(dplyr)
+query1 <- '{"_contains":{"patent_title":"dog"}}'
+query2 <- '{"_text_any":{"patent_title":"dog"}}'
 
-string_fields <-
-   fieldsdf %>%
-      filter(data_type == "string")  %>%
-      select(endpoint, field, data_type) %>%
-      arrange(`endpoint`, `field`)  
- 
-kable(string_fields,  row.names = FALSE, caption = 'String Fields')
+search_pv(query1)
+#> $data
+#> #### A list with a single data frame on patents level:
+#> 
+#> List of 1
+#>  $ patents:'data.frame':	1000 obs. of  3 variables:
+#>   ..$ patent_id   : chr [1:1000] "10000747" ...
+#>   ..$ patent_title: chr [1:1000] "Endoglycosidase mutants for glycoprotein re"..
+#>   ..$ patent_date : chr [1:1000] "2018-06-19" ...
+#> 
+#> $query_results
+#> #### Distinct entity counts across all downloadable pages of output:
+#> 
+#> total_hits = 3,652
+
+search_pv(query2)
+#> $data
+#> #### A list with a single data frame on patents level:
+#> 
+#> List of 1
+#>  $ patents:'data.frame':	1000 obs. of  3 variables:
+#>   ..$ patent_id   : chr [1:1000] "10028486" ...
+#>   ..$ patent_title: chr [1:1000] "Lightweight flexible dog shoes" ...
+#>   ..$ patent_date : chr [1:1000] "2018-07-24" ...
+#> 
+#> $query_results
+#> #### Distinct entity counts across all downloadable pages of output:
+#> 
+#> total_hits = 2,075
+```
+
+hitting the brf_sum_text endpoint:
+
+``` r
+query1 <- '{"_contains":{"summary_text":"paper cup holder"}}'
+query2 <- '{"_text_phrase":{"summary_text":"paper cup holder"}}'
+
+search_pv(query1, endpoint="brf_sum_text")
+#> $data
+#> #### A list with a single data frame on brf_sum_texts level:
+#> 
+#> List of 1
+#>  $ brf_sum_texts: list()
+#> 
+#> $query_results
+#> #### Distinct entity counts across all downloadable pages of output:
+#> 
+#> total_hits = 0
+
+search_pv(query2, endpoint="brf_sum_text")
+#> $data
+#> #### A list with a single data frame on brf_sum_texts level:
+#> 
+#> List of 1
+#>  $ brf_sum_texts:'data.frame':	1 obs. of  3 variables:
+#>   ..$ patent_id      : chr "11530080"
+#>   ..$ summary_text   : chr "FIELD OF THE INVENTION\n\nThe invention relates t"..
+#>   ..$ document_number: num 2.02e+10
+#> 
+#> $query_results
+#> #### Distinct entity counts across all downloadable pages of output:
+#> 
+#> total_hits = 1
 ```
 
 
 
-Table: String Fields
+### Case Sensitivity Caveat <a name="case-sensitivity-caveat">
+The original version of the API seemed to be case insensitive.  Not sure if this is a bug or feature 
+in the new version of the API but it's something to be aware of.
 
-|endpoint                       |field                                            |data_type |
-|:------------------------------|:------------------------------------------------|:---------|
-|assignee                       |assignee_id                                      |string    |
-|assignee                       |assignee_individual_name_first                   |string    |
-|assignee                       |assignee_individual_name_last                    |string    |
-|assignee                       |assignee_lastknown_city                          |string    |
-|assignee                       |assignee_lastknown_country                       |string    |
-|assignee                       |assignee_lastknown_location                      |string    |
-|assignee                       |assignee_lastknown_state                         |string    |
-|assignee                       |assignee_organization                            |string    |
-|brf_sum_text                   |patent_id                                        |string    |
-|brf_sum_text                   |summary_text                                     |string    |
-|claim                          |claim_dependent                                  |string    |
-|claim                          |claim_number                                     |string    |
-|claim                          |claim_text                                       |string    |
-|claim                          |patent_id                                        |string    |
-|claim                          |patent_zero_prefix                               |string    |
-|cpc_class                      |cpc_class_id                                     |string    |
-|cpc_class                      |cpc_class_title                                  |string    |
-|cpc_group                      |cpc_class_id                                     |string    |
-|cpc_group                      |cpc_group_id                                     |string    |
-|cpc_group                      |cpc_group_title                                  |string    |
-|cpc_group                      |cpc_subclass_id                                  |string    |
-|cpc_subclass                   |cpc_class_id                                     |string    |
-|cpc_subclass                   |cpc_subclass_id                                  |string    |
-|cpc_subclass                   |cpc_subclass_title                               |string    |
-|detail_desc_text               |description_text                                 |string    |
-|detail_desc_text               |patent_id                                        |string    |
-|draw_desc_text                 |description_text                                 |string    |
-|draw_desc_text                 |patent_id                                        |string    |
-|inventor                       |inventor_gender_code                             |string    |
-|inventor                       |inventor_id                                      |string    |
-|inventor                       |inventor_lastknown_city                          |string    |
-|inventor                       |inventor_lastknown_country                       |string    |
-|inventor                       |inventor_lastknown_location                      |string    |
-|inventor                       |inventor_lastknown_state                         |string    |
-|inventor                       |inventor_name_first                              |string    |
-|inventor                       |inventor_name_last                               |string    |
-|ipc                            |ipc_class                                        |string    |
-|ipc                            |ipc_id                                           |string    |
-|ipc                            |ipc_section                                      |string    |
-|ipc                            |ipc_subclass                                     |string    |
-|location                       |location_country                                 |string    |
-|location                       |location_county                                  |string    |
-|location                       |location_county_fips                             |string    |
-|location                       |location_id                                      |string    |
-|location                       |location_name                                    |string    |
-|location                       |location_place_type                              |string    |
-|location                       |location_state                                   |string    |
-|location                       |location_state_fips                              |string    |
-|patent                         |applicants.applicant_designation                 |string    |
-|patent                         |applicants.applicant_name_first                  |string    |
-|patent                         |applicants.applicant_name_last                   |string    |
-|patent                         |applicants.applicant_organization                |string    |
-|patent                         |applicants.applicant_type                        |string    |
-|patent                         |applicants.location_id                           |string    |
-|patent                         |application.application_id                       |string    |
-|patent                         |application.application_type                     |string    |
-|patent                         |application.filing_type                          |string    |
-|patent                         |application.series_code                          |string    |
-|patent                         |assignees.assignee_city                          |string    |
-|patent                         |assignees.assignee_country                       |string    |
-|patent                         |assignees.assignee_id                            |string    |
-|patent                         |assignees.assignee_individual_name_first         |string    |
-|patent                         |assignees.assignee_individual_name_last          |string    |
-|patent                         |assignees.assignee_organization                  |string    |
-|patent                         |assignees.assignee_state                         |string    |
-|patent                         |attorneys.attorney_id                            |string    |
-|patent                         |attorneys.attorney_name_first                    |string    |
-|patent                         |attorneys.attorney_name_last                     |string    |
-|patent                         |attorneys.attorney_organization                  |string    |
-|patent                         |botanic.latin_name                               |string    |
-|patent                         |botanic.variety                                  |string    |
-|patent                         |cpc_at_issue.cpc_class_id                        |string    |
-|patent                         |cpc_at_issue.cpc_group_id                        |string    |
-|patent                         |cpc_at_issue.cpc_section                         |string    |
-|patent                         |cpc_at_issue.cpc_subclass_id                     |string    |
-|patent                         |cpc_at_issue.cpc_type                            |string    |
-|patent                         |cpc_current.cpc_class_id                         |string    |
-|patent                         |cpc_current.cpc_group_id                         |string    |
-|patent                         |cpc_current.cpc_section                          |string    |
-|patent                         |cpc_current.cpc_subclass_id                      |string    |
-|patent                         |cpc_current.cpc_type                             |string    |
-|patent                         |examiners.art_group                              |string    |
-|patent                         |examiners.examiner_first_name                    |string    |
-|patent                         |examiners.examiner_id                            |string    |
-|patent                         |examiners.examiner_last_name                     |string    |
-|patent                         |examiners.examiner_role                          |string    |
-|patent                         |foreign_priority.foreign_application_id          |string    |
-|patent                         |foreign_priority.foreign_country_filed           |string    |
-|patent                         |foreign_priority.priority_claim_kind             |string    |
-|patent                         |gov_interest_contract_award_numbers.award_number |string    |
-|patent                         |gov_interest_organizations.fedagency_name        |string    |
-|patent                         |gov_interest_organizations.level_one             |string    |
-|patent                         |gov_interest_organizations.level_three           |string    |
-|patent                         |gov_interest_organizations.level_two             |string    |
-|patent                         |gov_interest_statement                           |string    |
-|patent                         |granted_pregrant_crosswalk.application_number    |string    |
-|patent                         |inventors.inventor_city                          |string    |
-|patent                         |inventors.inventor_country                       |string    |
-|patent                         |inventors.inventor_id                            |string    |
-|patent                         |inventors.inventor_name_first                    |string    |
-|patent                         |inventors.inventor_name_last                     |string    |
-|patent                         |inventors.inventor_state                         |string    |
-|patent                         |ipcr.ipc_class                                   |string    |
-|patent                         |ipcr.ipc_classification_data_source              |string    |
-|patent                         |ipcr.ipc_classification_value                    |string    |
-|patent                         |ipcr.ipc_id                                      |string    |
-|patent                         |ipcr.ipc_main_group                              |string    |
-|patent                         |ipcr.ipc_section                                 |string    |
-|patent                         |ipcr.ipc_subclass                                |string    |
-|patent                         |ipcr.ipc_subgroup                                |string    |
-|patent                         |ipcr.ipc_symbol_position                         |string    |
-|patent                         |patent_abstract                                  |string    |
-|patent                         |patent_id                                        |string    |
-|patent                         |patent_title                                     |string    |
-|patent                         |patent_type                                      |string    |
-|patent                         |pct_data.application_kind                        |string    |
-|patent                         |pct_data.pct_doc_number                          |string    |
-|patent                         |pct_data.pct_doc_type                            |string    |
-|patent                         |us_related_documents.published_country           |string    |
-|patent                         |us_related_documents.related_doc_kind            |string    |
-|patent                         |us_related_documents.related_doc_number          |string    |
-|patent                         |us_related_documents.related_doc_status          |string    |
-|patent                         |us_related_documents.related_doc_type            |string    |
-|patent                         |us_related_documents.wipo_kind                   |string    |
-|patent                         |us_term_of_grant.term_disclaimer                 |string    |
-|patent                         |us_term_of_grant.term_extension                  |string    |
-|patent                         |us_term_of_grant.term_grant                      |string    |
-|patent                         |uspc_at_issue.uspc_mainclass_id                  |string    |
-|patent                         |uspc_at_issue.uspc_subclass_id                   |string    |
-|patent                         |wipo.wipo_field_id                               |string    |
-|patent                         |wipo_kind                                        |string    |
-|patent/attorney                |attorney_id                                      |string    |
-|patent/attorney                |attorney_name_first                              |string    |
-|patent/attorney                |attorney_name_last                               |string    |
-|patent/attorney                |attorney_organization                            |string    |
-|patent/foreign_citation        |citation_category                                |string    |
-|patent/foreign_citation        |citation_country                                 |string    |
-|patent/foreign_citation        |citation_number                                  |string    |
-|patent/foreign_citation        |patent_id                                        |string    |
-|patent/otherreference          |patent_id                                        |string    |
-|patent/otherreference          |reference_sequence                               |string    |
-|patent/otherreference          |reference_text                                   |string    |
-|patent/rel_app_text            |patent_id                                        |string    |
-|patent/rel_app_text            |related_text                                     |string    |
-|patent/us_application_citation |citation_category                                |string    |
-|patent/us_application_citation |citation_document_number                         |string    |
-|patent/us_application_citation |citation_name                                    |string    |
-|patent/us_application_citation |citation_wipo_kind                               |string    |
-|patent/us_application_citation |patent_id                                        |string    |
-|patent/us_patent_citation      |citation_category                                |string    |
-|patent/us_patent_citation      |citation_name                                    |string    |
-|patent/us_patent_citation      |citation_patent_id                               |string    |
-|patent/us_patent_citation      |citation_wipo_kind                               |string    |
-|patent/us_patent_citation      |patent_id                                        |string    |
-|publication                    |assignees.assignee_city                          |string    |
-|publication                    |assignees.assignee_country                       |string    |
-|publication                    |assignees.assignee_id                            |string    |
-|publication                    |assignees.assignee_individual_name_first         |string    |
-|publication                    |assignees.assignee_individual_name_last          |string    |
-|publication                    |assignees.assignee_organization                  |string    |
-|publication                    |assignees.assignee_state                         |string    |
-|publication                    |cpc_at_issue.cpc_class_id                        |string    |
-|publication                    |cpc_at_issue.cpc_group_id                        |string    |
-|publication                    |cpc_at_issue.cpc_section                         |string    |
-|publication                    |cpc_at_issue.cpc_subclass_id                     |string    |
-|publication                    |cpc_at_issue.cpc_type                            |string    |
-|publication                    |cpc_current.cpc_class_id                         |string    |
-|publication                    |cpc_current.cpc_group_id                         |string    |
-|publication                    |cpc_current.cpc_section                          |string    |
-|publication                    |cpc_current.cpc_subclass_id                      |string    |
-|publication                    |cpc_current.cpc_type                             |string    |
-|publication                    |foreign_priority.foreign_application_id          |string    |
-|publication                    |foreign_priority.foreign_country_filed           |string    |
-|publication                    |foreign_priority.priority_claim_kind             |string    |
-|publication                    |gov_interest_organizations.fedagency_name        |string    |
-|publication                    |gov_interest_organizations.level_one             |string    |
-|publication                    |gov_interest_organizations.level_three           |string    |
-|publication                    |gov_interest_organizations.level_two             |string    |
-|publication                    |granted_pregrant_crosswalk.application_number    |string    |
-|publication                    |inventors.inventor_city                          |string    |
-|publication                    |inventors.inventor_country                       |string    |
-|publication                    |inventors.inventor_id                            |string    |
-|publication                    |inventors.inventor_name_first                    |string    |
-|publication                    |inventors.inventor_name_last                     |string    |
-|publication                    |inventors.inventor_state                         |string    |
-|publication                    |ipcr.ipc_class                                   |string    |
-|publication                    |ipcr.ipc_class_level                             |string    |
-|publication                    |ipcr.ipc_class_status                            |string    |
-|publication                    |ipcr.ipc_classification_data_source              |string    |
-|publication                    |ipcr.ipc_classification_value                    |string    |
-|publication                    |ipcr.ipc_id                                      |string    |
-|publication                    |ipcr.ipc_main_group                              |string    |
-|publication                    |ipcr.ipc_section                                 |string    |
-|publication                    |ipcr.ipc_subclass                                |string    |
-|publication                    |ipcr.ipc_subgroup                                |string    |
-|publication                    |ipcr.ipc_symbol_position                         |string    |
-|publication                    |pct_data.application_kind                        |string    |
-|publication                    |pct_data.filed_country                           |string    |
-|publication                    |pct_data.pct_doc_number                          |string    |
-|publication                    |pct_data.pct_doc_type                            |string    |
-|publication                    |publication_abstract                             |string    |
-|publication                    |publication_title                                |string    |
-|publication                    |publication_type                                 |string    |
-|publication                    |rule_47_flag                                     |string    |
-|publication                    |us_parties.applicant_authority                   |string    |
-|publication                    |us_parties.location_id                           |string    |
-|publication                    |us_parties.us_party_designation                  |string    |
-|publication                    |us_parties.us_party_name_first                   |string    |
-|publication                    |us_parties.us_party_name_last                    |string    |
-|publication                    |us_parties.us_party_organization                 |string    |
-|publication                    |us_parties.us_party_type                         |string    |
-|publication                    |us_related_documents.published_country           |string    |
-|publication                    |us_related_documents.related_doc_kind            |string    |
-|publication                    |us_related_documents.related_doc_number          |string    |
-|publication                    |us_related_documents.related_doc_type            |string    |
-|publication                    |uspc_at_issue.uspc_mainclass_id                  |string    |
-|publication                    |uspc_at_issue.uspc_subclass_id                   |string    |
-|publication                    |wipo.wipo_field_id                               |string    |
-|publication                    |wipo.wipo_sector_title                           |string    |
-|publication/rel_app_text       |document_number                                  |string    |
-|publication/rel_app_text       |related_text                                     |string    |
-|uspc_mainclass                 |uspc_mainclass_id                                |string    |
-|uspc_mainclass                 |uspc_mainclass_title                             |string    |
-|uspc_subclass                  |uspc_mainclass_id                                |string    |
-|uspc_subclass                  |uspc_subclass_id                                 |string    |
-|uspc_subclass                  |uspc_subclass_title                              |string    |
-|wipo                           |field_title                                      |string    |
-|wipo                           |sector_title                                     |string    |
-|wipo                           |wipo_id                                          |string    |
-
+As you'll see from the queries below, the two forms of equal now seem to be case senstive.
 
 
 ``` r
 
-fulltext_fields <-
-   fieldsdf %>%
-      filter(data_type == "fulltext")  %>%
-      select(endpoint, field, data_type) %>%
-      arrange(endpoint, field)  
- 
-kable(fulltext_fields ,  row.names = FALSE, caption = 'Full Text Fields')
+result <- search_pv('{"assignee_organization": "Johnson & Johnson International"}', endpoint="assignee")
+print (result$query_results$total_hits)
+#> [1] 1
+
+result <- search_pv('{"assignee_organization": "johnson & Johnson International"}', endpoint="assignee")
+print (result$query_results$total_hits)
+#> [1] 0
+
+result <- search_pv('{"_eq":{"assignee_organization": "Johnson & Johnson International"}}', endpoint="assignee")
+print (result$query_results$total_hits)
+#> [1] 1
+
+result <- search_pv('{"_eq":{"assignee_organization": "johnson & Johnson International"}}', endpoint="assignee")
+print (result$query_results$total_hits)
+#> [1] 0
 ```
 
-
-
-Table: Full Text Fields
-
-|endpoint |field |data_type |
-|:--------|:-----|:---------|
-
-
-
-## Other Changes
-
-* Some of the fields names changed.  assignee_last_name is now name_last in the assignees data structure.
-
-* Some fields' types have changed, some strings in the original version of the API have become a full text field and some full text fields have becomes strings.  This means you'll need to use different methods
-when including them in your query.  Example: assignee organization is renamed organization and is now a full text field, formerly it had been a string.
-
-* The API's endpoints are now singular, instead of being plural.  Ex /patents is now /patent  The returned data structures are still plural, ex. patents.  
-
-* All fields are supposed to be queryable with the new version of the API.
-
-* The subdomain of the API changed from https://api.patentsview.org/ to https://search.patentsview.org.  The R package takes care of this for you.
-
-* Nested fields seem to need to be fully qualified in the f:parameter. Here are all the patents endpoint's fields:
+## Summary of the R Package Changes <a name="r-package-changes">
+* The version number ought to be bumped to 1.0.0 since there are breaking API changes
+* Result set size seems unbounded now.  Should we warn if a query would return more than 100,000 rows with all_pages = TRUE?
+* [API throttling](#throttling) is handled for users.
+* The endpoints are now singluar, patent rather than patents
+* The API team changed how [paging](#a-note-on-paging) works but this is handled for users.
+* New methods
+   + HATEOAS and sample links can be retrieved using [retrieve_linked_data()](#HATEOAS)
+   + qry_funs$in_range
 
 ``` r
-sort(get_fields("patents"))
-#> Error: endpoint must be one of the following: patent/us_application_citation, assignee, cpc_subclass, cpc_group, cpc_class, inventor, patent/us_patent_citation, patent, uspc_subclass, uspc_mainclass, location, patent/attorney, patent/foreign_citation, patent/rel_app_text, wipo, ipc, publication, publication/rel_app_text, brf_sum_text, claim, detail_desc_text, draw_desc_text
+range_query <- qry_funs$in_range(patent_date=c("1970-01-01","1983-02-28")) 
+
+# which will generate this, so you don't have to do it by hand
+range_query 
+#> {"_and":[{"_gte":{"patent_date":"1970-01-01"}},{"_lte":{"patent_date":"1983-02-28"}}]}
+
+range_query <- qry_funs$in_range(patent_year=c(2010, 2021))
+
+# or this
+range_query
+#> {"_and":[{"_gte":{"patent_year":2010}},{"_lte":{"patent_year":2021}}]}
 ```
+* The matched_subentities_only option went away along with subent_cnts and page
+* The R package uses the subdomain and paths for the new version of the API 
+* A hex logo was created using GuangchuangYu’s [hexSticker](https://github.com/GuangchuangYu/hexSticker)
+* The original [ropensci_blog_post](ropensci_blog_post.html) was reworked using the new version of the API
+* There's a new [tech note](ropensci_tech_note.html) that could be used when the new version of the R package is ready.  
+* get_fields and search_pv - throw a specialized error if a plural endpoint is passed?
+* have get_endpoints() come back in alphabetical order?
+
+
+
+
