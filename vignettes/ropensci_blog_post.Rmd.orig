@@ -131,12 +131,13 @@ search_pv(
 )
 ```
 
-The fields that you can retrieve depends on the endpoint that you are hitting. We've been using the "patents" endpoint thus far, so all of these are retrievable: `fieldsdf[fieldsdf$endpoint == "patents", "field"]`. You can also use `get_fields()` to list the retrievable fields for a given endpoint:
+The fields that you can retrieve depends on the endpoint that you are hitting. We've been using the "patent" endpoint thus far, so all of these are retrievable: `fieldsdf[fieldsdf$endpoint == "patent", "field"]`. You can also use `get_fields()` to list the retrievable fields for a given endpoint,
+optionally imited to specific groups of nested or top level (the "" in groups) fields
 
 ```{r}
 search_pv(
   query = qry_funs$gt(patent_year = 2007),
-  fields = get_fields(endpoint = "patent", groups = c("patent", "inventors"))
+  fields = get_fields(endpoint = "patent", groups = c("", "inventors"))
 )
 ```
 
