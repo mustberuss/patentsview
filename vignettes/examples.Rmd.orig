@@ -14,12 +14,10 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Recent API Change
-
 With the recent [API changes](api-changes.html), the patents endpoint is the main way to retrieve data. The other 
 endpoints supply additional information.  Also note that an API key is required.
 
-## Patents endpoint
+## Patent endpoint
 
 Which patents have been cited by more than 500 US patents?
 
@@ -49,10 +47,6 @@ pv_out$data$assignees$assignee_organization
 
 Where geographically have Microsoft inventors been coming from over the past few years?
 
-Note that the api currently returns no results for "Microsoft Corporation" but will return
-"Microsoft Corporation", 
-"Microsoft Corporation—One Microsoft Way"
-
 ```{r}
 # Write the query
 query <- with_qfuns(
@@ -71,20 +65,43 @@ pv_out <- search_pv(query, fields = inv_fields, all_pages = TRUE, per_page = 100
 unnest_pv_data(pv_out$data, "patent_id")
 ```
 
-Which inventors have Chicago, IL listed as their location on at least one patent.[^1]
+## Inventor Endpoint
+
+Which inventor's most recent patent has Chicago, IL listed as their location.
 
 ```{r}
 pv_out <- search_pv(
-  query = '{"_and":[{"_text_phrase": {"inventors.inventor_city":"Chicago"}},{"_text_phrase": {"inventors.inventor_state":"IL"}}]}',
-  endpoint = "patent"
+  query = '{"_and":[{"_text_phrase": {"inventor_lastknown_city":"Chicago"}},
+                    {"_text_phrase": {"inventor_lastknown_state":"IL"}}]}',
+  endpoint = "inventor"
 )
 
 pv_out
 
-if (pv_out$query_results$total_hits == 0) {
-  print("something seems to be wrong with the API")
-}
 ```
+ In the new version of the API, the behavior of this endpoint has changed.  See the similar example
+on the [legacy inventors endpoint](https://patentsview.org/apis/api-endpoints/inventors) page
+for its original behavior.
+
+We could also call the new version of the patent endpoint to find inventors who listed
+Chicago, IL as their location when applying for a patent.
+
+```{r}
+fields <- c("patent_id", get_fields('patent', groups="inventors"))
+fields
+
+query <- '{"_and":[{"_text_phrase": {"inventors.inventor_city":"Chicago"}},
+                   {"_text_phrase": {"inventors.inventor_state":"IL"}}]}'
+
+search_pv(query, fields=fields, endpoint="patent")
+
+```
+
+Note that here all the inventors on a particular patent will be returned, not just the ones whose
+location was Chicago, IL.  Also see the [Writing Queries Vignette](writing-queries.html) for more readable ways
+to write queries.
+
+## Assignee Endpoint
 
 Which assignees have an interest in beer?
 
@@ -94,5 +111,3 @@ search_pv(
   endpoint = "patent"
 )
 ```
-
-[^1]: Example taken from https://patentsview.org/apis/api-endpoints/inventors.
