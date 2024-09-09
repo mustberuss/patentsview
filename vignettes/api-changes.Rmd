@@ -136,12 +136,6 @@ pv_data
 #> 
 #> total_hits = 1
 
-if(pv_data$query_results$total_hits != 1){
-   print("something is wrong with the API.  Response should match this:")
-   query <- qry_funs$eq("cpc_group_id" = "G01S7/4865")
-   search_pv(query, endpoint = "cpc_group")
-}
-
 # Here we'll use an example url from the documentation
 # Note that going to that link in a browser will result in a 403 Unauthorized, as no API key is sent.
 retrieve_linked_data('https://search.patentsview.org/api/v1/patent/?q={"patent_id":"7861317"}')
