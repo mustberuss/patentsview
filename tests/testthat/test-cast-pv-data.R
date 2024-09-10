@@ -20,7 +20,6 @@ test_that("cast_pv_data casts patent fields as expected", {
 
   # application.rule_47_flag is received as a boolean and casting should leave it alone
   expect_true(is.logical(dat$patents$application[[1]]$rule_47_flag))
-
 })
 
 test_that("cast_pv_data casts assignee fields as expected", {
@@ -53,10 +52,9 @@ test_that("cast_pv_data casts assignee fields as expected", {
   expect_true(cast_date)
   expect_true(years_active)
 
-#  expect_true(date && assignee_type && years_active)
+  #  expect_true(date && assignee_type && years_active)
 })
 
 # rats, the util method would have to be public - maybe special local run?
 # iterate through the helper queries, make the call and see
 # if the return of endpoint_from_entity matches the helper endpoint
-

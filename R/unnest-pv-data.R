@@ -18,32 +18,30 @@
 #'
 #' @export
 get_ok_pk <- function(endpoint) {
+  # most of the nested endpoints use patent_id, except patent/attorney uses "attorney_id"
+  # publications (unnested) uses document_number
+  use_document_number <- c(
+    # if endpoint is passed
+    "publication", "publication/rel_app_text",
 
-# most of the nested endpoints use patent_id, except patent/attorney uses "attorney_id"
-# publications (unnested) uses document_number
-use_document_number <- c(
-  # if endpoint is passed
-  "publication", "publication/rel_app_text",
+    # if names(pv_out[["data"]]) passed
+    "publications", "rel_app_text_publications"
+  )
 
-  # if names(pv_out[["data"]]) passed
-  "publications", "rel_app_text_publications"
-)
+  use_patent_id <- c(
+    # if endpoint passed
+    "patent/us_application_citation", "patent/us_patent_citation",
+    "patent/rel_app_text", "patent/foreign_citation", "patent/rel_app_text",
+    "publication/rel_app_text",
 
-use_patent_id <- c(
-  # if endpoint passed
-  "patent/us_application_citation", "patent/us_patent_citation",
-  "patent/rel_app_text", "patent/foreign_citation", "patent/rel_app_text",
-  "publication/rel_app_text",
-
-  # if names(pv_out[["data"]]) passed
-  "us_application_citations", "us_patent_citations", "foreign_citations",
-  "rel_app_texts", "patents","brf_sum_texts","detail_desc_texts", 
-  "draw_desc_texts"
-)
+    # if names(pv_out[["data"]]) passed
+    "us_application_citations", "us_patent_citations", "foreign_citations",
+    "rel_app_texts", "patents", "brf_sum_texts", "detail_desc_texts",
+    "draw_desc_texts"
+  )
   if (endpoint %in% use_document_number) {
     "document_number"
-  }
-  else if (endpoint %in% use_patent_id ) {
+  } else if (endpoint %in% use_patent_id) {
     "patent_id"
   } else {
     key <- to_singular(endpoint)
@@ -86,7 +84,6 @@ use_patent_id <- c(
 #'
 #' @export
 unnest_pv_data <- function(data, pk = get_ok_pk(names(data))) {
-
   validate_pv_data(data)
 
   df <- data[[1]]

@@ -39,14 +39,16 @@ validate_args <- function(api_key, fields, endpoint, method, page, per_page,
     all(is.numeric(per_page), length(per_page) == 1, per_page <= 1000),
     "per_page must be a numeric value less than or equal to 1,000"
   )
-  if (!is.null(sort))
+  if (!is.null(sort)) {
     asrt(
       all(
         all(names(sort) %in% fields), all(sort %in% c("asc", "desc")),
-          !is.list(sort)),
+        !is.list(sort)
+      ),
       "sort has to be a named character vector and each name has to be ",
       "specified in the field argument. See examples"
     )
+  }
 }
 
 #' @noRd

@@ -10,10 +10,10 @@ test_that("API returns expected df names for all endpoints", {
   skip_on_cran()
 
   broken_endpoints <- c(
-     "cpc_subclass",
-     "uspc_subclass",
-     "uspc_mainclass",
-     "wipo"
+    "cpc_subclass",
+    "uspc_subclass",
+    "uspc_mainclass",
+    "wipo"
   )
 
   # this will fail when the api is fixed
@@ -28,7 +28,7 @@ test_that("API returns expected df names for all endpoints", {
     )
   })
 
-  goodendpoints <- endpoints [! endpoints %in% broken_endpoints]
+  goodendpoints <- endpoints[!endpoints %in% broken_endpoints]
 
   df_names <- vapply(goodendpoints, function(x) {
     print(x)
@@ -39,13 +39,12 @@ test_that("API returns expected df names for all endpoints", {
   }, FUN.VALUE = character(1), USE.NAMES = FALSE)
 
   # remove nesting
-  plain_endpoints <- gsub("^(patent|publication)/","", goodendpoints);
+  plain_endpoints <- gsub("^(patent|publication)/", "", goodendpoints)
 
   # publication/rel_app_text's entity is rel_app_text_publications
   df_names <- gsub("rel_app_text_publication", "rel_app_text", df_names)
 
   expect_equal(plain_endpoints, df_names)
-
 })
 
 test_that("DSL-based query returns expected results", {
@@ -70,8 +69,8 @@ test_that("You can download up to 9,000+ records", {
   # Should return 9,000+ rows
   query <- with_qfuns(
     and(
-        gte(patent_date = "2021-12-13"),
-        lte(patent_date = "2021-12-24")
+      gte(patent_date = "2021-12-13"),
+      lte(patent_date = "2021-12-24")
     )
   )
   out <- search_pv(query, per_page = 1000, all_pages = TRUE)
@@ -81,8 +80,9 @@ test_that("You can download up to 9,000+ records", {
 test_that("search_pv can pull all fields for all endpoints", {
   skip_on_cran()
 
-  troubled_endpoints <- c("cpc_subclass", "location",
-     "uspc_subclass", "uspc_mainclass", "wipo", "claim", "draw_desc_text"
+  troubled_endpoints <- c(
+    "cpc_subclass", "location",
+    "uspc_subclass", "uspc_mainclass", "wipo", "claim", "draw_desc_text"
   )
 
   # these tests will fail when the API is fixed
@@ -134,18 +134,18 @@ test_that("search_pv properly URL encodes queries", {
   expect_true(phrase_search$query_results$total_hits == 1)
 
   # also test that the string operator does not matter now
-  eq_query <- with_qfuns(eq(assignee_organization = organization ))
+  eq_query <- with_qfuns(eq(assignee_organization = organization))
   eq_search <- search_pv(eq_query, endpoint = "assignee")
   expect_identical(eq_search$data, phrase_search$data)
 
   # text_phrase seems to be case insensitive but equal is not
-  organization = tolower(organization)
+  organization <- tolower(organization)
 
   text_query <- with_qfuns(text_phrase(assignee_organization = organization))
   phrase_search <- search_pv(text_query, endpoint = "assignee")
   expect_true(phrase_search$query_results$total_hits == 1)
 
-  eq_query <- with_qfuns(eq(assignee_organization = organization ))
+  eq_query <- with_qfuns(eq(assignee_organization = organization))
   eq_search <- search_pv(eq_query, endpoint = "assignee")
   expect_true(eq_search$query_results$total_hits == 0)
 })
@@ -215,12 +215,12 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
   # these currently throw Error: Internal Server Error
   broken_single_item_queries <- c(
     "cpc_subclass/A01B/",
-   "uspc_mainclass/30/",
-   "uspc_subclass/30:100/",
+    "uspc_mainclass/30/",
+    "uspc_subclass/30:100/",
     "wipo/1/"
   )
 
-  single_item_queries <-											single_item_queries [! single_item_queries %in% broken_single_item_queries]
+  single_item_queries <- single_item_queries[!single_item_queries %in% broken_single_item_queries]
 
   dev_null <- lapply(single_item_queries, function(q) {
     print(q)
@@ -232,7 +232,7 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
   # we'll know the api is fixed when this fails
   dev_null <- lapply(broken_single_item_queries, function(q) {
     expect_error(
-       j <- retrieve_linked_data(add_base_url(q))
+      j <- retrieve_linked_data(add_base_url(q))
     )
   })
 
@@ -278,10 +278,10 @@ test_that("individual fields are still broken", {
   # they are the only field requested.  Other individual fields at these
   # same endpoints throw errors.  Check fields again when these fail.
   sample_bad_fields <- c(
-    "assignee_organization" = "assignee", 
+    "assignee_organization" = "assignee",
     "inventor_lastknown_longitude" = "inventor",
-    "inventor_gender_attr_status"  = "inventor",
-    "location_name" = "location", 
+    "inventor_gender_attr_status" = "inventor",
+    "location_name" = "location",
     "attorney_name_last" = "patent/attorney",
     "citation_country" = "patent/foreign_citation",
     "ipc_id" = "ipc"

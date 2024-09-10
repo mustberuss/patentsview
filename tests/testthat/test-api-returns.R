@@ -13,21 +13,22 @@ test_that("API returns all requested groups", {
   # sort both requested fields and returned ones to see if they are equal
 
   # TODO: remove the trickery to get this test to pass, once the API is fixed
-  bad_eps <- c("cpc_subclasses"
-    , "location"        # Error: Invalid field: location_latitude
-    , "uspc_subclasse"  # Error: Internal Server Error
+  bad_eps <- c(
+    "cpc_subclasses",
+    "location" # Error: Invalid field: location_latitude
+    , "uspc_subclasse" # Error: Internal Server Error
     , "uspc_mainclass" # Error: Internal Server Error
-    , "wipo"             # Error: Internal Server Error
-    , "claim"           # Error: Invalid field: claim_dependent
-    , "draw_desc_text"  # Error: Invalid field: description_sequence
-    , "cpc_subclass"    # 404?  check the test query
-    , "uspc_subclass"   # 404
-   )
+    , "wipo" # Error: Internal Server Error
+    , "claim" # Error: Invalid field: claim_dependent
+    , "draw_desc_text" # Error: Invalid field: description_sequence
+    , "cpc_subclass" # 404?  check the test query
+    , "uspc_subclass" # 404
+  )
 
   mismatched_returns <- c(
-     "patent",
-     "publication"
-  ) 
+    "patent",
+    "publication"
+  )
 
   good_eps <- eps[!eps %in% bad_eps]
   good_eps <- good_eps[!good_eps %in% mismatched_returns]
@@ -47,20 +48,17 @@ test_that("API returns all requested groups", {
     expected_groups <- unique(fieldsdf[fieldsdf$endpoint == x, "group"])
 
     # we now need to unnest the endpoints for the comparison to work
-    expected_groups <- gsub("^(patent|publication)/","", expected_groups)
+    expected_groups <- gsub("^(patent|publication)/", "", expected_groups)
 
 
     # for "publication/rel_app_text" the expected group is really "rel_app_text_publications"
     # which doesn't match the endpoint
-    if(x == "publication/rel_app_text") {
-       expected_groups <- replace(expected_groups, expected_groups=="", "rel_app_text_publications")
-    }
-    else
-    {
-       # the expected group for unnested attributes would be "" in actuality the come back
-       # in an entity matching the plural form of the unnested endpoint
-       expected_groups <- replace(expected_groups, expected_groups=="", to_plural(x))
-
+    if (x == "publication/rel_app_text") {
+      expected_groups <- replace(expected_groups, expected_groups == "", "rel_app_text_publications")
+    } else {
+      # the expected group for unnested attributes would be "" in actuality the come back
+      # in an entity matching the plural form of the unnested endpoint
+      expected_groups <- replace(expected_groups, expected_groups == "", to_plural(x))
     }
 
     expect_setequal(actual_groups, expected_groups)
@@ -71,7 +69,7 @@ test_that("API returns all requested groups", {
   z <- lapply(bad_eps, function(x) {
     print(x)
     expect_error(
-       j <- search_pv(query = TEST_QUERIES[[x]], endpoint = x, fields = get_fields(x))
+      j <- search_pv(query = TEST_QUERIES[[x]], endpoint = x, fields = get_fields(x))
     )
   })
 
@@ -90,19 +88,18 @@ test_that("API returns all requested groups", {
     expected_groups <- unique(fieldsdf[fieldsdf$endpoint == x, "group"])
 
     # we now need to unnest the endpoints for the comparison to work
-    expected_groups <- gsub("^(patent|publication)/","", expected_groups)
+    expected_groups <- gsub("^(patent|publication)/", "", expected_groups)
 
     # the expected group for unnested attributes would be "" in actuality the come back
     # in an entity matching the plural form of the unnested endpoint
-    expected_groups <- replace(expected_groups, expected_groups=="", to_plural(x))
+    expected_groups <- replace(expected_groups, expected_groups == "", to_plural(x))
 
     # better way to do this?  want to expect_set_not_equal
     expect_error(
-       expect_setequal(actual_groups, expected_groups)
+      expect_setequal(actual_groups, expected_groups)
     )
   })
 
   # make it noticeable that all is not right with the API
   skip("Skip for API bugs") # TODO: remove when the API is fixed
-
 })

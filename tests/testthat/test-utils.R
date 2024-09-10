@@ -5,8 +5,7 @@ test_that("we can convert endpoints to their plural form and back", {
   }, FUN.VALUE = character(1), USE.NAMES = FALSE)
 
   # we now need to unnest the endpoints for the comparison to work
-  unnested_eps <- gsub("^(patent|publication)/","", eps);
+  unnested_eps <- gsub("^(patent|publication)/", "", eps)
 
   expect_equal(unnested_eps, z)
 })
-

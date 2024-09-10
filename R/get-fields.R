@@ -61,7 +61,6 @@ get_fields <- function(endpoint, groups = NULL) {
 #' @return A character vector with the names of each endpoint.
 #' @export
 get_endpoints <- function() {
-
   # now the endpoints are singular
   # note that now there are two rel_app_texts, one under patents and one under publications
   c(

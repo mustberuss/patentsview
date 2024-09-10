@@ -25,8 +25,8 @@ test_that("validate_args throws errors for all bad args", {
     class = "lifecycle_warning_deprecated"
   )
   expect_warning(
-     search_pv('{"patent_date":["1976-01-06"]}', mtchd_subent_only = NULL),
-     class = "lifecycle_warning_deprecated"
+    search_pv('{"patent_date":["1976-01-06"]}', mtchd_subent_only = NULL),
+    class = "lifecycle_warning_deprecated"
   )
   expect_error(
     search_pv('{"patent_date":["1976-01-06"]}', per_page = "50"),
@@ -46,7 +46,7 @@ test_that("validate_args throws errors for all bad args", {
   )
 
   expect_error(
-    get_fields("assignee", groups="cpc_current"),  # valid group for a different endpoint
+    get_fields("assignee", groups = "cpc_current"), # valid group for a different endpoint
     "groups"
   )
 })

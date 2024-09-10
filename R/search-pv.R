@@ -84,7 +84,6 @@ one_request <- function(method, query, base_url, arg_list, api_key, ...) {
 
     one_request(method, query, base_url, arg_list, api_key, ...)
   } else {
-
     if (httr::http_error(resp)) throw_er(resp)
 
     resp
@@ -248,7 +247,6 @@ search_pv <- function(query,
                       error_browser = NULL,
                       api_key = Sys.getenv("PATENTSVIEW_API_KEY"),
                       ...) {
-
   validate_args(api_key, fields, endpoint, method, page, per_page, sort)
   deprecate_warn_all(error_browser, subent_cnts, mtchd_subent_only)
 
@@ -269,7 +267,9 @@ search_pv <- function(query,
 
   result <- one_request(method, query, base_url, arg_list, api_key, ...)
   result <- process_resp(result)
-  if (!all_pages) return(result)
+  if (!all_pages) {
+    return(result)
+  }
 
   # Here we ignore the user's sort and instead have the API sort by the primary
   # key for the requested endpoint.  This simplifies the paging's after parameter.
@@ -291,7 +291,7 @@ search_pv <- function(query,
   # The API throws an error if the sort field is not present in the fields list
   # **Should we remember if we added the primary_sort_key and remove it before
   # returning data to the user?
-  primary_sort_key <-  get_default_sort(endpoint)
+  primary_sort_key <- get_default_sort(endpoint)
 
   if (!names(primary_sort_key) %in% fields) fields <- c(fields, names(primary_sort_key))
 
@@ -299,7 +299,7 @@ search_pv <- function(query,
   full_data <- request_apply(result, method, query, base_url, arg_list, api_key, ...)
 
   # apply the user's sort
-  data.table::setorderv(full_data, names(sort), ifelse(as.vector(sort)=="asc", 1, -1))
+  data.table::setorderv(full_data, names(sort), ifelse(as.vector(sort) == "asc", 1, -1))
   result$data[[1]] <- full_data
 
   result
@@ -321,41 +321,41 @@ search_pv <- function(query,
 #'
 #' retrieve_linked_data(
 #'   "https://search.patentsview.org/api/v1/cpc_group/G01S7:4811/"
-#'  )
+#' )
 #'
 #' retrieve_linked_data(
 #'   'https://search.patentsview.org/api/v1/patent/?q={"_text_any":{"patent_title":"COBOL cotton gin"}}&s=[{"patent_id": "asc" }]&o={"size":50}&f=["inventors.inventor_name_last","patent_id","patent_date","patent_title"]'
-#'  )
+#' )
 #' }
 #'
 #' @export
 retrieve_linked_data <- function(url,
                                  api_key = Sys.getenv("PATENTSVIEW_API_KEY"),
-                                 ...
-                                ) {
-
+                                 ...) {
   # There wouldn't be url parameters on a HATEOAS link but we'll also accept
   # example urls from the documentation, where there could be parameters
   url_peices <- httr::parse_url(url)
   params <- list()
-  query <- ''
+  query <- ""
 
-  if(!is.null(url_peices$query))
-  {
-     url = paste0(url_peices$scheme,'://',url_peices$hostname, '/', url_peices$path)
+  if (!is.null(url_peices$query)) {
+    url <- paste0(url_peices$scheme, "://", url_peices$hostname, "/", url_peices$path)
 
-     # need to change f to fields, s to sort and o to opts 
-     # probably a whizbangy better way to do this in R
-     if(!is.null(url_peices$query$f))
-        params$fields = jsonlite::fromJSON(url_peices$query$f)
+    # need to change f to fields, s to sort and o to opts
+    # probably a whizbangy better way to do this in R
+    if (!is.null(url_peices$query$f)) {
+      params$fields <- jsonlite::fromJSON(url_peices$query$f)
+    }
 
-     if(!is.null(url_peices$query$s))
-        params$sort = jsonlite::fromJSON(url_peices$query$s)
+    if (!is.null(url_peices$query$s)) {
+      params$sort <- jsonlite::fromJSON(url_peices$query$s)
+    }
 
-     if(!is.null(url_peices$query$o))
-        params$opts = jsonlite::fromJSON(url_peices$query$o)
+    if (!is.null(url_peices$query$o)) {
+      params$opts <- jsonlite::fromJSON(url_peices$query$o)
+    }
 
-     query <- if(!is.null(url_peices$query$q)) url_peices$query$q else ''
+    query <- if (!is.null(url_peices$query$q)) url_peices$query$q else ""
   }
 
   # Only send the API key to subdomains of patentsview.org

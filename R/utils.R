@@ -54,8 +54,8 @@ to_singular <- function(plural) {
   # wipo endpoint returns singluar wipo as the entity
   # attorneys accidently works
 
-  if(plural == "wipo") {
-     singular = plural
+  if (plural == "wipo") {
+    singular <- plural
   } else if (endsWith(plural, "ies")) {
     singular <- sub("ies$", "y", plural)
   } else if (endsWith(plural, "es") && !endsWith(plural, "ees")) {
@@ -75,11 +75,10 @@ to_plural <- function(singular) {
   singular <- sub("^patent/", "", singular)
   singular <- sub("^publication/", "", singular)
 
-  if(singular  == "wipo") {
-     plural = singular
-  } 
-  else if (singular == "attorney") {
-     plural <- "attorneys"
+  if (singular == "wipo") {
+    plural <- singular
+  } else if (singular == "attorney") {
+    plural <- "attorneys"
   } else if (endsWith(singular, "y")) {
     plural <- sub("y$", "ies", singular)
   } else if (endsWith(singular, "s")) {
@@ -91,22 +90,23 @@ to_plural <- function(singular) {
 
 #' @noRd
 endpoint_from_entity <- function(entity) {
-   # needed for casting to work with singular endpoints and mostly plural entities
+  # needed for casting to work with singular endpoints and mostly plural entities
 
-   if(entity == "rel_app_text_publications") {
-      "publication/rel_app_texts"
-   } else if (entity == "rel_app_text") {
-      "publication/rel_app_text"
-   } else if (entity == "other_reference") {
-      "patent/otherreference"
-   } else {
-      singular <- to_singular(entity)
+  if (entity == "rel_app_text_publications") {
+    "publication/rel_app_texts"
+  } else if (entity == "rel_app_text") {
+    "publication/rel_app_text"
+  } else if (entity == "other_reference") {
+    "patent/otherreference"
+  } else {
+    singular <- to_singular(entity)
 
-      # figure out if the endpoint is nested
-      nested <- c("attorney", "foreign_citation", "us_application_citation",
-                  "us_patent_citation", "rel_app_text")
+    # figure out if the endpoint is nested
+    nested <- c(
+      "attorney", "foreign_citation", "us_application_citation",
+      "us_patent_citation", "rel_app_text"
+    )
 
-      if(singular %in% nested) paste0("patent/", singular) else singular
-   }
+    if (singular %in% nested) paste0("patent/", singular) else singular
+  }
 }
-

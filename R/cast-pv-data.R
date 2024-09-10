@@ -6,8 +6,7 @@ get_cast_fun <- function(data_type) {
   # Some fields aren't documented, so we don't know what their data type is. Use
   # string type for these.
   if (length(data_type) != 1) data_type <- "string"
-  switch(
-    data_type,
+  switch(data_type,
     "string" = as_is,
     "date" = as.Date,
     "float" = as.numeric,
@@ -97,7 +96,7 @@ cast_one <- function(one, name, typesdf) UseMethod("cast_one")
 cast_pv_data <- function(data) {
   validate_pv_data(data)
 
-  entity_name <- names(data)  # preserve insanity, singular/plural/nonsensical name
+  entity_name <- names(data) # preserve insanity, singular/plural/nonsensical name
   endpoint <- endpoint_from_entity(entity_name)
 
   typesdf <- fieldsdf[fieldsdf$endpoint == endpoint, c("common_name", "data_type")]
@@ -110,7 +109,7 @@ cast_pv_data <- function(data) {
 
   df[] <- list_out
   out_data <- list(x = df)
-  names(out_data) <- entity_name  # preserve entity's name
+  names(out_data) <- entity_name # preserve entity's name
 
   structure(
     out_data,

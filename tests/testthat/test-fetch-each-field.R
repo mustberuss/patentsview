@@ -29,29 +29,30 @@ test_that("each field in fieldsdf can be retrieved", {
 
           # see if the field actually came back - a fair amount don't come back
           # make sure pv_out$query_results$total_hits >= 1 first
-          if(pv_out$query_results$total_hits == 0) 
-             print(paste(endpoint,"zero hits"))
-          else
-          {
-             found <- FALSE
-             if(! field %in% colnames(pv_out$data[[1]])) {
-                # check for the _id thing, ex requested assignee_id but got assignee back
+          if (pv_out$query_results$total_hits == 0) {
+            print(paste(endpoint, "zero hits"))
+          } else {
+            found <- FALSE
+            if (!field %in% colnames(pv_out$data[[1]])) {
+              # check for the _id thing, ex requested assignee_id but got assignee back
 
-                if(grepl("_id", field)) {
-                   idless <- sub("_id","",field)
+              if (grepl("_id", field)) {
+                idless <- sub("_id", "", field)
 
-                   found <- idless  %in% colnames(pv_out$data[[1]])
-                   if(found)
-                      print(paste("id dance on ", endpoint, field))
+                found <- idless %in% colnames(pv_out$data[[1]])
+                if (found) {
+                  print(paste("id dance on ", endpoint, field))
                 }
-                if(!found)
-                   print(paste(endpoint, field,"not returned"))
-             }
+              }
+              if (!found) {
+                print(paste(endpoint, field, "not returned"))
+              }
+            }
           }
           NA
         },
         error = function(e) {
-          print(paste("error",endpoint, field))
+          print(paste("error", endpoint, field))
           print(e)
           count <<- count + 1
           c(endpoint, field)
@@ -60,7 +61,7 @@ test_that("each field in fieldsdf can be retrieved", {
     })
   })
 
-  expect_true(count > 0)  # would fail when the API doesn't throw errors
+  expect_true(count > 0) # would fail when the API doesn't throw errors
 
   # make it noticeable that all is not right with the API
   skip("Skip for API bugs") # TODO: remove when the API is fixed

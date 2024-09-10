@@ -24,14 +24,16 @@ print.pv_data_result <- function(x, ...) {
   )
 
   utils::str(
-    x, vec.len = 1, max.level = 2, give.attr = FALSE, strict.width = "cut"
+    x,
+    vec.len = 1, max.level = 2, give.attr = FALSE, strict.width = "cut"
   )
 }
 
 #' @export
 print.pv_relay_db <- function(x, ...) {
   utils::str(
-    x, vec.len = 1, max.level = 2, give.attr = FALSE, strict.width = "cut"
+    x,
+    vec.len = 1, max.level = 2, give.attr = FALSE, strict.width = "cut"
   )
 }
 

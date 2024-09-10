@@ -17,21 +17,22 @@ test_that("API returns all requested groups", {
   # sort both requested fields and returned ones to see if they are equal
 
   # TODO: remove the trickery to get this test to pass, once the API is fixed
-  bad_eps <- c("cpc_subclasses"
-    , "location"        # Error: Invalid field: location_latitude
-    , "uspc_subclasse"  # Error: Internal Server Error
+  bad_eps <- c(
+    "cpc_subclasses",
+    "location" # Error: Invalid field: location_latitude
+    , "uspc_subclasse" # Error: Internal Server Error
     , "uspc_mainclass" # Error: Internal Server Error
-    , "wipo"             # Error: Internal Server Error
-    , "claim"           # Error: Invalid field: claim_dependent
-    , "draw_desc_text"  # Error: Invalid field: description_sequence
-    , "cpc_subclass"    # 404?  check the test query
-    , "uspc_subclass"   # 404
-   )
+    , "wipo" # Error: Internal Server Error
+    , "claim" # Error: Invalid field: claim_dependent
+    , "draw_desc_text" # Error: Invalid field: description_sequence
+    , "cpc_subclass" # 404?  check the test query
+    , "uspc_subclass" # 404
+  )
 
   mismatched_returns <- c(
-     "patent",
-     "publication"
-  ) 
+    "patent",
+    "publication"
+  )
 
   good_eps <- eps[!eps %in% bad_eps]
   good_eps <- good_eps[!good_eps %in% mismatched_returns]
@@ -51,20 +52,17 @@ test_that("API returns all requested groups", {
     expected_groups <- unique(fieldsdf[fieldsdf$endpoint == x, "group"])
 
     # we now need to unnest the endpoints for the comparison to work
-    expected_groups <- gsub("^(patent|publication)/","", expected_groups)
+    expected_groups <- gsub("^(patent|publication)/", "", expected_groups)
 
 
     # for "publication/rel_app_text" the expected group is really "rel_app_text_publications"
     # which doesn't match the endpoint
-    if(x == "publication/rel_app_text") {
-       expected_groups <- replace(expected_groups, expected_groups=="", "rel_app_text_publications")
-    }
-    else
-    {
-       # the expected group for unnested attributes would be "" in actuality the come back
-       # in an entity matching the plural form of the unnested endpoint
-       expected_groups <- replace(expected_groups, expected_groups=="", to_plural(x))
-
+    if (x == "publication/rel_app_text") {
+      expected_groups <- replace(expected_groups, expected_groups == "", "rel_app_text_publications")
+    } else {
+      # the expected group for unnested attributes would be "" in actuality the come back
+      # in an entity matching the plural form of the unnested endpoint
+      expected_groups <- replace(expected_groups, expected_groups == "", to_plural(x))
     }
 
     expect_setequal(actual_groups, expected_groups)
@@ -75,7 +73,7 @@ test_that("API returns all requested groups", {
   z <- lapply(bad_eps, function(x) {
     print(x)
     expect_error(
-       j <- search_pv(query = TEST_QUERIES[[x]], endpoint = x, fields = get_fields(x))
+      j <- search_pv(query = TEST_QUERIES[[x]], endpoint = x, fields = get_fields(x))
     )
   })
 
@@ -94,21 +92,20 @@ test_that("API returns all requested groups", {
     expected_groups <- unique(fieldsdf[fieldsdf$endpoint == x, "group"])
 
     # we now need to unnest the endpoints for the comparison to work
-    expected_groups <- gsub("^(patent|publication)/","", expected_groups)
+    expected_groups <- gsub("^(patent|publication)/", "", expected_groups)
 
     # the expected group for unnested attributes would be "" in actuality the come back
     # in an entity matching the plural form of the unnested endpoint
-    expected_groups <- replace(expected_groups, expected_groups=="", to_plural(x))
+    expected_groups <- replace(expected_groups, expected_groups == "", to_plural(x))
 
     # better way to do this?  want to expect_set_not_equal
     expect_error(
-       expect_setequal(actual_groups, expected_groups)
+      expect_setequal(actual_groups, expected_groups)
     )
   })
 
   # make it noticeable that all is not right with the API
   skip("Skip for API bugs") # TODO: remove when the API is fixed
-
 })
 
 # test-fetch-each-field.R
@@ -137,29 +134,30 @@ test_that("each field in fieldsdf can be retrieved", {
 
           # see if the field actually came back - a fair amount don't come back
           # make sure pv_out$query_results$total_hits >= 1 first
-          if(pv_out$query_results$total_hits == 0) 
-             print(paste(endpoint,"zero hits"))
-          else
-          {
-             found <- FALSE
-             if(! field %in% colnames(pv_out$data[[1]])) {
-                # check for the _id thing, ex requested assignee_id but got assignee back
+          if (pv_out$query_results$total_hits == 0) {
+            print(paste(endpoint, "zero hits"))
+          } else {
+            found <- FALSE
+            if (!field %in% colnames(pv_out$data[[1]])) {
+              # check for the _id thing, ex requested assignee_id but got assignee back
 
-                if(grepl("_id", field)) {
-                   idless <- sub("_id","",field)
+              if (grepl("_id", field)) {
+                idless <- sub("_id", "", field)
 
-                   found <- idless  %in% colnames(pv_out$data[[1]])
-                   if(found)
-                      print(paste("id dance on ", endpoint, field))
+                found <- idless %in% colnames(pv_out$data[[1]])
+                if (found) {
+                  print(paste("id dance on ", endpoint, field))
                 }
-                if(!found)
-                   print(paste(endpoint, field,"not returned"))
-             }
+              }
+              if (!found) {
+                print(paste(endpoint, field, "not returned"))
+              }
+            }
           }
           NA
         },
         error = function(e) {
-          print(paste("error",endpoint, field))
+          print(paste("error", endpoint, field))
           print(e)
           count <<- count + 1
           c(endpoint, field)
@@ -168,7 +166,7 @@ test_that("each field in fieldsdf can be retrieved", {
     })
   })
 
-  expect_true(count > 0)  # would fail when the API doesn't throw errors
+  expect_true(count > 0) # would fail when the API doesn't throw errors
 })
 
 # from test-search-pv.R
@@ -177,10 +175,10 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
 
   # these currently throw Error: Internal Server Error
   broken_single_item_queries <- c(
-   "cpc_subclass/A01B/",
-   "uspc_mainclass/30/",
-   "uspc_subclass/30:100/",
-   "wipo/1/"
+    "cpc_subclass/A01B/",
+    "uspc_mainclass/30/",
+    "uspc_subclass/30:100/",
+    "wipo/1/"
   )
 
 
@@ -188,7 +186,7 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
   # we'll know the api is fixed when this test fails
   dev_null <- lapply(broken_single_item_queries, function(q) {
     expect_error(
-       j <- retrieve_linked_data(add_base_url(q))
+      j <- retrieve_linked_data(add_base_url(q))
     )
   })
 })
@@ -202,10 +200,10 @@ test_that("individual fields are still broken", {
   # they are the only field requested.  Other individual fields at these
   # same endpoints throw errors.  Check fields again when these fail.
   sample_bad_fields <- c(
-    "assignee_organization" = "assignees", 
+    "assignee_organization" = "assignees",
     "inventor_lastknown_longitude" = "inventors",
-    "inventor_gender_code"  = "inventors",
-    "location_name" = "locations", 
+    "inventor_gender_code" = "inventors",
+    "location_name" = "locations",
     "attorney_name_last" = "patent/attorneys",
     "citation_country" = "patent/foreign_citations",
     "ipc_id" = "ipcs"
@@ -218,4 +216,3 @@ test_that("individual fields are still broken", {
     )
   })
 })
-
