@@ -78,8 +78,8 @@ qry_funs$eq(patent_date = "2001-01-01")
 
 qry_funs$not(qry_funs$eq(patent_date = "2001-01-01"))
 
-qry_funs$in_range(patent_year=c(2010, 2021))
+qry_funs$in_range(patent_year = c(2010, 2021))
 
-qry_funs$in_range(patent_date=c("1970-01-01","1983-02-28"))
+qry_funs$in_range(patent_date = c("1970-01-01", "1983-02-28"))
 }
 \keyword{datasets}
