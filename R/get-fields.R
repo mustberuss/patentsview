@@ -65,11 +65,27 @@ get_endpoints <- function() {
   # now the endpoints are singular
   # note that now there are two rel_app_texts, one under patents and one under publications
   c(
-    "patent/us_application_citation", "assignee", "cpc_subclass", "cpc_group",
-    "cpc_class", "inventor", "patent/us_patent_citation", "patent",
-    "uspc_subclass", "uspc_mainclass", "location",
-    "patent/attorney", "patent/foreign_citation", "patent/rel_app_text",
-    "wipo", "ipc", "publication", "publication/rel_app_text",
-    "brf_sum_text","claim","detail_desc_text","draw_desc_text"
+    "assignee",
+    "brf_sum_text",
+    "claim",
+    "cpc_class",
+    "cpc_group",
+    "cpc_subclass",
+    "detail_desc_text",
+    "draw_desc_text",
+    "inventor",
+    "ipc",
+    "location",
+    "patent",
+    "patent/attorney",
+    "patent/foreign_citation",
+    "patent/rel_app_text",
+    "patent/us_application_citation",
+    "patent/us_patent_citation",
+    "publication",
+    "publication/rel_app_text",
+    "uspc_mainclass",
+    "uspc_subclass",
+    "wipo"
   )
 }
