@@ -280,12 +280,12 @@ test-search-pv.R)</li>
 <li>There are two rel_app_text endpoints, one under patent/ and one
 under publication/ They return different entities, rel_app_texts
 (patent) and rel_app_text_publications (publication)</li>
-<li>attributes went away, some have new names. Most significantly,
-patent_number is now patent_id. Requesting patent_number will result in
-an error being thrown. Note also that the CPC related attributes have
-new names.</li>
 <li>Some endpoints now return <a href="#HATEOAS">HATEOAS links</a>
 </li>
+<li>Some fields went away, like the rawinventor fields, and some have
+new names, most significantly, patent_number is now patent_id.
+Requesting patent_number will result in an error being thrown. Note also
+that the CPC related fields have new names, see the next example.</li>
 </ol>
 </div>
 <div class="section level3">
@@ -298,25 +298,38 @@ endpoint. Here the slash in the CPC is turned into a colon. This is a
 peculiarity of two of the new convience urls that shouldn’t be noticable
 in the r package, unless you are trying to infer the USPC and CPC values
 from the returned urls, without actually calling back for this data.</p>
-<p>Here we’ll call the patent endpoint to get cpc_group HATEOAS
+<p>Here we’ll call the patent endpoint to get CPC fields for a
+particular patend, some of the fields, like the cpc_group, are HATEOAS
 links:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
 <span></span>
-<span>  <span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"patent_id": "11530080"}'</span>, fields<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"cpc_current.cpc_group_id"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">query</span> <span class="op">&lt;-</span> <span class="st">'{"patent_id": "11530080"}'</span></span>
+<span>  <span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'patent_id'</span>, <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span><span class="st">'patent'</span>, groups <span class="op">=</span> <span class="st">'cpc_current'</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">fields</span></span>
+<span><span class="co">#&gt; [1] "patent_id"                   "cpc_current.cpc_class_id"   </span></span>
+<span><span class="co">#&gt; [3] "cpc_current.cpc_group_id"    "cpc_current.cpc_section"    </span></span>
+<span><span class="co">#&gt; [5] "cpc_current.cpc_sequence"    "cpc_current.cpc_subclass_id"</span></span>
+<span><span class="co">#&gt; [7] "cpc_current.cpc_type"</span></span>
 <span></span>
-<span>  <span class="co"># as noted below, the returned attribute is cpc_group, not the requested cpc_group_id</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span> <span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span><span class="op">$</span><span class="va">cpc_current</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cpc_group</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/cpc_group/B65D71:0033/"   </span></span>
-<span><span class="co">#&gt; [2] "https://search.patentsview.org/api/v1/cpc_group/B65D71:004/"    </span></span>
-<span><span class="co">#&gt; [3] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:00141/"</span></span>
-<span><span class="co">#&gt; [4] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:0029/" </span></span>
-<span><span class="co">#&gt; [5] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:00351/"</span></span>
-<span><span class="co">#&gt; [6] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:00462/"</span></span>
-<span><span class="co">#&gt; [7] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:00481/"</span></span>
-<span><span class="co">#&gt; [8] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:0066/" </span></span>
-<span><span class="co">#&gt; [9] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:00716/"</span></span></code></pre></div>
+<span>  <span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query</span>, fields<span class="op">=</span><span class="va">fields</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="co"># as noted above, the CPC related fields aren't the same as they were in the</span></span>
+<span>  <span class="co"># original version of the API.  Also note that not all requested fields were</span></span>
+<span>  <span class="co"># returned and that _id-less, HATEOAS fields were returned.</span></span>
+<span>  <span class="va">unnested</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span>
+<span>  <span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">unnested</span> <span class="op">$</span><span class="va">cpc_current</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>     <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">x</span>,<span class="st">': '</span>, <span class="va">unnested</span><span class="op">$</span><span class="va">cpc_current</span><span class="op">[[</span><span class="va">x</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "patent_id: 11530080"</span></span>
+<span><span class="co">#&gt; [1] "cpc_sequence: 0"</span></span>
+<span><span class="co">#&gt; [1] "cpc_class: https://search.patentsview.org/api/v1/cpc_class/B65/"</span></span>
+<span><span class="co">#&gt; [1] "cpc_class_id: B65"</span></span>
+<span><span class="co">#&gt; [1] "cpc_subclass: https://search.patentsview.org/api/v1/cpc_subclass/B65D/"</span></span>
+<span><span class="co">#&gt; [1] "cpc_subclass_id: B65D"</span></span>
+<span><span class="co">#&gt; [1] "cpc_group: https://search.patentsview.org/api/v1/cpc_group/B65D71:0033/"</span></span>
+<span><span class="co">#&gt; [1] "cpc_group_id: B65D71/0033"</span></span></code></pre></div>
 <p>Note that going to these links in a browser will result in a 403
 Unauthorized, as no API key is sent.</p>
 <p>There is a new method in the R package to retrive data from the
@@ -405,6 +418,11 @@ indicating how many seconds to wait before sending more queries. The R
 package will take care of this for you. It will sleep for the required
 number of seconds before resubmitting your query, seemlessly to your
 script.</p>
+<p>This means that queries could take a lot longer to run now. Ex. a
+query that would return 100,000 rows would now take 3.7 hours to run as
+each request can return at most 1,000 rows.</p>
+<p>100,000 row result set -&gt; 10,000 requests x ( 1 minute/45
+requests) = 222.2 minutes = 3.7 hours</p>
 </div>
 <div class="section level3">
 <h3 id="a-note-on-paging">A Note on Paging <a name="a-note-on-paging"></a><a class="anchor" aria-label="anchor" href="#a-note-on-paging"></a>
@@ -575,16 +593,19 @@ works but this is handled for users.</li>
 and page</li>
 <li>The R package uses the subdomain and paths for the new version of
 the API</li>
-<li>A hex logo was created using GuangchuangYu’s <a href="https://github.com/GuangchuangYu/hexSticker" class="external-link">hexSticker</a>
-</li>
 <li>The original <a href="ropensci_blog_post.html">ropensci_blog_post</a> was reworked using
 the new version of the API</li>
-<li>There’s a new <a href="ropensci_tech_note.html">tech note</a> that
-could be used when the new version of the R package is ready.<br>
+<li>A hex logo was created using GuangchuangYu’s <a href="https://github.com/GuangchuangYu/hexSticker" class="external-link">hexSticker</a>
 </li>
-<li>get_fields and search_pv - throw a specialized error if a plural
-endpoint is passed?</li>
-<li>have get_endpoints() come back in alphabetical order?</li>
+</ul>
+<p>Possible Package Improvements <a name="possible-improvements"></a></p>
+<ul>
+<li>Have get_fields() and search_pv() throw a specialized error if a
+plural endpoint is passed</li>
+<li>Add an issue template that warns users not to share their API
+keys</li>
+<li>There’s a new <a href="ropensci_tech_note.html">tech note</a> that
+could be used when the new version of the R package is ready.</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

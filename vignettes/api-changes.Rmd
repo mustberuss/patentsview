@@ -80,32 +80,46 @@ Things to note
 1. Four of the new endpoints, brf_sum_text, claims, draw_desc_text and detail_desc_text, are marked 'beta' on the Swagger UI page and their data is not fully populated.  See this [page](https://search.patentsview.org/docs/docs/Search%20API/TextEndpointStatus) to see what data is currently populated.
 1. Currently some endpoints do not return all the attributes listed in the API’s OpenAPI object. Some throw 500 errors when requested (see test-search-pv.R)
 1. There are two rel_app_text endpoints, one under patent/ and one under publication/ They return different entities, rel_app_texts (patent) and rel_app_text_publications (publication)
-1. attributes went away, some have new names. Most significantly, patent_number is now patent_id. Requesting patent_number will result in an error being thrown. Note also that the CPC related attributes have new names.
 1. Some endpoints now return [HATEOAS links](#HATEOAS)
+1. Some fields went away, like the rawinventor fields, and some have new names, most significantly, patent_number is now patent_id. Requesting patent_number will result in an error being thrown. Note also that the CPC related fields have new names, see the next example.
+
 
 ### HATEOAS Links <a name="HATEOAS">
 Some of the returned fields are HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more information about that field. Slightly funky is the cpc_current's cpc_group, returned by the patents endpoint.  Here the slash in the CPC is turned into a colon.  This is a peculiarity of two of the new convience urls that shouldn't be noticable in the r package, unless you are trying to infer the USPC and CPC values from the returned urls, without actually calling back for this data.
 
-Here we'll call the patent endpoint to get cpc_group HATEOAS links:
+Here we'll call the patent endpoint to get CPC fields for a particular patend, some of
+the fields, like the cpc_group, are HATEOAS links:
  
 
 ``` r
 
 library(patentsview)
 
-  result <- search_pv('{"patent_id": "11530080"}', fields=c( "cpc_current.cpc_group_id"))
+  query <- '{"patent_id": "11530080"}'
+  fields <- c('patent_id', get_fields('patent', groups = 'cpc_current'))
+  fields
+#> [1] "patent_id"                   "cpc_current.cpc_class_id"   
+#> [3] "cpc_current.cpc_group_id"    "cpc_current.cpc_section"    
+#> [5] "cpc_current.cpc_sequence"    "cpc_current.cpc_subclass_id"
+#> [7] "cpc_current.cpc_type"
 
-  # as noted below, the returned attribute is cpc_group, not the requested cpc_group_id
-  print (result$data$patents$cpc_current[[1]]$cpc_group)
-#> [1] "https://search.patentsview.org/api/v1/cpc_group/B65D71:0033/"   
-#> [2] "https://search.patentsview.org/api/v1/cpc_group/B65D71:004/"    
-#> [3] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:00141/"
-#> [4] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:0029/" 
-#> [5] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:00351/"
-#> [6] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:00462/"
-#> [7] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:00481/"
-#> [8] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:0066/" 
-#> [9] "https://search.patentsview.org/api/v1/cpc_group/B65D2571:00716/"
+  result <- search_pv(query, fields=fields)
+
+  # as noted above, the CPC related fields aren't the same as they were in the
+  # original version of the API.  Also note that not all requested fields were
+  # returned and that _id-less, HATEOAS fields were returned.
+  unnested <- unnest_pv_data(result$data)
+  z <- lapply(names(unnested $cpc_current), function(x) {
+     print(paste0(x,': ', unnested$cpc_current[[x]][[1]]))
+  })
+#> [1] "patent_id: 11530080"
+#> [1] "cpc_sequence: 0"
+#> [1] "cpc_class: https://search.patentsview.org/api/v1/cpc_class/B65/"
+#> [1] "cpc_class_id: B65"
+#> [1] "cpc_subclass: https://search.patentsview.org/api/v1/cpc_subclass/B65D/"
+#> [1] "cpc_subclass_id: B65D"
+#> [1] "cpc_group: https://search.patentsview.org/api/v1/cpc_group/B65D71:0033/"
+#> [1] "cpc_group_id: B65D71/0033"
 ```
 Note that going to these links in a browser will result in a 403 Unauthorized, as no API key is sent.
 
@@ -196,6 +210,11 @@ Slight weirdness/sleight of hand where the returned field name looses the _id of
 
 ### Throttling <a name="throttling"></a>
 The API will now allow 45 requests per minute, making more requests will anger the API.  It will send back an error code with a header indicating how many seconds to wait before sending more queries.  The R package will take care of this for you.  It will sleep for the required number of seconds before resubmitting your query, seemlessly to your script.
+
+This means that queries could take a lot longer to run now.  Ex. a query that would 
+return 100,000 rows would now take 3.7 hours to run as each request can return at most 1,000 rows.
+
+100,000 row result set -> 10,000 requests x ( 1 minute/45 requests) = 222.2 minutes = 3.7 hours
 
 
 ### A Note on Paging <a name="a-note-on-paging">
@@ -358,12 +377,12 @@ range_query
 ```
 * The matched_subentities_only option went away along with subent_cnts and page
 * The R package uses the subdomain and paths for the new version of the API 
-* A hex logo was created using GuangchuangYu’s [hexSticker](https://github.com/GuangchuangYu/hexSticker)
 * The original [ropensci_blog_post](ropensci_blog_post.html) was reworked using the new version of the API
+* A hex logo was created using GuangchuangYu’s [hexSticker](https://github.com/GuangchuangYu/hexSticker)
+
+Possible Package Improvements <a name="possible-improvements">
+
+* Have get_fields() and search_pv() throw a specialized error if a plural endpoint is passed
+* Add an issue template that warns users not to share their API keys
 * There's a new [tech note](ropensci_tech_note.html) that could be used when the new version of the R package is ready.  
-* get_fields and search_pv - throw a specialized error if a plural endpoint is passed?
-* have get_endpoints() come back in alphabetical order?
-
-
-
 

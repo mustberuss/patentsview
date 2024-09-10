@@ -139,14 +139,10 @@
 
     
     
-<div class="section level2">
-<h2 id="important-api-change">Important API Change<a class="anchor" aria-label="anchor" href="#important-api-change"></a>
-</h2>
 <p>The new version of the API requires an API key, or all of your
 requests will be rejected. Request an API key using this link: <a href="https://patentsview.org/apis/keyrequest" class="external-link uri">https://patentsview.org/apis/keyrequest</a> Once you have
 one, you’ll need to set an environmental variable PATENTSVIEW_API_KEY to
 the value of your API key for the R package to use.</p>
-</div>
 <div class="section level2">
 <h2 id="a-basic-example">A basic example<a class="anchor" aria-label="anchor" href="#a-basic-example"></a>
 </h2>
@@ -277,12 +273,7 @@ first name is “john.” The PatentsView API is going to return all of the
 inventors who have a preferred first name (as per the disambiguation
 results) of john, which may not necessarily be their raw first name. You
 could be getting back inventors whose first name appears on the patent
-as, say, “jonathan,” “johnn,” or even “john jay.” You can search on the
-raw inventor names instead of the preferred names by using the fields
-starting with “raw” in your query (e.g.,
-<code>rawinventor_first_name</code>). The assignee and location raw data
-fields are not currently being offered by the API. To see the methods
-behind the disambiguation process, see the <a href="https://patentsview.org/disambiguation" class="external-link">PatentsView Inventor
+as, say, “jonathan,” “johnn,” or even “john jay.”, see the <a href="https://patentsview.org/disambiguation" class="external-link">PatentsView Inventor
 Disambiguation Technical Workshop website</a>.</p>
 </div>
 <div class="section level2">
