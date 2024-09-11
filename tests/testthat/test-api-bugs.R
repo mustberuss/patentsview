@@ -1,12 +1,68 @@
 
 # Tests from the other files in this directory that are masking API errors
-# This file will be submitted to the API team
+# This file was submitted to the API team as PVS-1125
 
 eps <- (get_endpoints())
 
 add_base_url <- function(x) {
   paste0("https://search.patentsview.org/api/v1/", x)
 }
+
+test_that("there is case sensitivity on string equals", {
+  skip_on_cran()
+  skip_on_ci()
+
+  # reported to the API team PVS-1147
+  # not sure if this is a bug or feature - original API was case insensitive
+  # using both forms of equals, impied and explicit
+
+  assignee <- "Johnson & Johnson International"
+  query1 <- sprintf('{"assignee_organization": \"%s\"}', assignee)
+  a <- search_pv(query1, endpoint = "assignee")
+  query2 <- qry_funs$eq(assignee_organization = assignee)
+  b <- search_pv(query2, endpoint = "assignee")
+  expect_equal(a$query_results$total_hits, 1)
+  expect_equal(b$query_results$total_hits, 1)
+
+  assignee <- tolower(assignee)
+  query1 <- sprintf('{"assignee_organization": \"%s\"}', assignee)
+  c <- search_pv(query1, endpoint = "assignee")
+  query2 <- qry_funs$eq(assignee_organization = assignee)
+  d <- search_pv(query2, endpoint = "assignee")
+  expect_equal(c$query_results$total_hits, 0)
+  expect_equal(d$query_results$total_hits, 0)
+})
+
+test_that("string vs text operators behave differently", {
+  # # reported to the API team PVS-1147
+  query <- qry_funs$begins(assignee_organization = "johnson")
+  a <- search_pv(query, endpoint = "assignee")
+
+  query <- qry_funs$text_any(assignee_organization = "johnson")
+  b <- search_pv(query, endpoint = "assignee")
+
+  expect_failure(
+    expect_equal(a$query_results$total_hits, b$query_results$total_hits)
+  )
+})
+
+test_that("the otherreferences endpoint is still broken", {
+  skip_on_cran()
+  skip_on_ci()
+
+  query <- '{"_gte":{"patent_id":"1"}}'
+
+  # reported to the API team PVS-1109
+  # otherreferences is listed in the OpenAPI object.  It isn't in get_endpoints()
+  # as it only throws errors.
+  # This test will fail when the API does not throw an error
+
+  # Currently throws a 404
+  expect_error(
+    result <- retrieve_linked_data(add_base_url(paste0("patent/otherreference/?q=", query)))
+  )
+})
+
 
 # from test-api-returns.R
 test_that("API returns all requested groups", {
@@ -98,8 +154,7 @@ test_that("API returns all requested groups", {
     # in an entity matching the plural form of the unnested endpoint
     expected_groups <- replace(expected_groups, expected_groups == "", to_plural(x))
 
-    # better way to do this?  want to expect_set_not_equal
-    expect_error(
+    expect_failure(
       expect_setequal(actual_groups, expected_groups)
     )
   })
