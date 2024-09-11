@@ -127,9 +127,13 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header">
-<img src="logo.png" class="logo" alt=""><h1 id="patentsview-">patentsview <a class="anchor" aria-label="anchor" href="#patentsview-"></a>
+<img src="logo.png" class="logo" alt=""><h1 id="patentsview">patentsview<a class="anchor" aria-label="anchor" href="#patentsview"></a>
 </h1>
 </div>
+</div>
+<div class="section level1">
+<h1 id="patentsview-">patentsview <a class="anchor" aria-label="anchor" href="#patentsview-"></a>
+</h1>
 <blockquote>
 <p>An R client to the PatentsView API</p>
 </blockquote>
@@ -148,9 +152,9 @@
 <span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"ropensci/patentsview"</span><span class="op">)</span></span></code></pre></div>
 <p>Or the R package for the new version of the API from github:</p>
-<pre><code><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"devtools"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html" class="external-link">installed.packages</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"ropensci/patentsview@api-redesign"</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="st">"devtools"</span> <span class="sc">%in%</span> <span class="fu">rownames</span>(<span class="fu">installed.packages</span>())) {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"ropensci/patentsview@api-redesign"</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <p>Or the R package for the new version of the API from r-universe:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -164,7 +168,7 @@
 <h2 id="important-api-change">Important API Change<a class="anchor" aria-label="anchor" href="#important-api-change"></a>
 </h2>
 <p>The new version of the API requires an api key, or all of your requests will be blocked. An API key can be optained <a href="https://patentsview.org/apis/keyrequest" class="external-link">here</a>. The updated R package will look for an environmental variable PATENTSVIEW_API_KEY set to the value of your key. For windows it would be</p>
-<pre><code>set PATENTSVIEW_API_KEY=my_keys_value_without quotes</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>set PATENTSVIEW_API_KEY<span class="ot">=</span>my_keys_value_without quotes</span></code></pre></div>
 <p>See <a href="articles/api-changes.html">this page</a> about the change. The navigation there will get you to the updated vignettes and reference pages.</p>
 </div>
 <div class="section level2">
@@ -194,15 +198,17 @@
 </h2>
 <p>Head over to the package’s <a href="https://docs.ropensci.org/patentsview/index.html" class="external-link">webpage</a> for more info, including:</p>
 <ul>
-<li>A <a href="articles/getting-started.html">getting started vignette</a> for first-time users. The package was also introduced in an <a href="https://ropensci.org/blog/2017/09/19/patentsview/" class="external-link">rOpenSci blog post</a>.</li>
+<li>A <a href="articles/getting-started.html">getting started vignette</a> for first-time users.</li>
 <li>An in-depth tutorial on <a href="articles/writing-queries.html">writing queries</a>
 </li>
 <li>A list of <a href="articles/examples.html">basic examples</a>
 </li>
 <li>Two examples of data applications (e.g., a brief analysis of the <a href="articles/top-assignees.html">top assignees</a> in the field of databases)</li>
 </ul>
+<p>This package was first introduced in 2017 in an <a href="https://ropensci.org/blog/2017/09/19/patentsview/" class="external-link">rOpenSci blog post</a> which used the original version of the API. The same content, reworked to use the new version of the API, is available <a href="articles/ropensci_blog_post.html">here</a>. A draft of a possible Tech Note about the new version of the API and R package is <a href="">here</a>.</p>
 </div>
 </div>
+
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
@@ -221,12 +227,6 @@
 </ul>
 </div>
 
-<div class="community">
-<h2 data-toc-skip>Community</h2>
-<ul class="list-unstyled">
-<li><a href="CONTRIBUTING.html">Contributing guide</a></li>
-</ul>
-</div>
 
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>
