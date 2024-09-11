@@ -274,11 +274,11 @@ search_pv <- function(query,
   # Here we ignore the user's sort and instead have the API sort by the primary
   # key for the requested endpoint.  This simplifies the paging's after parameter.
   # If we call the API with more than a primary sort, the after parameter would
-  # have to be an array of all the sort fields' values.
-  # After we've retrieved all the data we'll sort using the user's sort
+  # have to be an array of all the sort fields' last values.
+  # After we've retrieved all the data we'll sort in R using the sort the user requested
 
   # Doing this also protects users from needing to know the peculiarities
-  # of the API's sort.  Example: if a user requests a sort of
+  # of the API's paging.  Example: if a user requests a sort of
   # {"patent_date":"asc"}, on paging the after parameter may skip
   # to the next issue date before having retured all the data for the last
   # patent_date in the previous request - depending on where the
