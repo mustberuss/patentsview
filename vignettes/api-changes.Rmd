@@ -9,21 +9,21 @@ vignette: >
 
 
 
-In July of 2021 the Patentview API team announced [upcoming API changes]( https://patentsview.org/data-in-action/whats-new-patentsview-july-2021).  This page will explain the changes and impact to the 
-[R package](#r-package-changes).  Note that these are **breaking changes**, existing scripts will no longer run as-is using the new version of the API and the new version of the R package.
+In July of 2021 the Patentsview API team announced [upcoming API changes]( https://patentsview.org/data-in-action/whats-new-patentsview-july-2021).  This page will explain the changes and impact to the 
+[R package](#r-package-changes).  Note that these are **breaking changes**, existing scripts will no longer run as-is using the the new version of the R package which uses the new version of the API.
 
 ## Summary of the API changes
-* Probably most importanly, the current shutdown date for the original version of the API
+* Probably most importantly, the current shutdown date for the original version of the API
 is February 12, 2025, as communicated in the August 2024 newsletter.
 * An [API key](#api-key-required) is now required.
 * All fields can be queried now and there is seemingly [no distinction](#operators) between using string and full text operators now, with a new [case sensitivity caveat](#case-sensitivity-caveat) though.  Note that now some
 fields are returned in nested objects and would need to be fully qualified in the query/q: and 
-fields/f: paramters.  Ex. fields=c( "cpc_current.cpc_group_id") is used below.
+fields/f: parameters.  Ex. fields=c( "cpc_current.cpc_group_id") is used below.
 * A result set's size seems unbounded now, you can now retrieve more than 100,000 rows. You'd need to be careful when setting all_pages = TRUE
 as the R package will page until the entire result set is retrieved which could be a million or more rows. Ex. search_pv('{"patent_type":"utility"}', all_pages=TRUE)
 
 * Endpoint Changes
-   - nber_subcategories went away- it was an endpoint in the original verson of the API
+   - nber_subcategories went away- it was an endpoint in the original version of the API
    - Endpoints are now singular, ex. patent not patents.  The returned entities are still plural for the most part.
    - Now there are [23 endpoints](#endpoints), up from the original 7
 
@@ -63,7 +63,7 @@ The Patentsview API team has provided a Swagger UI page for the new version of t
    -  /api/v1/publication/rel_app_text/
    -  /api/v1/publications/
    -  /api/v1/wipo/
-2. Five of the original api's endpoints have singular names but lighter responses and fewer queryable fields as mentioned above.  
+2. Five of the original API's endpoints have singular names but lighter responses and fewer queryable fields as mentioned above.  
    -  /api/v1/assignee/
    -  /api/v1/inventor/
    -  /api/v1/location/
@@ -85,10 +85,10 @@ Things to note
 
 
 ### HATEOAS Links <a name="HATEOAS">
-Some of the returned fields are HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more information about that field. Slightly funky is the cpc_current's cpc_group, returned by the patents endpoint.  Here the slash in the CPC is turned into a colon.  This is a peculiarity of two of the new convience urls that shouldn't be noticable in the r package, unless you are trying to infer the USPC and CPC values from the returned urls, without actually calling back for this data.
+Some of the returned fields are HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more information about that field. Slightly funky is the cpc_current's cpc_group, returned by the patents endpoint.  Here the slash in the CPC is turned into a colon.  This is a peculiarity of two of the new convenience urls that shouldn't be noticeable in the r package, unless you are trying to infer the USPC and CPC values from the returned urls, without actually calling back for this data.
 
-Here we'll call the patent endpoint to get CPC fields for a particular patend, some of
-the fields, like the cpc_group, are HATEOAS links:
+Here we'll call the patent endpoint to get CPC fields for a particular patent, some of
+the returned fields, like the cpc_group, are HATEOAS links:
  
 
 ``` r
@@ -105,11 +105,11 @@ library(patentsview)
 
   result <- search_pv(query, fields=fields)
 
-  # as noted above, the CPC related fields aren't the same as they were in the
+  # As noted above, the CPC related fields aren't the same as they were in the
   # original version of the API.  Also note that not all requested fields were
   # returned and that _id-less, HATEOAS fields were returned.
   unnested <- unnest_pv_data(result$data)
-  z <- lapply(names(unnested $cpc_current), function(x) {
+  z <- lapply(names(unnested$cpc_current), function(x) {
      print(paste0(x,': ', unnested$cpc_current[[x]][[1]]))
   })
 #> [1] "patent_id: 11530080"
@@ -123,9 +123,9 @@ library(patentsview)
 ```
 Note that going to these links in a browser will result in a 403 Unauthorized, as no API key is sent.
 
-There is a new method in the R package to retrive data from the HATEOAS links, just pass the returned
+There is a new method in the R package to retrieve data from the HATEOAS links, just pass the returned
 link and the R package will retrieve the data for you.  You can also pass an arbitrary link that hits 
-the API.  This can be particualarly useful if you want to see what the response would be from a link
+the API.  This can be particularly useful if you want to see what the response would be from a link
 found in the [API's documentation](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/). 
 
 
@@ -209,7 +209,7 @@ Slight weirdness/sleight of hand where the returned field name looses the _id of
 ```
 
 ### Throttling <a name="throttling"></a>
-The API will now allow 45 requests per minute, making more requests will anger the API.  It will send back an error code with a header indicating how many seconds to wait before sending more queries.  The R package will take care of this for you.  It will sleep for the required number of seconds before resubmitting your query, seemlessly to your script.
+The API will now allow 45 requests per minute, making more requests will anger the API.  It will send back an error code with a header indicating how many seconds to wait before sending more queries.  The R package will take care of this for you.  It will sleep for the required number of seconds before resubmitting your query, seamlessly to your script.
 
 This means that queries could take a lot longer to run now.  Ex. a query that would 
 return 100,000 rows would now take 3.7 hours to run as each request can return at most 1,000 rows.
@@ -218,7 +218,7 @@ return 100,000 rows would now take 3.7 hours to run as each request can return a
 
 
 ### A Note on Paging <a name="a-note-on-paging">
-The API team changed how paging works and there is an important subtility that the R package  
+The API team changed how paging works and there is an important subtlety that the R package  
 handles for you.  This screams for a python library so python users don't need to worry about this and 
 throttling!  Here's a comment in search-pv.R that tries to explain the danger.
 ```
@@ -230,7 +230,7 @@ throttling!  Here's a comment in search-pv.R that tries to explain the danger.
 
   # Doing this also protects users from needing to know the peculiarities
   # of the API's paging.  Example: if a user requests a sort of
-  # {"patent_date":"asc"}, on paging the after parameter may skip
+  # [{"patent_date":"asc"}], on paging the after parameter may skip
   # to the next issue date before having retured all the data for the last
   # patent_date in the previous request - depending on where the
   # patent_dates change relative to the API's page breaks.
@@ -243,7 +243,7 @@ throttling!  Here's a comment in search-pv.R that tries to explain the danger.
 See the paging discussion in this [PR](https://github.com/ropensci/patentsview/pull/29#discussion_r1059137212)
 
 ### String and Full Text Operators <a name="operators">
-The Tip below "Syntax" in the API's [documentation](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#syntax) says
+The Tip below "Syntax" in the API's [documentation](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#syntax) says:
 
 When working with text data fields, wherever possible, we recommend using _text* operators over the 
 _contains and _begins operator. The text operators treat these fields as full text data and hence 
@@ -330,7 +330,7 @@ search_pv(query2, endpoint="brf_sum_text")
 The original version of the API seemed to be case insensitive.  Not sure if this is a bug or feature 
 in the new version of the API but it's something to be aware of.
 
-As you'll see from the queries below, the two forms of equal now seem to be case senstive.
+As you'll see from the queries below, the two forms of equal now seem to be case sensitive.
 
 
 ``` r
@@ -356,7 +356,7 @@ print (result$query_results$total_hits)
 * The version number ought to be bumped to 1.0.0 since there are breaking API changes
 * Result set size seems unbounded now.  Should we warn if a query would return more than 100,000 rows with all_pages = TRUE?
 * [API throttling](#throttling) is handled for users.
-* The endpoints are now singluar, patent rather than patents
+* The endpoints are now singular, patent rather than patents
 * The API team changed how [paging](#a-note-on-paging) works but this is handled for users.
 * New methods
    + HATEOAS and sample links can be retrieved using [retrieve_linked_data()](#HATEOAS)
@@ -378,11 +378,11 @@ range_query
 * The matched_subentities_only option went away along with subent_cnts and page
 * The R package uses the subdomain and paths for the new version of the API 
 * The original [ropensci_blog_post](ropensci_blog_post.html) was reworked using the new version of the API
-* A hex logo was created using GuangchuangYu’s [hexSticker](https://github.com/GuangchuangYu/hexSticker)
+* A hex sticker was created using GuangchuangYu's [hexSticker](https://github.com/GuangchuangYu/hexSticker)
 
 Possible Package Improvements <a name="possible-improvements">
 
 * Have get_fields() and search_pv() throw a specialized error if a plural endpoint is passed
 * Add an issue template that warns users not to share their API keys
-* There's a new [tech note](ropensci_tech_note.html) that could be used when the new version of the R package is ready.  
+* There's a new [tech note](ropensci_tech_note.html) that could be used when the new version of the R package is ready.
 

@@ -29,7 +29,7 @@ The new version of the API's endpoints are less Swiss Army Knife-like than befor
 Take a look at the [top assignees application](top-assignees.html). It has to blend together information from separate calls that used to be returned by a single call. This may push your dplyr skills to the limit.
 
 ## Changed Field Names and Types
-The fields requested by the original stript or used in its query may not be available from the new version's endpoints. The nber attributes  are no longer available as the 
+The fields requested by the original script or used in its query may not be available from the new version's endpoints. The nber attributes  are no longer available as the 
 nber_subcategories endpoint was removed. Also, some attributes have new names, like name_last in the nested inventor object returned by the patent endpoint.  Now in the fields parameter it would be specified as "inventor.name_last" where formerly it was "inventor_last_name" when using the patent endpoint.  This also demonstrates how nested fields need to be fully
 qualified in the query or fields parameters.
 

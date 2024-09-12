@@ -30,7 +30,7 @@ The original version of the R package is on CRAN with the new version available 
 2. Throttling is now enforced by the API and handled by the R package (sleep as specified by the throttle response then retry)
 3. There is a new function retrieve_linked_data() to retrieve data from a HATEOAS link, retrying if throttled
 4. The [ropensci post](https://ropensci.org/blog/2017/09/19/patentsview/) announcing the original version of the R package has been modified to work with the new version of the API and is now a new vignette.
-5. A hex logo was created using GuangchuangYu's [hexSticker](https://github.com/GuangchuangYu/hexSticker)
+5. A hex sticker was created using GuangchuangYu's [hexSticker](https://github.com/GuangchuangYu/hexSticker)
 
 The API team has provided a Swagger UI page for the new version of the API at https://search.patentsview.org/swagger-ui/
 to help in the transition.  As shown in the updated Top Assignees vignette, there will be occasions where multiple API calls are needed to retrieve the same data as in a single API call in the original version of the API and R package.

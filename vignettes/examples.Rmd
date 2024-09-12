@@ -65,6 +65,7 @@ What assignee's organizations start Microsoft?
 query <- qry_funs$begins(assignee_organization = "Microsoft")
 
 pv_out <- search_pv(query, endpoint = "assignee")
+#> The API's requests per minute limit has been reached. Pausing for 14 seconds before continuing.
 pv_out$data$assignees$assignee_organization
 #>  [1] "Microsoft Technology Beaming, LLC"               
 #>  [2] "MICROSOFT INTERNATIONAL HOLDINGS B.V."           
@@ -99,6 +100,7 @@ query <- with_qfuns(
 inv_fields <- get_fields(endpoint = "patent", groups="inventors")
 # Pull the data
 pv_out <- search_pv(query, fields = inv_fields, all_pages = TRUE, per_page = 1000)
+#> The API's requests per minute limit has been reached. Pausing for 24 seconds before continuing.
 
 # Unnest the inventor list column
 unnest_pv_data(pv_out$data, "patent_id")
@@ -116,9 +118,9 @@ unnest_pv_data(pv_out$data, "patent_id")
 #>   ..$ patent_id: chr [1:3600] "11397055" ...
 ```
 
-## Inventor Endpoint 
+## Inventor Endpoint
 
-Which inventor's most recent patent has Chicago, IL listed as their location. 
+Which inventor's most recent patent has Chicago, IL listed as their location.
 
 
 ``` r
@@ -143,11 +145,11 @@ pv_out
 #> 
 #> total_hits = 13,447
 ```
- In the new version of the API, the behavior of this endpoint has changed.  See the similar example 
+ In the new version of the API, the behavior of this endpoint has changed.  See the similar example
 on the [legacy inventors endpoint](https://patentsview.org/apis/api-endpoints/inventors) page
 for its original behavior.
 
-We could also call the new version of the patent endpoint to find inventors who listed 
+We could also call the new version of the patent endpoint to find inventors who listed
 Chicago, IL as their location when applying for a patent.
 
 
