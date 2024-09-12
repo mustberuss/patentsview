@@ -316,7 +316,7 @@ test_that("posts and gets return the same data", {
     , "uspc_subclass" # 404
   )
 
-  good_eps <- eps[!eps %in% bad_eps]
+  good_eps <- endpoints[!endpoints %in% bad_eps]
 
   z <- lapply(good_eps, function(x) {
     print(x)
