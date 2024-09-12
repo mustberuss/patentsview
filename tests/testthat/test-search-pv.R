@@ -297,3 +297,45 @@ test_that("individual fields are still broken", {
   # make it noticeable that all is not right with the API
   skip("Skip for API bugs") # TODO: remove when the API is fixed
 })
+
+# Make sure gets and posts return the same data.
+# Posts had issues that went undetected for a while using the new API
+# (odd results with posts when either no fields or sort was passed
+# see get_post_body in search-pv.R)
+
+test_that("posts and gets return the same data", {
+  bad_eps <- c(
+    "cpc_subclasses",
+    "location" # Error: Invalid field: location_latitude
+    , "uspc_subclasse" # Error: Internal Server Error
+    , "uspc_mainclass" # Error: Internal Server Error
+    , "wipo" # Error: Internal Server Error
+    , "claim" # Error: Invalid field: claim_dependent
+    , "draw_desc_text" # Error: Invalid field: description_sequence
+    , "cpc_subclass" # 404?  check the test query
+    , "uspc_subclass" # 404
+  )
+
+  good_eps <- eps[!eps %in% bad_eps]
+
+  z <- lapply(good_eps, function(x) {
+    print(x)
+    get_res <- search_pv(
+      query = TEST_QUERIES[[x]],
+      endpoint = x,
+      method = "GET"
+    )
+
+    g <- unnest_pv_data(get_res$data)
+
+    post_res <- search_pv(
+      query = TEST_QUERIES[[x]],
+      endpoint = x,
+      method = "POST"
+    )
+
+    p <- unnest_pv_data(post_res$data)
+
+    expect_equal(g, p)
+  })
+})

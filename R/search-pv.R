@@ -27,9 +27,10 @@ get_get_url <- function(query, base_url, arg_list) {
     base_url,
     "?q=", utils::URLencode(query, reserved = TRUE),
     "&f=", tojson_2(arg_list$fields),
-    "&o=", tojson_2(arg_list$opts, auto_unbox = TRUE),
-    "&s=", tojson_2(arg_list$sort, auto_unbox = TRUE)
+    "&s=", tojson_2(arg_list$sort, auto_unbox = TRUE),
+    "&o=", tojson_2(arg_list$opts, auto_unbox = TRUE)
   )
+
   utils::URLencode(j)
 }
 
@@ -39,11 +40,14 @@ get_post_body <- function(query, arg_list) {
     "{",
     '"q":', query, ",",
     '"f":', tojson_2(arg_list$fields), ",",
-    '"o":', tojson_2(arg_list$opts, auto_unbox = TRUE), ",",
-    '"s":', tojson_2(arg_list$sort, auto_unbox = TRUE),
+    '"s":', tojson_2(arg_list$sort, auto_unbox = TRUE), ",",
+    '"o":', tojson_2(arg_list$opts, auto_unbox = TRUE),
     "}"
   )
-  gsub('(,"[fs]":)([,}])', paste0("\\1", "{}", "\\2"), body)
+  # The API can now act weirdly if we pass f:{},s:{} as we did in the past.
+  # (Weirdly in that the post results may not equal the get results or posts error out)
+  # Now we'd remove "f":, and "s":,  We're guaranteed to have q: and at least "size":1000 as o:
+  gsub('("[fs]":,)', "", body)
 }
 
 #' @noRd
