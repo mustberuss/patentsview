@@ -178,7 +178,7 @@ endpoint names the R package uses (e.g., &lt;code&gt;assignees&lt;/code&gt;,
 &lt;code&gt;cpc_subsections&lt;/code&gt;, &lt;code&gt;inventors&lt;/code&gt;,
 &lt;code&gt;locations&lt;/code&gt;, &lt;code&gt;nber_subcategories&lt;/code&gt;,
 &lt;code&gt;patents&lt;/code&gt;, and &lt;code&gt;uspc_mainclasses&lt;/code&gt;). An API change
-made the actual endpoints singluar, though the returned entities are
+made the actual endpoints singular, though the returned entities are
 still plural (which is why the R package still uses the plural names).&lt;/p&gt;'><sup>1</sup></a> Your choice of endpoint determines which
 entity your query is applied to, as well as the structure of the data
 that is returned (more on this in the “23 endpoints for 23 entities
@@ -266,7 +266,7 @@ were queryable as they are now. The field tables for all of the
 endpoints can be found in the <code>fieldsdf</code> data frame, which
 you can load using <code>data("fieldsdf")</code> or
 <code>View(patentsview::fieldsdf)</code>.</p>
-<p><strong>An important note: By default, PatentsView uses disambiguted
+<p><strong>An important note: By default, PatentsView uses disambiguated
 versions of assignees, inventors, and locations, instead of raw
 data.</strong> For example, let’s say you search for all inventors whose
 first name is “john.” The PatentsView API is going to return all of the
@@ -281,7 +281,7 @@ Disambiguation Technical Workshop website</a>.</p>
 </h2>
 <p>By default, <code><a href="../reference/search_pv.html">search_pv()</a></code> returns 1,000 records per page
 and only gives you the first page of results. I suggest starting with
-something smaler, like the <code>per_page</code> = 150 below, while
+something smaller, like the <code>per_page</code> = 150 below, while
 you’re figuring out the details of your request, such as the query you
 want to use and the fields you want returned. Once you have those items
 finalized, you can use the <code>per_page</code> argument to download up
@@ -435,7 +435,7 @@ want.</p>
 </h2>
 <p>The API now returns most data fields as an appropriate data type
 (e.g., numeric). There is a small number of fields that are returned as
-strings where integers woudl be more appropriate. You can cast all
+strings where integers would be more appropriate. You can cast all
 fields to their preferred R types using <code><a href="../reference/cast_pv_data.html">cast_pv_data()</a></code>:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span></span>

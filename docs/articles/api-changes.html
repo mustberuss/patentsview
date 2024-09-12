@@ -139,16 +139,16 @@
 
     
     
-<p>In July of 2021 the Patentview API team announced <a href="https://patentsview.org/data-in-action/whats-new-patentsview-july-2021" class="external-link">upcoming
+<p>In July of 2021 the Patentsview API team announced <a href="https://patentsview.org/data-in-action/whats-new-patentsview-july-2021" class="external-link">upcoming
 API changes</a>. This page will explain the changes and impact to the <a href="#r-package-changes">R package</a>. Note that these are
 <strong>breaking changes</strong>, existing scripts will no longer run
-as-is using the new version of the API and the new version of the R
-package.</p>
+as-is using the the new version of the R package which uses the new
+version of the API.</p>
 <div class="section level2">
 <h2 id="summary-of-the-api-changes">Summary of the API changes<a class="anchor" aria-label="anchor" href="#summary-of-the-api-changes"></a>
 </h2>
 <ul>
-<li><p>Probably most importanly, the current shutdown date for the
+<li><p>Probably most importantly, the current shutdown date for the
 original version of the API is February 12, 2025, as communicated in the
 August 2024 newsletter.</p></li>
 <li><p>An <a href="#api-key-required">API key</a> is now
@@ -157,7 +157,7 @@ required.</p></li>
 operators now, with a new <a href="#case-sensitivity-caveat">case
 sensitivity caveat</a> though. Note that now some fields are returned in
 nested objects and would need to be fully qualified in the query/q: and
-fields/f: paramters. Ex. fields=c( “cpc_current.cpc_group_id”) is used
+fields/f: parameters. Ex. fields=c( “cpc_current.cpc_group_id”) is used
 below.</p></li>
 <li><p>A result set’s size seems unbounded now, you can now retrieve
 more than 100,000 rows. You’d need to be careful when setting all_pages
@@ -168,7 +168,7 @@ search_pv(‘{“patent_type”:“utility”}’, all_pages=TRUE)</p></li>
 <p>Endpoint Changes</p>
 <ul>
 <li>nber_subcategories went away- it was an endpoint in the original
-verson of the API</li>
+version of the API</li>
 <li>Endpoints are now singular, ex. patent not patents. The returned
 entities are still plural for the most part.</li>
 <li>Now there are <a href="#endpoints">23 endpoints</a>, up from the
@@ -248,7 +248,7 @@ patent/ and one is under publication/</p>
 <li>/api/v1/wipo/</li>
 </ul>
 </li>
-<li>Five of the original api’s endpoints have singular names but lighter
+<li>Five of the original API’s endpoints have singular names but lighter
 responses and fewer queryable fields as mentioned above.
 <ul>
 <li>/api/v1/assignee/</li>
@@ -295,12 +295,13 @@ that the CPC related fields have new names, see the next example.</li>
 Application State) links to retrieve more information about that field.
 Slightly funky is the cpc_current’s cpc_group, returned by the patents
 endpoint. Here the slash in the CPC is turned into a colon. This is a
-peculiarity of two of the new convience urls that shouldn’t be noticable
-in the r package, unless you are trying to infer the USPC and CPC values
-from the returned urls, without actually calling back for this data.</p>
+peculiarity of two of the new convenience urls that shouldn’t be
+noticeable in the r package, unless you are trying to infer the USPC and
+CPC values from the returned urls, without actually calling back for
+this data.</p>
 <p>Here we’ll call the patent endpoint to get CPC fields for a
-particular patend, some of the fields, like the cpc_group, are HATEOAS
-links:</p>
+particular patent, some of the returned fields, like the cpc_group, are
+HATEOAS links:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
@@ -315,11 +316,11 @@ links:</p>
 <span></span>
 <span>  <span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query</span>, fields<span class="op">=</span><span class="va">fields</span><span class="op">)</span></span>
 <span></span>
-<span>  <span class="co"># as noted above, the CPC related fields aren't the same as they were in the</span></span>
+<span>  <span class="co"># As noted above, the CPC related fields aren't the same as they were in the</span></span>
 <span>  <span class="co"># original version of the API.  Also note that not all requested fields were</span></span>
 <span>  <span class="co"># returned and that _id-less, HATEOAS fields were returned.</span></span>
 <span>  <span class="va">unnested</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span>
-<span>  <span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">unnested</span> <span class="op">$</span><span class="va">cpc_current</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">unnested</span><span class="op">$</span><span class="va">cpc_current</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
 <span>     <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">x</span>,<span class="st">': '</span>, <span class="va">unnested</span><span class="op">$</span><span class="va">cpc_current</span><span class="op">[[</span><span class="va">x</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">}</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "patent_id: 11530080"</span></span>
@@ -332,10 +333,10 @@ links:</p>
 <span><span class="co">#&gt; [1] "cpc_group_id: B65D71/0033"</span></span></code></pre></div>
 <p>Note that going to these links in a browser will result in a 403
 Unauthorized, as no API key is sent.</p>
-<p>There is a new method in the R package to retrive data from the
+<p>There is a new method in the R package to retrieve data from the
 HATEOAS links, just pass the returned link and the R package will
 retrieve the data for you. You can also pass an arbitrary link that hits
-the API. This can be particualarly useful if you want to see what the
+the API. This can be particularly useful if you want to see what the
 response would be from a link found in the <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/" class="external-link">API’s
 documentation</a>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -416,7 +417,7 @@ the _id of the requested field</p>
 will anger the API. It will send back an error code with a header
 indicating how many seconds to wait before sending more queries. The R
 package will take care of this for you. It will sleep for the required
-number of seconds before resubmitting your query, seemlessly to your
+number of seconds before resubmitting your query, seamlessly to your
 script.</p>
 <p>This means that queries could take a lot longer to run now. Ex. a
 query that would return 100,000 rows would now take 3.7 hours to run as
@@ -428,7 +429,7 @@ requests) = 222.2 minutes = 3.7 hours</p>
 <h3 id="a-note-on-paging">A Note on Paging <a name="a-note-on-paging"></a><a class="anchor" aria-label="anchor" href="#a-note-on-paging"></a>
 </h3>
 <p>The API team changed how paging works and there is an important
-subtility that the R package<br>
+subtlety that the R package<br>
 handles for you. This screams for a python library so python users don’t
 need to worry about this and throttling! Here’s a comment in search-pv.R
 that tries to explain the danger.</p>
@@ -440,7 +441,7 @@ that tries to explain the danger.</p>
 <span></span>
 <span>  <span class="co"># Doing this also protects users from needing to know the peculiarities</span></span>
 <span>  <span class="co"># of the API's paging.  Example: if a user requests a sort of</span></span>
-<span>  <span class="co"># {"patent_date":"asc"}, on paging the after parameter may skip</span></span>
+<span>  <span class="co"># [{"patent_date":"asc"}], on paging the after parameter may skip</span></span>
 <span>  <span class="co"># to the next issue date before having retured all the data for the last</span></span>
 <span>  <span class="co"># patent_date in the previous request - depending on where the</span></span>
 <span>  <span class="co"># patent_dates change relative to the API's page breaks.</span></span>
@@ -453,7 +454,7 @@ that tries to explain the danger.</p>
 <h3 id="string-and-full-text-operators">String and Full Text Operators <a name="operators"></a><a class="anchor" aria-label="anchor" href="#string-and-full-text-operators"></a>
 </h3>
 <p>The Tip below “Syntax” in the API’s <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#syntax" class="external-link">documentation</a>
-says</p>
+says:</p>
 <p>When working with text data fields, wherever possible, we recommend
 using _text* operators over the _contains and _begins operator. The text
 operators treat these fields as full text data and hence are more
@@ -535,7 +536,7 @@ that no errors were thrown by the API:</p>
 sure if this is a bug or feature in the new version of the API but it’s
 something to be aware of.</p>
 <p>As you’ll see from the queries below, the two forms of equal now seem
-to be case senstive.</p>
+to be case sensitive.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"assignee_organization": "Johnson &amp; Johnson International"}'</span>, endpoint<span class="op">=</span><span class="st">"assignee"</span><span class="op">)</span></span>
@@ -565,7 +566,7 @@ breaking API changes</li>
 return more than 100,000 rows with all_pages = TRUE?</li>
 <li>
 <a href="#throttling">API throttling</a> is handled for users.</li>
-<li>The endpoints are now singluar, patent rather than patents</li>
+<li>The endpoints are now singular, patent rather than patents</li>
 <li>The API team changed how <a href="#a-note-on-paging">paging</a>
 works but this is handled for users.</li>
 <li>New methods
@@ -595,7 +596,7 @@ and page</li>
 the API</li>
 <li>The original <a href="ropensci_blog_post.html">ropensci_blog_post</a> was reworked using
 the new version of the API</li>
-<li>A hex logo was created using GuangchuangYu’s <a href="https://github.com/GuangchuangYu/hexSticker" class="external-link">hexSticker</a>
+<li>A hex sticker was created using GuangchuangYu’s <a href="https://github.com/GuangchuangYu/hexSticker" class="external-link">hexSticker</a>
 </li>
 </ul>
 <p>Possible Package Improvements <a name="possible-improvements"></a></p>

@@ -49,8 +49,8 @@ install.packages("patentsview")
 
 ## Important API Change
 
-The new version of the API requires an api key, or all of your requests
-will be blocked. An API key can be optained
+The new version of the API requires an API key, or all of your requests
+will be blocked. An API key can be obtained
 [here](https://patentsview.org/apis/keyrequest). The updated R package
 will look for an environmental variable PATENTSVIEW_API_KEY set to the
 value of your key. For windows it would be
