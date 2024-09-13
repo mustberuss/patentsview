@@ -75,7 +75,7 @@ one_request <- function(method, query, base_url, arg_list, api_key, ...) {
   }
 
   # Sleep and retry on a 429 (too many requests). The Retry-After header is the
-  # seconds to sleep
+  # seconds to sleep before the API will accept requests again
   if (httr::status_code(resp) == 429) {
     num_seconds <- httr::headers(resp)[["Retry-After"]]
     maybe_an_s <- if (num_seconds == "1") "" else "s"
