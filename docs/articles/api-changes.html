@@ -140,10 +140,12 @@
     
     
 <p>In July of 2021 the Patentsview API team announced <a href="https://patentsview.org/data-in-action/whats-new-patentsview-july-2021" class="external-link">upcoming
-API changes</a>. This page will explain the changes and impact to the <a href="#r-package-changes">R package</a>. Note that these are
-<strong>breaking changes</strong>, existing scripts will no longer run
-as-is using the the new version of the R package which uses the new
-version of the API.</p>
+API changes</a>. This page will explain the necessary changes and
+additions to the R package. Note that these are <strong>breaking
+changes</strong>, existing scripts will no longer run as-is using the
+the new version of the R package which uses the new version of the API.
+As noted below, the R package handles some of the changes for users. All
+the changes are listed for completeness.</p>
 <div class="section level2">
 <h2 id="summary-of-the-api-changes">Summary of the API changes<a class="anchor" aria-label="anchor" href="#summary-of-the-api-changes"></a>
 </h2>
@@ -175,17 +177,20 @@ entities are still plural for the most part.</li>
 original 7</li>
 </ul>
 </li>
-<li><p>The API team added an ultra-helpful <a href="#swagger-ui-page">Swagger UI page</a>. Think of it as an online
-version of Postman already loaded with the API’s endpoints and returns.
-Note that you’ll need an API key in order to make requests.</p></li>
 <li><p>These options parameters went away: matched_subentities_only,
 subent_cnts and page (paging now uses ‘after’ instead of page)</p></li>
+<li><p>Now the API’s response is always JSON. The original version of
+the API had a ‘format’ parameter that defaulted to json but could be set
+to xml.</p></li>
 <li>
 <p>Changes your uber-helpful R package handles for you:</p>
 <ul>
 <li>The API now <a href="#throttling">throttles requests</a>.</li>
 <li>
 <a href="#a-note-on-paging">Paging</a> is completely different</li>
+<li>The API change says that POST requests will need to send JSON data
+(instead of string representation of JSON). A Content-Type:
+application/json header was added.</li>
 <li>The subdomain of the API changed from <a href="https://api.patentsview.org/" class="external-link uri">https://api.patentsview.org/</a> to <a href="https://search.patentsview.org" class="external-link uri">https://search.patentsview.org</a> and the paths to the
 endpoints changed.<br>
 </li>
@@ -193,9 +198,101 @@ endpoints changed.<br>
 is now the PatentSearch API, as announced <a href="https://search.patentsview.org/docs/#naming-update" class="external-link">here</a>. Note
 that the R package will retain its name. Continue to use
 library(patentsview)</li>
+<li>The order the fields are returned by the API has changed</li>
+</ul>
+<pre><code>  # Response body now
+  {
+    "error": false,
+    "count": 1,
+    "total_hits": 1,
+    "patents": []
+  }
+
+  # Original response
+
+  {
+    "patents": [],
+    "count": 1,
+    "total_patent_count": 1
+  }</code></pre>
+<p>Note that now total_hits comes back from all endpoints, previously
+there was an endpoint specific count, like total_patent_count. Again,
+all of this is handled for you by the R package. The way total_hits
+comes back from the R package remains unchanged.</p>
+</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
+<span></span>
+<span>   <span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"patent_id": "11530080"}'</span><span class="op">)</span></span>
+<span>   <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span> <span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">query_results</span><span class="op">$</span><span class="va">total_hits</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="swagger-ui-page">Swagger UI Page <a name="swagger-ui-page"></a><a class="anchor" aria-label="anchor" href="#swagger-ui-page"></a>
+</h2>
+<p>The Patentsview API team has provided a Swagger UI page for the new
+version of the API at <a href="https://search.patentsview.org/swagger-ui/" class="external-link uri">https://search.patentsview.org/swagger-ui/</a>. How cool is
+that? Think of it as an online version of Postman already loaded with
+the API’s endpoints and returns. Each field listed in the 200 response
+sections could be requested in the fields/f: parameter and each field is
+supposed to be queryable (usable in the query/q: parameter). The Swagger
+UI page can be used to make requests, if you have an API key to enter in
+the authorization screen. The Swagger UI definition at <a href="https://search.patentsview.org/static/openapi.json" class="external-link uri">https://search.patentsview.org/static/openapi.json</a> can
+be imported into Postman to give you a nicely loaded collection for the
+new version of the API. You’ll just need to set a global variable
+PVIEW_KEY and set the authorization’s value to {{PVIEW_KEY}} to your API
+key.</p>
+</div>
+<div class="section level2">
+<h2 id="additional-r-package-changes">Additional R Package Changes <a name="r-package-changes"></a><a class="anchor" aria-label="anchor" href="#additional-r-package-changes"></a>
+</h2>
+<p>These changes were also made to the R package, in addition to the <a href="#summary-of-the-api-changes">API changes</a> outlined above</p>
+<ul>
+<li>Two methods were added
+<ul>
+<li>HATEOAS and sample links can be retrieved using <a href="#HATEOAS">retrieve_linked_data()</a>
+</li>
+<li>qry_funs$in_range</li>
 </ul>
 </li>
 </ul>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">range_query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span>patent_date<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1970-01-01"</span>,<span class="st">"1983-02-28"</span><span class="op">)</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="co"># which will generate this, so you don't have to do it by hand</span></span>
+<span><span class="va">range_query</span> </span>
+<span><span class="co">#&gt; {"_and":[{"_gte":{"patent_date":"1970-01-01"}},{"_lte":{"patent_date":"1983-02-28"}}]}</span></span>
+<span></span>
+<span><span class="va">range_query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span>patent_year<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2010</span>, <span class="fl">2021</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># or this</span></span>
+<span><span class="va">range_query</span></span>
+<span><span class="co">#&gt; {"_and":[{"_gte":{"patent_year":2010}},{"_lte":{"patent_year":2021}}]}</span></span></code></pre></div>
+<ul>
+<li>The original <a href="ropensci_blog_post.html">ropensci_blog_post</a> was reworked to
+use the new version of the API</li>
+<li>A hex sticker was created using GuangchuangYu’s <a href="https://github.com/GuangchuangYu/hexSticker" class="external-link">hexSticker</a>
+</li>
+</ul>
+<p>Possible Package Improvements <a name="possible-improvements"></a></p>
+<ul>
+<li>The version number ought to be bumped to 1.0.0 since there are
+breaking API changes</li>
+<li>Result set size seems unbounded now. Should we warn if a query would
+return more than 100,000 rows with all_pages = TRUE?</li>
+<li>Have get_fields() and search_pv() throw a specialized error if a
+plural endpoint is passed</li>
+<li>Replace openAPI_to_csv.pl and to_rda.R with its R equivalent</li>
+<li>Add an issue template that warns users not to share their API
+keys</li>
+<li>There’s a new <a href="ropensci_tech_note.html">tech note</a> that
+could be used when the new version of the R package is ready.</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="details-of-the-api-changes">Details of the API changes<a class="anchor" aria-label="anchor" href="#details-of-the-api-changes"></a>
+</h2>
 <div class="section level3">
 <h3 id="an-api-key-is-required">An API Key is required <a name="api-key-required"></a><a class="anchor" aria-label="anchor" href="#an-api-key-is-required"></a>
 </h3>
@@ -203,20 +300,9 @@ library(patentsview)</li>
 will be rejected. Request an API key using this link: <a href="https://patentsview.org/apis/keyrequest" class="external-link uri">https://patentsview.org/apis/keyrequest</a> Once you have
 one, you’ll need to set an environmental variable PATENTSVIEW_API_KEY to
 the value of your API key for the R package to use.</p>
-</div>
-<div class="section level3">
-<h3 id="swagger-ui-page">Swagger UI Page <a name="swagger-ui-page"></a><a class="anchor" aria-label="anchor" href="#swagger-ui-page"></a>
-</h3>
-<p>The Patentsview API team has provided a Swagger UI page for the new
-version of the API at <a href="https://search.patentsview.org/swagger-ui/" class="external-link uri">https://search.patentsview.org/swagger-ui/</a>. It shows all
-the available endpoints and their responses. Each field in the 200
-response sections could be requested in the fields/f: parameter and each
-field is supposed to be queryable (usable in the query/q: parameter).
-The Swagger UI page can be used to make requests, if you have an API key
-to enter in the authorization screen. The Swagger UI definition at <a href="https://search.patentsview.org/static/openapi.json" class="external-link uri">https://search.patentsview.org/static/openapi.json</a> can
-be imported into Postman to give you a nicely loaded collection for the
-changed API. You’ll just need to set a global variable PVIEW_KEY and set
-the authorization’s value to {{PVIEW_KEY}} to your API key.</p>
+<p>The user’s API key needs to be sent on all requests</p>
+<pre><code><span><span class="va">api_key</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"PATENTSVIEW_API_KEY"</span><span class="op">)</span></span>
+<span><span class="fu">httr</span><span class="fu">::</span><span class="fu"><a href="https://httr.r-lib.org/reference/add_headers.html" class="external-link">add_headers</a></span><span class="op">(</span><span class="st">"X-Api-Key"</span> <span class="op">=</span> <span class="va">api_key</span><span class="op">)</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="endpoints">Endpoints <a name="endpoints"></a><a class="anchor" aria-label="anchor" href="#endpoints"></a>
@@ -271,11 +357,11 @@ endpoints
 <p>Things to note</p>
 <ol style="list-style-type: decimal">
 <li>Four of the new endpoints, brf_sum_text, claims, draw_desc_text and
-detail_desc_text, are marked ‘beta’ on the Swagger UI page and their
-data is not fully populated. See this <a href="https://search.patentsview.org/docs/docs/Search%20API/TextEndpointStatus" class="external-link">page</a>
+detail_desc_text, are marked ‘beta’ on the <a href="#swagger-ui-page">Swagger UI page</a> and their data is not fully
+populated. See this <a href="https://search.patentsview.org/docs/docs/Search%20API/TextEndpointStatus" class="external-link">page</a>
 to see what data is currently populated.</li>
 <li>Currently some endpoints do not return all the attributes listed in
-the API’s OpenAPI object. Some throw 500 errors when requested (see
+the API’s OpenAPI object. Some throw 500 errors when requested<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>1</sup></a> (see
 test-search-pv.R)</li>
 <li>There are two rel_app_text endpoints, one under patent/ and one
 under publication/ They return different entities, rel_app_texts
@@ -302,10 +388,8 @@ this data.</p>
 <p>Here we’ll call the patent endpoint to get CPC fields for a
 particular patent, some of the returned fields, like the cpc_group, are
 HATEOAS links:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
-<span></span>
 <span>  <span class="va">query</span> <span class="op">&lt;-</span> <span class="st">'{"patent_id": "11530080"}'</span></span>
 <span>  <span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'patent_id'</span>, <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span><span class="st">'patent'</span>, groups <span class="op">=</span> <span class="st">'cpc_current'</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="va">fields</span></span>
@@ -339,7 +423,7 @@ retrieve the data for you. You can also pass an arbitrary link that hits
 the API. This can be particularly useful if you want to see what the
 response would be from a link found in the <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/" class="external-link">API’s
 documentation</a>.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
 <span></span>
@@ -378,7 +462,7 @@ documentation</a>.</p>
 <span><span class="co">#&gt; total_hits = 1</span></span></code></pre></div>
 <p>Note that when calling the cpc_group endpoint instead of using the
 HATEOAS link, you’d use a slash instead of a colon.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"cpc_group_id": "A01B1/00"}'</span>, endpoint <span class="op">=</span> <span class="st">'cpc_group'</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $data</span></span>
@@ -397,7 +481,7 @@ HATEOAS link, you’d use a slash instead of a colon.</p>
 <span><span class="co">#&gt; total_hits = 1</span></span></code></pre></div>
 <p>Slight weirdness/sleight of hand where the returned field name looses
 the _id of the requested field</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="co"># We'll make a call to the patent endpoint to get inventor and assignee HATEOAS links</span></span>
 <span>  <span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"patent_id":"10000000"}'</span>,</span>
 <span>    fields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"inventors.inventor_id"</span>, <span class="st">"assignees.assignee_id"</span><span class="op">)</span></span>
@@ -411,7 +495,7 @@ the _id of the requested field</p>
 <span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/inventor/fl:jo_ln:marron-5/"</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="throttling">Throttling <a name="throttling"></a><a class="anchor" aria-label="anchor" href="#throttling"></a>
+<h3 id="api-throttling">API Throttling <a name="throttling"></a><a class="anchor" aria-label="anchor" href="#api-throttling"></a>
 </h3>
 <p>The API will now allow 45 requests per minute, making more requests
 will anger the API. It will send back an error code with a header
@@ -419,17 +503,18 @@ indicating how many seconds to wait before sending more queries. The R
 package will take care of this for you. It will sleep for the required
 number of seconds before resubmitting your query, seamlessly to your
 script.</p>
-<p>This means that queries could take a lot longer to run now. Ex. a
-query that would return 100,000 rows would now take 3.7 hours to run as
-each request can return at most 1,000 rows.</p>
-<p>100,000 row result set -&gt; 10,000 requests x ( 1 minute/45
-requests) = 222.2 minutes = 3.7 hours</p>
+<pre><code><span>  <span class="co"># Sleep and retry on a 429 (too many requests). The Retry-After header is the</span></span>
+<span>  <span class="co"># seconds to sleep before the API will accept requests again</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu">httr</span><span class="fu">::</span><span class="fu"><a href="https://httr.r-lib.org/reference/status_code.html" class="external-link">status_code</a></span><span class="op">(</span><span class="va">resp</span><span class="op">)</span> <span class="op">==</span> <span class="fl">429</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">num_seconds</span> <span class="op">&lt;-</span> <span class="fu">httr</span><span class="fu">::</span><span class="fu"><a href="https://httr.r-lib.org/reference/headers.html" class="external-link">headers</a></span><span class="op">(</span><span class="va">resp</span><span class="op">)</span><span class="op">[[</span><span class="st">"Retry-After"</span><span class="op">]</span><span class="op">]</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="va">num_seconds</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="a-note-on-paging">A Note on Paging <a name="a-note-on-paging"></a><a class="anchor" aria-label="anchor" href="#a-note-on-paging"></a>
 </h3>
-<p>The API team changed how paging works and there is an important
-subtlety that the R package<br>
+<p>The API team changed <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#pagination" class="external-link">how
+paging works</a> and there is an important subtlety that the R package
 handles for you. This screams for a python library so python users don’t
 need to worry about this and throttling! Here’s a comment in search-pv.R
 that tries to explain the danger.</p>
@@ -461,10 +546,10 @@ operators treat these fields as full text data and hence are more
 performant. The “full text” fields are identified in the API Endpoint
 specification with the value “text” for the data type.</p>
 <p>Not sure if that only applies to the beta endpoints or not. Also not
-sure what to make of the result set size differences, total_hits, noting
+sure what to make of the result set size differences<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>2</sup></a>, total_hits, noting
 that no errors were thrown by the API:</p>
 <p>hitting the patent endpoint:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">query1</span> <span class="op">&lt;-</span> <span class="st">'{"_contains":{"patent_title":"dog"}}'</span></span>
 <span><span class="va">query2</span> <span class="op">&lt;-</span> <span class="st">'{"_text_any":{"patent_title":"dog"}}'</span></span>
 <span></span>
@@ -498,7 +583,7 @@ that no errors were thrown by the API:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; total_hits = 2,075</span></span></code></pre></div>
 <p>hitting the brf_sum_text endpoint:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">query1</span> <span class="op">&lt;-</span> <span class="st">'{"_contains":{"summary_text":"paper cup holder"}}'</span></span>
 <span><span class="va">query2</span> <span class="op">&lt;-</span> <span class="st">'{"_text_phrase":{"summary_text":"paper cup holder"}}'</span></span>
 <span></span>
@@ -533,11 +618,11 @@ that no errors were thrown by the API:</p>
 <h3 id="case-sensitivity-caveat">Case Sensitivity Caveat <a name="case-sensitivity-caveat"></a><a class="anchor" aria-label="anchor" href="#case-sensitivity-caveat"></a>
 </h3>
 <p>The original version of the API seemed to be case insensitive. Not
-sure if this is a bug or feature in the new version of the API but it’s
+sure if this is a bug or feature<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>3</sup></a> in the new version of the API but it’s
 something to be aware of.</p>
 <p>As you’ll see from the queries below, the two forms of equal now seem
 to be case sensitive.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"assignee_organization": "Johnson &amp; Johnson International"}'</span>, endpoint<span class="op">=</span><span class="st">"assignee"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span> <span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">query_results</span><span class="op">$</span><span class="va">total_hits</span><span class="op">)</span></span>
@@ -556,59 +641,7 @@ to be case sensitive.</p>
 <span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
 </div>
 </div>
-<div class="section level2">
-<h2 id="summary-of-the-r-package-changes">Summary of the R Package Changes <a name="r-package-changes"></a><a class="anchor" aria-label="anchor" href="#summary-of-the-r-package-changes"></a>
-</h2>
-<ul>
-<li>The version number ought to be bumped to 1.0.0 since there are
-breaking API changes</li>
-<li>Result set size seems unbounded now. Should we warn if a query would
-return more than 100,000 rows with all_pages = TRUE?</li>
-<li>
-<a href="#throttling">API throttling</a> is handled for users.</li>
-<li>The endpoints are now singular, patent rather than patents</li>
-<li>The API team changed how <a href="#a-note-on-paging">paging</a>
-works but this is handled for users.</li>
-<li>New methods
-<ul>
-<li>HATEOAS and sample links can be retrieved using <a href="#HATEOAS">retrieve_linked_data()</a>
-</li>
-<li>qry_funs$in_range</li>
-</ul>
-</li>
-</ul>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">range_query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span>patent_date<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1970-01-01"</span>,<span class="st">"1983-02-28"</span><span class="op">)</span><span class="op">)</span> </span>
-<span></span>
-<span><span class="co"># which will generate this, so you don't have to do it by hand</span></span>
-<span><span class="va">range_query</span> </span>
-<span><span class="co">#&gt; {"_and":[{"_gte":{"patent_date":"1970-01-01"}},{"_lte":{"patent_date":"1983-02-28"}}]}</span></span>
-<span></span>
-<span><span class="va">range_query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span>patent_year<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2010</span>, <span class="fl">2021</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># or this</span></span>
-<span><span class="va">range_query</span></span>
-<span><span class="co">#&gt; {"_and":[{"_gte":{"patent_year":2010}},{"_lte":{"patent_year":2021}}]}</span></span></code></pre></div>
-<ul>
-<li>The matched_subentities_only option went away along with subent_cnts
-and page</li>
-<li>The R package uses the subdomain and paths for the new version of
-the API</li>
-<li>The original <a href="ropensci_blog_post.html">ropensci_blog_post</a> was reworked using
-the new version of the API</li>
-<li>A hex sticker was created using GuangchuangYu’s <a href="https://github.com/GuangchuangYu/hexSticker" class="external-link">hexSticker</a>
-</li>
-</ul>
-<p>Possible Package Improvements <a name="possible-improvements"></a></p>
-<ul>
-<li>Have get_fields() and search_pv() throw a specialized error if a
-plural endpoint is passed</li>
-<li>Add an issue template that warns users not to share their API
-keys</li>
-<li>There’s a new <a href="ropensci_tech_note.html">tech note</a> that
-could be used when the new version of the R package is ready.</li>
-</ul>
-</div>
+
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
 </div>
