@@ -158,7 +158,7 @@ patent_id as a field so we can join them to get the data we need.</p>
 (singular) but now that produces a result set of over 10,000 rows.
 Instead, we’ll search for databases (plural) which will make our result
 set smaller.</p>
-<p>We start by calling the patents endpoint to get the patents where
+<p>We start by calling the patent endpoint to get the patents where
 “databases” is in the title or abstract and there is an assignee. We
 make a subsequent call to the assignee endpoint to get
 assignee_num_patents (total number of patents) for the top 75 assignees,
@@ -252,7 +252,7 @@ relate to databases.</li>
 <span><span class="co"># We shouldn't need the filter (we queried for non empty string orginazations) but</span></span>
 <span><span class="co"># some are NA somehow</span></span>
 <span></span>
-<span><span class="co"># We don't get the assignee_total_num_patents back from the patents endpoint any longer.</span></span>
+<span><span class="co"># We don't get the assignee_total_num_patents back from the patent endpoint any longer.</span></span>
 <span><span class="co"># We'll have to make a call to the assignee endpoint once we know who the top 75</span></span>
 <span><span class="co"># assignees are.</span></span>
 <span></span>
@@ -336,7 +336,7 @@ changed over time.</li>
 </ol>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="co"># The patents endpoint no longer returns application date as this page used originally</span></span>
+<span><span class="co"># The patent endpoint no longer returns application date as this page used originally</span></span>
 <span><span class="co"># Instead we will use the patent_year  (year the patent was granted, returned as an integer)</span></span>
 <span></span>
 <span><span class="co"># Get the top 5 organizations since slice wasn't working out in the full_join below.</span></span>

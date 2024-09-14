@@ -168,7 +168,7 @@ function, <code><a href="../reference/search_pv.html">search_pv()</a></code>:</p
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; total_hits = 5,362,291</span></span></code></pre></div>
-<p>This call to <code><a href="../reference/search_pv.html">search_pv()</a></code> sends our query to the patents
+<p>This call to <code><a href="../reference/search_pv.html">search_pv()</a></code> sends our query to the patent
 endpoint (the default). The API has 23 different endpoints,
 corresponding to 23 different entity types (application_citation,
 assignee, cpc_group, cpc_subgroup, cpc_subsection, inventor, location,
@@ -208,7 +208,7 @@ using one of the functions in the DSL, <code>qry_funs$gte()</code>:</p>
 <p>More complex queries are also possible:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>  <span class="fu">and</span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
 <span>    <span class="fu">gte</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2007-01-01"</span><span class="op">)</span>,</span>
 <span>    <span class="fu">text_phrase</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"computer program"</span>, <span class="st">"dog leash"</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
@@ -318,14 +318,14 @@ output</em>, not just the page that was returned.</p>
 <div class="section level2">
 <h2 id="endpoints-for-23-entities">23 endpoints for 23 entities<a class="anchor" aria-label="anchor" href="#endpoints-for-23-entities"></a>
 </h2>
-<p>With the recent API change, the patents endpoint supplies the basic
+<p>With the recent API change, the patent endpoint supplies the basic
 patent data and the other endpoints return more specific data for those
 patents.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span>inventors.inventor_name_last <span class="op">=</span> <span class="st">"Chambers"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Here we'll request patent_id and the inventor fields from the patents endpoint</span></span>
+<span><span class="co"># Here we'll request patent_id and the inventor fields from the patent endpoint</span></span>
 <span><span class="va">inv_fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"patent"</span>, groups <span class="op">=</span><span class="st">"inventors"</span><span class="op">)</span></span>
 <span><span class="va">inv_fields</span></span>
 <span><span class="co">#&gt; [1] "inventors.inventor_city"       "inventors.inventor_country"   </span></span>
@@ -370,7 +370,7 @@ patents.</p>
 <span><span class="co">#&gt; 4               US                 3</span></span>
 <span><span class="co">#&gt; 5               US                 2</span></span>
 <span></span>
-<span><span class="co"># Now we will see what the inventors endpoint returns for a similar query.  We use get_fields() to get all the available for the inventors endpoint.</span></span>
+<span><span class="co"># Now we will see what the inventor endpoint returns for a similar query.  We use get_fields() to get all the available for the inventor endpoint.</span></span>
 <span><span class="va">query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span>inventor_name_last <span class="op">=</span> <span class="st">"Chambers"</span><span class="op">)</span></span>
 <span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"inventor"</span><span class="op">)</span></span>
 <span></span>
@@ -404,10 +404,10 @@ patents.</p>
 <p>Your choice of endpoint determines two things:</p>
 <ol style="list-style-type: decimal">
 <li><p><strong>Which entity your query is applied to.</strong> The first
-call shown above used the patents endpoint, so the API searched for
+call shown above used the patent endpoint, so the API searched for
 patents that have at least one inventor listed on them with the last
-name “chambers.” The second call used the inventors endpoint to show
-what it returns for a similar query.</p></li>
+name “chambers.” The second call used the inventor endpoint to show what
+it returns for a similar query.</p></li>
 <li><p><strong>The structure of the data frame that is
 returned.</strong> The first call returned a data frame on the patent
 level, meaning that each row corresponded to a different patent. Fields
@@ -418,11 +418,11 @@ that are named after the entity associated with the field (e.g., the
 list columns using &lt;code&gt;&lt;a href="../reference/unnest_pv_data.html"&gt;unnest_pv_data()&lt;/a&gt;&lt;/code&gt;. See the FAQs for
 details.&lt;/p&gt;'><sup>3</sup></a> Meanwhile, the second call gave us a data
 frame on the inventor level (one row for each inventor) because it used
-the inventors endpoint.</p></li>
+the inventor endpoint.</p></li>
 </ol>
 <p>Most of the time you will want to use the patent endpoint. Note that
 you can still effectively filter on fields that are not at the
-patent-level when using the patents endpoint (e.g., you can filter on
+patent-level when using the patent endpoint (e.g., you can filter on
 assignee name or CPC category). This is because patents are relatively
 low-level entities. For higher level entities like assignees, if you
 filter on a field that is not at the assignee-level (e.g., inventor

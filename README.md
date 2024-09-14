@@ -20,7 +20,7 @@ CRAN:
 install.packages("patentsview")
 ```
 
-Or the development version from GitHub:
+Or the development version from GitHub (*Currently broken*):
 
 ``` r
 if (!"devtools" %in% rownames(installed.packages())) {
@@ -29,12 +29,6 @@ if (!"devtools" %in% rownames(installed.packages())) {
 
 devtools::install_github("ropensci/patentsview")
 ```
-
-Or the R package for the new version of the API from github:
-
-    if (!"devtools" %in% rownames(installed.packages())) {
-      devtools::install_github("ropensci/patentsview@api-redesign")
-    }
 
 Or the R package for the new version of the API from r-universe:
 
@@ -58,7 +52,7 @@ value of your key. For windows it would be
     set PATENTSVIEW_API_KEY=my_keys_value_without quotes
 
 See [this page](articles/api-changes.html) about the change. The
-navigation there will get you to the updated vignettes and reference
+navigation above will get you to the updated vignettes and reference
 pages.
 
 ## Basic usage

@@ -174,14 +174,16 @@ version of the API</li>
 <li>Endpoints are now singular, ex. patent not patents. The returned
 entities are still plural for the most part.</li>
 <li>Now there are <a href="#endpoints">23 endpoints</a>, up from the
-original 7</li>
+original 7  </li>
 </ul>
 </li>
 <li><p>These options parameters went away: matched_subentities_only,
 subent_cnts and page (paging now uses ‘after’ instead of page)</p></li>
 <li><p>Now the API’s response is always JSON. The original version of
 the API had a ‘format’ parameter that defaulted to json but could be set
-to xml.</p></li>
+to xml. The original R package did not expose this parameter so your
+script won’t know the difference (unless you were calling the API
+directly).</p></li>
 <li>
 <p>Changes your uber-helpful R package handles for you:</p>
 <ul>
@@ -205,13 +207,13 @@ library(patentsview)</li>
     "error": false,
     "count": 1,
     "total_hits": 1,
-    "patents": []
+    "patent": [...]
   }
 
   # Original response
 
   {
-    "patents": [],
+    "patents": [...],
     "count": 1,
     "total_patent_count": 1
   }</code></pre>
@@ -227,22 +229,6 @@ comes back from the R package remains unchanged.</p>
 <span>   <span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"patent_id": "11530080"}'</span><span class="op">)</span></span>
 <span>   <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span> <span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">query_results</span><span class="op">$</span><span class="va">total_hits</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 1</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="swagger-ui-page">Swagger UI Page <a name="swagger-ui-page"></a><a class="anchor" aria-label="anchor" href="#swagger-ui-page"></a>
-</h2>
-<p>The Patentsview API team has provided a Swagger UI page for the new
-version of the API at <a href="https://search.patentsview.org/swagger-ui/" class="external-link uri">https://search.patentsview.org/swagger-ui/</a>. How cool is
-that? Think of it as an online version of Postman already loaded with
-the API’s endpoints and returns. Each field listed in the 200 response
-sections could be requested in the fields/f: parameter and each field is
-supposed to be queryable (usable in the query/q: parameter). The Swagger
-UI page can be used to make requests, if you have an API key to enter in
-the authorization screen. The Swagger UI definition at <a href="https://search.patentsview.org/static/openapi.json" class="external-link uri">https://search.patentsview.org/static/openapi.json</a> can
-be imported into Postman to give you a nicely loaded collection for the
-new version of the API. You’ll just need to set a global variable
-PVIEW_KEY and set the authorization’s value to {{PVIEW_KEY}} to your API
-key.</p>
 </div>
 <div class="section level2">
 <h2 id="additional-r-package-changes">Additional R Package Changes <a name="r-package-changes"></a><a class="anchor" aria-label="anchor" href="#additional-r-package-changes"></a>
@@ -264,14 +250,15 @@ key.</p>
 <span><span class="va">range_query</span> </span>
 <span><span class="co">#&gt; {"_and":[{"_gte":{"patent_date":"1970-01-01"}},{"_lte":{"patent_date":"1983-02-28"}}]}</span></span>
 <span></span>
+<span><span class="co"># or this</span></span>
 <span><span class="va">range_query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span>patent_year<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2010</span>, <span class="fl">2021</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># or this</span></span>
 <span><span class="va">range_query</span></span>
 <span><span class="co">#&gt; {"_and":[{"_gte":{"patent_year":2010}},{"_lte":{"patent_year":2021}}]}</span></span></code></pre></div>
 <ul>
-<li>The original <a href="ropensci_blog_post.html">ropensci_blog_post</a> was reworked to
-use the new version of the API</li>
+<li>The ropensci_blog_post that announced the original version of the R
+package was <a href="ropensci_blog_post.html">reworked</a> to use the
+new version of the R package and API</li>
 <li>A hex sticker was created using GuangchuangYu’s <a href="https://github.com/GuangchuangYu/hexSticker" class="external-link">hexSticker</a>
 </li>
 </ul>
@@ -289,6 +276,22 @@ keys</li>
 <li>There’s a new <a href="ropensci_tech_note.html">tech note</a> that
 could be used when the new version of the R package is ready.</li>
 </ul>
+</div>
+<div class="section level2">
+<h2 id="swagger-ui-page">Swagger UI Page <a name="swagger-ui-page"></a><a class="anchor" aria-label="anchor" href="#swagger-ui-page"></a>
+</h2>
+<p>The Patentsview API team has provided a Swagger UI page for the new
+version of the API at <a href="https://search.patentsview.org/swagger-ui/" class="external-link uri">https://search.patentsview.org/swagger-ui/</a>. How cool is
+that? Think of it as an online version of Postman already loaded with
+the API’s endpoints and returns. Each field listed in the 200 response
+sections could be requested in the fields/f: parameter and each field is
+supposed to be queryable (usable in the query/q: parameter). The Swagger
+UI page can be used to make requests, if you have an API key to enter in
+the authorization screen. The Swagger UI definition at <a href="https://search.patentsview.org/static/openapi.json" class="external-link uri">https://search.patentsview.org/static/openapi.json</a> can
+be imported into Postman to give you a nicely loaded collection for the
+new version of the API. You’ll just need to set a global variable
+PVIEW_KEY and set the authorization’s value to {{PVIEW_KEY}} to your API
+key.</p>
 </div>
 <div class="section level2">
 <h2 id="details-of-the-api-changes">Details of the API changes<a class="anchor" aria-label="anchor" href="#details-of-the-api-changes"></a>
@@ -310,7 +313,7 @@ the value of your API key for the R package to use.</p>
 <p>Now there are 23 endpoints, up from the original 7, and each returns
 a smaller, more specific data structure pertinent to that endpoint. As
 an example, previously the inventor endpoint could return assignee
-information, it no longer does that. The exception is the patents
+information, it no longer does that. The exception is the patent
 endpoint. It now can return assignees, inventors, cpc_current along with
 patent specific fields. Note that some new endpoints are nested under
 patent/ and one is under publication/</p>
@@ -334,8 +337,8 @@ patent/ and one is under publication/</p>
 <li>/api/v1/wipo/</li>
 </ul>
 </li>
-<li>Five of the original API’s endpoints have singular names but lighter
-responses and fewer queryable fields as mentioned above.
+<li>Five of the original API’s endpoints now have singular names but
+lighter responses and fewer queryable fields as mentioned above.
 <ul>
 <li>/api/v1/assignee/</li>
 <li>/api/v1/inventor/</li>
@@ -379,7 +382,7 @@ that the CPC related fields have new names, see the next example.</li>
 </h3>
 <p>Some of the returned fields are HATEOAS (Hypermedia as the Engine of
 Application State) links to retrieve more information about that field.
-Slightly funky is the cpc_current’s cpc_group, returned by the patents
+Slightly funky is the cpc_current’s cpc_group, returned by the patent
 endpoint. Here the slash in the CPC is turned into a colon. This is a
 peculiarity of two of the new convenience urls that shouldn’t be
 noticeable in the r package, unless you are trying to infer the USPC and
@@ -540,11 +543,13 @@ that tries to explain the danger.</p>
 </h3>
 <p>The Tip below “Syntax” in the API’s <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#syntax" class="external-link">documentation</a>
 says:</p>
+<blockquote>
 <p>When working with text data fields, wherever possible, we recommend
 using _text* operators over the _contains and _begins operator. The text
 operators treat these fields as full text data and hence are more
 performant. The “full text” fields are identified in the API Endpoint
 specification with the value “text” for the data type.</p>
+</blockquote>
 <p>Not sure if that only applies to the beta endpoints or not. Also not
 sure what to make of the result set size differences<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>2</sup></a>, total_hits, noting
 that no errors were thrown by the API:</p>

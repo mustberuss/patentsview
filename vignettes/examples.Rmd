@@ -9,7 +9,7 @@ vignette: >
 
 
 
-With the recent [API changes](api-changes.html), the patents endpoint is the main way to retrieve data. The other 
+With the recent [API changes](api-changes.html), the patent endpoint is the main way to retrieve data. The other 
 endpoints supply additional information.  Also note that an API key is required.
 
 ## Patent endpoint
@@ -65,7 +65,6 @@ What assignee's organizations start Microsoft?
 query <- qry_funs$begins(assignee_organization = "Microsoft")
 
 pv_out <- search_pv(query, endpoint = "assignee")
-#> The API's requests per minute limit has been reached. Pausing for 14 seconds before continuing.
 pv_out$data$assignees$assignee_organization
 #>  [1] "Microsoft Technology Beaming, LLC"               
 #>  [2] "MICROSOFT INTERNATIONAL HOLDINGS B.V."           
@@ -100,7 +99,6 @@ query <- with_qfuns(
 inv_fields <- get_fields(endpoint = "patent", groups="inventors")
 # Pull the data
 pv_out <- search_pv(query, fields = inv_fields, all_pages = TRUE, per_page = 1000)
-#> The API's requests per minute limit has been reached. Pausing for 24 seconds before continuing.
 
 # Unnest the inventor list column
 unnest_pv_data(pv_out$data, "patent_id")
