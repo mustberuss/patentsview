@@ -27,7 +27,7 @@ You can get the stable version for the original version of the API from CRAN:
 install.packages("patentsview")
 ```
 
-Or the development version from GitHub:
+Or the development version from GitHub (*Currently broken*):
 
 ```{r eval = FALSE}
 if (!"devtools" %in% rownames(installed.packages())) {
@@ -36,12 +36,7 @@ if (!"devtools" %in% rownames(installed.packages())) {
 
 devtools::install_github("ropensci/patentsview")
 ```
-Or the R package for the new version of the API from github:
-```
-if (!"devtools" %in% rownames(installed.packages())) {
-  devtools::install_github("ropensci/patentsview@api-redesign")
-}
-```
+
 Or the R package for the new version of the API from r-universe:
 
 ```{r eval = FALSE}
@@ -59,7 +54,7 @@ The new version of the API requires an API key, or all of your requests will be 
 set PATENTSVIEW_API_KEY=my_keys_value_without quotes
 ```
 
-See [this page](articles/api-changes.html) about the change. The navigation there will get you to the updated vignettes and reference pages.
+See [this page](articles/api-changes.html) about the change. The navigation above will get you to the updated vignettes and reference pages.
 
 ## Basic usage
 
