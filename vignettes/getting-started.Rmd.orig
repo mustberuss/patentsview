@@ -32,7 +32,7 @@ search_pv(
 )
 ```
 
-This call to `search_pv()` sends our query to the patents endpoint (the default). The API has 23 different endpoints, corresponding to 23 different entity types (application_citation, assignee, cpc_group, cpc_subgroup, cpc_subsection, inventor, location, nber_category, nber_subcategory, patent, patent_citation, uspc_mainclass and uspc_subclass).[^1] Your choice of endpoint determines which entity your query is applied to, as well as the structure of the data that is returned (more on this in the "23 endpoints for 23 entities section"). For now, let's turn our attention to the `query` parameter. 
+This call to `search_pv()` sends our query to the patent endpoint (the default). The API has 23 different endpoints, corresponding to 23 different entity types (application_citation, assignee, cpc_group, cpc_subgroup, cpc_subsection, inventor, location, nber_category, nber_subcategory, patent, patent_citation, uspc_mainclass and uspc_subclass).[^1] Your choice of endpoint determines which entity your query is applied to, as well as the structure of the data that is returned (more on this in the "23 endpoints for 23 entities section"). For now, let's turn our attention to the `query` parameter. 
 
 ## Writing queries
 
@@ -102,13 +102,13 @@ Our last two calls to `search_pv()` gave the same value for `total_hits`, even t
 
 ## 23 endpoints for 23 entities
 
-With the recent API change, the patents endpoint supplies the basic patent data and the other endpoints return more specific data for those patents.
+With the recent API change, the patent endpoint supplies the basic patent data and the other endpoints return more specific data for those patents.
 
 ```{r}
 
 query <- qry_funs$eq(inventors.inventor_name_last = "Chambers")
 
-# Here we'll request patent_id and the inventor fields from the patents endpoint
+# Here we'll request patent_id and the inventor fields from the patent endpoint
 inv_fields <- get_fields(endpoint = "patent", groups ="inventors")
 inv_fields
 fields <- c(inv_fields, "patent_id")
@@ -119,7 +119,7 @@ result
 # Here's the first inventors
 result$data$patents$inventors[[1]]
 
-# Now we will see what the inventors endpoint returns for a similar query.  We use get_fields() to get all the available for the inventors endpoint.
+# Now we will see what the inventor endpoint returns for a similar query.  We use get_fields() to get all the available for the inventor endpoint.
 query <- qry_funs$eq(inventor_name_last = "Chambers")
 fields <- get_fields(endpoint = "inventor")
 
@@ -129,11 +129,11 @@ search_pv(query, endpoint = "inventor", fields = fields)
 
 Your choice of endpoint determines two things:
 
-1. **Which entity your query is applied to.** The first call shown above used the patents endpoint, so the API searched for patents that have at least one inventor listed on them with the last name "chambers." The second call used the inventors endpoint to show what it returns for a similar query.
+1. **Which entity your query is applied to.** The first call shown above used the patent endpoint, so the API searched for patents that have at least one inventor listed on them with the last name "chambers." The second call used the inventor endpoint to show what it returns for a similar query.
 
-2. **The structure of the data frame that is returned.** The first call returned a data frame on the patent level, meaning that each row corresponded to a different patent. Fields that were not on the patent level (e.g., `inventors.inventor_name_last`) were returned in list columns that are named after the entity associated with the field (e.g., the `inventors` entity).[^3] Meanwhile, the second call gave us a data frame on the inventor level (one row for each inventor) because it used the inventors endpoint.
+2. **The structure of the data frame that is returned.** The first call returned a data frame on the patent level, meaning that each row corresponded to a different patent. Fields that were not on the patent level (e.g., `inventors.inventor_name_last`) were returned in list columns that are named after the entity associated with the field (e.g., the `inventors` entity).[^3] Meanwhile, the second call gave us a data frame on the inventor level (one row for each inventor) because it used the inventor endpoint.
 
-Most of the time you will want to use the patent endpoint. Note that you can still effectively filter on fields that are not at the patent-level when using the patents endpoint (e.g., you can filter on assignee name or CPC category). This is because patents are relatively low-level entities. For higher level entities like assignees, if you filter on a field that is not at the assignee-level (e.g., inventor name), the API will return data on any assignee that has at least one inventor whose name matches your search, which is probably not what you want.
+Most of the time you will want to use the patent endpoint. Note that you can still effectively filter on fields that are not at the patent-level when using the patent endpoint (e.g., you can filter on assignee name or CPC category). This is because patents are relatively low-level entities. For higher level entities like assignees, if you filter on a field that is not at the assignee-level (e.g., inventor name), the API will return data on any assignee that has at least one inventor whose name matches your search, which is probably not what you want.
 
 ## Casting fields
 

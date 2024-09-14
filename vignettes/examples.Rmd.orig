@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-With the recent [API changes](api-changes.html), the patents endpoint is the main way to retrieve data. The other 
+With the recent [API changes](api-changes.html), the patent endpoint is the main way to retrieve data. The other 
 endpoints supply additional information.  Also note that an API key is required.
 
 ## Patent endpoint

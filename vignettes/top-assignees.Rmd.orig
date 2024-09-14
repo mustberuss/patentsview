@@ -27,7 +27,7 @@ knitr::opts_chunk$set(
 >
 > In the original version of this page we searched for database (singular) but now that produces a result set of over 10,000 rows.  Instead, we'll search for databases (plural) which will make our result set smaller.  
 >
-> We start by calling the patents endpoint to get the patents where "databases" is in the title or abstract and there is an assignee. We make a subsequent call to the assignee endpoint to get assignee_num_patents (total number of patents) for the top 75 assignees, then we blend in the assignee_num_patents and compute the percentages. Then life, and the script, goes on as normal (as the original script did). 
+> We start by calling the patent endpoint to get the patents where "databases" is in the title or abstract and there is an assignee. We make a subsequent call to the assignee endpoint to get assignee_num_patents (total number of patents) for the top 75 assignees, then we blend in the assignee_num_patents and compute the percentages. Then life, and the script, goes on as normal (as the original script did). 
 
 The following is a quick analysis of the top organizations patenting in the field of databases.
 
@@ -85,7 +85,7 @@ dl
 # We shouldn't need the filter (we queried for non empty string orginazations) but
 # some are NA somehow
 
-# We don't get the assignee_total_num_patents back from the patents endpoint any longer.
+# We don't get the assignee_total_num_patents back from the patent endpoint any longer.
 # We'll have to make a call to the assignee endpoint once we know who the top 75
 # assignees are.
 
@@ -163,7 +163,7 @@ IBM is far and away the biggest player in the field. However, we can see that Or
 
 ```{r topchart}
 
-# The patents endpoint no longer returns application date as this page used originally
+# The patent endpoint no longer returns application date as this page used originally
 # Instead we will use the patent_year  (year the patent was granted, returned as an integer)
 
 # Get the top 5 organizations since slice wasn't working out in the full_join below.
