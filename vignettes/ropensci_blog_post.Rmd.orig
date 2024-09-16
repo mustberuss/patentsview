@@ -163,7 +163,7 @@ latitudes and longitudes to plot.
 Now we'll query the assignee endpoint for non-empty assignee_organization name, where their 
 assignee_individual_name_first and assignee_individual_name_last would be empty (query where
 the assignee is an entity, not an individual).
-The sort will be by assignee_num_patents descending so we'll get a list of the most proflic assignee_organizations
+The sort will be by assignee_num_patents descending so we'll get a list of the most prolific assignee_organizations
 
 ```{r}
 library(patentsview)
