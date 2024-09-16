@@ -173,7 +173,7 @@ Things to note
 
 
 ### HATEOAS Links <a name="HATEOAS">
-Some of the returned fields are HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more information about that field. Slightly funky is the cpc_current's cpc_group, returned by the patent endpoint.  Here the slash in the CPC is turned into a colon.  This is a peculiarity of two of the new convenience urls that shouldn't be noticeable in the r package, unless you are trying to infer the USPC and CPC values from the returned urls, without actually calling back for this data.
+Some of the returned fields are HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more information about that field. Slightly funky is the cpc_current's cpc_group, returned by the patent endpoint.  Here the slash in the CPC is turned into a colon.  This is a peculiarity of two of the new convenience URLs (new endpoints that accept URL parameters) that shouldn't be noticeable in the r package, unless you are trying to infer the USPC and CPC values from the returned URLs, without actually calling back for this data.
 
 Here we'll call the patent endpoint to get CPC fields for a particular patent, some of
 the returned fields, like the cpc_group, are HATEOAS links:
@@ -209,7 +209,7 @@ library(patentsview)
 pv_data <- retrieve_linked_data("https://search.patentsview.org/api/v1/cpc_group/G01S7:4865/")
 pv_data
 
-# Here we'll use an example url from the documentation
+# Here we'll use an example URL from the documentation
 # Note that going to that link in a browser will result in a 403 Unauthorized, as no API key is sent.
 retrieve_linked_data('https://search.patentsview.org/api/v1/patent/?q={"patent_id":"7861317"}')
 
