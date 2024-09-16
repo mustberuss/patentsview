@@ -105,4 +105,4 @@ version of the API, is available
 [here](https://mustberuss.github.io/patentsview/articles/ropensci_blog_post.html).
 A draft of a possible Tech Note about the new version of the API and R
 package is
-[here](https://mustberuss.github.io/patentsview/articles/ropensci_tech_note.html).
+[here](https://mustberuss.github.io/patentsview/articles/patentsview-breaking-change.html).
