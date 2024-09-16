@@ -59,6 +59,9 @@ navbar:
         - text: "Citation networks"
           icon: fa-long-arrow-left
           href: articles/citation-networks.html
+        - text: ropensci announcement
+          icon: fa-bullhorn
+          href: articles/ropensci_blog_post.html
   structure:
     left:  [intro, changes, starting, queries, examples, applications, news]
     right: [reference, search, github, lightswitch]
