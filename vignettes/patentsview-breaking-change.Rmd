@@ -1,0 +1,101 @@
+---
+slug: patentsview-breaking-change
+title: "Breaking release of the Patentsview Package"
+output: rmarkdown::html_vignette
+tags:
+  - tech notes
+  - Patents
+  - PatentsView
+  - API
+  - API client
+  - USPTO
+  - r-universe
+vignette: >
+  %\VignetteIndexEntry{Breaking release of the Patentsview Package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+
+The Patentsview API team has released a new version of their API, which is used by a
+correspondingly new version of the patentsview R package.  The problem for users
+is that the API team has made **breaking changes**, existing programs will not run
+with the new version of the R package. Please don't shoot the messenger!
+
+The new version of the R package handles some of the API team's changes where possible, 
+however an API key is now required.  The Patentsview API team plans to shutdown 
+the original version of the API on February 12, 2025. At that
+time the original version of the R package will stop working.
+
+The original version of the R package is available on CRAN with the new version available on r-universe.  After the original version of the API is shutdown, the new R package will be submitted to CRAN.
+
+## User Impacting API changes:
+1. Users will need to [request an API key](https://patentsview.org/apis/keyrequest) and set an environmental variable.
+2. endpoint changes:
+   - The nber_subcategories, one of the original seven endpoints, was removed
+   - cpc_subsections is now cpc_group
+   - The remaining five original endpoints went from plural to singular, patents is now patent for example
+   - There are now 23 endpoints, some may need to be called to retrieve fields that are  currently (soon-to-be-were)
+available from the original endpoints (now some endpoint's returns are lighter, requiring additional calls to be made).
+   - Now some of the endpoints return HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more data
+(URLs for additional calls back to the API)
+3. Some fields are now nested and need to be fully qualified when used in a query or fields list, 
+ex fields=c( "cpc_current.cpc_group_id") when using the patent endpoint
+4. Some field's names have changed, most significantly, patent_number is now patent_id,
+ and some fields were removed entirely.
+5. The original version of the API had queryable fields and additional fields which could be 
+retreived but couldn't be part of a conditional query.  That notion does not apply to the 
+new version of the API as all fields are now queryable.  Game on, meaning you may be able
+to simplify your code if you found yourself doing post processing on returned data
+because a field you were interested in was not queryable.
+
+
+The API team also renamed the API, PatentsView's Search API is now the PatentSearch API, as announced 
+[here](https://search.patentsview.org/docs/#naming-update). 
+Note that the R package will retain its name, continue to use library(patentsview)
+
+## Highlights of the R package:
+
+1. Throttling is now enforced by the API and handled by the R package (sleep as specified by the throttle response then retry)
+2. There are two new vignettes
+   - There is a new "Converting an existing script" vignette
+   - The [ropensci post](https://ropensci.org/blog/2017/09/19/patentsview/) that announced the original version of the R package has been changed to work with the new version of the API and is now a new vignette.
+3. A hex sticker was created using GuangchuangYu's [hexSticker](https://github.com/GuangchuangYu/hexSticker)
+4. Two new functions were added
+   - retrieve_linked_data() to retrieve data from a HATEOAS link the API sent back, retrying if throttled
+   - qry_funs$in_range() to generate range queries for you.
+
+``` r
+library(patentsview)
+qry_funs$in_range(patent_date = c("1970-01-01", "1983-02-28"))
+#> {"_and":[{"_gte":{"patent_date":"1970-01-01"}},{"_lte":{"patent_date":"1983-02-28"}}]}
+
+qry_funs$in_range(patent_year = c(2010, 2021))
+#> {"_and":[{"_gte":{"patent_year":2010}},{"_lte":{"patent_year":2021}}]}
+```
+
+## Online Documentation
+
+The API team has thoughtfully provided a Swagger UI page for the new version of the API at https://search.patentsview.org/swagger-ui/.
+Think of it as an online version of Postman already loaded with the API’s new endpoints and returns.
+The Swagger UI page documents what fields are returned by each endpoint on a successful call.
+(Response http code 200).
+You can even send in requests and see actual API responses if you enter your API key and press
+an endpoint's "Try it out" and "Execute" buttons.  Even error responses can be informative, 
+usually pointing out what went wrong.
+
+In a similar format, the [updated API documentation](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/) 
+lists what each endpoint does.  Additionally, the R package's fieldsdef data frame has been updated, now listing the new set 
+of endpoints and retrievable/queryable fields.  The package's reference pages have been also updated.
+
+## Final Thoughts
+As shown in the updated Top Assignees vignette, there will be occasions now where multiple API calls are needed to retrieve the same data as in a single API call in the original version of the API and R package.
+Additionally, the reworked ropensci post explains what changes had to be made since assignee latitude
+and longitude are no longer available from the patent endpoint.
+
+Please open issues for the R package [here](https://github.com/ropensci/patentsview/issues).  Issues or questions about the API itself can be raised [here](https://patentsview-support.atlassian.net/servicedesk/customer/portals) or in the
+API's [forum](https://patentsview.org/forum).
+
+
