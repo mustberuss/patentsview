@@ -98,6 +98,11 @@
        
       Citation networks
     </a>
+    <a class="dropdown-item" href="../articles/ropensci_blog_post.html">
+      <span class="fa fa-bullhorn"></span>
+       
+      ropensci announcement
+    </a>
   </div>
 </li>
 <li class="nav-item">
@@ -148,7 +153,8 @@ version of the R package handles some of the API team’s changes. The new
 version of the API requires an API key however. The original and new
 versions of the API will both be available for a while, but eventually
 the Patentsview API team plans to shutdown the original version of the
-API.</p>
+API (the current shutdown date is February 12, 2025). Don’t shoot the
+messenger.</p>
 <p>The original version of the R package is on CRAN with the new version
 available on r-universe. After the original version of the API is
 shutdown, the new R package will be submitted to CRAN.</p>
@@ -158,13 +164,19 @@ shutdown, the new R package will be submitted to CRAN.</p>
 <ol style="list-style-type: decimal">
 <li>Users will need to <a href="https://patentsview.org/apis/keyrequest" class="external-link">request an API key</a>
 and set an environmental variable.</li>
-<li>New endpoints were added.</li>
-<li>Some endpoints were renamed (moved) and some were removed.</li>
+<li>The nber_subcategories endpoint was removed</li>
+<li>The original endpoints went from plural to singular, patents is now
+patent for example</li>
+<li>The CPC releated endpoints have new names</li>
 <li>Some of the endpoints return HATEOAS (Hypermedia as the Engine of
 Application State) links to retrieve more data</li>
-<li>Some attribute names have changes and some were removed
-entirely.</li>
+<li>Some field names have changed, most significantly, patent_number is
+now patent_id, and some fields were removed entirely.</li>
 </ol>
+<p>The API team also renamed the API, PatentsView’s Search API is now
+the PatentSearch API, as announced <a href="https://search.patentsview.org/docs/#naming-update" class="external-link">here</a>. Note
+that the R package will retain its name, continue to use
+library(patentsview)</p>
 </div>
 <div class="section level3">
 <h3 id="highlights-of-the-r-package">Highlights of the R package:<a class="anchor" aria-label="anchor" href="#highlights-of-the-r-package"></a>
@@ -176,18 +188,20 @@ entirely.</li>
 <li>There is a new function retrieve_linked_data() to retrieve data from
 a HATEOAS link, retrying if throttled</li>
 <li>The <a href="https://ropensci.org/blog/2017/09/19/patentsview/" class="external-link">ropensci
-post</a> announcing the original version of the R package has been
+post</a> that announced the original version of the R package has been
 modified to work with the new version of the API and is now a new
 vignette.</li>
 <li>A hex sticker was created using GuangchuangYu’s <a href="https://github.com/GuangchuangYu/hexSticker" class="external-link">hexSticker</a>
 </li>
 </ol>
 <p>The API team has provided a Swagger UI page for the new version of
-the API at <a href="https://search.patentsview.org/swagger-ui/" class="external-link uri">https://search.patentsview.org/swagger-ui/</a> to help in
-the transition. As shown in the updated Top Assignees vignette, there
-will be occasions where multiple API calls are needed to retrieve the
-same data as in a single API call in the original version of the API and
-R package.</p>
+the API at <a href="https://search.patentsview.org/swagger-ui/" class="external-link uri">https://search.patentsview.org/swagger-ui/</a>. As shown in
+the updated Top Assignees vignette, there will be occasions where
+multiple API calls are needed to retrieve the same data as in a single
+API call in the original version of the API and R package. Additionally,
+the reworked ropensci post explains what changes had to be made since
+assignee latitude and longitude are no longer available from the patent
+endpoint.</p>
 <p>Please open issues for the R package <a href="https://github.com/ropensci/patentsview/issues" class="external-link">here</a>. Issues
 or questions about the API itself can be raised <a href="https://patentsview-support.atlassian.net/servicedesk/customer/portals" class="external-link">here</a>
 or in the API’s <a href="https://patentsview.org/forum" class="external-link">forum</a>.</p>

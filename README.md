@@ -1,5 +1,3 @@
-patentsview
-================
 
 # patentsview <img src="man/figures/logo.png" align="right" height="200" style="float:right; height:200px;" alt="Package Logo"/>
 
@@ -51,9 +49,10 @@ value of your key. For windows it would be
 
     set PATENTSVIEW_API_KEY=my_keys_value_without quotes
 
-See [this page](articles/api-changes.html) about the change. The
-navigation above will get you to the updated vignettes and reference
-pages.
+See [this
+page](https://mustberuss.github.io/patentsview/articles/api-changes.html)
+about the change. The navigation there will get you to the updated
+vignettes and reference pages.
 
 ## Basic usage
 
@@ -87,18 +86,23 @@ Head over to the package’s
 [webpage](https://docs.ropensci.org/patentsview/index.html) for more
 info, including:
 
--   A [getting started vignette](articles/getting-started.html) for
-    first-time users.
+-   A [getting started
+    vignette](https://mustberuss.github.io/patentsview/articles/getting-started.html)
+    for first-time users.
 -   An in-depth tutorial on [writing
-    queries](articles/writing-queries.html)
--   A list of [basic examples](articles/examples.html)
+    queries](https://mustberuss.github.io/patentsview/articles/writing-queries.html)
+-   A list of [basic
+    examples](https://mustberuss.github.io/patentsview/articles/examples.html)
 -   Two examples of data applications (e.g., a brief analysis of the
-    [top assignees](articles/top-assignees.html) in the field of
-    databases)
+    [top
+    assignees](https://mustberuss.github.io/patentsview/articles/top-assignees.html)
+    in the field of databases)
 
 This package was first introduced in 2017 in an [rOpenSci blog
 post](https://ropensci.org/blog/2017/09/19/patentsview/) which used the
 original version of the API. The same content, reworked to use the new
 version of the API, is available
-[here](articles/ropensci_blog_post.html). A draft of a possible Tech
-Note about the new version of the API and R package is [here]().
+[here](https://mustberuss.github.io/patentsview/articles/ropensci_blog_post.html).
+A draft of a possible Tech Note about the new version of the API and R
+package is
+[here](https://mustberuss.github.io/patentsview/articles/ropensci_tech_note.html).
