@@ -41,7 +41,8 @@ The original version of the R package is available on CRAN with the new version 
 2. endpoint changes:
    - The nber_subcategories, one of the original seven endpoints, was removed
    - cpc_subsections is now cpc_group
-   - The remaining five original endpoints went from plural to singular, patents is now patent for example
+   - The remaining five original endpoints went from plural to singular, "patents" is now "patent" for example.
+Interestingly, the returned data structures are still plural for the most part. (insert head scratching emoji here)
    - There are now 23 endpoints, some may need to be called to retrieve fields that are  currently (soon-to-be-were)
 available from the original endpoints (now some endpoint's returns are lighter, requiring additional calls to be made).
    - Now some of the endpoints return HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more data
@@ -55,7 +56,11 @@ retreived but couldn't be part of a conditional query.  That notion does not app
 new version of the API as all fields are now queryable.  Game on, meaning you may be able
 to simplify your code if you found yourself doing post processing on returned data
 because a field you were interested in was not queryable.
-
+6. Currently not working properly, there isn't supposed to be a difference between
+operators used on full text fields, as there was in the original
+verson of the API.  See the tip below the Syntax section [here](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#syntax).
+Note that the result sizes aren't matching currently though, see
+[testthat/test-api-bugs.R](https://github.com/mustberuss/patentsview/blob/api-redesign/tests/testthat/test-api-bugs.R)
 
 The API team also renamed the API, PatentsView's Search API is now the PatentSearch API, as announced 
 [here](https://search.patentsview.org/docs/#naming-update). 
@@ -88,9 +93,9 @@ You can even send in requests and see actual API responses if you enter your API
 an endpoint's "Try it out" and "Execute" buttons.  Even error responses can be informative, 
 usually pointing out what went wrong.
 
-In a similar format, the [updated API documentation](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/) 
+In a similar format, the [updated API documentation](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints)
 lists what each endpoint does.  Additionally, the R package's fieldsdef data frame has been updated, now listing the new set 
-of endpoints and retrievable/queryable fields.  The package's reference pages have been also updated.
+of endpoints and retrievable/queryable fields.  The R package's reference pages have also been updated.
 
 ## Final Thoughts
 As shown in the updated Top Assignees vignette, there will be occasions now where multiple API calls are needed to retrieve the same data as in a single API call in the original version of the API and R package.
