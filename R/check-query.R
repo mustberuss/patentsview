@@ -35,7 +35,7 @@ one_check <- function(operator, field, value, f1) {
     (operator %in% c("_begins", "_contains", "_text_all", "_text_any", "_text_phrase") &&
       !(f1$data_type == "fulltext" || f1$data_type == "string")) ||
       (f1$data_type %in% c("string", "fulltext") &&
-        operator %in% c("_gt", "_gte", "_lt", "_lte"))  ) {
+        operator %in% c("_gt", "_gte", "_lt", "_lte"))) {
     stop2("You cannot use the operator ", operator, " with the field ", field)
   }
 }
