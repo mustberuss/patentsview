@@ -392,7 +392,7 @@ endpoint. Here the slash in the CPC is turned into a colon. This is a
 peculiarity of two of the new convenience URLs (new endpoints that
 accept URL parameters) that shouldn’t be noticeable in the r package,
 unless you are trying to infer the USPC and CPC values from the returned
-urls, without actually calling back for this data.</p>
+URLs, without actually calling back for this data.</p>
 <p>Here we’ll call the patent endpoint to get CPC fields for a
 particular patent, some of the returned fields, like the cpc_group, are
 HATEOAS links:</p>
@@ -452,7 +452,7 @@ documentation</a>.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; total_hits = 1</span></span>
 <span></span>
-<span><span class="co"># Here we'll use an example url from the documentation</span></span>
+<span><span class="co"># Here we'll use an example URL from the documentation</span></span>
 <span><span class="co"># Note that going to that link in a browser will result in a 403 Unauthorized, as no API key is sent.</span></span>
 <span><span class="fu"><a href="../reference/retrieve_linked_data.html">retrieve_linked_data</a></span><span class="op">(</span><span class="st">'https://search.patentsview.org/api/v1/patent/?q={"patent_id":"7861317"}'</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $data</span></span>

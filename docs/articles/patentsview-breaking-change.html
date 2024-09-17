@@ -169,7 +169,9 @@ and set an environmental variable.</li>
 removed</li>
 <li>cpc_subsections is now cpc_group</li>
 <li>The remaining five original endpoints went from plural to singular,
-patents is now patent for example</li>
+“patents” is now “patent” for example. Interestingly, the returned data
+structures are still plural for the most part. (insert head scratching
+emoji here)</li>
 <li>There are now 23 endpoints, some may need to be called to retrieve
 fields that are currently (soon-to-be-were) available from the original
 endpoints (now some endpoint’s returns are lighter, requiring additional
@@ -190,6 +192,11 @@ query. That notion does not apply to the new version of the API as all
 fields are now queryable. Game on, meaning you may be able to simplify
 your code if you found yourself doing post processing on returned data
 because a field you were interested in was not queryable.</li>
+<li>Currently not working properly, there isn’t supposed to be a
+difference between operators used on full text fields, as there was in
+the original verson of the API. See the tip below the Syntax section <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#syntax" class="external-link">here</a>.
+Note that the result sizes aren’t matching currently though, see <a href="https://github.com/mustberuss/patentsview/blob/api-redesign/tests/testthat/test-api-bugs.R" class="external-link">testthat/test-api-bugs.R</a>
+</li>
 </ol>
 <p>The API team also renamed the API, PatentsView’s Search API is now
 the PatentSearch API, as announced <a href="https://search.patentsview.org/docs/#naming-update" class="external-link">here</a>. Note
@@ -241,11 +248,11 @@ returned by each endpoint on a successful call. (Response http code
 enter your API key and press an endpoint’s “Try it out” and “Execute”
 buttons. Even error responses can be informative, usually pointing out
 what went wrong.</p>
-<p>In a similar format, the <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/" class="external-link">updated
+<p>In a similar format, the <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints" class="external-link">updated
 API documentation</a> lists what each endpoint does. Additionally, the R
 package’s fieldsdef data frame has been updated, now listing the new set
-of endpoints and retrievable/queryable fields. The package’s reference
-pages have been also updated.</p>
+of endpoints and retrievable/queryable fields. The R package’s reference
+pages have also been updated.</p>
 </div>
 <div class="section level2">
 <h2 id="final-thoughts">Final Thoughts<a class="anchor" aria-label="anchor" href="#final-thoughts"></a>
