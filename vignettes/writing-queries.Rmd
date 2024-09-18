@@ -117,15 +117,16 @@ All of the functions that make up the DSL are found in the `qry_funs` list (e.g.
 
 ## Query examples 
 
-*The following queries are intended for the patent endpoint*
-
-Patents linked to an assignee with 10 or fewer distinct (and disambiguated) inventors:
+Query the assignee endpoint for disambiguated assignees with 10 or fewer patents:
 
 
 ``` r
-qry_funs$lte(num_inventors = 10)
-#> {"_lte":{"num_inventors":10}}
+
+qry_funs$lte(assignee_num_inventors.num_inventors = 10)
+#> {"_lte":{"assignee_num_inventors.num_inventors":10}}
 ```
+
+The remaining examples are queries intended for the patent enpoint
 
 Patents assigned to the "CPC class" of G12 (physics instruments):
 
@@ -171,16 +172,16 @@ OR
 with_qfuns(
   or(
     and(
-      eq(inventors.inventor_name_last = "smith"),
+      eq(inventors.inventor_name_last = "Smith"),
       contains(patent_title = "cotton gin")
     ),
     and(
-      eq(inventors.inventor_name_last = "turner"),
+      eq(inventors.inventor_name_last = "Turner"),
       contains(patent_title = "COBOL")
     )
   )
 )
-#> {"_or":[{"_and":[{"_eq":{"inventors.inventor_name_last":"smith"}},{"_contains":{"patent_title":"cotton gin"}}]},{"_and":[{"_eq":{"inventors.inventor_name_last":"turner"}},{"_contains":{"patent_title":"COBOL"}}]}]}
+#> {"_or":[{"_and":[{"_eq":{"inventors.inventor_name_last":"Smith"}},{"_contains":{"patent_title":"cotton gin"}}]},{"_and":[{"_eq":{"inventors.inventor_name_last":"Turner"}},{"_contains":{"patent_title":"COBOL"}}]}]}
 ```
 
 [^1]: One may note that using "value arrays" is supposedly supported by the API. For example, the API documentation gives the following query as an example of their use: `'{"inventor_last_name":["Whitney","Hopper"]}'`. The problem with this is that the API is not consistent in its handling of value arrays. For many of the comparison operators, one cannot "or" together values like this using arrays. Thus, the DSL in `patentsview` never relies on arrays when creating queries.

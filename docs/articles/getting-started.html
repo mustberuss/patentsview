@@ -213,7 +213,7 @@ using one of the functions in the DSL, <code>qry_funs$gte()</code>:</p>
 <p>More complex queries are also possible:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
+<span>  <span class="fu">and</span><span class="op">(</span></span>
 <span>    <span class="fu">gte</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2007-01-01"</span><span class="op">)</span>,</span>
 <span>    <span class="fu">text_phrase</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"computer program"</span>, <span class="st">"dog leash"</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
@@ -265,7 +265,7 @@ default set. You can specify which fields you want using the
 UI page</a> for the API, the fields returned are listed for each
 endpoint in the 200 Response body sections.</p>
 <p>You can also visit an endpoint’s online documentation page to see a
-list of its retrievable fields (e.g., see the <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#inventor" class="external-link">inventor
+list of its fields (e.g., see the <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#inventor" class="external-link">inventor
 field list table</a>). In earlier versions of the API not all fields
 were queryable as they are now. The field tables for all of the
 endpoints can be found in the <code>fieldsdf</code> data frame, which
@@ -493,9 +493,9 @@ problem.</p>
 </h4>
 <p>Yes, the API currently allows 45 calls per minute for each API key.
 If this limit is exceeded the API will return an http status of 429 with
-a response header Retry-After set to the number of seconds to wait until
-making subsequent requests. The R package should handle this for you.
-You will need to <a href="https://patentsview.org/apis/keyrequest" class="external-link">request an API key</a>
+a response header Retry-After set to the number of seconds to wait
+before making subsequent requests. The R package should handle this for
+you. You will need to <a href="https://patentsview.org/apis/keyrequest" class="external-link">request an API key</a>
 and set the environmental variable PATENTSVIEW_API_KEY to the value of
 your key.</p>
 </div>
@@ -755,7 +755,7 @@ field that can act as a unique identifier for the primary entities:</li>
 <p>Now we are left with a series of flat data frames instead of having a
 single data frame with other data frames nested inside of it. These flat
 data frames can be joined together as needed via the primary key
-(<code>assignee_id</code>).</p>
+(<code>patent_id</code>).</p>
 </div>
 </div>
 

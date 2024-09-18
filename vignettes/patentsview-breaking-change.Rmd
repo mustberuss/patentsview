@@ -51,10 +51,10 @@ retreived but couldn't be part of a conditional query.  That notion does not app
 new version of the API as all fields are now queryable.  Game on, meaning you may be able
 to simplify your code if you found yourself doing post processing on returned data
 because a field you were interested in was not queryable.
-6. Currently not working properly, there isn't supposed to be a difference between 
+6. Currently not working properly, there isn't supposed to be a difference between
 operators used on full text fields, as there was in the original
 verson of the API.  See the tip below the Syntax section [here](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#syntax).
-Note that the result sizes aren't matching currently though, see 
+Note that the result sizes aren't matching currently though, see
 [testthat/test-api-bugs.R](https://github.com/mustberuss/patentsview/blob/api-redesign/tests/testthat/test-api-bugs.R)
 
 The API team also renamed the API, PatentsView's Search API is now the PatentSearch API, as announced 
@@ -91,7 +91,7 @@ You can even send in requests and see actual API responses if you enter your API
 an endpoint's "Try it out" and "Execute" buttons.  Even error responses can be informative, 
 usually pointing out what went wrong.
 
-In a similar format, the [updated API documentation](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints) 
+In a similar format, the [updated API documentation](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints)
 lists what each endpoint does.  Additionally, the R package's fieldsdef data frame has been updated, now listing the new set 
 of endpoints and retrievable/queryable fields.  The R package's reference pages have also been updated.
 

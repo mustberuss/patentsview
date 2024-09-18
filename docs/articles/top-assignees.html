@@ -145,19 +145,20 @@
     
     
 <blockquote>
-<p>Note about the affects of the <a href="api-changes.html">API
+<p>Note about the effects of the <a href="api-changes.html">API
 changes</a>.</p>
-<p>This is a good example of life under the new API, where we have to
-make more than one call to get the same data as before. This assumes
-that we have already received an API key and have set the environmental
-variable (see the API Changes page). Maybe even keep the old page around
-for comparison?</p>
+<p>This is a good example of life under the new version of the API,
+where we have to make more than one call to get the same data as before.
+This assumes that we have already received an API key and have set the
+environmental variable (see the API Changes page). Maybe even keep the
+old page around for comparison? For now the original Top Assignees page
+is <a href="https://docs.ropensci.org/patentsview/articles/top-assignees.html" class="external-link">here</a>.</p>
 <p>Intention:<br>
 The original version of this page used the patent’s application date in
-the plot below. In the new version of the API there a patent_year (the
-year the patent was granted, already of type integer) that we’ll use.
-Trouble is that the count is nested inside the patents structure, not
-inside the nested assignees. Fortunately both nested structures have
+the plot below. In the new version of the API there is a patent_year
+(the year the patent was granted, already of type integer) that we’ll
+use. Trouble is that the count is nested inside the patents structure,
+not inside the nested assignees. Fortunately both nested structures have
 patent_id as a field so we can join them to get the data we need.</p>
 <p>In the original version of this page we searched for database
 (singular) but now that produces a result set of over 10,000 rows.
@@ -184,19 +185,15 @@ PatentsView API:</li>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rstudio/DT" class="external-link">DT</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/" class="external-link">knitr</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># With the recent API change that limits the overall result set size, we now look</span></span>
-<span><span class="co"># for databases (plural) where we used to use the singular database for this vignette.</span></span>
-<span><span class="co"># We also exclude patents without an assignee organization.</span></span>
-<span></span>
 <span><span class="co"># We first need to write a query. Our query will look for "databases" in either </span></span>
 <span><span class="co"># the patent title or abstract...Note, this isn't a terribly good way to ID our </span></span>
 <span><span class="co"># patents, but it will work for the purpose of demonstration. Users who are </span></span>
 <span><span class="co"># interested in writing higher-quality queries could consult the large body of </span></span>
 <span><span class="co"># research that has been done in field of patent document retrieval.</span></span>
 <span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
+<span>  <span class="fu">and</span><span class="op">(</span></span>
 <span>     <span class="fu">neq</span><span class="op">(</span><span class="st">"assignees.assignee_organization"</span> <span class="op">=</span> <span class="st">""</span><span class="op">)</span>,</span>
-<span>     <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">or</a></span><span class="op">(</span></span>
+<span>     <span class="fu">or</span><span class="op">(</span></span>
 <span>       <span class="fu">text_phrase</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="st">"databases"</span><span class="op">)</span>,</span>
 <span>       <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"databases"</span><span class="op">)</span></span>
 <span>     <span class="op">)</span></span>
@@ -206,11 +203,14 @@ PatentsView API:</li>
 <span><span class="va">query</span></span>
 <span><span class="co">#&gt; {"_and":[{"_neq":{"assignees.assignee_organization":""}},{"_or":[{"_text_phrase":{"patent_abstract":"databases"}},{"_contains":{"patent_title":"databases"}}]}]}</span></span>
 <span></span>
-<span><span class="co"># Create a list of the fields we'll need for the analysis</span></span>
+<span><span class="co"># Create a list of the fields we'll need for the analysis.</span></span>
+<span><span class="co"># We'll request both "patent_earliest_application_date" and</span></span>
+<span><span class="co"># "applications.filing_date" so that either could be used</span></span>
+<span><span class="co"># in the plot below</span></span>
 <span></span>
 <span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>  <span class="st">"patent_id"</span>, <span class="st">"patent_date"</span>,<span class="st">"patent_year"</span>,</span>
-<span>  <span class="st">"patent_num_us_patents_cited"</span>,</span>
+<span>  <span class="st">"patent_id"</span>, <span class="st">"patent_date"</span>, <span class="st">"patent_year"</span>, <span class="st">"patent_earliest_application_date"</span>,</span>
+<span>  <span class="st">"patent_num_us_patents_cited"</span>, <span class="st">"application.filing_date"</span>,</span>
 <span>  <span class="st">"assignees.assignee_organization"</span>,</span>
 <span>  <span class="st">"assignees.assignee_id"</span>  <span class="co"># the assignee fields come back in a nested object</span></span>
 <span><span class="op">)</span></span>
@@ -222,12 +222,14 @@ PatentsView API:</li>
 <span><span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ patents:'data.frame': 8937 obs. of  5 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id                  : chr [1:8937] "10000987" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_date                : chr [1:8937] "2018-06-19" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_year                : int [1:8937] 2018 2018 ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_num_us_patents_cited: int [1:8937] 163 7 ...</span></span>
-<span><span class="co">#&gt;   ..$ assignees                  :List of 8937</span></span>
+<span><span class="co">#&gt;  $ patents:'data.frame': 8937 obs. of  7 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id                       : chr [1:8937] "10000987" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_date                     : chr [1:8937] "2018-06-19" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_year                     : int [1:8937] 2018 2018 ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_earliest_application_date: chr [1:8937] "2014-02-20" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_num_us_patents_cited     : int [1:8937] 163 7 ...</span></span>
+<span><span class="co">#&gt;   ..$ application                     :List of 8937</span></span>
+<span><span class="co">#&gt;   ..$ assignees                       :List of 8937</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
@@ -240,60 +242,56 @@ patents these assignees have and what fraction of their total patents
 relate to databases.</li>
 </ol>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Unnest the data frames that are stored in the assignee list column</span></span>
+<code class="sourceCode R"><span></span>
+<span><span class="co"># Unnest the data frames that are stored in the assignee list column</span></span>
 <span><span class="va">dl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">pv_out</span><span class="op">$</span><span class="va">data</span>, <span class="st">"patent_id"</span><span class="op">)</span></span>
 <span><span class="va">dl</span></span>
-<span><span class="co">#&gt; List of 2</span></span>
-<span><span class="co">#&gt;  $ assignees:'data.frame':   8440 obs. of  3 variables:</span></span>
+<span><span class="co">#&gt; List of 3</span></span>
+<span><span class="co">#&gt;  $ application:'data.frame': 8937 obs. of  2 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id  : chr [1:8937] "10000987" ...</span></span>
+<span><span class="co">#&gt;   ..$ filing_date: chr [1:8937] "2014-02-20" ...</span></span>
+<span><span class="co">#&gt;  $ assignees  :'data.frame': 8440 obs. of  3 variables:</span></span>
 <span><span class="co">#&gt;   ..$ patent_id            : chr [1:8440] "10000987" ...</span></span>
 <span><span class="co">#&gt;   ..$ assignee             : chr [1:8440] "https://search.patentsview.org/api"..</span></span>
 <span><span class="co">#&gt;   ..$ assignee_organization: chr [1:8440] "National Oilwell Varco, L.P." ...</span></span>
-<span><span class="co">#&gt;  $ patents  :'data.frame':   8937 obs. of  4 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id                  : chr [1:8937] "10000987" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_date                : chr [1:8937] "2018-06-19" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_year                : int [1:8937] 2018 2018 ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_num_us_patents_cited: int [1:8937] 163 7 ...</span></span>
-<span></span>
-<span><span class="co"># We shouldn't need the filter (we queried for non empty string orginazations) but</span></span>
-<span><span class="co"># some are NA somehow</span></span>
+<span><span class="co">#&gt;  $ patents    :'data.frame': 8937 obs. of  5 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id                       : chr [1:8937] "10000987" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_date                     : chr [1:8937] "2018-06-19" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_year                     : int [1:8937] 2018 2018 ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_earliest_application_date: chr [1:8937] "2014-02-20" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_num_us_patents_cited     : int [1:8937] 163 7 ...</span></span>
 <span></span>
 <span><span class="co"># We don't get the assignee_total_num_patents back from the patent endpoint any longer.</span></span>
 <span><span class="co"># We'll have to make a call to the assignee endpoint once we know who the top 75</span></span>
 <span><span class="co"># assignees are.</span></span>
 <span></span>
-<span><span class="co"># Requested assignees.assignee_id comes back in the assignees object </span></span>
-<span><span class="co"># with key "assignee" and value like </span></span>
+<span><span class="co"># We requested assignees.assignee_id but it comes back in the assignees object</span></span>
+<span><span class="co"># with key "assignee" (the _id clipped off) and a GUID looking value ex:</span></span>
 <span><span class="co"># https://search.patentsview.org/api/v1/assignee/4e49a0a0-16c8-11ed-9b5f-1234bde3cd05/</span></span>
 <span><span class="co"># We want to parse out the assignee_ids, ex: 4e49a0a0-16c8-11ed-9b5f-1234bde3cd05</span></span>
+<span><span class="co"># (The API's documetation shows that the assignee URL parameter is the assignee_id)</span></span>
 <span></span>
 <span><span class="co"># Create a data frame with the top 75 assignees:</span></span>
 <span><span class="va">top_asgns</span> <span class="op">&lt;-</span></span>
 <span>  <span class="va">dl</span><span class="op">$</span><span class="va">assignees</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">assignee_organization</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="co"># some patents are assigned to an inventor (not an org)</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>assignee_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">gsub</a></span><span class="op">(</span><span class="st">".*/([0-9]+)/$"</span>, <span class="st">"\\1"</span>, <span class="va">assignee</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>assignee_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">".*/([0-9a-f-]+)/$"</span>, <span class="st">"\\1"</span>, <span class="va">assignee</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">assignee_organization</span>, <span class="va">assignee_id</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>db_pats <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">db_pats</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">75</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Now that we have the assignee_id's we can call the assignee endpoint to get the</span></span>
-<span><span class="co"># total number of patents for each of our top_asgns </span></span>
+<span><span class="co"># Now that we have the assignee_id's,  we can make a single call to the assignee</span></span>
+<span><span class="co"># endpoint to get the total number of patents for each of our top_asgns. (One</span></span>
+<span><span class="co"># call rather than 75 calls using the unparsed "assignee" URLs)</span></span>
 <span></span>
 <span><span class="va">assignee_query</span> <span class="op">=</span>  <span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span>assignee_id <span class="op">=</span> <span class="va">top_asgns</span><span class="op">$</span><span class="va">assignee_id</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#*** This used to work but now the API returns no results from assignee_query,</span></span>
-<span><span class="co">#*** instead we'll try using assignee_organization, odd thing though, the</span></span>
-<span><span class="co">#*** query by assignee_organization only returns 72 rows, not 75 as we'd like</span></span>
-<span><span class="co">#*** Still it's an improvement over no rows</span></span>
-<span></span>
-<span><span class="va">assignee_query</span> <span class="op">=</span>  <span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span>assignee_organization <span class="op">=</span> <span class="va">top_asgns</span><span class="op">$</span><span class="va">assignee_organization</span><span class="op">)</span></span>
-<span></span>
 <span><span class="va">assignee_fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>  <span class="st">"assignee_id"</span>,<span class="st">"assignee_organization"</span>, <span class="st">"assignee_num_patents"</span> </span>
+<span>  <span class="st">"assignee_id"</span>, <span class="st">"assignee_organization"</span>, <span class="st">"assignee_num_patents"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># we'll post to the API, the query is a pretty large string (an "or" of 75 assignee_ids)</span></span>
+<span><span class="co"># We'll post to the API, the query is a pretty large string (an "or" of 75 assignee_ids)</span></span>
 <span><span class="va">assignee_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">assignee_query</span> , fields <span class="op">=</span> <span class="va">assignee_fields</span>, all_pages <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>   per_page <span class="op">=</span> <span class="fl">1000</span>, endpoint <span class="op">=</span> <span class="st">"assignee"</span>, method <span class="op">=</span> <span class="st">"POST"</span><span class="op">)</span></span>
 <span></span>
@@ -316,12 +314,16 @@ relate to databases.</li>
 <span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">db_pats</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># trying to avoid Error: Chromote: timed out waiting for event Page.loadEventFired</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/knitr/man/opts_chunk.html" class="external-link">opts_chunk</a></span><span class="op">$</span><span class="fu">set</span><span class="op">(</span></span>
+<span>   delay <span class="op">=</span> <span class="fl">30</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co"># Create datatable</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">datatable</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">top_asgns</span>,</span>
 <span>  rownames <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  colnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"Assignee"</span>, <span class="st">"DB patents"</span>,<span class="st">"Total patents"</span>, <span class="st">"DB patents / total patents"</span></span>
+<span>    <span class="st">"Assignee"</span>, <span class="st">"DB patents"</span>, <span class="st">"Total patents"</span>, <span class="st">"DB patents / total patents"</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  caption <span class="op">=</span> <span class="fu">htmltools</span><span class="fu">::</span><span class="va"><a href="https://rstudio.github.io/htmltools/reference/builder.html" class="external-link">tags</a></span><span class="op">$</span><span class="fu">caption</span><span class="op">(</span></span>
 <span>    style <span class="op">=</span> <span class="st">'caption-side: top; text-align: left; font-style: italic;'</span>,</span>
@@ -341,30 +343,47 @@ changed over time.</li>
 </ol>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="co"># The patent endpoint no longer returns application date as this page used originally</span></span>
-<span><span class="co"># Instead we will use the patent_year  (year the patent was granted, returned as an integer)</span></span>
+<span><span class="co"># Comment from the original version of this page:</span></span>
+<span><span class="co"># Create a data frame with patent counts by application year for each assignee</span></span>
+<span></span>
+<span><span class="co"># The patent endpoint can now return "patent_earliest_application_date"  and/or</span></span>
+<span><span class="co"># application.filing_date.  We requested both above so we can use either here</span></span>
+<span><span class="co"># to create app_yr.  The API's data dictionary (if one exists) would need to be</span></span>
+<span><span class="co"># consulted to find out how these fields differ. (There are data dictionaries for</span></span>
+<span><span class="co"># the bulk downloadable files, I'll follow up with the API team to see if there</span></span>
+<span><span class="co"># is one for the API.)</span></span>
+<span></span>
+<span><span class="co"># We'll use patent_earliest_application_date, we'd need an additional</span></span>
+<span><span class="co"># full_join(., dl$application) %&gt;%  if we want to use filing_date</span></span>
+<span><span class="co"># mutate(app_yr = as.numeric(substr(filing_date, 1, 4)))</span></span>
+<span></span>
+<span><span class="co"># As an aside, I don't think it's possible to querry the API for patents</span></span>
+<span><span class="co"># where the two fields differ, least not directly.  We could request both</span></span>
+<span><span class="co"># fields and look for differences ourselves but we can't query where</span></span>
+<span><span class="co"># {"_neq":{"patent_earliest_application_date":{"application.filing_date"}}</span></span>
 <span></span>
 <span><span class="co"># Get the top 5 organizations since slice wasn't working out in the full_join below.</span></span>
 <span><span class="co"># We want data to just be the top 5 assignees, not all 75 assignees</span></span>
 <span><span class="va">top_five</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">top_asgns</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
-<span>   </span>
+<span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> </span>
 <span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">full_join</a></span><span class="op">(</span><span class="va">dl</span><span class="op">$</span><span class="va">assignees</span>, <span class="va">dl</span><span class="op">$</span><span class="va">patents</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">assignee_organization</span>, <span class="va">patent_year</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>app_yr <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substr.html" class="external-link">substr</a></span><span class="op">(</span><span class="va">patent_earliest_application_date</span>, <span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">assignee_organization</span>, <span class="va">app_yr</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span><span class="va">top_five</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">assignee_organization</span>,<span class="va">patent_year</span>,<span class="va">n</span><span class="op">)</span></span>
+<span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">assignee_organization</span>, <span class="va">app_yr</span>, <span class="va">n</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Plot the data using highcharter:</span></span>
 <span><span class="fu"><a href="https://jkunst.com/highcharter/reference/hchart.html" class="external-link">hchart</a></span><span class="op">(</span></span>
 <span>  <span class="va">data</span>, <span class="st">"line"</span>, </span>
-<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hcaes.html" class="external-link">hcaes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">patent_year</span>, y <span class="op">=</span> <span class="va">n</span>, group <span class="op">=</span> <span class="va">assignee_organization</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hcaes.html" class="external-link">hcaes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">app_yr</span>, y <span class="op">=</span> <span class="va">n</span>, group <span class="op">=</span> <span class="va">assignee_organization</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_plotOptions.html" class="external-link">hc_plotOptions</a></span><span class="op">(</span>series <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>marker <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>enabled <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_xAxis.html" class="external-link">hc_xAxis</a></span><span class="op">(</span>title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Grant year"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_yAxis.html" class="external-link">hc_yAxis</a></span><span class="op">(</span>title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Patents"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_title.html" class="external-link">hc_title</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Top five assignees in 'databases'"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_subtitle.html" class="external-link">hc_subtitle</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Yearly granted patents over time"</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_subtitle.html" class="external-link">hc_subtitle</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Yearly patent applications over time"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figure/topchart-1.png"></p>
 <p>It’s hard to see any clear trends in this graph. What is clear is
 that the top assignees have all been patenting in the field for many
