@@ -115,13 +115,15 @@ All of the functions that make up the DSL are found in the `qry_funs` list (e.g.
 
 ## Query examples 
 
-*The following queries are intended for the patent endpoint*
-
-Patents linked to an assignee with 10 or fewer distinct (and disambiguated) inventors:
+Query the assignee endpoint for disambiguated assignees with 10 or fewer patents:
 
 ```{r}
-qry_funs$lte(num_inventors = 10)
+
+qry_funs$lte(assignee_num_inventors.num_inventors = 10)
+
 ```
+
+The remaining examples are queries intended for the patent enpoint
 
 Patents assigned to the "CPC class" of G12 (physics instruments):
 
@@ -162,11 +164,11 @@ OR
 with_qfuns(
   or(
     and(
-      eq(inventors.inventor_name_last = "smith"),
+      eq(inventors.inventor_name_last = "Smith"),
       contains(patent_title = "cotton gin")
     ),
     and(
-      eq(inventors.inventor_name_last = "turner"),
+      eq(inventors.inventor_name_last = "Turner"),
       contains(patent_title = "COBOL")
     )
   )
