@@ -1,0 +1,175 @@
+---
+title: "Understanding the API"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Understanding the API}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE, 
+  comment = "#>", 
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+Oh, the interesting things you'll learn when you take the time to read the API documentation!
+Here are gems gleaned from a [Jupyter notebook](PatentsView/PatentsView-Code-Snippets) in PatentsView's PatentsView-Code-Snippets
+repo.
+
+## Fields Shorthand
+The notebook starts out fairly fluffy but things really get interesting really quickly.
+See this under "constructing your query",  I don't remember seeing this anywhere else:
+
+> Some endpoints contain groups of fields representing related entities connected to one of that
+> endpiont's primary entity type; for example, the patent endpoint contains a field "inventors",
+> which contains information on all inventors associated with any given patent. *The fields for
+> related entities can be requested in the API request's fields parameter as a group by using the
+> group name in the fields parameter*, or individually by specifying the required field as "{entity_type}.{subfield}".
+
+Mind blown, so we can request all the nested application fields from the patent endpoint by simply requesting "application" in the fields list.  
+
+The new version of the R package will let its users leverage this same "feature".  (Purists will probably frown upon using it, as they 
+would with a select * in SQL.  It can be helpul to see exactly what fields the API can return, should the documentation
+be lagging.)
+
+```{r}
+library(patentsview)
+
+pat_res <- search_pv(qry_funs$eq(patent_id = "10568228"), fields=c("application"))
+pat_res$data$patent$application
+
+```
+
+The results should be the same if we used ```fields=get_fields("patent", groups=c("application"))```.  The difference
+is that in the case above, it's the API deciding what fields to return while in the get_fields() case, we parsed
+the API's OpenAPI object when building the R package to determine what fields can be requested.  The query results 
+could be different if the API's return is not in sync with the API's OpenAPI object.  Here we see that the
+results are the same:
+
+```{r}
+app_fields <- get_fields("patent", groups=c("application"))
+app_fields
+
+pat_res <- search_pv(qry_funs$eq(patent_id = "10568228"), fields=app_fields)
+pat_res$data$patent$application
+
+```
+## Unexpected Results
+
+Then, as if that wasn't enough, some non-obvious behavior is slipped in under the "Queries using related entity fields" header.
+
+In their example, they use George Washington as an inventor.  Humorously, there are modern
+inventors with that name!  Abraham Lincoln is also used as an inventor.  Good ol' Abe is the only
+US president to receive a [patent](https://ppubs.uspto.gov/pubwebapp/external.html?db=USPAT&type=ids&q=(0006469).pn.) but
+it's too early to be in the patentsview database and there are no modern Abraham Lincolns to be found
+as inventors.
+
+To demonstrate the API's not-exactly-intuitive behavior, we'll keep George as an inventor but substitute 
+Thomas Jefferson for Abe as there are inventors going by that famous name, though they aren't on 
+nickles or five dollar bills in the US.
+
+```{r}
+library(dplyr)
+
+patents_query <- 
+  with_qfuns(
+    or(
+      and(
+        text_phrase(inventors.inventor_name_first = "George"),
+        text_phrase(inventors.inventor_name_last = "Washington")
+      ),
+      and(
+        text_phrase(inventors.inventor_name_first = "Thomas"),
+        text_phrase(inventors.inventor_name_last = "Jefferson")
+      )
+    )
+  )
+
+patent_fields <-c("patent_id", "inventors.inventor_name_first", "inventors.inventor_name_last")
+pat_res <- search_pv(patents_query, fields=patent_fields, endpoint="patent")
+dl <- unnest_pv_data(pat_res$data)
+
+# We got back all the inventors on the patents that met our search criteria.  We'll filter out
+# the inventors that didn't meet our criteria.  We want the noted behavior to be clear.
+
+display_inventors <- 
+   dl$inventors %>%
+   filter(grepl("^(George|Thomas)", inventor_name_first ) | grepl("^(Washington|Jefferson)", inventor_name_last))  %>%
+   arrange(nchar(patent_id), patent_id)  # string sort
+
+display_inventors
+
+```
+
+Now we'll hit the inventor endpoint with a similar query, as the Jupyter notebook suggests.
+
+```{r}
+
+inventors_query <- 
+  with_qfuns(
+    or(
+      and(
+        text_phrase(inventor_name_first = "George"),
+        text_phrase(inventor_name_last = "Washington")
+      ),
+      and(
+        text_phrase(inventor_name_first = "Thomas"),
+        text_phrase(inventor_name_last = "Jefferson")
+      )
+    )
+  )
+
+inventor_fields <- c("inventor_id","inventor_name_first","inventor_name_last")
+inventor_res <- search_pv(inventors_query, fields=inventor_fields, endpoint="inventor")
+dl2 <- unnest_pv_data(inventor_res$data)
+
+actual_inventors <-
+   dl2$inventors %>%
+   arrange(inventor_name_last, inventor_name_first)
+
+actual_inventors
+```
+
+Now, with actual_inventors inventor_ids in hand, we'll ask the patent endpoint for their patents.
+The results are quite different than what the first query returned. (These patents would 
+have names matching at least one of our two famous forefathers.  The first query unintuitively
+matched names where the first/last name matches did not necessarily both occur on the same inventor.)
+
+```{r}
+id_query <- qry_funs$eq(inventors.inventor_id=actual_inventors$inventor_id)
+
+# We need to pass fields since we're sorting (sort field has to be passed as a field)
+# Without a sort we could rely on the default fields being returned if we liked
+
+patent_fields <-c("patent_id", "inventors.inventor_name_first", "inventors.inventor_name_last")
+pat_res <- search_pv(id_query, fields=patent_fields, sort=c("patent_id" = "asc"))
+
+dl <- unnest_pv_data(pat_res$data)
+
+# Also, the API's sort on patent_id, a string field, puts 10568228 first as the time of 
+# this writing.  Would that be a bug or feature?  Below we'll apply our own sort
+dl$patents[[1]][[1]]
+
+# we'll repeat the same filter we used on the first query's results
+display_inventors <- 
+   dl$inventors %>%
+   filter(grepl("^(George|Thomas)", inventor_name_first ) | grepl("^(Washington|Jefferson)", inventor_name_last))  %>%
+   arrange(nchar(patent_id), patent_id)  # string sort
+
+
+display_inventors
+
+```
+
+## Acknowledgment
+
+Again, credit goes to the Patentsview API team for creating the cited Jupyter notebook.  This is just portions of it
+in R package form.  The repo didn't have a stated license but https://patentsview.org/contact says
+
+> Users are free to use, share, or adapt the material for any purpose, subject to the standards of the 
+> [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).  
+

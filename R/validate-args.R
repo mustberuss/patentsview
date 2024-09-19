@@ -15,7 +15,16 @@ validate_args <- function(api_key, fields, endpoint, method, page, per_page,
     "The new version of the API requires an API key"
   )
 
+
   flds_flt <- fieldsdf[fieldsdf$endpoint == endpoint, "field"]
+
+  # Now the API allows the group name to be requested to get all of its nested fields
+  # ex.: "assignees" on the patent endpoint gets you all of the assignee fields
+  # twist: in fieldsdef top level/unnested fields have an empty string as their group,
+  # which wouldn't be valid here
+  groups <- unique(fieldsdf[fieldsdf$endpoint == endpoint, c("group")])
+  flds_flt <- append(flds_flt, groups[!(groups %in% c(""))])
+
   asrt(
     all(fields %in% flds_flt),
     "Bad field(s): ", paste(fields[!(fields %in% flds_flt)], collapse = ", ")
@@ -54,9 +63,11 @@ validate_args <- function(api_key, fields, endpoint, method, page, per_page,
 #' @noRd
 validate_groups <- function(endpoint, groups) {
   ok_grps <- unique(fieldsdf[fieldsdf$endpoint == endpoint, c("group")])
+
   asrt(
     all(groups %in% ok_grps),
-    "groups for the ", endpoint, " endpoint must be one or more of the following: ", paste(ok_grps, collapse = ", ")
+    "groups for the ", endpoint, " endpoint must be one or more of the following: ",
+    paste(error_groups(ok_grps), collapse = ", ")
   )
 }
 
@@ -93,4 +104,12 @@ deprecate_warn_all <- function(error_browser, subent_cnts, mtchd_subent_only) {
       version of the API"
     )
   }
+}
+
+#' @noRd
+error_groups <- function(groups) {
+  # on an error explain the empty string is for top level attributes
+  # throw a different error if there aren't any nested groups?
+
+  error_grps <- replace(groups, groups == "", '"" (for top level attributes)')
 }

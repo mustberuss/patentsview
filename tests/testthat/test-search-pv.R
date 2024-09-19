@@ -339,3 +339,16 @@ test_that("posts and gets return the same data", {
     expect_equal(g, p)
   })
 })
+
+test_that("nested shorthand produces the same results as fully qualified ones", {
+  # the API now allows a shorthand in the fields/f: parameter
+  # just the group name will retrieve all that group's attributes
+  # This is indirectly testing our parse of the OpenAPI object and actual API responses
+
+  shorthand_res <- search_pv(TEST_QUERIES[["patent"]], fields = c("application"))
+  qualified_res <- search_pv(TEST_QUERIES[["patent"]], fields = get_fields("patent", groups = c("application")))
+
+  # the request$urls will be different but the data should match
+  expect_failure(expect_equal(shorthand_res$request$url, qualified_res$request$url))
+  expect_equal(shorthand_res$data, qualified_res$data)
+})
