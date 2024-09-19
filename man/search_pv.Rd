@@ -38,13 +38,18 @@ E.g., \code{qry_funs$gte(patent_date = "2007-01-04")}
 }}
 
 \item{fields}{A character vector of the fields that you want returned to you.
-A value of \code{NULL} indicates that the default fields should be
-returned. Acceptable fields for a given endpoint can be found at the API's
+A value of \code{NULL} indicates to the API that it should return the default fields
+for that endpoint. Acceptable fields for a given endpoint can be found at the API's
 online documentation (e.g., check out the field list for the
 \href{https://search.patentsview.org/docs/docs/Search\%20API/SearchAPIReference#patent}{patents
 endpoint}) or by viewing the \code{fieldsdf} data frame
 (\code{View(fieldsdf)}). You can also use \code{\link{get_fields}} to list
-out the fields available for a given endpoint.}
+out the fields available for a given endpoint.
+
+Nested fields can be fully qualified, e.g., "application.filing_date" or the
+group name can be used to retrieve all of its nested fields, E.g. "application".
+The latter would be similar to passing \code{get_fields("patent", group = "application")}
+except it's the API that decides what fields to return.}
 
 \item{endpoint}{The web service resource you wish to search. Use
 \code{get_endpoints()} to list the available endpoints.}
@@ -137,6 +142,11 @@ search_pv(
   query = qry_funs$contains(inventors.inventor_name_last = "Smith"),
   endpoint = "patent",
   config = httr::timeout(40)
+)
+
+search_pv(
+  query = qry_funs$eq(patent_id = "11530080"),
+  fields = "application"
 )
 }
 
