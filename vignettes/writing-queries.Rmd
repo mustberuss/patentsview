@@ -126,7 +126,7 @@ qry_funs$lte(assignee_num_inventors.num_inventors = 10)
 #> {"_lte":{"assignee_num_inventors.num_inventors":10}}
 ```
 
-The remaining examples are queries intended for the patent enpoint
+The remaining examples are queries intended for the patent endpoint.
 
 Patents assigned to the "CPC class" of G12 (physics instruments):
 

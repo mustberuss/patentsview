@@ -98,7 +98,7 @@ range_query
 * The ropensci_blog_post that announced the original version of the R package was [reworked](ropensci_blog_post.html) to use the new version of the R package and API
 * A hex sticker was created using GuangchuangYu's [hexSticker](https://github.com/GuangchuangYu/hexSticker)
 
-Possible Package Improvements <a name="possible-improvements">
+**Possible Package Improvements** <a name="possible-improvements">
 
 * The version number ought to be bumped to 1.0.0 since there are breaking API changes
 * Result set size seems unbounded now.  Should we warn if a query would return more than 100,000 rows with all_pages = TRUE?
@@ -167,7 +167,7 @@ Things to note
 1. Currently some endpoints do not return all the attributes listed in the API’s OpenAPI object. Some throw 500 errors when requested[^1] (see test-search-pv.R)
 1. There are two rel_app_text endpoints, one under patent/ and one under publication/ They return different entities, rel_app_texts (patent) and rel_app_text_publications (publication)
 1. Some endpoints now return [HATEOAS links](#HATEOAS)
-1. Some fields went away, like the rawinventor fields, and some have new names, most significantly, patent_number is now patent_id. Requesting patent_number will result in an error being thrown. Note also that the CPC related fields have new names, see the next example.
+1. Some fields went away, like rawinventor_first_name and rawinventor_last_name, and some have new names, most significantly, patent_number is now patent_id. Requesting patent_number will result in an error being thrown. Note also that the CPC related fields have new names, see the next example.
 
 
 ### HATEOAS Links <a name="HATEOAS">

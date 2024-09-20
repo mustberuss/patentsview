@@ -271,15 +271,19 @@ were queryable as they are now. The field tables for all of the
 endpoints can be found in the <code>fieldsdf</code> data frame, which
 you can load using <code>data("fieldsdf")</code> or
 <code>View(patentsview::fieldsdf)</code>.</p>
-<p><strong>An important note: By default, PatentsView uses disambiguated
-versions of assignees, inventors, and locations, instead of raw
-data.</strong> For example, let’s say you search for all inventors whose
-first name is “john.” The PatentsView API is going to return all of the
-inventors who have a preferred first name (as per the disambiguation
-results) of john, which may not necessarily be their raw first name. You
-could be getting back inventors whose first name appears on the patent
-as, say, “jonathan,” “johnn,” or even “john jay.”, see the <a href="https://patentsview.org/disambiguation" class="external-link">PatentsView Inventor
+<p><strong>An important note: PatentsView uses disambiguated versions of
+assignees, inventors, and locations, instead of raw data.</strong> For
+example, let’s say you search for all inventors whose first name is
+“john.” The PatentsView API is going to return all of the inventors who
+have a preferred first name (as per the disambiguation results) of john,
+which may not necessarily be their raw first name. You could be getting
+back inventors whose first name appears on the patent as, say,
+“jonathan,” “johnn,” or even “john jay.”, see the <a href="https://patentsview.org/disambiguation" class="external-link">PatentsView Inventor
 Disambiguation Technical Workshop website</a>.</p>
+<p>In the original version of the API, rawinventor_first_name and
+rawinventor_last_name were available from the patents, inventors and
+assignees endpoints. <strong>In the new version of the API these felds
+are no longer available.</strong></p>
 </div>
 <div class="section level2">
 <h2 id="paginated-responses">Paginated responses<a class="anchor" aria-label="anchor" href="#paginated-responses"></a>

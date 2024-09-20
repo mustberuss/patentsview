@@ -323,7 +323,7 @@ fewer patents:</p>
 <span><span class="va">qry_funs</span><span class="op">$</span><span class="fu">lte</span><span class="op">(</span>assignee_num_inventors.num_inventors <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co">#&gt; {"_lte":{"assignee_num_inventors.num_inventors":10}}</span></span></code></pre></div>
 <p>The remaining examples are queries intended for the patent
-enpoint</p>
+endpoint.</p>
 <p>Patents assigned to the “CPC class” of G12 (physics instruments):</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span>cpc_current.cpc_class_id <span class="op">=</span> <span class="st">"G12"</span><span class="op">)</span></span>

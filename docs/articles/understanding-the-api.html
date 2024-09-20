@@ -145,8 +145,8 @@
     
     
 <p>Oh, the interesting things you’ll learn when you take the time to
-read the API documentation! Here are gems gleaned from a <a href="PatentsView/PatentsView-Code-Snippets">Jupyter notebook</a> in
-PatentsView’s PatentsView-Code-Snippets repo.</p>
+read the API documentation! Here are gems gleaned from a <a href="https://github.com/PatentsView/PatentsView-Code-Snippets/blob/master/07_PatentSearch_API_demo/PV%20PatentSearch%20API%20tutorial.ipynb" class="external-link">Jupyter
+notebook</a> in PatentsView’s PatentsView-Code-Snippets repo.</p>
 <div class="section level2">
 <h2 id="fields-shorthand">Fields Shorthand<a class="anchor" aria-label="anchor" href="#fields-shorthand"></a>
 </h2>
@@ -155,7 +155,7 @@ interesting really quickly. See this under “constructing your query”, I
 don’t remember seeing this anywhere else:</p>
 <blockquote>
 <p>Some endpoints contain groups of fields representing related entities
-connected to one of that endpiont’s primary entity type; for example,
+connected to one of that endpoint’s primary entity type; for example,
 the patent endpoint contains a field “inventors”, which contains
 information on all inventors associated with any given patent. <em>The
 fields for related entities can be requested in the API request’s fields
@@ -163,13 +163,13 @@ parameter as a group by using the group name in the fields
 parameter</em>, or individually by specifying the required field as
 “{entity_type}.{subfield}”.</p>
 </blockquote>
-<p>Mind blown, so we can request all the nested application fields from
-the patent endpoint by simply requesting “application” in the fields
-list.</p>
-<p>The R package will now let its users leverage this same “feature”.
-(Purists will probably frown upon using it, as they would with a select
-* in SQL. It can be helpul to see exactly what fields the API can
-return, should the documentation be lagging.)</p>
+<p>Mind blown, so we can, for example, request all the nested
+application fields from the patent endpoint by simply requesting
+“application” in the fields list.</p>
+<p>The new version of the R package will let its users leverage this
+same “feature”. (Purists will probably frown upon using it, as they
+would with a select * in SQL. It can be helpful to see exactly what
+fields the API can return, should the documentation be lagging.)</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
 <span></span>
@@ -181,12 +181,13 @@ return, should the documentation be lagging.)</p>
 <span><span class="co">#&gt;   filing_type</span></span>
 <span><span class="co">#&gt; 1          15</span></span></code></pre></div>
 <p>The results should be the same if we used
-<code>{r}fields=get_fields("patent", groups=c("application"))</code>.
-The difference is that in the case above, it’s the API deciding what
-fields to return while in the get_fields() case, we parsed the API’s
-OpenAPI object when building the R package to determine what fields can
-be requested. The query results could be different if the API’s return
-is not in sync with the API’s OpenAPI object.</p>
+<code>fields=get_fields("patent", groups=c("application"))</code>. The
+difference is that in the case above, it’s the API deciding what fields
+to return while in the get_fields() case, we parsed the API’s OpenAPI
+object when building the R package to determine what fields can be
+requested. The query results could be different if the API’s return is
+not in sync with the API’s OpenAPI object. Here we see that the results
+are the same:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">app_fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span><span class="st">"patent"</span>, groups<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"application"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">app_fields</span></span>
@@ -205,18 +206,24 @@ is not in sync with the API’s OpenAPI object.</p>
 <div class="section level2">
 <h2 id="unexpected-results">Unexpected Results<a class="anchor" aria-label="anchor" href="#unexpected-results"></a>
 </h2>
-<p>Then, as if that wasn’t enough, some non-obvious behavior is slipped
-in under the “Queries using related entity fields” header.</p>
+<p>Then, as if that wasn’t enough, some non-obvious behavior appears
+under the second bullet point under the “Queries using related entity
+fields” header:</p>
+<blockquote>
+<p>When applying multiple conditions to related-entity fields, a central
+entity record will be returned if any combination of its related
+entities satisfy those conditions.</p>
+</blockquote>
 <p>In their example, they use George Washington as an inventor.
 Humorously, there are modern inventors with that name! Abraham Lincoln
-is also used as an inventor. Good ol’ Abe is the US president to receive
-a <a href="https://ppubs.uspto.gov/pubwebapp/external.html?db=USPAT&amp;type=ids&amp;q=(0006469).pn." class="external-link">patent</a>
+is also used as an inventor. Good ol’ Abe is the only US president to
+receive a <a href="https://ppubs.uspto.gov/pubwebapp/external.html?db=USPAT&amp;type=ids&amp;q=(0006469).pn." class="external-link">patent</a>
 but it’s too early to be in the patentsview database and there are no
 modern Abraham Lincolns to be found as inventors.</p>
 <p>To demonstrate the API’s not-exactly-intuitive behavior, we’ll keep
-George as an inventor but substitute Thomas Jefferson for Abe as there
-are inventors going by that famous name, though they aren’t on nickles
-or five dollar bills in the US.</p>
+George as an inventor but substitute Thomas Jefferson for Abe, as there
+are inventors going by that famous name, though they aren’t on a nickel
+or two dollar bills in the US.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span></span>
@@ -280,7 +287,7 @@ or five dollar bills in the US.</p>
 <span><span class="co">#&gt; 30  11032709           Thomas J.             Bonola</span></span>
 <span><span class="co">#&gt; 31  11032709             Lorri L          Jefferson</span></span></code></pre></div>
 <p>Now we’ll hit the inventor endpoint with a similar query, as the
-jupyter notebook suggests.</p>
+Jupyter notebook suggests.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">inventors_query</span> <span class="op">&lt;-</span> </span>
@@ -313,7 +320,7 @@ jupyter notebook suggests.</p>
 <p>Now, with actual_inventors inventor_ids in hand, we’ll ask the patent
 endpoint for their patents. The results are quite different than what
 the first query returned. (These patents would have names matching at
-least one of our two famous forefathers. The first query unintuitively
+least one of our two famous forefathers. The first query non-intuitively
 matched names where the first/last name matches did not necessarily both
 occur on the same inventor.)</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -327,7 +334,7 @@ occur on the same inventor.)</p>
 <span></span>
 <span><span class="va">dl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">pat_res</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Also, the API's sort on patent_id, a string field, puts 10568228 first as the time of </span></span>
+<span><span class="co"># Also, the API's sort on patent_id, a string field, puts 10568228 first at the time of </span></span>
 <span><span class="co"># this writing.  Would that be a bug or feature?  Below we'll apply our own sort</span></span>
 <span><span class="va">dl</span><span class="op">$</span><span class="va">patents</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="co">#&gt; [1] "10568228"</span></span>

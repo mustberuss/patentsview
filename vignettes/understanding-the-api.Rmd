@@ -10,7 +10,7 @@ vignette: >
 
 
 Oh, the interesting things you'll learn when you take the time to read the API documentation!
-Here are gems gleaned from a [Jupyter notebook](PatentsView/PatentsView-Code-Snippets) in PatentsView's PatentsView-Code-Snippets
+Here are gems gleaned from a [Jupyter notebook](https://github.com/PatentsView/PatentsView-Code-Snippets/blob/master/07_PatentSearch_API_demo/PV%20PatentSearch%20API%20tutorial.ipynb) in PatentsView's PatentsView-Code-Snippets
 repo.
 
 ## Fields Shorthand
@@ -18,15 +18,15 @@ The notebook starts out fairly fluffy but things really get interesting really q
 See this under "constructing your query",  I don't remember seeing this anywhere else:
 
 > Some endpoints contain groups of fields representing related entities connected to one of that
-> endpiont's primary entity type; for example, the patent endpoint contains a field "inventors",
+> endpoint's primary entity type; for example, the patent endpoint contains a field "inventors",
 > which contains information on all inventors associated with any given patent. *The fields for
 > related entities can be requested in the API request's fields parameter as a group by using the
 > group name in the fields parameter*, or individually by specifying the required field as "{entity_type}.{subfield}".
 
-Mind blown, so we can request all the nested application fields from the patent endpoint by simply requesting "application" in the fields list.  
+Mind blown, so we can, for example, request all the nested application fields from the patent endpoint by simply requesting "application" in the fields list.  
 
-The R package will now let its users leverage this same "feature".  (Purists will probably frown upon using it, as they 
-would with a select * in SQL.  It can be helpul to see exactly what fields the API can return, should the documentation
+The new version of the R package will let its users leverage this same "feature".  (Purists will probably frown upon using it, as they 
+would with a select * in SQL.  It can be helpful to see exactly what fields the API can return, should the documentation
 be lagging.)
 
 
@@ -42,10 +42,11 @@ pat_res$data$patent$application
 #> 1          15
 ```
 
-The results should be the same if we used ```{r}fields=get_fields("patent", groups=c("application"))```.  The difference
+The results should be the same if we used ```fields=get_fields("patent", groups=c("application"))```.  The difference
 is that in the case above, it's the API deciding what fields to return while in the get_fields() case, we parsed
 the API's OpenAPI object when building the R package to determine what fields can be requested.  The query results 
-could be different if the API's return is not in sync with the API's OpenAPI object.
+could be different if the API's return is not in sync with the API's OpenAPI object.  Here we see that the
+results are the same:
 
 
 ``` r
@@ -65,17 +66,21 @@ pat_res$data$patent$application
 ```
 ## Unexpected Results
 
-Then, as if that wasn't enough, some non-obvious behavior is slipped in under the "Queries using related entity fields" header.
+Then, as if that wasn't enough, some non-obvious behavior appears under the second bullet point
+under the "Queries using related entity fields" header:
+
+> When applying multiple conditions to related-entity fields, a central entity record will be 
+> returned if any combination of its related entities satisfy those conditions.
 
 In their example, they use George Washington as an inventor.  Humorously, there are modern
-inventors with that name!  Abraham Lincoln is also used as an inventor.  Good ol' Abe is the
+inventors with that name!  Abraham Lincoln is also used as an inventor.  Good ol' Abe is the only
 US president to receive a [patent](https://ppubs.uspto.gov/pubwebapp/external.html?db=USPAT&type=ids&q=(0006469).pn.) but
 it's too early to be in the patentsview database and there are no modern Abraham Lincolns to be found
 as inventors.
 
 To demonstrate the API's not-exactly-intuitive behavior, we'll keep George as an inventor but substitute 
-Thomas Jefferson for Abe as there are inventors going by that famous name, though they aren't on 
-nickles or five dollar bills in the US.
+Thomas Jefferson for Abe, as there are inventors going by that famous name, though they aren't on a nickel or
+two dollar bills in the US.
 
 
 ``` r
@@ -142,7 +147,7 @@ display_inventors
 #> 31  11032709             Lorri L          Jefferson
 ```
 
-Now we'll hit the inventor endpoint with a similar query, as the jupyter notebook suggests.
+Now we'll hit the inventor endpoint with a similar query, as the Jupyter notebook suggests.
 
 
 ``` r
@@ -178,7 +183,7 @@ actual_inventors
 
 Now, with actual_inventors inventor_ids in hand, we'll ask the patent endpoint for their patents.
 The results are quite different than what the first query returned. (These patents would 
-have names matching at least one of our two famous forefathers.  The first query unintuitively
+have names matching at least one of our two famous forefathers.  The first query non-intuitively
 matched names where the first/last name matches did not necessarily both occur on the same inventor.)
 
 
@@ -193,7 +198,7 @@ pat_res <- search_pv(id_query, fields=patent_fields, sort=c("patent_id" = "asc")
 
 dl <- unnest_pv_data(pat_res$data)
 
-# Also, the API's sort on patent_id, a string field, puts 10568228 first as the time of 
+# Also, the API's sort on patent_id, a string field, puts 10568228 first at the time of 
 # this writing.  Would that be a bug or feature?  Below we'll apply our own sort
 dl$patents[[1]][[1]]
 #> [1] "10568228"

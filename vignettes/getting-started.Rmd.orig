@@ -80,7 +80,9 @@ See the [Swagger UI page](https://search.patentsview.org/swagger-ui/) for the AP
 
 You can also visit an endpoint's online documentation page to see a list of its fields (e.g., see the [inventor field list table](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#inventor)). In earlier versions of the API not all fields were queryable as they are now. The field tables for all of the endpoints can be found in the `fieldsdf` data frame, which you can load using `data("fieldsdf")` or `View(patentsview::fieldsdf)`.
 
-**An important note: By default, PatentsView uses disambiguated versions of assignees, inventors, and locations, instead of raw data.** For example, let's say you search for all inventors whose first name is "john." The PatentsView API is going to return all of the inventors who have a preferred first name (as per the disambiguation results) of john, which may not necessarily be their raw first name. You could be getting back inventors whose first name appears on the patent as, say, "jonathan," "johnn," or even "john jay.", see the [PatentsView Inventor Disambiguation Technical Workshop website](https://patentsview.org/disambiguation).
+**An important note: PatentsView uses disambiguated versions of assignees, inventors, and locations, instead of raw data.** For example, let's say you search for all inventors whose first name is "john." The PatentsView API is going to return all of the inventors who have a preferred first name (as per the disambiguation results) of john, which may not necessarily be their raw first name. You could be getting back inventors whose first name appears on the patent as, say, "jonathan," "johnn," or even "john jay.", see the [PatentsView Inventor Disambiguation Technical Workshop website](https://patentsview.org/disambiguation).
+
+In the original version of the API, rawinventor_first_name and rawinventor_last_name were available from the patents, inventors and assignees endpoints. **In the new version of the API these felds are no longer available.**
 
 ## Paginated responses
 
