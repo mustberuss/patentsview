@@ -33,20 +33,26 @@ be lagging.)
 ``` r
 library(patentsview)
 
-pat_res <- search_pv(qry_funs$eq(patent_id = "10568228"), fields=c("application"))
+pat_res <- search_pv(qry_funs$eq(patent_id = "10568228"), fields=c("application"), method="POST")
 pat_res$data$patent$application
 #> [[1]]
 #>   application_id application_type filing_date series_code rule_47_flag
 #> 1      15/995745               15  2018-06-01          15        FALSE
 #>   filing_type
 #> 1          15
+pat_res$request
+#> #### An HTTP request where:
+#> 
+#> Method: POST
+#> URL: https://search.patentsview.org/api/v1/patent/
+#> Body: {"q":{"_eq":{"patent_id":"10568228"}},"f":["application"],"o":{"size":1000}}
 ```
 
 The results should be the same if we used ```fields=get_fields("patent", groups=c("application"))```.  The difference
 is that in the case above, it's the API deciding what fields to return while in the get_fields() case, we parsed
 the API's OpenAPI object when building the R package to determine what fields can be requested.  The query results 
 could be different if the API's return is not in sync with the API's OpenAPI object.  Here we see that the
-results are the same:
+results are the same (we'll use POSTs as the requests are easier to read since they don't need to be urlencoded.):
 
 
 ``` r
@@ -56,13 +62,21 @@ app_fields
 #> [3] "application.filing_date"      "application.filing_type"     
 #> [5] "application.rule_47_flag"     "application.series_code"
 
-pat_res <- search_pv(qry_funs$eq(patent_id = "10568228"), fields=app_fields)
+pat_res <- search_pv(qry_funs$eq(patent_id = "10568228"), fields=app_fields, method="POST")
 pat_res$data$patent$application
 #> [[1]]
 #>   application_id application_type filing_date series_code rule_47_flag
 #> 1      15/995745               15  2018-06-01          15        FALSE
 #>   filing_type
 #> 1          15
+
+# the request here and the one above differ, but the results were the same!
+pat_res$request
+#> #### An HTTP request where:
+#> 
+#> Method: POST
+#> URL: https://search.patentsview.org/api/v1/patent/
+#> Body: {"q":{"_eq":{"patent_id":"10568228"}},"f":["application.application_id","application.application_type","application.filing_date","application.filing_type","application.rule_47_flag","application.series_code"],"o":{"size":1000}}
 ```
 ## Unexpected Results
 

@@ -149,28 +149,48 @@ API changes</a>. This page will explain the necessary changes and
 additions to the R package. Note that these are <strong>breaking
 changes</strong>, existing scripts will no longer run as-is using the
 the new version of the R package which uses the new version of the API.
-As noted below, the R package handles some of the changes for users. All
-the changes are listed for completeness.</p>
+As noted below, the new version ofthe R package handles some of the
+changes for users.</p>
+<p>One change to note, the API team changed the name of the API.
+PatentsView’s Search API is now the PatentSearch API, as announced <a href="https://search.patentsview.org/docs/#naming-update" class="external-link">here</a>. The
+R package will retain its name, continue to use library(patentsview) as
+before.</p>
 <div class="section level2">
-<h2 id="summary-of-the-api-changes">Summary of the API changes<a class="anchor" aria-label="anchor" href="#summary-of-the-api-changes"></a>
+<h2 id="summary-of-pertinent-api-changes">Summary of Pertinent API Changes<a class="anchor" aria-label="anchor" href="#summary-of-pertinent-api-changes"></a>
 </h2>
+<p>Listed here are the API changes that matter to users of the original
+verision of the R package (which used the original version of the API).
+Toward the bottom of this page are additional API changes what would
+only matter if you called the API directly or wanted to write a python
+library for the API.</p>
 <ul>
 <li><p>Probably most importantly, the current shutdown date for the
 original version of the API is February 12, 2025, as communicated in the
 August 2024 newsletter.</p></li>
 <li><p>An <a href="#api-key-required">API key</a> is now
 required.</p></li>
-<li><p>All fields can be queried now and there is seemingly <a href="#operators">no distinction</a> between using string and full text
+<li>
+<p>All fields can be queried now and there is seemingly <a href="#operators">no distinction</a> between using string and full text
 operators now, with a new <a href="#case-sensitivity-caveat">case
 sensitivity caveat</a> though. Note that now some fields are returned in
-nested objects and would need to be fully qualified in the query/q: and
-fields/f: parameters. Ex. fields=c( “cpc_current.cpc_group_id”) is used
-below.</p></li>
+nested objects and would need to be fully qualified in the query
+parameter. Ex.
+<code>search_pv(qry_funs$begins(cpc_current.cpc_group_id="A01B1/00"))</code></p>
+<p>In the fields parameter, nested fields can be fully qualified or a
+new API shorthand can be used, where group names can specified. When
+group names are used, all of the group’s nested fields will be returned
+by the API. Ex. the new version of the API and R package will accept
+fields=c(“assignees”) when using the patent endpoint and all nested
+assignees fields wil be returned by the API. This would be simlar to
+get_fields(“patent”, groups=c(“assignees”)) except that it’s the API
+deciding what fields to return (in this case, all of the assignees
+fields).</p>
+</li>
 <li><p>A result set’s size seems unbounded now, you can now retrieve
 more than 100,000 rows. You’d need to be careful when setting all_pages
 = TRUE as the R package will page until the entire result set is
 retrieved which could be a million or more rows. Ex.
-search_pv(‘{“patent_type”:“utility”}’, all_pages=TRUE)</p></li>
+<code>search_pv('{"patent_type":"utility"}', all_pages=TRUE)</code></p></li>
 <li>
 <p>Endpoint Changes</p>
 <ul>
@@ -182,63 +202,13 @@ entities are still plural for the most part.</li>
 original 7  </li>
 </ul>
 </li>
-<li><p>These options parameters went away: matched_subentities_only,
-subent_cnts and page (paging now uses ‘after’ instead of page)</p></li>
-<li><p>Now the API’s response is always JSON. The original version of
-the API had a ‘format’ parameter that defaulted to json but could be set
-to xml. The original R package did not expose this parameter so your
-script won’t know the difference (unless you were calling the API
-directly).</p></li>
-<li>
-<p>Changes your uber-helpful R package handles for you:</p>
-<ul>
-<li>The API now <a href="#throttling">throttles requests</a>.</li>
-<li>
-<a href="#a-note-on-paging">Paging</a> is completely different</li>
-<li>The API change says that POST requests will need to send JSON data
-(instead of string representation of JSON). A Content-Type:
-application/json header was added.</li>
-<li>The subdomain of the API changed from <a href="https://api.patentsview.org/" class="external-link uri">https://api.patentsview.org/</a> to <a href="https://search.patentsview.org" class="external-link uri">https://search.patentsview.org</a> and the paths to the
-endpoints changed.<br>
-</li>
-<li>The API team changed the name of the API. PatentsView’s Search API
-is now the PatentSearch API, as announced <a href="https://search.patentsview.org/docs/#naming-update" class="external-link">here</a>. Note
-that the R package will retain its name. Continue to use
-library(patentsview)</li>
-<li>The order the fields are returned by the API has changed</li>
 </ul>
-<pre><code>  # Response body now
-  {
-    "error": false,
-    "count": 1,
-    "total_hits": 1,
-    "patent": [...]
-  }
-
-  # Original response
-
-  {
-    "patents": [...],
-    "count": 1,
-    "total_patent_count": 1
-  }</code></pre>
-<p>Note that now total_hits comes back from all endpoints, previously
-there was an endpoint specific count, like total_patent_count. Again,
-all of this is handled for you by the R package. The way total_hits
-comes back from the R package remains unchanged.</p>
-</li>
-</ul>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
-<span></span>
-<span>   <span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"patent_id": "11530080"}'</span><span class="op">)</span></span>
-<span>   <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span> <span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">query_results</span><span class="op">$</span><span class="va">total_hits</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 1</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="additional-r-package-changes">Additional R Package Changes <a name="r-package-changes"></a><a class="anchor" aria-label="anchor" href="#additional-r-package-changes"></a>
 </h2>
-<p>These changes were also made to the R package, in addition to the <a href="#summary-of-the-api-changes">API changes</a> outlined above</p>
+<p>These changes were also made to the R package, in addition to the <a href="#summary-of-the-api-changes">API changes</a> outlined above and
+the <a href="#other-api-changes">Other API Changes blow</a></p>
 <ul>
 <li>Two methods were added
 <ul>
@@ -248,8 +218,10 @@ comes back from the R package remains unchanged.</p>
 </ul>
 </li>
 </ul>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">range_query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span>patent_date<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1970-01-01"</span>,<span class="st">"1983-02-28"</span><span class="op">)</span><span class="op">)</span> </span>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">range_query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span>patent_date<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1970-01-01"</span>,<span class="st">"1983-02-28"</span><span class="op">)</span><span class="op">)</span> </span>
 <span></span>
 <span><span class="co"># which will generate this, so you don't have to do it by hand</span></span>
 <span><span class="va">range_query</span> </span>
@@ -290,14 +262,71 @@ could be used when the new version of the R package is ready.</li>
 version of the API at <a href="https://search.patentsview.org/swagger-ui/" class="external-link uri">https://search.patentsview.org/swagger-ui/</a>. How cool is
 that? Think of it as an online version of Postman already loaded with
 the API’s endpoints and returns. Each field listed in the 200 response
-sections could be requested in the fields/f: parameter and each field is
-supposed to be queryable (usable in the query/q: parameter). The Swagger
-UI page can be used to make requests, if you have an API key to enter in
+sections could be requested in the fields parameter and each field is
+supposed to be queryable (usable in the query parameter). The Swagger UI
+page can be used to make requests, if you have an API key to enter in
 the authorization screen. The Swagger UI definition at <a href="https://search.patentsview.org/static/openapi.json" class="external-link uri">https://search.patentsview.org/static/openapi.json</a> can
 be imported into Postman to give you a nicely loaded collection for the
 new version of the API. You’ll just need to set a global variable
 PVIEW_KEY and set the authorization’s value to {{PVIEW_KEY}} to your API
 key.</p>
+</div>
+<div class="section level2">
+<h2 id="other-api-changes">Other API Changes <a name="other-api-changes"></a><a class="anchor" aria-label="anchor" href="#other-api-changes"></a>
+</h2>
+<p>These API changes would only matter if you want to call the API
+directly or want to write a python library for the API etc. Or maybe
+you’re on the receiving end of a PR and need to know about all of the
+API’s changes.</p>
+<ul>
+<li><p>These options parameters went away: matched_subentities_only,
+subent_cnts and page (paging now uses ‘after’ instead of page)</p></li>
+<li><p>Now the API’s response is always JSON. The original version of
+the API had a ‘format’ parameter that defaulted to json but could be set
+to xml. The original R package did not expose this parameter so your
+script won’t know the difference (unless you were calling the API
+directly).</p></li>
+<li>
+<p>Changes the updated R package handles for users:</p>
+<ul>
+<li>The API now <a href="#throttling">throttles requests</a>. The R
+package retries throttled requests.</li>
+<li>The API’s <a href="#a-note-on-paging">paging</a> is completely
+different, but to users, all_pages=TRUE still works the same (however,
+note the possibly unbounded result set size mentioned above).</li>
+<li>The API change says that POST requests will need to send JSON data
+(instead of string representation of JSON). A Content-Type:
+application/json header was added.</li>
+<li>The subdomain of the API changed from <a href="https://api.patentsview.org/" class="external-link uri">https://api.patentsview.org/</a> to <a href="https://search.patentsview.org" class="external-link uri">https://search.patentsview.org</a> and the paths to the
+endpoints changed.<br>
+</li>
+<li>The order the fields are returned by the API has changed</li>
+</ul>
+<pre><code>  # Response body now
+  {
+    "error": false,
+    "count": 1,
+    "total_hits": 1,
+    "patent": [...]
+  }
+
+  # Original response
+
+  {
+    "patents": [...],
+    "count": 1,
+    "total_patent_count": 1
+  }</code></pre>
+<p>Note that now total_hits comes back from all endpoints, previously
+there was an endpoint specific count, like total_patent_count. Again,
+all of this is handled for you by the R package. The way total_hits
+comes back from the R package remains unchanged.</p>
+</li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span>   <span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"patent_id": "11530080"}'</span><span class="op">)</span></span>
+<span>   <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span> <span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">query_results</span><span class="op">$</span><span class="va">total_hits</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="details-of-the-api-changes">Details of the API changes<a class="anchor" aria-label="anchor" href="#details-of-the-api-changes"></a>

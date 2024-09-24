@@ -93,7 +93,7 @@ A list with the following three elements:
 \item{data}{A list with one element - a named data frame containing the
 data returned by the server. Each row in the data frame corresponds to a
 single value for the primary entity. For example, if you search the
-assignees endpoint, then the data frame will be on the assignee-level,
+assignee endpoint, then the data frame will be on the assignee-level,
 where each row corresponds to a single assignee. Fields that are not on
 the assignee-level would be returned in list columns.}
 
