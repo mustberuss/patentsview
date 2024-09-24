@@ -18,17 +18,31 @@ knitr::opts_chunk$set(
 
 In July of 2021 the Patentsview API team announced [upcoming API changes]( https://patentsview.org/data-in-action/whats-new-patentsview-july-2021).  This page will explain the necessary changes and additions to the 
 R package.  Note that these are **breaking changes**, existing scripts will no longer run as-is using the the new version of the R package which uses the new version of the API.
-As noted below, the R package handles some of the changes for users.  All the changes are listed for completeness.
+As noted below, the new version ofthe R package handles some of the changes for users.
 
-## Summary of the API changes
+One change to note, the API team changed the name of the API.  PatentsView's Search API is now the PatentSearch API, as announced [here](https://search.patentsview.org/docs/#naming-update). 
+The R package will retain its name, continue to use library(patentsview) as before.
+
+## Summary of Pertinent API Changes
+
+Listed here are the API changes that matter to users of the original verision of the R package (which used the original version 
+of the API).  Toward the bottom of this page are additional API changes what would only matter if you called the API 
+directly or wanted to write a python library for the API. 
+
 * Probably most importantly, the current shutdown date for the original version of the API
 is February 12, 2025, as communicated in the August 2024 newsletter.
 * An [API key](#api-key-required) is now required.
 * All fields can be queried now and there is seemingly [no distinction](#operators) between using string and full text operators now, with a new [case sensitivity caveat](#case-sensitivity-caveat) though.  Note that now some
-fields are returned in nested objects and would need to be fully qualified in the query/q: and 
-fields/f: parameters.  Ex. fields=c( "cpc_current.cpc_group_id") is used below.
+fields are returned in nested objects and would need to be fully qualified in the query parameter.  Ex. ```search_pv(qry_funs$begins(cpc_current.cpc_group_id="A01B1/00"))```
+
+  In the fields parameter, nested fields can be fully qualified or a new API shorthand can be used, where group names can specified.
+When group names are used, all of the group's nested fields will be returned by the API.  Ex. the new version 
+of the API and R package will accept fields=c("assignees") when using the patent endpoint and all nested assignees
+fields wil be returned by the API.  This would be simlar to get_fields("patent", groups=c("assignees")) except that it's the API deciding what fields to return
+(in this case, all of the assignees fields).
+  
 * A result set's size seems unbounded now, you can now retrieve more than 100,000 rows. You'd need to be careful when setting all_pages = TRUE
-as the R package will page until the entire result set is retrieved which could be a million or more rows. Ex. search_pv('{"patent_type":"utility"}', all_pages=TRUE)
+as the R package will page until the entire result set is retrieved which could be a million or more rows. Ex. ```search_pv('{"patent_type":"utility"}', all_pages=TRUE)```
 
 * Endpoint Changes
    - nber_subcategories went away- it was an endpoint in the original version of the API
@@ -36,57 +50,18 @@ as the R package will page until the entire result set is retrieved which could 
    - Now there are [23 endpoints](#endpoints), up from the original 7
 &nbsp;  
 
-* These options parameters went away: matched_subentities_only, subent_cnts and page (paging now uses 'after' instead of page)
-* Now the API's response is always JSON.  The original version of the API
-had a 'format' parameter that defaulted to json but could be set to xml.  The original R package
-did not expose this parameter so your script won't know the difference (unless you were calling the
-API directly).
-
-* Changes your uber-helpful R package handles for you:
-   - The API now [throttles requests](#throttling).
-   - [Paging](#a-note-on-paging) is completely different
-   - The API change says that POST requests will need to send JSON data (instead of string representation of JSON). A Content-Type: application/json header was added.
-   - The subdomain of the API changed from https://api.patentsview.org/ to https://search.patentsview.org and the paths to the endpoints changed.  
-   - The API team changed the name of the API.  PatentsView's Search API is now the PatentSearch API, as
-announced [here](https://search.patentsview.org/docs/#naming-update). Note that the R package will retain its name.  Continue to use library(patentsview)
-   - The order the fields are returned by the API has changed
-   ```
-     # Response body now
-     {
-       "error": false,
-       "count": 1,
-       "total_hits": 1,
-       "patent": [...]
-     }
-
-     # Original response
-
-     {
-       "patents": [...],
-       "count": 1,
-       "total_patent_count": 1
-     }
-     ```
-     Note that now total_hits comes back from all endpoints, previously there was an endpoint 
-specific count, like total_patent_count.  Again, all of this is handled for you
-by the R package.  The way total_hits comes back from the R package remains unchanged.
-
-```{r}
-library(patentsview)
-
-   result <- search_pv('{"patent_id": "11530080"}')
-   print (result$query_results$total_hits)
-```
 
 ## Additional R Package Changes <a name="r-package-changes">
 
 These changes were also made to the R package, in addition to the 
-[API changes](#summary-of-the-api-changes) outlined above
+[API changes](#summary-of-the-api-changes) outlined above and the [Other API Changes blow](#other-api-changes)
 
 * Two methods were added
    + HATEOAS and sample links can be retrieved using [retrieve_linked_data()](#HATEOAS)
    + qry_funs$in_range
 ```{r}
+library(patentsview)
+
 range_query <- qry_funs$in_range(patent_date=c("1970-01-01","1983-02-28")) 
 
 # which will generate this, so you don't have to do it by hand
@@ -114,12 +89,56 @@ The Patentsview API team has provided a Swagger UI page for the new version of t
 at https://search.patentsview.org/swagger-ui/. How cool is that?
 Think of it as an online version of Postman already loaded with the API's endpoints and returns. 
 Each field listed in the 200 response sections could be requested in the 
-fields/f: parameter and each field is supposed to be queryable (usable in the query/q: 
+fields parameter and each field is supposed to be queryable (usable in the query
 parameter).  The Swagger UI page can be used to make requests, if you have an API key 
 to enter in the authorization screen.  The Swagger UI definition at
 https://search.patentsview.org/static/openapi.json can be imported into Postman to give
 you a nicely loaded collection for the new version of the API. You'll just need to set 
 a global variable PVIEW_KEY and set the authorization's value to {{PVIEW_KEY}} to your API key. 
+
+## Other API Changes <a name="other-api-changes"></a>
+
+These API changes would only matter if you want to call the API directly or want to write a python library for the API etc.
+Or maybe you're on the receiving end of a PR and need to know about all of the API's changes.
+
+* These options parameters went away: matched_subentities_only, subent_cnts and page (paging now uses 'after' instead of page)
+* Now the API's response is always JSON.  The original version of the API
+had a 'format' parameter that defaulted to json but could be set to xml.  The original R package
+did not expose this parameter so your script won't know the difference (unless you were calling the
+API directly).
+
+* Changes the updated R package handles for users:
+   - The API now [throttles requests](#throttling).  The R package retries throttled requests.
+   - The API's [paging](#a-note-on-paging) is completely different, but to users, all_pages=TRUE still works the same (however, note
+the possibly unbounded result set size mentioned above).
+   - The API change says that POST requests will need to send JSON data (instead of string representation of JSON). A Content-Type: application/json header was added.
+   - The subdomain of the API changed from https://api.patentsview.org/ to https://search.patentsview.org and the paths to the endpoints changed.  
+   - The order the fields are returned by the API has changed
+   ```
+     # Response body now
+     {
+       "error": false,
+       "count": 1,
+       "total_hits": 1,
+       "patent": [...]
+     }
+
+     # Original response
+
+     {
+       "patents": [...],
+       "count": 1,
+       "total_patent_count": 1
+     }
+     ```
+     Note that now total_hits comes back from all endpoints, previously there was an endpoint 
+specific count, like total_patent_count.  Again, all of this is handled for you
+by the R package.  The way total_hits comes back from the R package remains unchanged.
+
+```{r}
+   result <- search_pv('{"patent_id": "11530080"}')
+   print (result$query_results$total_hits)
+```
 
 ## Details of the API changes
 

@@ -39,8 +39,9 @@ be lagging.)
 ```{r}
 library(patentsview)
 
-pat_res <- search_pv(qry_funs$eq(patent_id = "10568228"), fields=c("application"))
+pat_res <- search_pv(qry_funs$eq(patent_id = "10568228"), fields=c("application"), method="POST")
 pat_res$data$patent$application
+pat_res$request
 
 ```
 
@@ -48,14 +49,17 @@ The results should be the same if we used ```fields=get_fields("patent", groups=
 is that in the case above, it's the API deciding what fields to return while in the get_fields() case, we parsed
 the API's OpenAPI object when building the R package to determine what fields can be requested.  The query results 
 could be different if the API's return is not in sync with the API's OpenAPI object.  Here we see that the
-results are the same:
+results are the same (we'll use POSTs as the requests are easier to read since they don't need to be urlencoded.):
 
 ```{r}
 app_fields <- get_fields("patent", groups=c("application"))
 app_fields
 
-pat_res <- search_pv(qry_funs$eq(patent_id = "10568228"), fields=app_fields)
+pat_res <- search_pv(qry_funs$eq(patent_id = "10568228"), fields=app_fields, method="POST")
 pat_res$data$patent$application
+
+# the request here and the one above differ, but the results were the same!
+pat_res$request
 
 ```
 ## Unexpected Results
