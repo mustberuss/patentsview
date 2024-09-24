@@ -194,7 +194,7 @@ get_default_sort <- function(endpoint) {
 #'    \item{data}{A list with one element - a named data frame containing the
 #'    data returned by the server. Each row in the data frame corresponds to a
 #'    single value for the primary entity. For example, if you search the
-#'    assignees endpoint, then the data frame will be on the assignee-level,
+#'    assignee endpoint, then the data frame will be on the assignee-level,
 #'    where each row corresponds to a single assignee. Fields that are not on
 #'    the assignee-level would be returned in list columns.}
 #'
@@ -322,12 +322,28 @@ search_pv <- function(query,
 #' Get Linked Data
 #'
 #' Some of the endpoints now return HATEOAS style links to get more data. E.g.,
-#' the inventors endpoint may return a link such as:
-#' "https://search.patentsview.org/api/v1/inventor/252373/"
+#' the patent endpoint may return a link such as:
+#' "https://search.patentsview.org/api/v1/inventor/fl:th_ln:jefferson-1/"
 #'
 #' @param url The link that was returned by the API on a previous call or an example in the documentation.
 #'
-#' @inherit search_pv return
+#' @param ... Arguments passed along to httr's \code{\link[httr]{GET}} function.
+#'
+#' @return A list with the following three elements:
+#'  \describe{
+#'    \item{data}{A list with one element - a named data frame containing the
+#'    data returned by the server. Each row in the data frame corresponds to a
+#'    single value for the primary entity. For example, if you search the
+#'    assignee endpoint, then the data frame will be on the assignee-level,
+#'    where each row corresponds to a single assignee. Fields that are not on
+#'    the assignee-level would be returned in list columns.}
+#'
+#'    \item{query_results}{Entity counts across all pages of output (not just
+#'    the page returned to you).}
+#'
+#'    \item{request}{Details of the GET HTTP request that was sent to the server.}
+#'  }
+#'
 #' @inheritParams search_pv
 #'
 #' @examples
