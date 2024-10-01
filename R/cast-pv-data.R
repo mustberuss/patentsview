@@ -14,7 +14,8 @@ get_cast_fun <- function(data_type) {
     "integer" = as_is,
     "int" = as.integer,
     "fulltext" = as_is,
-    "boolean" = as_is
+    "boolean" = as_is,
+    "bool" = as.logical
   )
 }
 

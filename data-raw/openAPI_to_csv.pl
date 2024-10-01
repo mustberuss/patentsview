@@ -21,6 +21,16 @@ use LWP::Simple;
 # assignees.assignee_id to receive inventors.inventor and assignees.assignee,
 # their respective HATEOAS links
 
+# another oddity, there are two rule_47_flag fields, one in patent and one in 
+# publication.  The former is a boolean, the latter a string.  For casting,
+# we'll use bool as the data_type to cast the string to a boolean.
+
+# cast string claim_number to an "int" like we do for assignee_type?
+
+# document_number is generally an integer field but there are two string instances
+# that we'll set to "int" "citation_document_number","string" and 
+# "publication/rel_app_text","document_number"
+
 my $data = get('https://search.patentsview.org/static/openapi.json');
 open my $url_fh, '<', \$data or die $!;
 
@@ -135,7 +145,7 @@ while($line = <$url_fh>)
             if($line =~ /"(\w+)"/)
             {
                $entity = $1;
-               $entity = "ipcs" if($entity eq "ipcr");  # mistake in OpenAPI spec
+               $entity = "ipcs" if($entity eq "ipcr");
 
                $entities{$entity}++;
 
@@ -171,7 +181,12 @@ while($line = <$url_fh>)
                            $type = "date" if($field =~ /_date$/);
                            $type = "integer" if($type eq "number");
                            $type = "number" if($field =~ /latitude|longitude/);  # strings in the openapi definition
-                           $type = "int" if($field eq "assignee_type");  # string that needs to be cast as integers
+                           $type = "int" if($field eq "assignee_type");  # string that needs to be cast as integer
+                           $type = "int" if($field eq "claim_number");
+                           $type = "int" if($field eq "citation_document_number");
+                           $type = "int" if($field eq "document_number" && $type eq "string");
+
+                           $type = "bool" if($field eq "rule_47_flag" && $entity eq "publications" );  # string that casts to boolean
 
                            # mistake in 4/3/24 on applicant_authority 
                            $type = "string" if($type eq "keyword");
