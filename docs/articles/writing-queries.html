@@ -235,8 +235,9 @@ invalid. <code><a href="../reference/search_pv.html">search_pv()</a></code> chec
 <ul>
 <li>The fields included in your query are <em>queryable</em> for the
 endpoint (i.e., the field can be used in the user query). For example,
-it would make sure that <code>assingee_country</code> can be used in the
-query argument if you sent the above query to the patent endpoint.</li>
+it would make sure that <code>assignees.assignee_country</code> can be
+used in the query argument if you sent the above query to the patent
+endpoint.</li>
 <li>The fields in your query are compatible with the comparison
 operators you used. For example, it would confirm that the
 <code>text_all</code> operator was used with a field whose type was
@@ -259,11 +260,12 @@ absolutely necessary, even if your query is still valid JSON (e.g.,
 an error).</p>
 <p>Compared to method 1, method 3 will correctly “or” together values if
 you put them in a vector. For example, in the query shown above, a
-vector of two values was given for <code>assingee_country</code>
-(<code>c("US", "CA")</code>). This safely converted the single “equals”
-statement in the third element of the query
-(<code>eq(assingee_country = c("US", "CA"))</code>) to two separate
-equals statements that got or’d together.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;One may note that using “value arrays” is supposedly
+vector of two values was given for
+<code>assignees.assignee_country</code> (<code>c("US", "CA")</code>).
+This safely converted the single “equals” statement in the third element
+of the query
+(<code>eq(assignees.assignee_country = c("US", "CA"))</code>) to two
+separate equals statements that got or’d together.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;One may note that using “value arrays” is supposedly
 supported by the API. For example, the API documentation gives the
 following query as an example of their use:
 &lt;code&gt;'{&quot;inventor_last_name&quot;:[&quot;Whitney&quot;,&quot;Hopper&quot;]}'&lt;/code&gt;. The problem
@@ -320,8 +322,8 @@ don’t have the word “hi” in their titles like this:
 fewer patents:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">qry_funs</span><span class="op">$</span><span class="fu">lte</span><span class="op">(</span>assignee_num_inventors.num_inventors <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="co">#&gt; {"_lte":{"assignee_num_inventors.num_inventors":10}}</span></span></code></pre></div>
+<span><span class="va">qry_funs</span><span class="op">$</span><span class="fu">lte</span><span class="op">(</span>assignee_num_inventors <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; {"_lte":{"assignee_num_inventors":10}}</span></span></code></pre></div>
 <p>The remaining examples are queries intended for the patent
 endpoint.</p>
 <p>Patents assigned to the “CPC class” of G12 (physics instruments):</p>

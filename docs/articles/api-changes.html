@@ -149,7 +149,7 @@ API changes</a>. This page will explain the necessary changes and
 additions to the R package. Note that these are <strong>breaking
 changes</strong>, existing scripts will no longer run as-is using the
 the new version of the R package which uses the new version of the API.
-As noted below, the new version ofthe R package handles some of the
+As noted below, the new version of the R package handles some of the
 changes for users.</p>
 <p>One change to note, the API team changed the name of the API.
 PatentsView’s Search API is now the PatentSearch API, as announced <a href="https://search.patentsview.org/docs/#naming-update" class="external-link">here</a>. The
@@ -159,7 +159,7 @@ before.</p>
 <h2 id="summary-of-pertinent-api-changes">Summary of Pertinent API Changes<a class="anchor" aria-label="anchor" href="#summary-of-pertinent-api-changes"></a>
 </h2>
 <p>Listed here are the API changes that matter to users of the original
-verision of the R package (which used the original version of the API).
+version of the R package (which used the original version of the API).
 Toward the bottom of this page are additional API changes what would
 only matter if you called the API directly or wanted to write a python
 library for the API.</p>
@@ -181,7 +181,7 @@ new API shorthand can be used, where group names can specified. When
 group names are used, all of the group’s nested fields will be returned
 by the API. Ex. the new version of the API and R package will accept
 fields=c(“assignees”) when using the patent endpoint and all nested
-assignees fields wil be returned by the API. This would be simlar to
+assignees fields will be returned by the API. This would be similar to
 get_fields(“patent”, groups=c(“assignees”)) except that it’s the API
 deciding what fields to return (in this case, all of the assignees
 fields).</p>
@@ -208,13 +208,13 @@ original 7  </li>
 <h2 id="additional-r-package-changes">Additional R Package Changes <a name="r-package-changes"></a><a class="anchor" aria-label="anchor" href="#additional-r-package-changes"></a>
 </h2>
 <p>These changes were also made to the R package, in addition to the <a href="#summary-of-the-api-changes">API changes</a> outlined above and
-the <a href="#other-api-changes">Other API Changes blow</a></p>
+the <a href="#other-api-changes">Other API Changes</a> below</p>
 <ul>
 <li>Two methods were added
 <ul>
 <li>HATEOAS and sample links can be retrieved using <a href="#HATEOAS">retrieve_linked_data()</a>
 </li>
-<li>qry_funs$in_range</li>
+<li>qry_funs$in_range()</li>
 </ul>
 </li>
 </ul>
