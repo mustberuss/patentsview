@@ -301,20 +301,28 @@ search_pv <- function(query,
   # of a particular date, we wouldn't want the after parameter to
   # to begin the next page of data after this date.)
 
-  # We also need to insure we'll have the value of the primary sort field.
-  # The API throws an error if the sort field is not present in the fields list
-  # **Should we remember if we added the primary_sort_key and remove it before
-  # returning data to the user?
+  # We also need to insure we have the value of the primary sort field.
+  # We'll throw an error if the sort field is not present in the fields list
+  # Remember if we added the primary_sort_key to fields and remove it from the
+  # API's return before returning data to the user- even if the user didn't
+  # pass any fields?
   primary_sort_key <- get_default_sort(endpoint)
 
-  if (!names(primary_sort_key) %in% fields) fields <- c(fields, names(primary_sort_key))
+  if (!names(primary_sort_key) %in% fields) {
+    fields <- c(fields, names(primary_sort_key))
+    need_remove <- TRUE
+  } else {
+    need_remove <- FALSE
+  }
 
   arg_list <- to_arglist(fields, page, per_page, primary_sort_key)
-  full_data <- request_apply(result, method, query, base_url, arg_list, api_key, ...)
+  paged_data <- request_apply(result, method, query, base_url, arg_list, api_key, ...)
 
   # apply the user's sort
-  data.table::setorderv(full_data, names(sort), ifelse(as.vector(sort) == "asc", 1, -1))
-  result$data[[1]] <- full_data
+  data.table::setorderv(paged_data, names(sort), ifelse(as.vector(sort) == "asc", 1, -1))
+  result$data[[1]] <- paged_data
+
+  if (need_remove) result$data[[1]][[names(primary_sort_key)]] <- NULL
 
   result
 }
