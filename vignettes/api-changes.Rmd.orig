@@ -18,14 +18,14 @@ knitr::opts_chunk$set(
 
 In July of 2021 the Patentsview API team announced [upcoming API changes]( https://patentsview.org/data-in-action/whats-new-patentsview-july-2021).  This page will explain the necessary changes and additions to the 
 R package.  Note that these are **breaking changes**, existing scripts will no longer run as-is using the the new version of the R package which uses the new version of the API.
-As noted below, the new version ofthe R package handles some of the changes for users.
+As noted below, the new version of the R package handles some of the changes for users.
 
 One change to note, the API team changed the name of the API.  PatentsView's Search API is now the PatentSearch API, as announced [here](https://search.patentsview.org/docs/#naming-update). 
 The R package will retain its name, continue to use library(patentsview) as before.
 
 ## Summary of Pertinent API Changes
 
-Listed here are the API changes that matter to users of the original verision of the R package (which used the original version 
+Listed here are the API changes that matter to users of the original version of the R package (which used the original version 
 of the API).  Toward the bottom of this page are additional API changes what would only matter if you called the API 
 directly or wanted to write a python library for the API. 
 
@@ -38,7 +38,7 @@ fields are returned in nested objects and would need to be fully qualified in th
   In the fields parameter, nested fields can be fully qualified or a new API shorthand can be used, where group names can specified.
 When group names are used, all of the group's nested fields will be returned by the API.  Ex. the new version 
 of the API and R package will accept fields=c("assignees") when using the patent endpoint and all nested assignees
-fields wil be returned by the API.  This would be simlar to get_fields("patent", groups=c("assignees")) except that it's the API deciding what fields to return
+fields will be returned by the API.  This would be similar to get_fields("patent", groups=c("assignees")) except that it's the API deciding what fields to return
 (in this case, all of the assignees fields).
   
 * A result set's size seems unbounded now, you can now retrieve more than 100,000 rows. You'd need to be careful when setting all_pages = TRUE
@@ -54,11 +54,11 @@ as the R package will page until the entire result set is retrieved which could 
 ## Additional R Package Changes <a name="r-package-changes">
 
 These changes were also made to the R package, in addition to the 
-[API changes](#summary-of-the-api-changes) outlined above and the [Other API Changes blow](#other-api-changes)
+[API changes](#summary-of-the-api-changes) outlined above and the [Other API Changes](#other-api-changes) below
 
 * Two methods were added
    + HATEOAS and sample links can be retrieved using [retrieve_linked_data()](#HATEOAS)
-   + qry_funs$in_range
+   + qry_funs$in_range()
 ```{r}
 library(patentsview)
 
