@@ -112,7 +112,7 @@ head(retrvble_flds)
 ```
 Nested fields can be fully qualified or a new API shorthand can be used, where group names can specified. When group names are used, all of the group’s nested fields will be returned by the API. E.g., the new version of the API and R package will accept ```fields=c("applicants")```
 
-See the [Swagger UI page](https://search.patentsview.org/swagger-ui/) for the API, the fields returned are listed for each endpoint in the 200 Response body sections.
+See the [Swagger UI page](https://search.patentsview.org/swagger-ui/) for the API, the fields returned are listed for each endpoint in the 200 Response body sections.  The [API's endpoint documentation](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints) has a similar look and feel.
 
 You can also visit an endpoint's online documentation page to see a list of its fields (e.g., see the [inventor field list table](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#inventor)). In earlier versions of the API not all fields were queryable as they are now. The field tables for all of the endpoints can be found in the `fieldsdf` data frame, which you can load using `data("fieldsdf")` or `View(patentsview::fieldsdf)`.
 
@@ -261,13 +261,13 @@ library(knitr)
 
 # These fields are received as strings and would be cast to integers
 ints <- fieldsdf[fieldsdf$data_type == "int", c("endpoint","field")]
+ints <- ints[order(ints$field),]
 print(ints,  row.names = FALSE)
 #>                        endpoint                    field
 #>                        assignee            assignee_type
-#>                           claim             claim_number
 #>                          patent  assignees.assignee_type
-#>  patent/us_application_citation citation_document_number
 #>                     publication  assignees.assignee_type
+#>  patent/us_application_citation citation_document_number
 #>        publication/rel_app_text          document_number
 
 # These fields are received as strings and would be cast to dates

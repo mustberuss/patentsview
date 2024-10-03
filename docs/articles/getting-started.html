@@ -261,7 +261,8 @@ version of the API and R package will accept
 <code>fields=c("applicants")</code></p>
 <p>See the <a href="https://search.patentsview.org/swagger-ui/" class="external-link">Swagger
 UI page</a> for the API, the fields returned are listed for each
-endpoint in the 200 Response body sections.</p>
+endpoint in the 200 Response body sections. The <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints" class="external-link">API’s
+endpoint documentation</a> has a similar look and feel.</p>
 <p>You can also visit an endpoint’s online documentation page to see a
 list of its fields (e.g., see the <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#inventor" class="external-link">inventor
 field list table</a>). In earlier versions of the API not all fields
@@ -455,13 +456,13 @@ their preferred R types using <code><a href="../reference/cast_pv_data.html">cas
 <span></span>
 <span><span class="co"># These fields are received as strings and would be cast to integers</span></span>
 <span><span class="va">ints</span> <span class="op">&lt;-</span> <span class="va">fieldsdf</span><span class="op">[</span><span class="va">fieldsdf</span><span class="op">$</span><span class="va">data_type</span> <span class="op">==</span> <span class="st">"int"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"endpoint"</span>,<span class="st">"field"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">ints</span> <span class="op">&lt;-</span> <span class="va">ints</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">ints</span><span class="op">$</span><span class="va">field</span><span class="op">)</span>,<span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">ints</span>,  row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                        endpoint                    field</span></span>
 <span><span class="co">#&gt;                        assignee            assignee_type</span></span>
-<span><span class="co">#&gt;                           claim             claim_number</span></span>
 <span><span class="co">#&gt;                          patent  assignees.assignee_type</span></span>
-<span><span class="co">#&gt;  patent/us_application_citation citation_document_number</span></span>
 <span><span class="co">#&gt;                     publication  assignees.assignee_type</span></span>
+<span><span class="co">#&gt;  patent/us_application_citation citation_document_number</span></span>
 <span><span class="co">#&gt;        publication/rel_app_text          document_number</span></span>
 <span></span>
 <span><span class="co"># These fields are received as strings and would be cast to dates</span></span>

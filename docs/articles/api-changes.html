@@ -392,14 +392,18 @@ endpoints
 </li>
 <li>The nber_subcategory endpoint seems to be gone now.</li>
 </ol>
-<p>Things to note</p>
+<div class="section level4">
+<h4 id="things-to-note">Things to note <a name="things-to-note"></a><a class="anchor" aria-label="anchor" href="#things-to-note"></a>
+</h4>
 <ol style="list-style-type: decimal">
 <li>Four of the new endpoints, brf_sum_text, claims, draw_desc_text and
 detail_desc_text, are marked ‘beta’ on the <a href="#swagger-ui-page">Swagger UI page</a> and their data is not fully
 populated. See this <a href="https://search.patentsview.org/docs/docs/Search%20API/TextEndpointStatus" class="external-link">page</a>
-to see what data is currently populated.</li>
+to see what data is currently populated. The <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#brief-summary-text" class="external-link">API
+documentation</a> says these 4 endpoint are GET only, though they do
+respond to POSTs<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>1</sup></a>.</li>
 <li>Currently some endpoints do not return all the attributes listed in
-the API’s OpenAPI object. Some throw 500 errors when requested<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>1</sup></a> (see
+the API’s OpenAPI object. Some throw 500 errors when requested<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>2</sup></a> (see
 test-search-pv.R)</li>
 <li>There are two rel_app_text endpoints, one under patent/ and one
 under publication/ They return different entities, rel_app_texts
@@ -413,6 +417,7 @@ an error being thrown. Note also that the CPC related fields have new
 names, see the next example.</li>
 </ol>
 </div>
+</div>
 <div class="section level3">
 <h3 id="hateoas-links">HATEOAS Links <a name="HATEOAS"></a><a class="anchor" aria-label="anchor" href="#hateoas-links"></a>
 </h3>
@@ -421,9 +426,9 @@ Application State) links to retrieve more information about that field.
 Slightly funky is the cpc_current’s cpc_group, returned by the patent
 endpoint. Here the slash in the CPC is turned into a colon. This is a
 peculiarity of two of the new convenience URLs (new endpoints that
-accept URL parameters) that shouldn’t be noticeable in the r package,
-unless you are trying to infer the USPC and CPC values from the returned
-URLs, without actually calling back for this data.</p>
+accept a single URL parameter) that shouldn’t be noticeable in the R
+package, unless you are trying to infer the USPC and CPC values from the
+returned URLs, without actually calling back for this data.</p>
 <p>Here we’ll call the patent endpoint to get CPC fields for a
 particular patent, some of the returned fields, like the cpc_group, are
 HATEOAS links:</p>
@@ -518,8 +523,8 @@ HATEOAS link, you’d use a slash instead of a colon.</p>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; total_hits = 1</span></span></code></pre></div>
-<p>Slight weirdness/sleight of hand where the returned field name looses
-the _id of the requested field</p>
+<p><a name="slight-weirdness">Slight weirdness</a>/sleight of hand where
+the returned field name looses the _id of the requested field</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="co"># We'll make a call to the patent endpoint to get inventor and assignee HATEOAS links</span></span>
 <span>  <span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"patent_id":"10000000"}'</span>,</span>
@@ -587,7 +592,7 @@ performant. The “full text” fields are identified in the API Endpoint
 specification with the value “text” for the data type.</p>
 </blockquote>
 <p>Not sure if that only applies to the beta endpoints or not. Also not
-sure what to make of the result set size differences<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>2</sup></a>, total_hits, noting
+sure what to make of the result set size differences<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>3</sup></a>, total_hits, noting
 that no errors were thrown by the API:</p>
 <p>hitting the patent endpoint:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -659,7 +664,7 @@ that no errors were thrown by the API:</p>
 <h3 id="case-sensitivity-caveat">Case Sensitivity Caveat <a name="case-sensitivity-caveat"></a><a class="anchor" aria-label="anchor" href="#case-sensitivity-caveat"></a>
 </h3>
 <p>The original version of the API seemed to be case insensitive. Not
-sure if this is a bug or feature<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>3</sup></a> in the new version of the API but it’s
+sure if this is a bug or feature<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>4</sup></a> in the new version of the API but it’s
 something to be aware of.</p>
 <p>As you’ll see from the queries below, the two forms of equal now seem
 to be case sensitive.</p>

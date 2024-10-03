@@ -8,16 +8,18 @@ get_fields(endpoint, groups = NULL)
 }
 \arguments{
 \item{endpoint}{The API endpoint whose field list you want to get. See
-\code{\link{get_endpoints}} for a list of the 7 endpoints.}
+\code{\link{get_endpoints}} for a list of the 23 endpoints.}
 
 \item{groups}{A character vector giving the group(s) whose fields you want
 returned. A value of \code{NULL} indicates that you want all of the
 endpoint's fields (i.e., do not filter the field list based on group
-membership). See the field tables located online to see which groups you
+membership). See the Nested Fields listed online to see which groups you
 can specify for a given endpoint (e.g., the
 \href{https://search.patentsview.org/docs/docs/Search\%20API/SearchAPIReference/#patent}{patents
 endpoint table}), or use the \code{fieldsdf} table
-(e.g., \code{unique(fieldsdf[fieldsdf$endpoint == "patent", "group"])}).}
+(e.g., \code{unique(fieldsdf[fieldsdf$endpoint == "patent", "group"])}).
+An empty string can also be specified to return all top level
+(non-nested) fields for the endpoint.}
 }
 \value{
 A character vector with field names.
@@ -31,7 +33,7 @@ possible fields for each endpoint).
 }
 \examples{
 # Get all top level (non-nested) fields for the patent endpoint:
-fields <- get_fields(endpoint = "patent", groups = "")
+fields <- get_fields(endpoint = "patent", groups = c(""))
 
 # ...Then pass to search_pv:
 \dontrun{

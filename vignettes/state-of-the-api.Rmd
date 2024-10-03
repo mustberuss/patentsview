@@ -1,0 +1,134 @@
+---
+title: "State of the API"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{State of the API}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+There's a lot going on with the new version of Patentsview API, recently renamed
+PatentSearch API, as announced [here](https://search.patentsview.org/docs/#naming-update).
+You could read a whole bunch of documentation about it but here's what's going on:
+
+* The original API's sunset date is currently February 12, 2025 though the new version 
+still has [issues](api-changes.html#things-to-note)
+* On a new [string case sensitivity](api-changes.html#case-sensitivity-caveat)
+* On [string vs full text operators](api-changes.html#string-and-full-text-operators).
+Note that there isn't a way to distinguish strings and full text fields in the OpenAPI object
+(limitation of the OpenAPI spec).  We may need to change the way fieldsdf is generated
+if we need to track what operators can be used, possibly parsing the [API page](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/)?
+* Interesting behavior mentioned in their Jupyter Notebook, [converted to R](understanding-the-api.html)
+
+* API Oddities
+   + some [requested fields](api-changes.html#slight-weirdness) ending with _id come back without the _id[^4] 
+Ex patent endpoint request inventors.inventor_id and
+assignees.assignee_id will receive inventors.inventor and assignees.assignee,
+their respective HATEOAS links
+
+   + Two of the [HATEOAS links](api-changes.html#hateoas-links) use a colon instead of having two URL parameters
+      * https[]()://search.patentsview.org/api/v1/cpc_group/G01S7:4865/
+      * https[]()://search.patentsview.org/api/v1/uspc_subclass/403:57/ (endpoint currently throws a 500)
+
+      These links aren't clickable since no API key would be sent, resulting in a 403, Forbidden response.
+
+   + Field inconsistencies
+      * There are two rule_47_flag fields, one returned by the patent endpoint and one returned by the
+publication endpoint.  The former is a boolean, the latter a string that cast-pv-data casts to a boolean.[^1]
+
+      * assignee_type is a string but looks like they're integer values[^3]
+
+      * Most document_number fields are integers but there are two that are returned as strings
+that cast-pv-data casts to integers.[^2] [Additional details](getting-started.html#casting-fields)
+
+   + Most endpoints' returns are the plural form of the endpoint.  Exceptions: 
+
+     |endpoint|returned entity|
+     |--------|---------------|
+     |ipc|ipcr|
+     |otherreference|other_references|
+     |wipo|wipo|
+     |publication/rel_app_text|rel_app_text_publications| 
+     (patent/rel_app_text returns rel_app_texts)
+
+### On the plus side
+
+* All fields can be queried now.
+
+* A [Swagger UI](patentsview-breaking-change.html#online-documentation) page was created for the API
+
+* The 100,000 row result set limit seems to be gone.  Might be part curse as a user might not have
+intended to retrieve all utility patents etc.
+
+## State of the R Package
+* The otherreference endpoint isn't currently working (reported as a [bug](#otherreference) below).
+It is not included in the return of get_endpoints() and has only a negative test case that will
+fail when the API responds with something other than an error.
+
+* Some of the new endpoints are nested under patent/ and one is nested under publication/
+```
+> unique(fieldsdf[grep('/',fieldsdf$endpoint),"endpoint"])
+[1] "patent/attorney"                "patent/foreign_citation"
+[3] "patent/otherreference"          "patent/rel_app_text"
+[5] "patent/us_application_citation" "patent/us_patent_citation"
+[7] "publication/rel_app_text"
+```
+
+* [Two new methods](api-changes.html#additional-r-package-changes) were added to the R package
+
+* The API and R package now allow nested attributes to be [wildcarded](understanding-the-api.html#fields-shorthand),
+where the group's name will retrieve all the group's nested fields.  An empty string can also be passed as a group name to get_fields()
+which then requests all the non-nested attributes from the endpoint. Ex. ```get_fields("patent", group=c("", "inventors")```
+
+* On the new [implementation of paging](api-changes.html#a-note-on-paging) and the
+[PR discussion](https://github.com/ropensci/patentsview/pull/29#discussion_r1059153136) on paging with more than a primary sort 
+
+* [Possible improvements](api-changes.html#possible-improvements)
+
+* A possible [tech note](patentsview-breaking-change.html) which mentions
+
+> As shown in the updated [Top Assignees vignette](top-assignees.html), there will be occasions now where multiple API calls are needed to retrieve the same data as in a single API call in the original version of the API and R package.
+
+* The reworked [ropensci post](ropensci_blog_post.html) explains what changes had to be made since assignee 
+latitude and longitude are no longer available from the patent endpoint.
+
+* The R package unit tests have some skips and negative tests that API bugs still exist
+(they'll fail when bugs are fixed).  The tests were copied to
+[a single file](https://github.com/mustberuss/patentsview/blob/api-redesign/tests/testthat/test-api-bugs.R) that
+was then submitted to the API team as bugs.  Most of the tests exist
+in other test files but a few are unique (specific to API bugs that won't be needed
+once they're fixed).
+
+* Navigation on the vignettes could be better,  [understanding-the-api](understanding-the-api.html) isn't a link in the navigation,
+neither is the possible tech note [patentsview-breaking-change](patentsview-breaking-change.html)
+
+## Bugs I've submitted
+
+PVS-1147	
+Results are case dependent now when using an implied or explicit equals
+
+PVS-1125	
+Not all the fields in the OpenAPI object can be requested
+
+PVS-1109 <a name="otherreference">  
+The otherreference endpoint rejects the default [Swagger UI](https://search.patentsview.org/swagger-ui/) parameters (throws a 400 Bad Request Error if
+either reference_sequence or reference_text is requested) and returns no data when only
+patent_id is requested.  The returned object is supposed to be other_references which 
+is another exception to the singular endpoint/plural return pattern.
+
+PVS-1155  
+Documentation inconsistencies  
+The endpoint is listed as /api/v1/attorney/, it should be /api/v1/patent/attorney for the GET/POST and /api/v1/patent/attorney/{attorney_id}/ for the GET with a url parameter
+The beta endpoints say they are only GETs. The Swagger UI page and OpenAPI object say they accept posts too, which do work.
+
+## Worth Mentioning
+
+bergant/rapiclient has a new maintainer and there is talk of adding support for OpenAPI v3
+https://github.com/bergant/rapiclient/issues/11   The R version (not currently working) of
+the fieldsdf creator uses rapiclient but it's expecting to read a Swagger/OpenAPI v2 object
+(the patentsview object is OpenAPI v3).
+
+[^1]: Observation sent to the API team.
+[^2]: Observation sent to the API team.
+[^3]: There isn't a data dictionary for the API so I suggested they create one.
+[^4]: Observation sent to the API team but they might not see it as a bug.

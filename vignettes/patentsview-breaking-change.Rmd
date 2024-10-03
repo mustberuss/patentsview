@@ -42,10 +42,10 @@ Interestingly, the returned data structures are still plural for the most part.
 available from the original endpoints (now some endpoint's returns are lighter, requiring additional calls to be made).
    - Now some of the endpoints return HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more data
 (URLs for additional calls back to the API)
-3. Some fields are now nested and need to be fully qualified when used in a query, 
+3. Some fields are now nested and need to be fully qualified when used in a query,
 e.g., ```search_pv('{"cpc_current.cpc_group_id":"A01B1/00"}')``` when using the patent endpoint.
 
-   In the fields parameter, nested fields can be fully qualified or a new API shorthand can be used, where group names can specified. When group names are used, all of the group's nested fields will be returned by the API. Ex. the new version of the API and R package will accept fields=c("assignees") when using the patent endpoint and all nested assignees fields will be returned by the API. 
+   In the fields parameter, nested fields can be fully qualified or a new API shorthand can be used, where group names can specified. When group names are used, all of the group's nested fields will be returned by the API. Ex. the new version of the API and R package will accept fields=c("assignees") when using the patent endpoint and all nested assignees fields will be returned by the API.
 
 4. Some field's names have changed, most significantly, patent_number is now patent_id,
  and some fields were removed entirely, e.g., rawinventor_first_name and rawinventor_last_name.
@@ -77,8 +77,8 @@ Note that the R package will retain its name, continue to use library(patentsvie
 
 ``` r
 library(patentsview)
-qry_funs$in_range(patent_date = c("1970-01-01", "1983-02-28"))
-#> {"_and":[{"_gte":{"patent_date":"1970-01-01"}},{"_lte":{"patent_date":"1983-02-28"}}]}
+qry_funs$in_range(patent_date = c("1976-01-01", "1983-02-28"))
+#> {"_and":[{"_gte":{"patent_date":"1976-01-01"}},{"_lte":{"patent_date":"1983-02-28"}}]}
 
 qry_funs$in_range(patent_year = c(2010, 2021))
 #> {"_and":[{"_gte":{"patent_year":2010}},{"_lte":{"patent_year":2021}}]}
@@ -95,7 +95,7 @@ an endpoint's "Try it out" and "Execute" buttons.  Even error responses can be i
 usually pointing out what went wrong.
 
 In a similar format, the [updated API documentation](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints)
-lists what each endpoint does.  Additionally, the R package's fieldsdef data frame has been updated, now listing the new set 
+lists what each endpoint does.  Additionally, the R package's fieldsdf data frame has been updated, now listing the new set 
 of endpoints and retrievable/queryable fields.  The R package's reference pages have also been updated.
 
 ## Final Thoughts

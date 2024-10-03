@@ -240,8 +240,8 @@ sent back, retrying if throttled</li>
 </ol>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
-<span><span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1970-01-01"</span>, <span class="st">"1983-02-28"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; {"_and":[{"_gte":{"patent_date":"1970-01-01"}},{"_lte":{"patent_date":"1983-02-28"}}]}</span></span>
+<span><span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1976-01-01"</span>, <span class="st">"1983-02-28"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; {"_and":[{"_gte":{"patent_date":"1976-01-01"}},{"_lte":{"patent_date":"1983-02-28"}}]}</span></span>
 <span></span>
 <span><span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span>patent_year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2010</span>, <span class="fl">2021</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; {"_and":[{"_gte":{"patent_year":2010}},{"_lte":{"patent_year":2021}}]}</span></span></code></pre></div>
@@ -260,7 +260,7 @@ buttons. Even error responses can be informative, usually pointing out
 what went wrong.</p>
 <p>In a similar format, the <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints" class="external-link">updated
 API documentation</a> lists what each endpoint does. Additionally, the R
-package’s fieldsdef data frame has been updated, now listing the new set
+package’s fieldsdf data frame has been updated, now listing the new set
 of endpoints and retrievable/queryable fields. The R package’s reference
 pages have also been updated.</p>
 </div>

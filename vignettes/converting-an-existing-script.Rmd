@@ -50,7 +50,7 @@ harder to read.
 The endpoints are now singular, ex: patent where previously it was patents.
 
 ``` r
-sort(get_endpoints())
+get_endpoints()
 #>  [1] "assignee"                       "brf_sum_text"                  
 #>  [3] "claim"                          "cpc_class"                     
 #>  [5] "cpc_group"                      "cpc_subclass"                  

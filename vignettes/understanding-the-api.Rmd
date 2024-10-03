@@ -93,7 +93,7 @@ it's too early to be in the patentsview database and there are no modern Abraham
 as inventors.
 
 To demonstrate the API's not-exactly-intuitive behavior, we'll keep George as an inventor but substitute 
-Thomas Jefferson for Abe, as there are inventors going by that famous name, though they aren't on a nickel or
+Thomas Jefferson for Abe, as there are inventors going by that famous name, though they aren't on nickels or
 two dollar bills in the US.
 
 
@@ -119,7 +119,8 @@ pat_res <- search_pv(patents_query, fields=patent_fields, endpoint="patent")
 dl <- unnest_pv_data(pat_res$data)
 
 # We got back all the inventors on the patents that met our search criteria.  We'll filter out
-# the inventors that didn't meet our criteria.  We want the noted behavior to be clear.
+# the inventors that didn't strickly meet our criteria (they came along for the ride with
+the ones that met our criteria), we want the noted behavior to be clear.
 
 display_inventors <- 
    dl$inventors %>%
@@ -127,38 +128,10 @@ display_inventors <-
    arrange(nchar(patent_id), patent_id)  # string sort
 
 display_inventors
-#>    patent_id inventor_name_first inventor_name_last
-#> 1    4078607              Thomas          Jefferson
-#> 2    4104193              Thomas          Jefferson
-#> 3    5643452              George         Washington
-#> 4    5645778              George         Washington
-#> 5    5736046              George         Washington
-#> 6    5897817              George         Washington
-#> 7    5914971           George E.         Burke, Jr.
-#> 8    5914971           Rodney B.         Washington
-#> 9    6218441              George         Washington
-#> 10   6881337              George         Washington
-#> 11   6905071              Thomas           Amundsen
-#> 12   6905071              George              Kolis
-#> 13   6905071             Matthew          Jefferson
-#> 14   7144505              George         Washington
-#> 15   7598629           George E.         Burke, Jr.
-#> 16   7598629           Rodney B.         Washington
-#> 17   7971908              Thomas              Tilly
-#> 18   7971908           Thomas M.           DiMambro
-#> 19   7971908           Alfred A.          Jefferson
-#> 20   8347213           Thomas M.            Clifton
-#> 21   8347213          Bradley C.          Jefferson
-#> 22   8717367           Thomas M.            Clifton
-#> 23   8717367          Bradley C.          Jefferson
-#> 24  10180440          Stanley T.          Jefferson
-#> 25  10180440              Thomas                FAY
-#> 26  10374815           Thomas J.             Bonola
-#> 27  10374815             Lorri L          Jefferson
-#> 28  10568228      George Elliott         Washington
-#> 29  10664808                Joel         Washington
-#> 30  11032709           Thomas J.             Bonola
-#> 31  11032709             Lorri L          Jefferson
+#> Error: <text>:23:5: unexpected symbol
+#> 22: # the inventors that didn't strickly meet our criteria (they came along for the ride with
+#> 23: the ones
+#>         ^
 ```
 
 Now we'll hit the inventor endpoint with a similar query, as the Jupyter notebook suggests.
@@ -187,61 +160,53 @@ dl2 <- unnest_pv_data(inventor_res$data)
 actual_inventors <-
    dl2$inventors %>%
    arrange(inventor_name_last, inventor_name_first)
+#> Error in dl2$inventors %>% arrange(inventor_name_last, inventor_name_first): could not find function "%>%"
 
 actual_inventors
-#>             inventor_id inventor_name_first inventor_name_last
-#> 1  fl:th_ln:jefferson-1              Thomas          Jefferson
-#> 2 fl:ge_ln:washington-4              George         Washington
-#> 3 fl:ge_ln:washington-5      George Elliott         Washington
+#> Error in eval(expr, envir, enclos): object 'actual_inventors' not found
 ```
 
-Now, with actual_inventors inventor_ids in hand, we'll ask the patent endpoint for their patents.
+Now, with actual_inventors' inventor_ids in hand, we'll ask the patent endpoint for their patents.
 The results are quite different than what the first query returned. (These patents would 
 have names matching at least one of our two famous forefathers.  The first query non-intuitively
-matched names where the first/last name matches did not necessarily both occur on the same inventor.)
+matched names where the first and last name matches did not necessarily both occur on the same inventor.)
 
 
 ``` r
 id_query <- qry_funs$eq(inventors.inventor_id=actual_inventors$inventor_id)
+#> Error in qry_funs$eq(inventors.inventor_id = actual_inventors$inventor_id): object 'actual_inventors' not found
 
 # We need to pass fields since we're sorting (sort field has to be passed as a field)
 # Without a sort we could rely on the default fields being returned if we liked
 
 patent_fields <-c("patent_id", "inventors.inventor_name_first", "inventors.inventor_name_last")
 pat_res <- search_pv(id_query, fields=patent_fields, sort=c("patent_id" = "asc"))
+#> Error in search_pv(id_query, fields = patent_fields, sort = c(patent_id = "asc")): object 'id_query' not found
 
 dl <- unnest_pv_data(pat_res$data)
+#> Error: patent_id not in primary entity data frame...Did you include it in your fields list?
 
 # Also, the API's sort on patent_id, a string field, puts 10568228 first at the time of 
 # this writing.  Would that be a bug or feature?  Below we'll apply our own sort
 dl$patents[[1]][[1]]
-#> [1] "10568228"
+#> Error in eval(expr, envir, enclos): object 'dl' not found
 
 # we'll repeat the same filter we used on the first query's results
 display_inventors <- 
    dl$inventors %>%
    filter(grepl("^(George|Thomas)", inventor_name_first ) | grepl("^(Washington|Jefferson)", inventor_name_last))  %>%
    arrange(nchar(patent_id), patent_id)  # string sort
+#> Error in dl$inventors %>% filter(grepl("^(George|Thomas)", inventor_name_first) | : could not find function "%>%"
 
 
 display_inventors
-#>    patent_id inventor_name_first inventor_name_last
-#> 1    4078607              Thomas          Jefferson
-#> 2    4104193              Thomas          Jefferson
-#> 3    5643452              George         Washington
-#> 4    5645778              George         Washington
-#> 5    5736046              George         Washington
-#> 6    5897817              George         Washington
-#> 7    6218441              George         Washington
-#> 8    6881337              George         Washington
-#> 9    7144505              George         Washington
-#> 10  10568228      George Elliott         Washington
+#> Error in eval(expr, envir, enclos): object 'display_inventors' not found
 ```
 ## Worth Noting
 
 It's not directly mentioned, but toward the top of the notebook, the publication/rel_app_text endpoint appears in the
-special_keys hash. Its entity is a rel_app_text_publications.  There's a similar patent/rel_app_text 
-endpoint whose entity is rel_app_texts.  Generally, the entity is the plural form of the 
+special_keys hash. Its entity is a rel_app_text_publications.  There's a similar patent/rel_app_text
+endpoint whose entity is rel_app_texts.  Generally, the entity is the plural form of the
 singular endpoint, special_keys lists the exceptions to that rule, as the code shows.  The otherreference endpoint is
 not currently working, its entity is other_references and should have an entry in special_keys[^1].
 

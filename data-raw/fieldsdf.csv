@@ -22,7 +22,7 @@
 "brf_sum_text","patent_id_zero_prefix","integer","","patent_id_zero_prefix"
 "brf_sum_text","summary_text","string","","summary_text"
 "claim","claim_dependent","string","","claim_dependent"
-"claim","claim_number","int","","claim_number"
+"claim","claim_number","string","","claim_number"
 "claim","claim_sequence","integer","","claim_sequence"
 "claim","claim_text","string","","claim_text"
 "claim","document_number","integer","","document_number"
