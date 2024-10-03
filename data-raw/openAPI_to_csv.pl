@@ -17,7 +17,7 @@ use LWP::Simple;
 # patent/rel_app_text/ the messes up putting the last part of the paths
 # in a hashmap
 
-# latest weirdness: patents endpoint request inventors.inventor_id and
+# latest weirdness: patent endpoint request inventors.inventor_id and
 # assignees.assignee_id to receive inventors.inventor and assignees.assignee,
 # their respective HATEOAS links
 
@@ -26,9 +26,11 @@ use LWP::Simple;
 # we'll use bool as the data_type to cast the string to a boolean.
 
 # cast string claim_number to an "int" like we do for assignee_type?
+#    no, there are non numerics "claim_number": "96-115"
 
 # document_number is generally an integer field but there are two string instances
-# that we'll set to "int" "citation_document_number","string" and 
+# that we'll set to "int":
+# "patent/us_application_citation,"citation_document_number" and 
 # "publication/rel_app_text","document_number"
 
 my $data = get('https://search.patentsview.org/static/openapi.json');
@@ -182,7 +184,6 @@ while($line = <$url_fh>)
                            $type = "integer" if($type eq "number");
                            $type = "number" if($field =~ /latitude|longitude/);  # strings in the openapi definition
                            $type = "int" if($field eq "assignee_type");  # string that needs to be cast as integer
-                           $type = "int" if($field eq "claim_number");
                            $type = "int" if($field eq "citation_document_number");
                            $type = "int" if($field eq "document_number" && $type eq "string");
 
@@ -277,7 +278,8 @@ close (OUT);
 # warn if there's a type we don't know about- would need to add 
 # code to cast-pv-data.R
 %known_types = ( "boolean" => 1, "date" => 1, "int" => 1, 
-                 "integer" => 1, "number" => 1, "string" => 1);
+                 "integer" => 1, "number" => 1, "string" => 1,
+                 "bool" => 1);
 
 print "types found:\n";
 @warn = ();
