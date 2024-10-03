@@ -81,7 +81,7 @@ Note that the R package will retain its name, continue to use library(patentsvie
    - qry_funs$in_range() to generate range queries for you.
 ```{r}
 library(patentsview)
-qry_funs$in_range(patent_date = c("1970-01-01", "1983-02-28"))
+qry_funs$in_range(patent_date = c("1976-01-01", "1983-02-28"))
 
 qry_funs$in_range(patent_year = c(2010, 2021))
 ```
@@ -97,7 +97,7 @@ an endpoint's "Try it out" and "Execute" buttons.  Even error responses can be i
 usually pointing out what went wrong.
 
 In a similar format, the [updated API documentation](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints)
-lists what each endpoint does.  Additionally, the R package's fieldsdef data frame has been updated, now listing the new set 
+lists what each endpoint does.  Additionally, the R package's fieldsdf data frame has been updated, now listing the new set 
 of endpoints and retrievable/queryable fields.  The R package's reference pages have also been updated.
 
 ## Final Thoughts

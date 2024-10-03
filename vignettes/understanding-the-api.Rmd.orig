@@ -77,7 +77,7 @@ it's too early to be in the patentsview database and there are no modern Abraham
 as inventors.
 
 To demonstrate the API's not-exactly-intuitive behavior, we'll keep George as an inventor but substitute 
-Thomas Jefferson for Abe, as there are inventors going by that famous name, though they aren't on a nickel or
+Thomas Jefferson for Abe, as there are inventors going by that famous name, though they aren't on nickels or
 two dollar bills in the US.
 
 ```{r}
@@ -102,7 +102,8 @@ pat_res <- search_pv(patents_query, fields=patent_fields, endpoint="patent")
 dl <- unnest_pv_data(pat_res$data)
 
 # We got back all the inventors on the patents that met our search criteria.  We'll filter out
-# the inventors that didn't meet our criteria.  We want the noted behavior to be clear.
+# the inventors that didn't strickly meet our criteria (they came along for the ride with
+the ones that met our criteria), we want the noted behavior to be clear.
 
 display_inventors <- 
    dl$inventors %>%
@@ -142,10 +143,10 @@ actual_inventors <-
 actual_inventors
 ```
 
-Now, with actual_inventors inventor_ids in hand, we'll ask the patent endpoint for their patents.
+Now, with actual_inventors' inventor_ids in hand, we'll ask the patent endpoint for their patents.
 The results are quite different than what the first query returned. (These patents would 
 have names matching at least one of our two famous forefathers.  The first query non-intuitively
-matched names where the first/last name matches did not necessarily both occur on the same inventor.)
+matched names where the first and last name matches did not necessarily both occur on the same inventor.)
 
 ```{r}
 id_query <- qry_funs$eq(inventors.inventor_id=actual_inventors$inventor_id)

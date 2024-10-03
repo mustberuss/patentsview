@@ -54,7 +54,7 @@ harder to read.
 
 The endpoints are now singular, ex: patent where previously it was patents.
 ```{r}
-sort(get_endpoints())
+get_endpoints()
 ```
 
 
