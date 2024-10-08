@@ -9,21 +9,21 @@ vignette: >
 
 There's a lot going on with the new version of Patentsview API, recently renamed
 PatentSearch API, as announced [here](https://search.patentsview.org/docs/#naming-update).
-You could read a whole bunch of documentation about it but here's what's going on:
+Here are the key points:
 
 * The original API's sunset date is currently February 12, 2025 though the new version 
 still has [issues](api-changes.html#things-to-note)
-* On a new [string case sensitivity](api-changes.html#case-sensitivity-caveat)
+* On a new [string case sensitivity](api-changes.html#case-sensitivity-caveat), opened as a [bug](#case-dependent) below
 * On [string vs full text operators](api-changes.html#string-and-full-text-operators).
 Note that there isn't a way to distinguish strings and full text fields in the OpenAPI object
 (limitation of the OpenAPI spec).  We may need to change the way fieldsdf is generated
 if we need to track what operators can be used, possibly parsing the [API page](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/)?
-* Interesting behavior mentioned in their Jupyter Notebook, [converted to R](understanding-the-api.html)
+* Interesting behavior mentioned in their Jupyter Notebook, portions of it converted to [a vignette](understanding-the-api.html)
 
 * API Oddities
-   + some [requested fields](api-changes.html#slight-weirdness) ending with _id come back without the _id[^4] 
-Ex patent endpoint request inventors.inventor_id and
-assignees.assignee_id will receive inventors.inventor and assignees.assignee,
+   + Some [requested fields](api-changes.html#slight-weirdness) ending with _id come back without the _id[^4] 
+Ex patent endpoint requested inventors.inventor_id and
+assignees.assignee_id are returned as inventors.inventor and assignees.assignee, their values are
 their respective HATEOAS links
 
    + Two of the [HATEOAS links](api-changes.html#hateoas-links) use a colon instead of having two URL parameters
@@ -34,14 +34,14 @@ their respective HATEOAS links
 
    + Field inconsistencies
       * There are two rule_47_flag fields, one returned by the patent endpoint and one returned by the
-publication endpoint.  The former is a boolean, the latter a string that cast-pv-data casts to a boolean.[^1]
+publication endpoint.  The former is returned as a boolean, the latter as a string that cast-pv-data casts to a boolean.[^1]
 
-      * assignee_type is a string but looks like they're integer values[^3]
+      * assignee_type, available from three endpoints, is returned as a string but looks like they're integer values[^3]
 
       * Most document_number fields are integers but there are two that are returned as strings
 that cast-pv-data casts to integers.[^2] [Additional details](getting-started.html#casting-fields)
 
-   + Most endpoints' returns are the plural form of the endpoint.  Exceptions: 
+   + Most endpoints' returns are the plural form of the singular endpoint with these exceptions: 
 
      |endpoint|returned entity|
      |--------|---------------|
@@ -49,20 +49,20 @@ that cast-pv-data casts to integers.[^2] [Additional details](getting-started.ht
      |otherreference|other_references|
      |wipo|wipo|
      |publication/rel_app_text|rel_app_text_publications| 
-     (patent/rel_app_text returns rel_app_texts)
+     (Note that patent/rel_app_text returns rel_app_texts, following the singular/plural pattern)
 
 ### On the plus side
 
 * All fields can be queried now.
 
-* A [Swagger UI](patentsview-breaking-change.html#online-documentation) page was created for the API
+* A [Swagger UI](patentsview-breaking-change.html#online-documentation) page was created for the new version of the API
 
 * The 100,000 row result set limit seems to be gone.  Might be part curse as a user might not have
 intended to retrieve all utility patents etc.
 
 ## State of the R Package
-* The otherreference endpoint isn't currently working (reported as a [bug](#otherreference) below).
-It is not included in the return of get_endpoints() and has only a negative test case that will
+* The patent/otherreference endpoint isn't currently working (reported as a [bug](#otherreference) below).
+It is included in the return of get_endpoints() and has only a negative test case that will
 fail when the API responds with something other than an error.
 
 * Some of the new endpoints are nested under patent/ and one is nested under publication/
@@ -85,9 +85,9 @@ which then requests all the non-nested attributes from the endpoint. Ex. ```get_
 
 * [Possible improvements](api-changes.html#possible-improvements)
 
-* A possible [tech note](patentsview-breaking-change.html) which mentions
+* A possible [tech note](patentsview-breaking-change.html) mentions
 
-> As shown in the updated [Top Assignees vignette](top-assignees.html), there will be occasions now where multiple API calls are needed to retrieve the same data as in a single API call in the original version of the API and R package.
+  > As shown in the updated [Top Assignees vignette](top-assignees.html), there will be occasions now where multiple API calls are needed to retrieve the same data as in a single API call in the original version of the API and R package.
 
 * The reworked [ropensci post](ropensci_blog_post.html) explains what changes had to be made since assignee 
 latitude and longitude are no longer available from the patent endpoint.
@@ -99,12 +99,12 @@ was then submitted to the API team as bugs.  Most of the tests exist
 in other test files but a few are unique (specific to API bugs that won't be needed
 once they're fixed).
 
-* Navigation on the vignettes could be better,  [understanding-the-api](understanding-the-api.html) isn't a link in the navigation,
+* Navigation on the vignettes could be better,  [understanding-the-api](understanding-the-api.html) isn't a link in the navigation yet,
 neither is the possible tech note [patentsview-breaking-change](patentsview-breaking-change.html)
 
 ## Bugs I've submitted
 
-PVS-1147	
+PVS-1147 <a name="case-dependent">	
 Results are case dependent now when using an implied or explicit equals
 
 PVS-1125	

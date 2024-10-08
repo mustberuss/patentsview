@@ -183,10 +183,10 @@ httr::add_headers("X-Api-Key" = api_key)
 #### Things to note <a name="things-to-note">
 
 1. Four of the new endpoints, brf_sum_text, claims, draw_desc_text and detail_desc_text, are marked 'beta' on the [Swagger UI page](#swagger-ui-page) and their data is not fully populated.  See this [page](https://search.patentsview.org/docs/docs/Search%20API/TextEndpointStatus) to see what data is currently populated.  The [API documentation](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#brief-summary-text) says these 4 endpoint are GET only, though they do respond to POSTs[^4].
-1. Currently some endpoints do not return all the attributes listed in the API’s OpenAPI object. Some throw 500 errors when requested[^1] (see test-search-pv.R)
+1. Currently some endpoints do not return all the attributes listed in the API’s OpenAPI object. Some throw 500 errors when requested[^1] (see test-api-bugs.R)
 1. There are two rel_app_text endpoints, one under patent/ and one under publication/ They return different entities, rel_app_texts (patent) and rel_app_text_publications (publication)
 1. Some endpoints now return [HATEOAS links](#HATEOAS)
-1. Some fields went away, like rawinventor_first_name and rawinventor_last_name, and some have new names, most significantly, patent_number is now patent_id. Requesting patent_number will result in an error being thrown. Note also that the CPC related fields have new names, see the next example.
+1. Some fields went away, like rawinventor_first_name and rawinventor_last_name, and some have new names, most significantly, patent_number is now patent_id. Requesting patent_number will result in an error being thrown. Note also that the CPC related fields have new names, see the next section.
 
 
 ### HATEOAS Links <a name="HATEOAS">

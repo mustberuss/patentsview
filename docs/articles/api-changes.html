@@ -404,7 +404,7 @@ documentation</a> says these 4 endpoint are GET only, though they do
 respond to POSTs<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>1</sup></a>.</li>
 <li>Currently some endpoints do not return all the attributes listed in
 the API’s OpenAPI object. Some throw 500 errors when requested<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>2</sup></a> (see
-test-search-pv.R)</li>
+test-api-bugs.R)</li>
 <li>There are two rel_app_text endpoints, one under patent/ and one
 under publication/ They return different entities, rel_app_texts
 (patent) and rel_app_text_publications (publication)</li>
@@ -414,7 +414,7 @@ under publication/ They return different entities, rel_app_texts
 rawinventor_last_name, and some have new names, most significantly,
 patent_number is now patent_id. Requesting patent_number will result in
 an error being thrown. Note also that the CPC related fields have new
-names, see the next example.</li>
+names, see the next section.</li>
 </ol>
 </div>
 </div>
