@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 ```
 
 Oh, the interesting things you'll learn when you take the time to read the API documentation!
-Here are gems gleaned from a [Jupyter notebook](https://github.com/PatentsView/PatentsView-Code-Snippets/blob/master/07_PatentSearch_API_demo/PV%20PatentSearch%20API%20tutorial.ipynb) in PatentsView's PatentsView-Code-Snippets
+Here are gems gleaned from a [jupyter notebook](https://github.com/PatentsView/PatentsView-Code-Snippets/blob/master/07_PatentSearch_API_demo/PV%20PatentSearch%20API%20tutorial.ipynb) in PatentsView's PatentsView-Code-Snippets
 repo.
 
 ## Fields Shorthand
@@ -114,7 +114,7 @@ display_inventors
 
 ```
 
-Now we'll hit the inventor endpoint with a similar query, as the Jupyter notebook suggests.
+Now we'll hit the inventor endpoint with a similar query, as the jupyter notebook suggests.
 
 ```{r}
 
@@ -183,7 +183,7 @@ not currently working, its entity is other_references and should have an entry i
 
 ## Acknowledgment
 
-Again, credit goes to the Patentsview API team for creating the cited Jupyter notebook.  This is just portions of it
+Again, credit goes to the Patentsview API team for creating the cited jupyter notebook.  This is just portions of it
 in R package form.  The repo didn't have a stated license but https://patentsview.org/contact says
 
 > Users are free to use, share, or adapt the material for any purpose, subject to the standards of the 
