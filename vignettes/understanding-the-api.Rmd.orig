@@ -47,9 +47,9 @@ pat_res$request
 
 The results should be the same if we used ```fields=get_fields("patent", groups=c("application"))```.  The difference
 is that in the case above, it's the API deciding what fields to return while in the get_fields() case, we parsed
-the API's OpenAPI object when building the R package to determine what fields can be requested.  The query results 
-could be different if the API's return is not in sync with the API's OpenAPI object.  Here we see that the
-results are the same (we'll use POSTs as the requests are easier to read since they don't need to be urlencoded.):
+the [API's OpenAPI object](https://search.patentsview.org/static/openapi.json) when building the R package to determine what fields can be requested.  The results 
+could be different if the API's actual return is not in sync with the API's OpenAPI object.  Here we see that
+the requests are different but the results are the same (we used POSTs so the requests are easier to read since they don't need to be urlencoded):
 
 ```{r}
 app_fields <- get_fields("patent", groups=c("application"))
@@ -102,8 +102,8 @@ pat_res <- search_pv(patents_query, fields=patent_fields, endpoint="patent")
 dl <- unnest_pv_data(pat_res$data)
 
 # We got back all the inventors on the patents that met our search criteria.  We'll filter out
-# the inventors that didn't strickly meet our criteria (they came along for the ride with
-the ones that met our criteria), we want the noted behavior to be clear.
+# the inventors that didn't strictly meet our criteria (they came along for the ride with
+# the ones that met our criteria), we want the noted behavior to be clear.
 
 display_inventors <- 
    dl$inventors %>%
@@ -178,8 +178,7 @@ display_inventors
 It's not directly mentioned, but toward the top of the notebook, the publication/rel_app_text endpoint appears in the
 special_keys hash. Its entity is a rel_app_text_publications.  There's a similar patent/rel_app_text
 endpoint whose entity is rel_app_texts.  Generally, the entity is the plural form of the
-singular endpoint, special_keys lists the exceptions to that rule, as the code shows.  The otherreference endpoint is
-not currently working, its entity is other_references and should have an entry in special_keys[^1].
+singular endpoint, special_keys lists the exceptions to that rule, as the code shows.
 
 ## Acknowledgment
 
@@ -188,6 +187,4 @@ in R package form.  The repo didn't have a stated license but https://patentsvie
 
 > Users are free to use, share, or adapt the material for any purpose, subject to the standards of the 
 > [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).  
-
-[^1]: Observation sent to the API team.
 
