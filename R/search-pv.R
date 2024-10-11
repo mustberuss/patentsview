@@ -327,7 +327,7 @@ search_pv <- function(query,
   result
 }
 
-#' Get Linked Data
+#' Retrieve Linked Data
 #'
 #' Some of the endpoints now return HATEOAS style links to get more data. E.g.,
 #' the patent endpoint may return a link such as:
