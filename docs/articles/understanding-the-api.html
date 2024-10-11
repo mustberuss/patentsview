@@ -189,12 +189,12 @@ fields the API can return, should the documentation be lagging.)</p>
 <p>The results should be the same if we used
 <code>fields=get_fields("patent", groups=c("application"))</code>. The
 difference is that in the case above, it’s the API deciding what fields
-to return while in the get_fields() case, we parsed the API’s OpenAPI
-object when building the R package to determine what fields can be
-requested. The query results could be different if the API’s return is
-not in sync with the API’s OpenAPI object. Here we see that the results
-are the same (we’ll use POSTs as the requests are easier to read since
-they don’t need to be urlencoded.):</p>
+to return while in the get_fields() case, we parsed the <a href="https://search.patentsview.org/static/openapi.json" class="external-link">API’s OpenAPI
+object</a> when building the R package to determine what fields can be
+requested. The results could be different if the API’s actual return is
+not in sync with the API’s OpenAPI object. Here we see that the requests
+are different but the results are the same (we used POSTs so the
+requests are easier to read since they don’t need to be urlencoded):</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">app_fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span><span class="st">"patent"</span>, groups<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"application"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">app_fields</span></span>
@@ -239,42 +239,71 @@ modern Abraham Lincolns to be found as inventors.</p>
 George as an inventor but substitute Thomas Jefferson for Abe, as there
 are inventors going by that famous name, though they aren’t on nickels
 or two dollar bills in the US.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>patents_query <span class="ot">&lt;-</span> </span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">with_qfuns</span>(</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">or</span>(</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">and</span>(</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">text_phrase</span>(<span class="at">inventors.inventor_name_first =</span> <span class="st">"George"</span>),</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        <span class="fu">text_phrase</span>(<span class="at">inventors.inventor_name_last =</span> <span class="st">"Washington"</span>)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>      ),</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>      <span class="fu">and</span>(</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        <span class="fu">text_phrase</span>(<span class="at">inventors.inventor_name_first =</span> <span class="st">"Thomas"</span>),</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">text_phrase</span>(<span class="at">inventors.inventor_name_last =</span> <span class="st">"Jefferson"</span>)</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>      )</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>patent_fields <span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">"patent_id"</span>, <span class="st">"inventors.inventor_name_first"</span>, <span class="st">"inventors.inventor_name_last"</span>)</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>pat_res <span class="ot">&lt;-</span> <span class="fu">search_pv</span>(patents_query, <span class="at">fields=</span>patent_fields, <span class="at">endpoint=</span><span class="st">"patent"</span>)</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>dl <span class="ot">&lt;-</span> <span class="fu">unnest_pv_data</span>(pat_res<span class="sc">$</span>data)</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co"># We got back all the inventors on the patents that met our search criteria.  We'll filter out</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="co"># the inventors that didn't strickly meet our criteria (they came along for the ride with</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>the ones that met our criteria<span class="er">)</span>, we want the noted behavior to be clear.</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>display_inventors <span class="ot">&lt;-</span> </span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>   dl<span class="sc">$</span>inventors <span class="sc">%&gt;%</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>   <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">"^(George|Thomas)"</span>, inventor_name_first ) <span class="sc">|</span> <span class="fu">grepl</span>(<span class="st">"^(Washington|Jefferson)"</span>, inventor_name_last))  <span class="sc">%&gt;%</span></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>   <span class="fu">arrange</span>(<span class="fu">nchar</span>(patent_id), patent_id)  <span class="co"># string sort</span></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>display_inventors</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error: &lt;text&gt;:23:5: unexpected symbol</span></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 22: # the inventors that didn't strickly meet our criteria (they came along for the ride with</span></span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 23: the ones</span></span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         ^</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">patents_query</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
+<span>    <span class="fu">or</span><span class="op">(</span></span>
+<span>      <span class="fu">and</span><span class="op">(</span></span>
+<span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_first <span class="op">=</span> <span class="st">"George"</span><span class="op">)</span>,</span>
+<span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_last <span class="op">=</span> <span class="st">"Washington"</span><span class="op">)</span></span>
+<span>      <span class="op">)</span>,</span>
+<span>      <span class="fu">and</span><span class="op">(</span></span>
+<span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_first <span class="op">=</span> <span class="st">"Thomas"</span><span class="op">)</span>,</span>
+<span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_last <span class="op">=</span> <span class="st">"Jefferson"</span><span class="op">)</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">patent_fields</span> <span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patent_id"</span>, <span class="st">"inventors.inventor_name_first"</span>, <span class="st">"inventors.inventor_name_last"</span><span class="op">)</span></span>
+<span><span class="va">pat_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">patents_query</span>, fields<span class="op">=</span><span class="va">patent_fields</span>, endpoint<span class="op">=</span><span class="st">"patent"</span><span class="op">)</span></span>
+<span><span class="va">dl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">pat_res</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># We got back all the inventors on the patents that met our search criteria.  We'll filter out</span></span>
+<span><span class="co"># the inventors that didn't strictly meet our criteria (they came along for the ride with</span></span>
+<span><span class="co"># the ones that met our criteria), we want the noted behavior to be clear.</span></span>
+<span></span>
+<span><span class="va">display_inventors</span> <span class="op">&lt;-</span> </span>
+<span>   <span class="va">dl</span><span class="op">$</span><span class="va">inventors</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"^(George|Thomas)"</span>, <span class="va">inventor_name_first</span> <span class="op">)</span> <span class="op">|</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"^(Washington|Jefferson)"</span>, <span class="va">inventor_name_last</span><span class="op">)</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="va">patent_id</span><span class="op">)</span>, <span class="va">patent_id</span><span class="op">)</span>  <span class="co"># string sort</span></span>
+<span></span>
+<span><span class="va">display_inventors</span></span>
+<span><span class="co">#&gt;    patent_id inventor_name_first inventor_name_last</span></span>
+<span><span class="co">#&gt; 1    4078607              Thomas          Jefferson</span></span>
+<span><span class="co">#&gt; 2    4104193              Thomas          Jefferson</span></span>
+<span><span class="co">#&gt; 3    5643452              George         Washington</span></span>
+<span><span class="co">#&gt; 4    5645778              George         Washington</span></span>
+<span><span class="co">#&gt; 5    5736046              George         Washington</span></span>
+<span><span class="co">#&gt; 6    5897817              George         Washington</span></span>
+<span><span class="co">#&gt; 7    5914971           George E.         Burke, Jr.</span></span>
+<span><span class="co">#&gt; 8    5914971           Rodney B.         Washington</span></span>
+<span><span class="co">#&gt; 9    6218441              George         Washington</span></span>
+<span><span class="co">#&gt; 10   6881337              George         Washington</span></span>
+<span><span class="co">#&gt; 11   6905071              Thomas           Amundsen</span></span>
+<span><span class="co">#&gt; 12   6905071              George              Kolis</span></span>
+<span><span class="co">#&gt; 13   6905071             Matthew          Jefferson</span></span>
+<span><span class="co">#&gt; 14   7144505              George         Washington</span></span>
+<span><span class="co">#&gt; 15   7598629           George E.         Burke, Jr.</span></span>
+<span><span class="co">#&gt; 16   7598629           Rodney B.         Washington</span></span>
+<span><span class="co">#&gt; 17   7971908              Thomas              Tilly</span></span>
+<span><span class="co">#&gt; 18   7971908           Thomas M.           DiMambro</span></span>
+<span><span class="co">#&gt; 19   7971908           Alfred A.          Jefferson</span></span>
+<span><span class="co">#&gt; 20   8347213           Thomas M.            Clifton</span></span>
+<span><span class="co">#&gt; 21   8347213          Bradley C.          Jefferson</span></span>
+<span><span class="co">#&gt; 22   8717367           Thomas M.            Clifton</span></span>
+<span><span class="co">#&gt; 23   8717367          Bradley C.          Jefferson</span></span>
+<span><span class="co">#&gt; 24  10180440          Stanley T.          Jefferson</span></span>
+<span><span class="co">#&gt; 25  10180440              Thomas                FAY</span></span>
+<span><span class="co">#&gt; 26  10374815           Thomas J.             Bonola</span></span>
+<span><span class="co">#&gt; 27  10374815             Lorri L          Jefferson</span></span>
+<span><span class="co">#&gt; 28  10568228      George Elliott         Washington</span></span>
+<span><span class="co">#&gt; 29  10664808                Joel         Washington</span></span>
+<span><span class="co">#&gt; 30  11032709           Thomas J.             Bonola</span></span>
+<span><span class="co">#&gt; 31  11032709             Lorri L          Jefferson</span></span></code></pre></div>
 <p>Now we’ll hit the inventor endpoint with a similar query, as the
-upyter notebook suggests.</p>
+jupyter notebook suggests.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">inventors_query</span> <span class="op">&lt;-</span> </span>
@@ -298,10 +327,12 @@ upyter notebook suggests.</p>
 <span><span class="va">actual_inventors</span> <span class="op">&lt;-</span></span>
 <span>   <span class="va">dl2</span><span class="op">$</span><span class="va">inventors</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">inventor_name_last</span>, <span class="va">inventor_name_first</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in dl2$inventors %&gt;% arrange(inventor_name_last, inventor_name_first): could not find function "%&gt;%"</span></span>
 <span></span>
 <span><span class="va">actual_inventors</span></span>
-<span><span class="co">#&gt; Error in eval(expr, envir, enclos): object 'actual_inventors' not found</span></span></code></pre></div>
+<span><span class="co">#&gt;             inventor_id inventor_name_first inventor_name_last</span></span>
+<span><span class="co">#&gt; 1  fl:th_ln:jefferson-1              Thomas          Jefferson</span></span>
+<span><span class="co">#&gt; 2 fl:ge_ln:washington-4              George         Washington</span></span>
+<span><span class="co">#&gt; 3 fl:ge_ln:washington-5      George Elliott         Washington</span></span></code></pre></div>
 <p>Now, with actual_inventors’ inventor_ids in hand, we’ll ask the
 patent endpoint for their patents. The results are quite different than
 what the first query returned. (These patents would have names matching
@@ -310,33 +341,39 @@ non-intuitively matched names where the first and last name matches did
 not necessarily both occur on the same inventor.)</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">id_query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span>inventors.inventor_id<span class="op">=</span><span class="va">actual_inventors</span><span class="op">$</span><span class="va">inventor_id</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in qry_funs$eq(inventors.inventor_id = actual_inventors$inventor_id): object 'actual_inventors' not found</span></span>
 <span></span>
 <span><span class="co"># We need to pass fields since we're sorting (sort field has to be passed as a field)</span></span>
 <span><span class="co"># Without a sort we could rely on the default fields being returned if we liked</span></span>
 <span></span>
 <span><span class="va">patent_fields</span> <span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patent_id"</span>, <span class="st">"inventors.inventor_name_first"</span>, <span class="st">"inventors.inventor_name_last"</span><span class="op">)</span></span>
 <span><span class="va">pat_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">id_query</span>, fields<span class="op">=</span><span class="va">patent_fields</span>, sort<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patent_id"</span> <span class="op">=</span> <span class="st">"asc"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in search_pv(id_query, fields = patent_fields, sort = c(patent_id = "asc")): object 'id_query' not found</span></span>
 <span></span>
 <span><span class="va">dl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">pat_res</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: patent_id not in primary entity data frame...Did you include it in your fields list?</span></span>
 <span></span>
 <span><span class="co"># Also, the API's sort on patent_id, a string field, puts 10568228 first at the time of </span></span>
 <span><span class="co"># this writing.  Would that be a bug or feature?  Below we'll apply our own sort</span></span>
 <span><span class="va">dl</span><span class="op">$</span><span class="va">patents</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="co">#&gt; Error in eval(expr, envir, enclos): object 'dl' not found</span></span>
+<span><span class="co">#&gt; [1] "10568228"</span></span>
 <span></span>
 <span><span class="co"># we'll repeat the same filter we used on the first query's results</span></span>
 <span><span class="va">display_inventors</span> <span class="op">&lt;-</span> </span>
 <span>   <span class="va">dl</span><span class="op">$</span><span class="va">inventors</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"^(George|Thomas)"</span>, <span class="va">inventor_name_first</span> <span class="op">)</span> <span class="op">|</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"^(Washington|Jefferson)"</span>, <span class="va">inventor_name_last</span><span class="op">)</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="va">patent_id</span><span class="op">)</span>, <span class="va">patent_id</span><span class="op">)</span>  <span class="co"># string sort</span></span>
-<span><span class="co">#&gt; Error in dl$inventors %&gt;% filter(grepl("^(George|Thomas)", inventor_name_first) | : could not find function "%&gt;%"</span></span>
 <span></span>
 <span></span>
 <span><span class="va">display_inventors</span></span>
-<span><span class="co">#&gt; Error in eval(expr, envir, enclos): object 'display_inventors' not found</span></span></code></pre></div>
+<span><span class="co">#&gt;    patent_id inventor_name_first inventor_name_last</span></span>
+<span><span class="co">#&gt; 1    4078607              Thomas          Jefferson</span></span>
+<span><span class="co">#&gt; 2    4104193              Thomas          Jefferson</span></span>
+<span><span class="co">#&gt; 3    5643452              George         Washington</span></span>
+<span><span class="co">#&gt; 4    5645778              George         Washington</span></span>
+<span><span class="co">#&gt; 5    5736046              George         Washington</span></span>
+<span><span class="co">#&gt; 6    5897817              George         Washington</span></span>
+<span><span class="co">#&gt; 7    6218441              George         Washington</span></span>
+<span><span class="co">#&gt; 8    6881337              George         Washington</span></span>
+<span><span class="co">#&gt; 9    7144505              George         Washington</span></span>
+<span><span class="co">#&gt; 10  10568228      George Elliott         Washington</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="worth-noting">Worth Noting<a class="anchor" aria-label="anchor" href="#worth-noting"></a>
@@ -346,9 +383,7 @@ publication/rel_app_text endpoint appears in the special_keys hash. Its
 entity is a rel_app_text_publications. There’s a similar
 patent/rel_app_text endpoint whose entity is rel_app_texts. Generally,
 the entity is the plural form of the singular endpoint, special_keys
-lists the exceptions to that rule, as the code shows. The otherreference
-endpoint is not currently working, its entity is other_references and
-should have an entry in special_keys<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>1</sup></a>.</p>
+lists the exceptions to that rule, as the code shows.</p>
 </div>
 <div class="section level2">
 <h2 id="acknowledgment">Acknowledgment<a class="anchor" aria-label="anchor" href="#acknowledgment"></a>
@@ -362,7 +397,6 @@ subject to the standards of the <a href="https://creativecommons.org/licenses/by
 Attribution 4.0 International License</a>.</p>
 </blockquote>
 </div>
-
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
 </div>

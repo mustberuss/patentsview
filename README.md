@@ -1,7 +1,8 @@
 
 # patentsview <img src="man/figures/logo.png" align="right" height="200" style="float:right; height:200px;" alt="Package Logo"/>
 
-> An R client to the PatentsView API
+> An R client to the PatentsView API, recently renamed the PatentSearch
+> API
 
 [![](http://badges.ropensci.org/112_status.svg)](https://github.com/ropensci/software-review/issues/112)
 [![R-CMD-check](https://github.com/ropensci/patentsview/workflows/R-CMD-check/badge.svg)](https://github.com/ropensci/patentsview/actions)
@@ -39,6 +40,16 @@ options(repos = c(
 install.packages("patentsview")
 ```
 
+Or the R package for the new version of the API from GitHub:
+
+``` r
+if (!"devtools" %in% rownames(installed.packages())) {
+  install.packages("devtools")
+}
+
+devtools::install_github("mustberuss/patentsview@api-redesign")
+```
+
 ## Important API Change
 
 The new version of the API requires an API key, or all of your requests
@@ -56,7 +67,8 @@ vignettes and reference pages.
 
 ## Basic usage
 
-The [PatentsView API](https://patentsview.org/apis/api-endpoints)
+The [PatentsView
+API](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints)
 provides an interface to a disambiguated version of USPTO. The
 `patentsview` R package provides one main function, `search_pv()`, to
 make it easy to interact with the API:

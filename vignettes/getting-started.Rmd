@@ -44,7 +44,7 @@ search_pv(
 This call to `search_pv()` sends our query to the patent endpoint (the default). The API has 23 different endpoints, corresponding to 23 different entity types
 (assignees, attorneys, brf_sum_texts, claims, cpc_classes, cpc_groups, 
 cpc_subclasses, detail_desc_texts, draw_desc_texts, foreign_citations, 
-inventors, ipcs, locations, other_references, patents, publications, 
+inventors, ipcs, locations, otherreferences, patents, publications, 
 rel_app_text_publications, rel_app_texts, us_application_citations, 
 us_patent_citations, uspc_mainclasses, uspc_subclasses, wipo).[^1] 
 Your choice of endpoint determines which entity your query is applied to, as well as the structure of the data that is returned (more on this in the "23 endpoints for 23 entities section"). For now, let's turn our attention to the `query` parameter. 

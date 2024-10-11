@@ -18,7 +18,7 @@ still has [issues](api-changes.html#things-to-note)
 Note that there isn't a way to distinguish strings and full text fields in the OpenAPI object
 (limitation of the OpenAPI spec).  We may need to change the way fieldsdf is generated
 if we need to track what operators can be used, possibly parsing the [API page](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/)?
-* Interesting behavior mentioned in their Jupyter Notebook, portions of it converted to [a vignette](understanding-the-api.html)
+* Interesting behavior mentioned in their jupyter notebook, portions of it converted to [a vignette](understanding-the-api.html)
 
 * API Oddities
    + Some [requested fields](api-changes.html#slight-weirdness) ending with _id come back without the _id[^4] 
@@ -46,7 +46,7 @@ that cast-pv-data casts to integers.[^2] [Additional details](getting-started.ht
      |endpoint|returned entity|
      |--------|---------------|
      |ipc|ipcr|
-     |otherreference|other_references|
+     |otherreference|other_references[^5]|
      |wipo|wipo|
      |publication/rel_app_text|rel_app_text_publications| 
      (Note that patent/rel_app_text returns rel_app_texts, following the singular/plural pattern)
@@ -132,3 +132,4 @@ the fieldsdf creator uses rapiclient but it's expecting to read a Swagger/OpenAP
 [^2]: Observation sent to the API team.
 [^3]: There isn't a data dictionary for the API so I suggested they create one.
 [^4]: Observation sent to the API team but they might not see it as a bug.
+[^5]: To be fixed by the API team

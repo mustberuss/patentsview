@@ -136,7 +136,7 @@
 </h1>
 </div>
 <blockquote>
-<p>An R client to the PatentsView API</p>
+<p>An R client to the PatentsView API, recently renamed the PatentSearch API</p>
 </blockquote>
 <p><a href="https://github.com/ropensci/software-review/issues/112" class="external-link"><img src="http://badges.ropensci.org/112_status.svg"></a> <a href="https://github.com/ropensci/patentsview/actions" class="external-link"><img src="https://github.com/ropensci/patentsview/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a> <a href="https://cran.r-project.org/package=patentsview" class="external-link"><img src="http://www.r-pkg.org/badges/version/patentsview" alt="CRAN version"></a> <a href="https://mustberuss.r-universe.dev/ui#package:patentsview" class="external-link"><img src="https://mustberuss.r-universe.dev/badges/patentsview"></a></p>
 <div class="section level2">
@@ -165,17 +165,18 @@
 <h2 id="important-api-change">Important API Change<a class="anchor" aria-label="anchor" href="#important-api-change"></a>
 </h2>
 <p>The new version of the API requires an API key, or all of your requests will be blocked. An API key can be obtained <a href="https://patentsview.org/apis/keyrequest" class="external-link">here</a>. The updated R package will look for an environmental variable PATENTSVIEW_API_KEY set to the value of your key. For windows it would be</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>set PATENTSVIEW_API_KEY<span class="ot">=</span>my_keys_value_without quotes</span></code></pre></div>
+<pre><code>set PATENTSVIEW_API_KEY=my_keys_value_without quotes</code></pre>
 <p>See <a href="https://mustberuss.github.io/patentsview/articles/api-changes.html" class="external-link">this page</a> about the change. The navigation there will get you to the updated vignettes and reference pages.</p>
 </div>
 <div class="section level2">
 <h2 id="basic-usage">Basic usage<a class="anchor" aria-label="anchor" href="#basic-usage"></a>
 </h2>
-<p>The <a href="https://patentsview.org/apis/api-endpoints" class="external-link">PatentsView API</a> provides an interface to a disambiguated version of USPTO. The <code>patentsview</code> R package provides one main function, <code><a href="reference/search_pv.html">search_pv()</a></code>, to make it easy to interact with the API:</p>
+<p>The <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints" class="external-link">PatentsView API</a> provides an interface to a disambiguated version of USPTO. The <code>patentsview</code> R package provides one main function, <code><a href="reference/search_pv.html">search_pv()</a></code>, to make it easy to interact with the API:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/search_pv.html">search_pv</a></span><span class="op">(</span>query <span class="op">=</span> <span class="st">'{"_gte":{"patent_date":"2007-01-01"}}'</span><span class="op">)</span></span>
+<span><span class="co">#&gt; The API's requests per minute limit has been reached. Pausing for 19 seconds before continuing.</span></span>
 <span><span class="co">#&gt; $data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
