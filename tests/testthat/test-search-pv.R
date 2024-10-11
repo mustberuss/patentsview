@@ -304,6 +304,8 @@ test_that("individual fields are still broken", {
 # see get_post_body in search-pv.R)
 
 test_that("posts and gets return the same data", {
+  skip_on_cran()
+
   bad_eps <- c(
     "cpc_subclasses",
     "location" # Error: Invalid field: location_latitude
@@ -341,6 +343,8 @@ test_that("posts and gets return the same data", {
 })
 
 test_that("nested shorthand produces the same results as fully qualified ones", {
+  skip_on_cran()
+
   # the API now allows a shorthand in the fields/f: parameter
   # just the group name will retrieve all that group's attributes
   # This is indirectly testing our parse of the OpenAPI object and actual API responses

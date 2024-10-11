@@ -1,4 +1,6 @@
 test_that("we can convert endpoints to their plural form and back", {
+  skip_on_cran()
+
   eps <- get_endpoints()
   z <- vapply(eps, function(x) {
     to_singular(to_plural(x))

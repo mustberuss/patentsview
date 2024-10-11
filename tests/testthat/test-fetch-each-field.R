@@ -5,6 +5,8 @@
 # "patents assignees.assignee_id not returned"  probably the _id thing, assignees.assignee probably returned
 
 test_that("each field in fieldsdf can be retrieved", {
+  skip_on_cran()
+
   # Iterate through fieldsdf, requesting one field at a time to see if the field
   # really can be retrieved.  What fields work and don't work is constantly changing
   # as the new version of the api is being developed

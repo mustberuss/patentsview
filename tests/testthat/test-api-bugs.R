@@ -34,6 +34,8 @@ test_that("there is case sensitivity on string equals", {
 })
 
 test_that("string vs text operators behave differently", {
+  skip_on_cran()
+
   # # reported to the API team PVS-1147
   query <- qry_funs$begins(assignee_organization = "johnson")
   a <- search_pv(query, endpoint = "assignee")
@@ -165,6 +167,8 @@ test_that("API returns all requested groups", {
 
 # test-fetch-each-field.R
 test_that("each field in fieldsdf can be retrieved", {
+  skip_on_cran()
+
   # Iterate through fieldsdf, requesting one field at a time to see if the field
   # really can be retrieved.  What fields work and don't work is constantly changing
   # as the new version of the api is being developed
