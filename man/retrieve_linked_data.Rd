@@ -2,7 +2,7 @@
 % Please edit documentation in R/search-pv.R
 \name{retrieve_linked_data}
 \alias{retrieve_linked_data}
-\title{Get Linked Data}
+\title{Retrieve Linked Data}
 \usage{
 retrieve_linked_data(url, api_key = Sys.getenv("PATENTSVIEW_API_KEY"), ...)
 }
