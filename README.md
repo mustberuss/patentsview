@@ -77,6 +77,7 @@ make it easy to interact with the API:
 library(patentsview)
 
 search_pv(query = '{"_gte":{"patent_date":"2007-01-01"}}')
+#> The API's requests per minute limit has been reached. Pausing for 31 seconds before continuing.
 #> $data
 #> #### A list with a single data frame on patents level:
 #> 
