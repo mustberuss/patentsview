@@ -39,12 +39,7 @@ devtools::install_github("ropensci/patentsview")
 Or the R package for the new version of the API from r-universe:
 
 ```{r eval = FALSE}
-options(repos = c(
-  patentsview = "https://mustberuss.r-universe.dev/",
-  CRAN = "https://cloud.r-project.org"
-))
-
-install.packages("patentsview")
+install.packages("patentsview", repos = c("https://mustberuss.r-universe.dev"))
 ```
 
 Or the R package for the new version of the API from GitHub:
