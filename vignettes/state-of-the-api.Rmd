@@ -9,7 +9,8 @@ vignette: >
 
 There's a lot going on with the new version of Patentsview API, recently renamed
 PatentSearch API, as announced [here](https://search.patentsview.org/docs/#naming-update).
-Here are the key points:
+
+## Key Points
 
 * The original API's sunset date is currently February 12, 2025 though the new version 
 still has [issues](api-changes.html#things-to-note)
@@ -17,7 +18,7 @@ still has [issues](api-changes.html#things-to-note)
 * On [string vs full text operators](api-changes.html#string-and-full-text-operators).
 Note that there isn't a way to distinguish strings and full text fields in the OpenAPI object
 (limitation of the OpenAPI spec).  We may need to change the way fieldsdf is generated
-if we need to track what operators can be used, possibly parsing the [API page](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/)?
+if we need to track what operators can be used, possibly parsing the [API's endpoints page](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints)
 * Interesting behavior mentioned in their jupyter notebook, portions of it converted to [a vignette](understanding-the-api.html)
 
 * API Oddities
@@ -51,7 +52,7 @@ that cast-pv-data casts to integers.[^2] [Additional details](getting-started.ht
      |publication/rel_app_text|rel_app_text_publications| 
      (Note that patent/rel_app_text returns rel_app_texts, following the singular/plural pattern)
 
-### On the plus side
+## On the Plus Side
 
 * All fields can be queried now.
 
@@ -60,49 +61,20 @@ that cast-pv-data casts to integers.[^2] [Additional details](getting-started.ht
 * The 100,000 row result set limit seems to be gone.  Might be part curse as a user might not have
 intended to retrieve all utility patents etc.
 
-## State of the R Package
-* The patent/otherreference endpoint isn't currently working (reported as a [bug](#otherreference) below).
-It is included in the return of get_endpoints() and has only a negative test case that will
-fail when the API responds with something other than an error.
+* The new version of the API returns data in types other than strings, e.g. application.rule_47_flag from the patent endpoint is a boolean.  ```View(fieldsdf[grep('number|integer|boolean',fieldsdf$data_type),c("endpoint","field","data_type")])``` currently returns 90 rows
 
-* Some of the new endpoints are nested under patent/ and one is nested under publication/
-```
-> unique(fieldsdf[grep('/',fieldsdf$endpoint),"endpoint"])
-[1] "patent/attorney"                "patent/foreign_citation"
-[3] "patent/otherreference"          "patent/rel_app_text"
-[5] "patent/us_application_citation" "patent/us_patent_citation"
-[7] "publication/rel_app_text"
-```
+  There are still a few fields where the API returns strings that cast-pv-data() casts to a more appropriate data type[^7].
+fieldsdf$data_type is set to int or bool for these fields.
 
-* [Two new methods](api-changes.html#additional-r-package-changes) were added to the R package
+  ```{r}
+library(patentsview)
 
-* The API and R package now allow nested attributes to be [wildcarded](understanding-the-api.html#fields-shorthand),
-where the group's name will retrieve all the group's nested fields.  An empty string can also be passed as a group name to get_fields()
-which then requests all the non-nested attributes from the endpoint. Ex. ```get_fields("patent", group=c("", "inventors")```
+print(fieldsdf[grep("bool$|int$", fieldsdf$data_type), c("endpoint", "field", "data_type")], row.names = FALSE)
+  ```
 
-* On the new [implementation of paging](api-changes.html#a-note-on-paging) and the
-[PR discussion](https://github.com/ropensci/patentsview/pull/29#discussion_r1059153136) on paging with more than a primary sort 
+## Open API Bugs
 
-* [Possible improvements](api-changes.html#possible-improvements)
-
-* A possible [tech note](patentsview-breaking-change.html) mentions
-
-  > As shown in the updated [Top Assignees vignette](top-assignees.html), there will be occasions now where multiple API calls are needed to retrieve the same data as in a single API call in the original version of the API and R package.
-
-* The reworked [ropensci post](ropensci_blog_post.html) explains what changes had to be made since assignee 
-latitude and longitude are no longer available from the patent endpoint.
-
-* The R package unit tests have some skips and negative tests that API bugs still exist
-(they'll fail when bugs are fixed).  The tests were copied to
-[a single file](https://github.com/mustberuss/patentsview/blob/api-redesign/tests/testthat/test-api-bugs.R) that
-was then submitted to the API team as bugs.  Most of the tests exist
-in other test files but a few are unique (specific to API bugs that won't be needed
-once they're fixed).
-
-* Navigation on the vignettes could be better,  [understanding-the-api](understanding-the-api.html) isn't a link in the navigation yet,
-neither is the possible tech note [patentsview-breaking-change](patentsview-breaking-change.html)
-
-## Bugs I've submitted
+Weirdly, you can only view bugs you've submitted.  I'm assuming there are other open bugs.
 
 PVS-1147 <a name="case-dependent">	
 Results are case dependent now when using an implied or explicit equals
@@ -113,13 +85,66 @@ Not all the fields in the OpenAPI object can be requested
 PVS-1109 <a name="otherreference">  
 The otherreference endpoint rejects the default [Swagger UI](https://search.patentsview.org/swagger-ui/) parameters (throws a 400 Bad Request Error if
 either reference_sequence or reference_text is requested) and returns no data when only
-patent_id is requested.  The returned object is supposed to be other_references which 
-is another exception to the singular endpoint/plural return pattern.
+patent_id is requested.  The OpenAPI object says the returned object is other_references which 
+is another exception to the singular endpoint/plural return pattern[^6].
 
 PVS-1155  
 Documentation inconsistencies  
 The endpoint is listed as /api/v1/attorney/, it should be /api/v1/patent/attorney for the GET/POST and /api/v1/patent/attorney/{attorney_id}/ for the GET with a url parameter
 The beta endpoints say they are only GETs. The Swagger UI page and OpenAPI object say they accept posts too, which do work.
+
+## State of the R Package
+
+* [Two new methods](api-changes.html#additional-r-package-changes) were added to the R package
+
+* The API and R package now allow nested attributes to be [wildcarded](understanding-the-api.html#fields-shorthand),
+where the group's name will retrieve all the group's nested fields.  An empty string can also be passed as a group name to get_fields()
+which then requests all the non-nested attributes from the endpoint. Ex. ```get_fields("patent", group=c("", "inventors")```
+
+* The reworked [ropensci post](ropensci_blog_post.html) explains what changes had to be made since assignee 
+latitude and longitude are no longer available from the patent endpoint.
+
+* Some of the new endpoints are nested under patent/ and one is nested under publication/
+  ```{r}
+print(unique(fieldsdf[grep("/", fieldsdf$endpoint), "endpoint"]), row.names = FALSE)
+  ```
+
+* Package contributor specific changes
+
+  + My github repo is set to deliver to https://mustberuss.r-universe.dev/patentsview and can be
+installed via ```install.packages('patentsview', repos = c('https://mustberuss.r-universe.dev'))```
+
+  + On the new [implementation of paging](api-changes.html#a-note-on-paging) and the
+[PR discussion](https://github.com/ropensci/patentsview/pull/29#discussion_r1059153136) on paging with more than a primary sort 
+
+  + The patent/otherreference endpoint isn't currently working (reported as a [bug](#otherreference) above).
+It is included in the return of get_endpoints() and has only a negative test case that will
+fail when the API responds with something other than an error.
+
+  + The R package unit tests have some skips and other negative tests that API bugs still exist
+(they'll fail when bugs are fixed).  The tests were copied to
+[a single file](https://github.com/mustberuss/patentsview/blob/api-redesign/tests/testthat/test-api-bugs.R) that
+was then submitted to the API team as bugs.  Most of the tests exist
+in other test files but a few are unique (specific to API bugs that won't be needed
+once they're fixed).
+
+  + A possible [tech note](patentsview-breaking-change.html) for when the new package is ready mentions
+
+    > As shown in the updated [Top Assignees vignette](top-assignees.html), there will be occasions now where multiple API calls are needed to retrieve the same data as in a single API call in the original version of the API and R package.
+
+  + The workflow (R-CMD-check.yaml) was updated to get rid of deprecated warnings
+
+  + Added vignettes/build_some.R to half render some of the vignettes
+
+  + Possible Package Improvements
+
+    * The version number ought to be bumped to 1.0.0 since there are breaking API changes
+    * Result set size seems unbounded now.  Should we warn if a query would return more than 100,000 rows with all_pages = TRUE?
+    * Have get_fields() and search_pv() throw a specialized error if a plural endpoint is passed
+    * Replace openAPI_to_csv.pl and to_rda.R with its R equivalent
+    * Add an issue template that warns users not to share their API keys
+    * Navigation on the vignettes could be better,  [understanding-the-api](understanding-the-api.html) isn't a link in the navigation yet,
+neither is the possible [tech note](patentsview-breaking-change.html)
 
 ## Worth Mentioning
 
@@ -128,8 +153,118 @@ https://github.com/bergant/rapiclient/issues/11   The R version (not currently w
 the fieldsdf creator uses rapiclient but it's expecting to read a Swagger/OpenAPI v2 object
 (the patentsview object is OpenAPI v3).
 
+## Findings/Contributor 101
+
+Helpful info after you've forked https://github.com/ropensci/patentsview 
+
+* API related
+
+  + Updated versions of the new API are unannounced for the most part, maybe on a three week release cycle, often on 
+Saturdays.  I do head requests from time to time on the [API's OpenAPI object](https://search.patentsview.org/static/openapi.json)
+to detect when its Last-Modified changes. When it changes, I back up data-raw/fieldsdf.csv, run data-raw/openAPI_to_csv.pl and 
+compare the backed up fieldsdf.csv to the new one to see if anything changed.  I also run
+all of the tests to see what happens and push any changes to keep the tests passing.  Quarterly or so they'll update https://patentsview.org/release-notes
+
+  + Report API suggestions/bugs etc [here](https://patentsview-support.atlassian.net/servicedesk/customer/portals)
+or Community -> Support using the nav on [patentsview.org](httsp://patentsview.org)
+
+  + Now all the endpoints are documented on a [single page](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints).
+The [query language]( https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#api-query-language) is also on that same page.
+Originally there was a separate page for each endpoint.
+
+  + The patentsview forum isn't terribly active but it's worth keeping an eye on
+https://patentsview.org/forum
+
+* Locally
+
+  + Build and install the local code ```devtools::install('.')```
+
+  + Local Testing
+
+    * devtools::test()  to run all the tests in tests/testthat/
+
+    * devtools::test(filter="utils") to just run just test-utils.R
+
+    * note that if you add new test methods, they must start with ```skip_on_cran()``` or builds will fail on r-universe (see Optional below) and eventually on CRAN.
+
+  + Half building vignettes locally - see vignettes/README.md
+
+    * need phantomjs in your path on windows at least
+
+    * see the comments in vignettes/build_some.R 
+
+  + pkgdown locally
+
+    * pkgdown::build_articles() to see local changes to half-rendered vignettes 
+
+    *  You may want to run individual methods or 
+[pkgdown::build_site()](https://pkgdown.r-lib.org/reference/build_site.html) which is a wrapper for 
+       + init_site()
+       + build_home()
+       + build_reference()
+       + build_articles()
+       + build_tutorials()
+       + build_news()
+       + build_redirects()
+<br />
+<br />
+   + build reference pages locally   
+If you make changes to method documentation, run 
+      * devtools::document() and
+      * pkgdown::build_reference()
+   + see README.Rmd changes locally
+      * knitr::knit("README.Rmd", "README.md")
+      * pkgdown::build_home()
+<br />
+<br />
+* Remotely
+
+  + pkgdown remotely   
+   You can set up github pages in your repo to display vignettes and man pages, e.g. https://github.com/mustberuss/patentsview
+
+  + Remote Testing   
+You can put your API key in your repo as a Repository secret so the tests will run when you push changes.
+ E.g., I have PATENTSVIEW_API_KEY set in 
+https://github.com/mustberuss/patentsview/settings/secrets/actions (though settings aren't publicly
+viewable)
+
+* Before doing a push 
+
+  + make sure you are following the [Tidyverse style guide](https://style.tidyverse.org/).
+There are plugins to keep you stylish ```styler::style_pkg(".", dry = "fail")```
+```styler::style_file('path/file')``` if necessary or use a plugin etc
+
+  + make sure the examples still run ```devtools::run_examples()```
+
+   + check spelling using ```devtools::spell_check(pkg = ".", vignettes = TRUE, use_wordlist = TRUE)```
+Locally I have an unchecked in inst/WORDLIST with additional words to allow (one word per line)
+see https://devtools.r-lib.org/reference/spell_check.html
+
+* Optional
+
+  + you can set up your own r-universe by creating a special github repo, as explained 
+[here](https://ropensci.org/blog/2021/06/22/setup-runiverse/).
+E.g., https://github.com/mustberuss/mustberuss.r-universe.dev
+with https://github.com/mustberuss/mustberuss.r-universe.dev/blob/master/packages.json
+See [this article](https://ropensci.org/blog/2023/02/07/runiverse-registry-repo/) on the newer repo naming convention
+<br />
+<br />
+* Notes
+   + By default, patentsview is on r-universe https://ropensci.r-universe.dev/patentsview
+<br />
+<br />  
+    
+* Questions:
+   + Is there a way to set up notifications on r-universe build failures?  If you miss a
+skip_on_cran(), tests could work in your repo (if you have your API key as a repo secret)
+but the build will silently fail on r-universe.  Don't ask how I know that.
+
+   + Why don't the vignettes show up on r-universe?  The articles link is grayed out.
+
 [^1]: Observation sent to the API team.
 [^2]: Observation sent to the API team.
 [^3]: There isn't a data dictionary for the API so I suggested they create one.
 [^4]: Observation sent to the API team but they might not see it as a bug.
 [^5]: To be fixed by the API team
+[^6]: To be fixed by the API team
+[^7]: Observation sent to the API team.

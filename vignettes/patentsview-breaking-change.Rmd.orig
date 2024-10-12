@@ -55,7 +55,7 @@ e.g., ```search_pv('{"cpc_current.cpc_group_id":"A01B1/00"}')``` when using the 
 4. Some field's names have changed, most significantly, patent_number is now patent_id,
  and some fields were removed entirely, e.g., rawinventor_first_name and rawinventor_last_name.
 5. The original version of the API had queryable fields and additional fields which could be 
-retreived but couldn't be part of a conditional query.  That notion does not apply to the 
+retrieved but couldn't be part of a conditional query.  That notion does not apply to the 
 new version of the API as all fields are now queryable.  You may be able
 to simplify your code if you found yourself doing post processing on returned data
 because a field you were interested in was not queryable.
