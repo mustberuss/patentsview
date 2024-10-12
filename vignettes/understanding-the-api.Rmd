@@ -253,5 +253,3 @@ in R package form.  The repo didn't have a stated license but https://patentsvie
 > Users are free to use, share, or adapt the material for any purpose, subject to the standards of the 
 > [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).  
 
-[^1]: Observation sent to the API team.
-

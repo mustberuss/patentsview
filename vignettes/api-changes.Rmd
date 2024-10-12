@@ -71,15 +71,6 @@ range_query
 * The ropensci_blog_post that announced the original version of the R package was [reworked](ropensci_blog_post.html) to use the new version of the R package and API
 * A hex sticker was created using GuangchuangYu's [hexSticker](https://github.com/GuangchuangYu/hexSticker)
 
-**Possible Package Improvements** <a name="possible-improvements">
-
-* The version number ought to be bumped to 1.0.0 since there are breaking API changes
-* Result set size seems unbounded now.  Should we warn if a query would return more than 100,000 rows with all_pages = TRUE?
-* Have get_fields() and search_pv() throw a specialized error if a plural endpoint is passed
-* Replace openAPI_to_csv.pl and to_rda.R with its R equivalent
-* Add an issue template that warns users not to share their API keys
-* There's a new [tech note](ropensci_tech_note.html) that could be used when the new version of the R package is ready.
-
 ## Swagger UI Page <a name="swagger-ui-page"></a>
 The Patentsview API team has provided a Swagger UI page for the new version of the API 
 at https://search.patentsview.org/swagger-ui/. How cool is that?

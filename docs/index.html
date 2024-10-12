@@ -154,12 +154,7 @@
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"ropensci/patentsview"</span><span class="op">)</span></span></code></pre></div>
 <p>Or the R package for the new version of the API from r-universe:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>  patentsview <span class="op">=</span> <span class="st">"https://mustberuss.r-universe.dev/"</span>,</span>
-<span>  CRAN <span class="op">=</span> <span class="st">"https://cloud.r-project.org"</span></span>
-<span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"patentsview"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"patentsview"</span>, repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://mustberuss.r-universe.dev"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Or the R package for the new version of the API from GitHub:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="st">"devtools"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html" class="external-link">installed.packages</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
@@ -172,7 +167,7 @@
 <h2 id="important-api-change">Important API Change<a class="anchor" aria-label="anchor" href="#important-api-change"></a>
 </h2>
 <p>The new version of the API requires an API key, or all of your requests will be blocked. An API key can be obtained <a href="https://patentsview.org/apis/keyrequest" class="external-link">here</a>. The updated R package will look for an environmental variable PATENTSVIEW_API_KEY set to the value of your key. For windows it would be</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>set PATENTSVIEW_API_KEY<span class="ot">=</span>my_keys_value_without quotes</span></code></pre></div>
+<pre><code>set PATENTSVIEW_API_KEY=my_keys_value_without quotes</code></pre>
 <p>See <a href="https://mustberuss.github.io/patentsview/articles/api-changes.html" class="external-link">this page</a> about the change. The navigation there will get you to the updated vignettes and reference pages.</p>
 </div>
 <div class="section level2">
@@ -183,7 +178,6 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/search_pv.html">search_pv</a></span><span class="op">(</span>query <span class="op">=</span> <span class="st">'{"_gte":{"patent_date":"2007-01-01"}}'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; The API's requests per minute limit has been reached. Pausing for 31 seconds before continuing.</span></span>
 <span><span class="co">#&gt; $data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
