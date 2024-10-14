@@ -144,32 +144,68 @@
 
     
     
-<p>There’s a lot going on with the new version of Patentsview API,
+<p>There’s a lot going on with the new version of the Patentsview API,
 recently renamed PatentSearch API, as announced <a href="https://search.patentsview.org/docs/#naming-update" class="external-link">here</a>.</p>
 <div class="section level2">
-<h2 id="key-points">Key Points<a class="anchor" aria-label="anchor" href="#key-points"></a>
+<h2 id="on-the-plus-side">On the Plus Side<a class="anchor" aria-label="anchor" href="#on-the-plus-side"></a>
+</h2>
+<ul>
+<li><p>All fields can be queried now.</p></li>
+<li><p>The 100,000 row result set size limit seems to be gone. Might be
+part curse as a user might not have intended to <a href="api-changes.html#unbounded">retrieve all utility patents</a>
+etc.</p></li>
+<li>
+<p>The new version of the API returns data in types other than
+strings, e.g. application.rule_47_flag from the patent endpoint is a
+boolean.
+<code>View(fieldsdf[grep('number|integer|boolean',fieldsdf$data_type),c("endpoint","field","data_type")])</code>
+currently returns 90 rows</p>
+<p>There are still a few fields where the API returns strings that
+cast-pv-data() casts to a more appropriate data type<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>1</sup></a>. fieldsdf$data_type is
+set to int or bool for these fields.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Count of non string, non date fields returned by the new version of the API</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">fieldsdf</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">'number|integer|boolean'</span>,<span class="va">fieldsdf</span><span class="op">$</span><span class="va">data_type</span><span class="op">)</span>,<span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 90</span></span></code></pre>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fieldsdf</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"bool$|int$"</span>, <span class="va">fieldsdf</span><span class="op">$</span><span class="va">data_type</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"endpoint"</span>, <span class="st">"field"</span>, <span class="st">"data_type"</span><span class="op">)</span><span class="op">]</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##                        endpoint                    field data_type</span></span>
+<span><span class="co">##                        assignee            assignee_type       int</span></span>
+<span><span class="co">##                          patent  assignees.assignee_type       int</span></span>
+<span><span class="co">##  patent/us_application_citation citation_document_number       int</span></span>
+<span><span class="co">##                     publication  assignees.assignee_type       int</span></span>
+<span><span class="co">##                     publication             rule_47_flag      bool</span></span>
+<span><span class="co">##        publication/rel_app_text          document_number       int</span></span></code></pre>
+</li>
+<li><p>The API team created a <a href="patentsview-breaking-change.html#online-documentation">Swagger
+UI</a> page for the new version of the API. On the <a href="https://patentsview.historicip.com/swagger/articles/" class="external-link">Joys of
+Swagger UI</a></p></li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="issues">Issues<a class="anchor" aria-label="anchor" href="#issues"></a>
 </h2>
 <ul>
 <li><p>The original API’s sunset date is currently February 12, 2025
 though the new version still has <a href="api-changes.html#things-to-note">issues</a></p></li>
 <li><p>On a new <a href="api-changes.html#case-sensitivity-caveat">string case
-sensitivity</a>, opened as a <a href="#case-dependent">bug</a>
+sensitivity</a>, opened as a <a href="#case-dependent">bug</a> listed
 below</p></li>
 <li><p>On <a href="api-changes.html#string-and-full-text-operators">string vs full
-text operators</a>. Note that there isn’t a way to distinguish strings
-and full text fields in the OpenAPI object (limitation of the OpenAPI
-spec). We may need to change the way fieldsdf is generated if we need to
-track what operators can be used, possibly parsing the <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints" class="external-link">API’s
+text operators</a>, also opened as a bug listed below. Note that there
+isn’t a way to distinguish strings and full text fields in the OpenAPI
+object (limitation of the OpenAPI spec). We may need to change the way
+fieldsdf is generated if we need to track what operators can be used,
+possibly parsing the <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints" class="external-link">API’s
 endpoints page</a></p></li>
-<li><p>Interesting behavior mentioned in their jupyter notebook,
-portions of it converted to <a href="understanding-the-api.html">a
-vignette</a></p></li>
 <li>
 <p>API Oddities</p>
 <ul>
 <li><p>Some <a href="api-changes.html#slight-weirdness">requested
 fields</a> ending with _id come back without the _id<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team but they might not see
-it as a bug.&lt;/p&gt;"><sup>1</sup></a> Ex patent endpoint
+it as a bug.&lt;/p&gt;"><sup>2</sup></a> Ex patent endpoint
 requested inventors.inventor_id and assignees.assignee_id are returned
 as inventors.inventor and assignees.assignee, their values are their
 respective HATEOAS links</p></li>
@@ -181,8 +217,9 @@ links</a> use a colon instead of having two URL parameters</p>
 <li>https<a href=""></a>://search.patentsview.org/api/v1/uspc_subclass/403:57/
 (endpoint currently throws a 500)</li>
 </ul>
-<p>These links aren’t clickable since no API key would be sent,
-resulting in a 403, Forbidden response.</p>
+<p>An <a href="api-changes.html#an-api-key-is-required">API key</a> is
+now required so, intentionally, these URLs aren’t clickable since no API
+key would be sent, resulting in a 403, Forbidden response.</p>
 </li>
 <li>
 <p>Field inconsistencies</p>
@@ -190,12 +227,12 @@ resulting in a 403, Forbidden response.</p>
 <li><p>There are two rule_47_flag fields, one returned by the patent
 endpoint and one returned by the publication endpoint. The former is
 returned as a boolean, the latter as a string that cast-pv-data casts to
-a boolean.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>2</sup></a></p></li>
+a boolean.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>3</sup></a></p></li>
 <li><p>assignee_type, available from three endpoints, is returned as a
 string but looks like they’re integer values<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;There isn’t a data dictionary for the API so I suggested
-they create one.&lt;/p&gt;"><sup>3</sup></a></p></li>
+they create one.&lt;/p&gt;"><sup>4</sup></a></p></li>
 <li><p>Most document_number fields are integers but there are two that
-are returned as strings that cast-pv-data casts to integers.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>4</sup></a> <a href="getting-started.html#casting-fields">Additional
+are returned as strings that cast-pv-data casts to integers.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>5</sup></a> <a href="getting-started.html#casting-fields">Additional
 details</a></p></li>
 </ul>
 </li>
@@ -214,7 +251,7 @@ endpoint with these exceptions:</p>
 </tr>
 <tr class="even">
 <td>otherreference</td>
-<td>other_references<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;To be fixed by the API team&lt;/p&gt;"><sup>5</sup></a>
+<td>other_references<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;To be fixed by the API team&lt;/p&gt;"><sup>6</sup></a>
 </td>
 </tr>
 <tr class="odd">
@@ -231,39 +268,6 @@ endpoint with these exceptions:</p>
 singular/plural pattern)</p>
 </li>
 </ul>
-</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="on-the-plus-side">On the Plus Side<a class="anchor" aria-label="anchor" href="#on-the-plus-side"></a>
-</h2>
-<ul>
-<li><p>All fields can be queried now.</p></li>
-<li><p>A <a href="patentsview-breaking-change.html#online-documentation">Swagger
-UI</a> page was created for the new version of the API</p></li>
-<li><p>The 100,000 row result set limit seems to be gone. Might be part
-curse as a user might not have intended to retrieve all utility patents
-etc.</p></li>
-<li>
-<p>The new version of the API returns data in types other than
-strings, e.g. application.rule_47_flag from the patent endpoint is a
-boolean.
-<code>View(fieldsdf[grep('number|integer|boolean',fieldsdf$data_type),c("endpoint","field","data_type")])</code>
-currently returns 90 rows</p>
-<p>There are still a few fields where the API returns strings that
-cast-pv-data() casts to a more appropriate data type<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>6</sup></a>. fieldsdf$data_type is
-set to int or bool for these fields.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fieldsdf</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"bool$|int$"</span>, <span class="va">fieldsdf</span><span class="op">$</span><span class="va">data_type</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"endpoint"</span>, <span class="st">"field"</span>, <span class="st">"data_type"</span><span class="op">)</span><span class="op">]</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##                        endpoint                    field data_type</span></span>
-<span><span class="co">##                        assignee            assignee_type       int</span></span>
-<span><span class="co">##                          patent  assignees.assignee_type       int</span></span>
-<span><span class="co">##  patent/us_application_citation citation_document_number       int</span></span>
-<span><span class="co">##                     publication  assignees.assignee_type       int</span></span>
-<span><span class="co">##                     publication             rule_47_flag      bool</span></span>
-<span><span class="co">##        publication/rel_app_text          document_number       int</span></span></code></pre>
 </li>
 </ul>
 </div>
@@ -291,6 +295,14 @@ The endpoint is listed as /api/v1/attorney/, it should be
 /api/v1/patent/attorney/{attorney_id}/ for the GET with a url parameter
 The beta endpoints say they are only GETs. The Swagger UI page and
 OpenAPI object say they accept posts too, which do work.</p>
+<p>PVS-1181 Improvement Suggestion<br>
+There isn’t a data dictionary for the API like there is for the bulk
+download files. A specific question would be what is the difference
+between patent_earliest_application_date and application.filing_date
+returned by the new patent endpoint. Other questions would be what do
+the values of the assignees.assignee_type field represent, are they all
+integers and if so should the field be received as an integer rather
+than a string?</p>
 </div>
 <div class="section level2">
 <h2 id="state-of-the-r-package">State of the R Package<a class="anchor" aria-label="anchor" href="#state-of-the-r-package"></a>
@@ -298,18 +310,27 @@ OpenAPI object say they accept posts too, which do work.</p>
 <ul>
 <li><p><a href="api-changes.html#additional-r-package-changes">Two new
 methods</a> were added to the R package</p></li>
+<li><p>The reworked <a href="ropensci_blog_post.html">ropensci post</a>
+explains what changes had to be made since assignee latitude and
+longitude are no longer available from the patent endpoint.</p></li>
+<li>
+<p>A new vignette, inspired by the API team’s jupyter notebook, was
+created showing two of the things it mentions</p>
+<ol style="list-style-type: decimal">
 <li><p>The API and R package now allow nested attributes to be <a href="understanding-the-api.html#fields-shorthand">wildcarded</a>, where
 the group’s name will retrieve all the group’s nested fields. An empty
 string can also be passed as a group name to get_fields() which then
 requests all the non-nested attributes from the endpoint. Ex.
 <code>get_fields("patent", group=c("", "inventors")</code></p></li>
-<li><p>The reworked <a href="ropensci_blog_post.html">ropensci post</a>
-explains what changes had to be made since assignee latitude and
-longitude are no longer available from the patent endpoint.</p></li>
+<li><p>On <a href="understanding-the-api.html#unexpected-results">applying multiple
+conditions to related-entity fields</a></p></li>
+</ol>
+</li>
 <li>
-<p>Some of the new endpoints are nested under patent/ and one is
-nested under publication/</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<p>The endpoints are now singular, to match the API’s change. Some
+of the new endpoints are nested under patent/ and one is nested under
+publication/, also matching the API’s change</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">fieldsdf</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"/"</span>, <span class="va">fieldsdf</span><span class="op">$</span><span class="va">endpoint</span><span class="op">)</span>, <span class="st">"endpoint"</span><span class="op">]</span><span class="op">)</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "patent/attorney"                "patent/foreign_citation"       </span></span>
 <span><span class="co">## [3] "patent/otherreference"          "patent/rel_app_text"           </span></span>
@@ -319,12 +340,12 @@ nested under publication/</p>
 <li>
 <p>Package contributor specific changes</p>
 <ul>
-<li><p>My github repo is set to deliver to <a href="https://mustberuss.r-universe.dev/patentsview" class="external-link uri">https://mustberuss.r-universe.dev/patentsview</a> and can be
-installed via
-<code>install.packages('patentsview', repos = c('https://mustberuss.r-universe.dev'))</code></p></li>
+<li><p>My github repo is set to deliver to <a href="https://mustberuss.r-universe.dev/patentsview" class="external-link uri">https://mustberuss.r-universe.dev/patentsview</a>. The new
+version of the R package can be installed via<br><code>install.packages('patentsview', repos = c('https://mustberuss.r-universe.dev'))</code></p></li>
 <li><p>On the new <a href="api-changes.html#a-note-on-paging">implementation of paging</a>
 and the <a href="https://github.com/ropensci/patentsview/pull/29#discussion_r1059153136" class="external-link">PR
-discussion</a> on paging with more than a primary sort</p></li>
+discussion</a> on paging with more than a primary sort. This added a
+dependency to data.table.</p></li>
 <li><p>The patent/otherreference endpoint isn’t currently working
 (reported as a <a href="#otherreference">bug</a> above). It is included
 in the return of get_endpoints() and has only a negative test case that
@@ -348,20 +369,27 @@ version of the API and R package.</p>
 </li>
 <li><p>The workflow (R-CMD-check.yaml) was updated to get rid of
 deprecated warnings</p></li>
-<li><p>Added vignettes/build_some.R to half render some of the
-vignettes</p></li>
+<li><p>Added vignettes/build_some.R to half render one or more of the
+vignettes during development</p></li>
+<li><p>Added a <code>bootstrap: 5</code> to _pkgdown.yml so the search
+box would display (Maëlle’s <a href="https://github.com/ropensci/patentsview/pull/34" class="external-link">PR</a>)</p></li>
+<li><p>The R package handles <a href="api-changes.html#throttling">throttling</a>, which the new version
+of the API now imposes</p></li>
 <li>
 <p>Possible Package Improvements</p>
 <ul>
 <li>The version number ought to be bumped to 1.0.0 since there are
-breaking API changes</li>
+breaking API changes (singular endpoints and the addition of an API
+key)</li>
 <li>Result set size seems unbounded now. Should we warn if a query would
 return more than 100,000 rows with all_pages = TRUE?</li>
 <li>Have get_fields() and search_pv() throw a specialized error if a
 plural endpoint is passed</li>
 <li>Replace openAPI_to_csv.pl and to_rda.R with its R equivalent</li>
 <li>Add an issue template that warns users not to share their API
-keys</li>
+key</li>
+<li>Add a contributing.md or something that explains how to build
+everything, something like <a href="#findingscontributor-101">Findings/Contributor 101</a> below</li>
 <li>Navigation on the vignettes could be better, <a href="understanding-the-api.html">understanding-the-api</a> isn’t a link
 in the navigation yet, neither is the possible <a href="patentsview-breaking-change.html">tech note</a>
 </li>
@@ -376,7 +404,7 @@ in the navigation yet, neither is the possible <a href="patentsview-breaking-cha
 </h2>
 <p>bergant/rapiclient has a new maintainer and there is talk of adding
 support for OpenAPI v3 <a href="https://github.com/bergant/rapiclient/issues/11" class="external-link uri">https://github.com/bergant/rapiclient/issues/11</a> The R
-version (not currently working) of the fieldsdf creator uses rapiclient
+version of the fieldsdf creator (not currently working) uses rapiclient
 but it’s expecting to read a Swagger/OpenAPI v2 object (the patentsview
 object is OpenAPI v3).</p>
 </div>
@@ -512,7 +540,10 @@ article</a> on the newer repo naming convention <br><br>
 <li>
 <p>Notes</p>
 <ul>
-<li>By default, patentsview is on r-universe <a href="https://ropensci.r-universe.dev/patentsview" class="external-link uri">https://ropensci.r-universe.dev/patentsview</a> <br><br>
+<li>By default, patentsview is on r-universe <a href="https://ropensci.r-universe.dev/patentsview" class="external-link uri">https://ropensci.r-universe.dev/patentsview</a>
+</li>
+<li>Someone really smart should write a python library for the API!
+<br><br>
 </li>
 </ul>
 </li>
@@ -523,8 +554,12 @@ article</a> on the newer repo naming convention <br><br>
 failures? If you miss a skip_on_cran(), tests could work in your repo
 (if you have your API key as a repo secret) but the build will silently
 fail on r-universe. Don’t ask how I know that.</p></li>
-<li><p>Why don’t the vignettes show up on r-universe? The articles link
-is grayed out.</p></li>
+<li>
+<p>Why don’t the vignettes show up on r-universe? The articles link
+is grayed out.</p>
+<p>Ah, on the build it shows Build pkgdown site (ropensci only) was
+skipped</p>
+</li>
 </ul>
 </li>
 </ul>

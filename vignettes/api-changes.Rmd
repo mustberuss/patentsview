@@ -34,8 +34,27 @@ of the API and R package will accept fields=c("assignees") when using the patent
 fields will be returned by the API.  This would be similar to get_fields("patent", groups=c("assignees")) except that it's the API deciding what fields to return
 (in this case, all of the assignees fields).
   
-* A result set's size seems unbounded now, you can now retrieve more than 100,000 rows. You'd need to be careful when setting all_pages = TRUE
-as the R package will page until the entire result set is retrieved which could be a million or more rows. Ex. ```search_pv('{"patent_type":"utility"}', all_pages=TRUE)```
+* <a name="unbounded"> A result set's size seems unbounded now, you can now retrieve more than 100,000 rows. You'd need to be careful when setting all_pages = TRUE
+as the R package will page until the entire result set is retrieved which could be a million or more rows. 
+Note total_hits, in the previous version of the API this was capped at 100,000 rows.
+
+``` r
+library(patentsview)
+search_pv('{"patent_type":"utility"}', all_pages = FALSE )
+#> $data
+#> #### A list with a single data frame on patents level:
+#> 
+#> List of 1
+#>  $ patents:'data.frame':	1000 obs. of  3 variables:
+#>   ..$ patent_id   : chr [1:1000] "10000000" ...
+#>   ..$ patent_title: chr [1:1000] "Coherent LADAR using intra-pixel quadrature"..
+#>   ..$ patent_date : chr [1:1000] "2018-06-19" ...
+#> 
+#> $query_results
+#> #### Distinct entity counts across all downloadable pages of output:
+#> 
+#> total_hits = 8,044,869
+```
 
 * Endpoint Changes
    - nber_subcategories went away- it was an endpoint in the original version of the API
@@ -54,8 +73,6 @@ These changes were also made to the R package, in addition to the
    + qry_funs$in_range()
 
 ``` r
-library(patentsview)
-
 range_query <- qry_funs$in_range(patent_date=c("1970-01-01","1983-02-28")) 
 
 # which will generate this, so you don't have to do it by hand
