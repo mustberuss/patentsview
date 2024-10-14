@@ -7,19 +7,40 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-There's a lot going on with the new version of Patentsview API, recently renamed
+There's a lot going on with the new version of the Patentsview API, recently renamed
 PatentSearch API, as announced [here](https://search.patentsview.org/docs/#naming-update).
 
-## Key Points
+## On the Plus Side
+
+* All fields can be queried now.
+
+* The 100,000 row result set size limit seems to be gone.  Might be part curse as a user might not have
+intended to [retrieve all utility patents](api-changes.html#unbounded) etc.
+
+* The new version of the API returns data in types other than strings, e.g. application.rule_47_flag from the patent endpoint is a boolean.  ```View(fieldsdf[grep('number|integer|boolean',fieldsdf$data_type),c("endpoint","field","data_type")])``` currently returns 90 rows
+
+  There are still a few fields where the API returns strings that cast-pv-data() casts to a more appropriate data type[^7].
+fieldsdf$data_type is set to int or bool for these fields.
+
+  ```{r}
+library(patentsview)
+
+# Count of non string, non date fields returned by the new version of the API
+nrow(fieldsdf[grep('number|integer|boolean',fieldsdf$data_type),])
+
+print(fieldsdf[grep("bool$|int$", fieldsdf$data_type), c("endpoint", "field", "data_type")], row.names = FALSE)
+  ```
+* The API team created a [Swagger UI](patentsview-breaking-change.html#online-documentation) page for the new version of the API. On the [Joys of Swagger UI](https://patentsview.historicip.com/swagger/articles/)
+
+## Issues
 
 * The original API's sunset date is currently February 12, 2025 though the new version 
 still has [issues](api-changes.html#things-to-note)
-* On a new [string case sensitivity](api-changes.html#case-sensitivity-caveat), opened as a [bug](#case-dependent) below
-* On [string vs full text operators](api-changes.html#string-and-full-text-operators).
+* On a new [string case sensitivity](api-changes.html#case-sensitivity-caveat), opened as a [bug](#case-dependent) listed below
+* On [string vs full text operators](api-changes.html#string-and-full-text-operators), also opened as a bug listed below.
 Note that there isn't a way to distinguish strings and full text fields in the OpenAPI object
 (limitation of the OpenAPI spec).  We may need to change the way fieldsdf is generated
 if we need to track what operators can be used, possibly parsing the [API's endpoints page](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints)
-* Interesting behavior mentioned in their jupyter notebook, portions of it converted to [a vignette](understanding-the-api.html)
 
 * API Oddities
    + Some [requested fields](api-changes.html#slight-weirdness) ending with _id come back without the _id[^4] 
@@ -31,7 +52,7 @@ their respective HATEOAS links
       * https[]()://search.patentsview.org/api/v1/cpc_group/G01S7:4865/
       * https[]()://search.patentsview.org/api/v1/uspc_subclass/403:57/ (endpoint currently throws a 500)
 
-      These links aren't clickable since no API key would be sent, resulting in a 403, Forbidden response.
+      An [API key](api-changes.html#an-api-key-is-required) is now required so, intentionally, these URLs aren't clickable since no API key would be sent, resulting in a 403, Forbidden response.
 
    + Field inconsistencies
       * There are two rule_47_flag fields, one returned by the patent endpoint and one returned by the
@@ -52,25 +73,6 @@ that cast-pv-data casts to integers.[^2] [Additional details](getting-started.ht
      |publication/rel_app_text|rel_app_text_publications| 
      (Note that patent/rel_app_text returns rel_app_texts, following the singular/plural pattern)
 
-## On the Plus Side
-
-* All fields can be queried now.
-
-* A [Swagger UI](patentsview-breaking-change.html#online-documentation) page was created for the new version of the API
-
-* The 100,000 row result set limit seems to be gone.  Might be part curse as a user might not have
-intended to retrieve all utility patents etc.
-
-* The new version of the API returns data in types other than strings, e.g. application.rule_47_flag from the patent endpoint is a boolean.  ```View(fieldsdf[grep('number|integer|boolean',fieldsdf$data_type),c("endpoint","field","data_type")])``` currently returns 90 rows
-
-  There are still a few fields where the API returns strings that cast-pv-data() casts to a more appropriate data type[^7].
-fieldsdf$data_type is set to int or bool for these fields.
-
-  ```{r}
-library(patentsview)
-
-print(fieldsdf[grep("bool$|int$", fieldsdf$data_type), c("endpoint", "field", "data_type")], row.names = FALSE)
-  ```
 
 ## Open API Bugs
 
@@ -93,29 +95,41 @@ Documentation inconsistencies
 The endpoint is listed as /api/v1/attorney/, it should be /api/v1/patent/attorney for the GET/POST and /api/v1/patent/attorney/{attorney_id}/ for the GET with a url parameter
 The beta endpoints say they are only GETs. The Swagger UI page and OpenAPI object say they accept posts too, which do work.
 
+PVS-1181
+Improvement Suggestion  
+There isn't a data dictionary for the API like there is for the bulk download files.
+A specific question would be what is the difference between patent_earliest_application_date and application.filing_date returned by the new patent endpoint. 
+Other questions would be what do the values of the assignees.assignee_type field represent, are they all integers and if so should the field be received as an integer rather than a string?
+
 ## State of the R Package
 
 * [Two new methods](api-changes.html#additional-r-package-changes) were added to the R package
 
-* The API and R package now allow nested attributes to be [wildcarded](understanding-the-api.html#fields-shorthand),
-where the group's name will retrieve all the group's nested fields.  An empty string can also be passed as a group name to get_fields()
-which then requests all the non-nested attributes from the endpoint. Ex. ```get_fields("patent", group=c("", "inventors")```
-
 * The reworked [ropensci post](ropensci_blog_post.html) explains what changes had to be made since assignee 
 latitude and longitude are no longer available from the patent endpoint.
 
-* Some of the new endpoints are nested under patent/ and one is nested under publication/
+* A new vignette, inspired by the API team's jupyter notebook, was created showing two of the things it mentions
+
+  1. The API and R package now allow nested attributes to be [wildcarded](understanding-the-api.html#fields-shorthand),
+where the group's name will retrieve all the group's nested fields.  An empty string can also be passed as a group name to get_fields()
+which then requests all the non-nested attributes from the endpoint. Ex. ```get_fields("patent", group=c("", "inventors")```
+
+  2. On [applying multiple conditions to related-entity fields](understanding-the-api.html#unexpected-results)
+
+* The endpoints are now singular, to match the API's change.  Some of the new endpoints are nested under patent/ and one is nested under publication/,
+also matching the API's change
   ```{r}
 print(unique(fieldsdf[grep("/", fieldsdf$endpoint), "endpoint"]), row.names = FALSE)
   ```
-
 * Package contributor specific changes
 
-  + My github repo is set to deliver to https://mustberuss.r-universe.dev/patentsview and can be
-installed via ```install.packages('patentsview', repos = c('https://mustberuss.r-universe.dev'))```
+  + My github repo is set to deliver to https://mustberuss.r-universe.dev/patentsview.  The new
+version of the R package can be installed via   
+```install.packages('patentsview', repos = c('https://mustberuss.r-universe.dev'))```
 
   + On the new [implementation of paging](api-changes.html#a-note-on-paging) and the
-[PR discussion](https://github.com/ropensci/patentsview/pull/29#discussion_r1059153136) on paging with more than a primary sort 
+[PR discussion](https://github.com/ropensci/patentsview/pull/29#discussion_r1059153136) on paging with more than a primary sort.
+This added a dependency to data.table.
 
   + The patent/otherreference endpoint isn't currently working (reported as a [bug](#otherreference) above).
 It is included in the return of get_endpoints() and has only a negative test case that will
@@ -134,23 +148,29 @@ once they're fixed).
 
   + The workflow (R-CMD-check.yaml) was updated to get rid of deprecated warnings
 
-  + Added vignettes/build_some.R to half render some of the vignettes
+  + Added vignettes/build_some.R to half render one or more of the vignettes during development
+
+  + Added a ```bootstrap: 5``` to _pkgdown.yml so the search box would display (Maëlle's [PR](https://github.com/ropensci/patentsview/pull/34))
+
+  + The R package handles [throttling](api-changes.html#throttling), which the new version of the API now imposes
 
   + Possible Package Improvements
 
-    * The version number ought to be bumped to 1.0.0 since there are breaking API changes
+    * The version number ought to be bumped to 1.0.0 since there are breaking API changes (singular endpoints and the addition of an API key)
     * Result set size seems unbounded now.  Should we warn if a query would return more than 100,000 rows with all_pages = TRUE?
     * Have get_fields() and search_pv() throw a specialized error if a plural endpoint is passed
     * Replace openAPI_to_csv.pl and to_rda.R with its R equivalent
-    * Add an issue template that warns users not to share their API keys
+    * Add an issue template that warns users not to share their API key
+    * Add a contributing.md or something that explains how to build everything, something like
+[Findings/Contributor 101](#findingscontributor-101) below
     * Navigation on the vignettes could be better,  [understanding-the-api](understanding-the-api.html) isn't a link in the navigation yet,
 neither is the possible [tech note](patentsview-breaking-change.html)
 
 ## Worth Mentioning
 
 bergant/rapiclient has a new maintainer and there is talk of adding support for OpenAPI v3
-https://github.com/bergant/rapiclient/issues/11   The R version (not currently working) of
-the fieldsdf creator uses rapiclient but it's expecting to read a Swagger/OpenAPI v2 object
+https://github.com/bergant/rapiclient/issues/11   The R version of the fieldsdf creator
+(not currently working) uses rapiclient but it's expecting to read a Swagger/OpenAPI v2 object
 (the patentsview object is OpenAPI v3).
 
 ## Findings/Contributor 101
@@ -251,6 +271,7 @@ See [this article](https://ropensci.org/blog/2023/02/07/runiverse-registry-repo/
 <br />
 * Notes
    + By default, patentsview is on r-universe https://ropensci.r-universe.dev/patentsview
+   + Someone really smart should write a python library for the API!
 <br />
 <br />  
     
@@ -260,6 +281,9 @@ skip_on_cran(), tests could work in your repo (if you have your API key as a rep
 but the build will silently fail on r-universe.  Don't ask how I know that.
 
    + Why don't the vignettes show up on r-universe?  The articles link is grayed out.
+
+      Ah, on the build it shows Build pkgdown site (ropensci only) was skipped
+
 
 [^1]: Observation sent to the API team.
 [^2]: Observation sent to the API team.
