@@ -167,7 +167,7 @@ set to int or bool for these fields.</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Count of non string, non date fields returned by the new version of the API</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">fieldsdf</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">'number|integer|boolean'</span>,<span class="va">fieldsdf</span><span class="op">$</span><span class="va">data_type</span><span class="op">)</span>,<span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">fieldsdf</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"number|integer|boolean"</span>, <span class="va">fieldsdf</span><span class="op">$</span><span class="va">data_type</span><span class="op">)</span>, <span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] 90</span></span></code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fieldsdf</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"bool$|int$"</span>, <span class="va">fieldsdf</span><span class="op">$</span><span class="va">data_type</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"endpoint"</span>, <span class="st">"field"</span>, <span class="st">"data_type"</span><span class="op">)</span><span class="op">]</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
@@ -295,6 +295,17 @@ The endpoint is listed as /api/v1/attorney/, it should be
 /api/v1/patent/attorney/{attorney_id}/ for the GET with a url parameter
 The beta endpoints say they are only GETs. The Swagger UI page and
 OpenAPI object say they accept posts too, which do work.</p>
+<p>PVS-1218<br>
+openapi.json errors</p>
+<ul>
+<li><p>“publication”,“us_parties.applicant_authority” has a type of
+“keyword” when it should be “string”</p></li>
+<li><p>There are two rule_47_flag fields, one is a boolean (line 7019),
+the other is a string (line 8004)</p></li>
+<li><p>Most of the document_numbers are integers but from
+publication/rel_app_text it’s a string as is citation_document_number
+from patent/us_application_citation</p></li>
+</ul>
 <p>PVS-1181 Improvement Suggestion<br>
 There isn’t a data dictionary for the API like there is for the bulk
 download files. A specific question would be what is the difference
@@ -317,7 +328,7 @@ longitude are no longer available from the patent endpoint.</p></li>
 <p>A new vignette, inspired by the API team’s jupyter notebook, was
 created showing two of the things it mentions</p>
 <ol style="list-style-type: decimal">
-<li><p>The API and R package now allow nested attributes to be <a href="understanding-the-api.html#fields-shorthand">wildcarded</a>, where
+<li><p>The API and now the R package allow nested attributes to be <a href="understanding-the-api.html#fields-shorthand">wildcarded</a>, where
 the group’s name will retrieve all the group’s nested fields. An empty
 string can also be passed as a group name to get_fields() which then
 requests all the non-nested attributes from the endpoint. Ex.
@@ -375,6 +386,9 @@ vignettes during development</p></li>
 box would display (Maëlle’s <a href="https://github.com/ropensci/patentsview/pull/34" class="external-link">PR</a>)</p></li>
 <li><p>The R package handles <a href="api-changes.html#throttling">throttling</a>, which the new version
 of the API now imposes</p></li>
+<li><p>data-raw/fieldsdf.R is working again! There is some hard-coding
+that can be removed when bugs are fixed. We may need to retain some of
+the hard-coding, see the comments in data-raw/fieldsdf.R</p></li>
 <li>
 <p>Possible Package Improvements</p>
 <ul>
@@ -385,7 +399,6 @@ key)</li>
 return more than 100,000 rows with all_pages = TRUE?</li>
 <li>Have get_fields() and search_pv() throw a specialized error if a
 plural endpoint is passed</li>
-<li>Replace openAPI_to_csv.pl and to_rda.R with its R equivalent</li>
 <li>Add an issue template that warns users not to share their API
 key</li>
 <li>Add a contributing.md or something that explains how to build
@@ -400,13 +413,14 @@ in the navigation yet, neither is the possible <a href="patentsview-breaking-cha
 </ul>
 </div>
 <div class="section level2">
-<h2 id="worth-mentioning">Worth Mentioning<a class="anchor" aria-label="anchor" href="#worth-mentioning"></a>
+<h2 id="worth-monitoring">Worth Monitoring<a class="anchor" aria-label="anchor" href="#worth-monitoring"></a>
 </h2>
-<p>bergant/rapiclient has a new maintainer and there is talk of adding
-support for OpenAPI v3 <a href="https://github.com/bergant/rapiclient/issues/11" class="external-link uri">https://github.com/bergant/rapiclient/issues/11</a> The R
-version of the fieldsdf creator (not currently working) uses rapiclient
-but it’s expecting to read a Swagger/OpenAPI v2 object (the patentsview
-object is OpenAPI v3).</p>
+<p>bergant/rapiclient has a new maintainer and <a href="https://github.com/bergant/rapiclient/issues/11#issuecomment-2383483280" class="external-link">he’s
+in favor</a> of supporting OpenAPI v3 though he thinks that would
+warrant a new package. The R version of the fieldsdf creator is working
+again! It uses rapiclient which is expecting to read a Swagger/OpenAPI
+v2 object (the patentsview object is OpenAPI v3). It throws a warning
+but seems to work otherwise.</p>
 </div>
 <div class="section level2">
 <h2 id="findingscontributor-101">Findings/Contributor 101<a class="anchor" aria-label="anchor" href="#findingscontributor-101"></a>
@@ -420,10 +434,11 @@ object is OpenAPI v3).</p>
 part, maybe on a three week release cycle, often on Saturdays. I do head
 requests from time to time on the <a href="https://search.patentsview.org/static/openapi.json" class="external-link">API’s OpenAPI
 object</a> to detect when its Last-Modified changes. When it changes, I
-back up data-raw/fieldsdf.csv, run data-raw/openAPI_to_csv.pl and
-compare the backed up fieldsdf.csv to the new one to see if anything
-changed. I also run all of the tests to see what happens and push any
-changes to keep the tests passing. Quarterly or so they’ll update <a href="https://patentsview.org/release-notes" class="external-link uri">https://patentsview.org/release-notes</a></p></li>
+back up data-raw/fieldsdf.csv, run data-raw/fieldsdf.R and compare the
+backed up fieldsdf.csv to the new one to see if anything changed. If it
+did change, I’ll do a local build and run all of the tests to see what
+happens and push any changes to keep the tests passing. Quarterly or so
+they’ll update <a href="https://patentsview.org/release-notes" class="external-link uri">https://patentsview.org/release-notes</a></p></li>
 <li><p>Report API suggestions/bugs etc <a href="https://patentsview-support.atlassian.net/servicedesk/customer/portals" class="external-link">here</a>
 or Community -&gt; Support using the nav on <a href="httsp://patentsview.org">patentsview.org</a></p></li>
 <li><p>Now all the endpoints are documented on a <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints" class="external-link">single
@@ -439,6 +454,9 @@ keeping an eye on <a href="https://patentsview.org/forum" class="external-link u
 <ul>
 <li><p>Build and install the local code
 <code>devtools::install('.')</code></p></li>
+<li><p>rscript data-raw/fieldsdf.R to run the fieldsdf creator locally.
+It parses the Patentsview OpenAPI object to produce fieldsdf.csv and
+fieldsdf.rda</p></li>
 <li>
 <p>Local Testing</p>
 <ul>
