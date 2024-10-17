@@ -26,7 +26,7 @@ fieldsdf$data_type is set to int or bool for these fields.
 library(patentsview)
 
 # Count of non string, non date fields returned by the new version of the API
-nrow(fieldsdf[grep('number|integer|boolean',fieldsdf$data_type),])
+nrow(fieldsdf[grep("number|integer|boolean", fieldsdf$data_type), ])
 
 print(fieldsdf[grep("bool$|int$", fieldsdf$data_type), c("endpoint", "field", "data_type")], row.names = FALSE)
   ```
@@ -95,6 +95,15 @@ Documentation inconsistencies
 The endpoint is listed as /api/v1/attorney/, it should be /api/v1/patent/attorney for the GET/POST and /api/v1/patent/attorney/{attorney_id}/ for the GET with a url parameter
 The beta endpoints say they are only GETs. The Swagger UI page and OpenAPI object say they accept posts too, which do work.
 
+PVS-1218	
+openapi.json errors
+  
+* "publication","us_parties.applicant_authority" has a type of "keyword" when it should be "string"
+
+* There are two rule_47_flag fields, one is a boolean (line 7019), the other is a string (line 8004) 
+
+* Most of the document_numbers are integers but from publication/rel_app_text it's a string as is citation_document_number from patent/us_application_citation
+
 PVS-1181
 Improvement Suggestion  
 There isn't a data dictionary for the API like there is for the bulk download files.
@@ -110,7 +119,7 @@ latitude and longitude are no longer available from the patent endpoint.
 
 * A new vignette, inspired by the API team's jupyter notebook, was created showing two of the things it mentions
 
-  1. The API and R package now allow nested attributes to be [wildcarded](understanding-the-api.html#fields-shorthand),
+  1. The API and now the R package allow nested attributes to be [wildcarded](understanding-the-api.html#fields-shorthand),
 where the group's name will retrieve all the group's nested fields.  An empty string can also be passed as a group name to get_fields()
 which then requests all the non-nested attributes from the endpoint. Ex. ```get_fields("patent", group=c("", "inventors")```
 
@@ -154,24 +163,26 @@ once they're fixed).
 
   + The R package handles [throttling](api-changes.html#throttling), which the new version of the API now imposes
 
+  + data-raw/fieldsdf.R is working again!  There is some hard-coding that can be removed when
+bugs are fixed.  We may need to retain some of the hard-coding, see the comments in data-raw/fieldsdf.R
+
   + Possible Package Improvements
 
     * The version number ought to be bumped to 1.0.0 since there are breaking API changes (singular endpoints and the addition of an API key)
     * Result set size seems unbounded now.  Should we warn if a query would return more than 100,000 rows with all_pages = TRUE?
     * Have get_fields() and search_pv() throw a specialized error if a plural endpoint is passed
-    * Replace openAPI_to_csv.pl and to_rda.R with its R equivalent
     * Add an issue template that warns users not to share their API key
     * Add a contributing.md or something that explains how to build everything, something like
 [Findings/Contributor 101](#findingscontributor-101) below
     * Navigation on the vignettes could be better,  [understanding-the-api](understanding-the-api.html) isn't a link in the navigation yet,
 neither is the possible [tech note](patentsview-breaking-change.html)
 
-## Worth Mentioning
+## Worth Monitoring
 
-bergant/rapiclient has a new maintainer and there is talk of adding support for OpenAPI v3
-https://github.com/bergant/rapiclient/issues/11   The R version of the fieldsdf creator
-(not currently working) uses rapiclient but it's expecting to read a Swagger/OpenAPI v2 object
-(the patentsview object is OpenAPI v3).
+bergant/rapiclient has a new maintainer and [he's in favor](https://github.com/bergant/rapiclient/issues/11#issuecomment-2383483280)
+of supporting OpenAPI v3 though he thinks that would warrant a new package.   The R version of the fieldsdf creator
+is working again!  It uses rapiclient which is expecting to read a Swagger/OpenAPI v2 object
+(the patentsview object is OpenAPI v3).  It throws a warning but seems to work otherwise.
 
 ## Findings/Contributor 101
 
@@ -181,9 +192,10 @@ Helpful info after you've forked https://github.com/ropensci/patentsview
 
   + Updated versions of the new API are unannounced for the most part, maybe on a three week release cycle, often on 
 Saturdays.  I do head requests from time to time on the [API's OpenAPI object](https://search.patentsview.org/static/openapi.json)
-to detect when its Last-Modified changes. When it changes, I back up data-raw/fieldsdf.csv, run data-raw/openAPI_to_csv.pl and 
-compare the backed up fieldsdf.csv to the new one to see if anything changed.  I also run
-all of the tests to see what happens and push any changes to keep the tests passing.  Quarterly or so they'll update https://patentsview.org/release-notes
+to detect when its Last-Modified changes. When it changes, I back up data-raw/fieldsdf.csv, run data-raw/fieldsdf.R and 
+compare the backed up fieldsdf.csv to the new one to see if anything changed. If it did change, I'll do a
+local build and run all of the tests to see what happens and push any changes to keep the tests passing.
+Quarterly or so they'll update https://patentsview.org/release-notes
 
   + Report API suggestions/bugs etc [here](https://patentsview-support.atlassian.net/servicedesk/customer/portals)
 or Community -> Support using the nav on [patentsview.org](httsp://patentsview.org)
@@ -198,6 +210,9 @@ https://patentsview.org/forum
 * Locally
 
   + Build and install the local code ```devtools::install('.')```
+
+  + rscript data-raw/fieldsdf.R to run the fieldsdf creator locally.  It parses the Patentsview OpenAPI object to 
+produce fieldsdf.csv and fieldsdf.rda
 
   + Local Testing
 
