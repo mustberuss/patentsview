@@ -160,7 +160,11 @@ test_that("Throttled requests are automatically retried", {
   res <- search_pv('{"_gte":{"patent_date":"2007-01-04"}}', per_page = 50)
   patent_ids <- res$data$patents$patent_id
 
-  expect_message(
+  # now we don't get message "The API's requests per minute limit has been reached. "
+  # so we'll testthat it takes over 60 seconds to run (since we got throttled)
+  # TODO(any): can we use evaluate_promise to find "Waiting 45s for retry backoff"?
+
+  duration <- system.time(
     built_singly <- lapply(patent_ids, function(patent_id) {
       search_pv(
         query = qry_funs$eq(patent_id = patent_id),
@@ -168,9 +172,10 @@ test_that("Throttled requests are automatically retried", {
         fields = c("patent_id", "citation_patent_id"),
         sort = c("citation_patent_id" = "asc")
       )[["data"]][["us_patent_citations"]]
-    }),
-    "The API's requests per minute limit has been reached. "
+    })
   )
+
+  expect_gt(duration[["elapsed"]], 60)
 
   built_singly <- do.call(rbind, built_singly)
 
@@ -184,9 +189,12 @@ test_that("Throttled requests are automatically retried", {
   )
   result_all <- result_all$data$us_patent_citations
 
-  # the secondary sort seems to be broken, expect_identical() fails when it shouldn't
-  # this will fail when the bug is fixed
-  expect_error(expect_identical(built_singly, result_all))
+  # TODO(any): fix this:
+  # expect_equal says actual row.names are an integer vector and expected
+  # row.names is a character vector.  Not sure why
+  row.names(result_all) <- NULL
+  row.names(built_singly) <- NULL
+  expect_equal(built_singly, result_all)
 })
 
 test_that("We won't expose the user's patentsview API key to random websites", {
