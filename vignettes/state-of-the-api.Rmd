@@ -125,12 +125,20 @@ which then requests all the non-nested attributes from the endpoint. Ex. ```get_
 
   2. On [applying multiple conditions to related-entity fields](understanding-the-api.html#unexpected-results)
 
+* Under the covers, httr was changed to httr2 (see below).  This only matters to users if 
+they passed additional arguments (...) to search_pv().  Previously if they passed config = httr::timeout(40)
+they'd now pass timeout = 40 (name-value pairs of valid curl options, as found in curl::curl_options())
+
 * The endpoints are now singular, to match the API's change.  Some of the new endpoints are nested under patent/ and one is nested under publication/,
 also matching the API's change
   ```{r}
 print(unique(fieldsdf[grep("/", fieldsdf$endpoint), "endpoint"]), row.names = FALSE)
   ```
 * Package contributor specific changes
+
+    + Changed httr to httr2 as [httr](https://httr.r-lib.org/index.html) says it's superseded by [httr2](https://httr2.r-lib.org/)
+It's trying to put us out of business by handling 429 retries etc.  See their 
+[Wrapping APIs vignette](https://httr2.r-lib.org/articles/wrapping-apis.html)
 
   + My github repo is set to deliver to https://mustberuss.r-universe.dev/patentsview.  The new
 version of the R package can be installed via   
@@ -166,7 +174,7 @@ once they're fixed).
   + data-raw/fieldsdf.R is working again!  There is some hard-coding that can be removed when
 bugs are fixed.  We may need to retain some of the hard-coding, see the comments in data-raw/fieldsdf.R
 
-  + Possible Package Improvements
+  + <a name="improvements"> Possible Package Improvements
 
     * The version number ought to be bumped to 1.0.0 since there are breaking API changes (singular endpoints and the addition of an API key)
     * Result set size seems unbounded now.  Should we warn if a query would return more than 100,000 rows with all_pages = TRUE?
@@ -176,6 +184,12 @@ bugs are fixed.  We may need to retain some of the hard-coding, see the comments
 [Findings/Contributor 101](#findingscontributor-101) below
     * Navigation on the vignettes could be better,  [understanding-the-api](understanding-the-api.html) isn't a link in the navigation yet,
 neither is the possible [tech note](patentsview-breaking-change.html)
+    * httr2 improvements
+       +  need to figure out how to disply the X-Status-Reason header on 400 errors [docs](https://httr2.r-lib.org/reference/req_error.html)
+[article](https://httr2.r-lib.org/articles/wrapping-apis.html) and is process-error.R still needed?
+       + Can the throttled test detect output to stdout etc?  We used to expect_message "The API's requests per minute limit has been reached."
+  Now "Waiting 45s for retry backoff" appears but doesn't satisfy expect_message().
+
 
 ## Worth Monitoring
 
@@ -269,7 +283,7 @@ viewable)
 There are plugins to keep you stylish ```styler::style_pkg(".", dry = "fail")```
 ```styler::style_file('path/file')``` if necessary or use a plugin etc
 
-  + make sure the examples still run ```devtools::run_examples()```
+   + make sure the examples still run ```devtools::run_examples(run_dontrun = TRUE)```
 
    + check spelling using ```devtools::spell_check(pkg = ".", vignettes = TRUE, use_wordlist = TRUE)```
 Locally I have an unchecked in inst/WORDLIST with additional words to allow (one word per line)

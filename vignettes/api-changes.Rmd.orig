@@ -61,6 +61,10 @@ search_pv('{"patent_type":"utility"}', all_pages = FALSE )
 These changes were also made to the R package, in addition to the 
 [API changes](#summary-of-the-api-changes) outlined above and the [Other API Changes](#other-api-changes) below
 
+* The R package changed internally from using httr to httr2.  This only affects users if 
+they passed additional arguments (...) to search_pv().  Previously if they passed config = httr::timeout(40)
+they'd now pass timeout = 40 (name-value pairs of valid curl options, as found in curl::curl_options() see [req_options](https://httr2.r-lib.org/reference/req_options.html))
+
 * Two methods were added
    + HATEOAS and sample links can be retrieved using [retrieve_linked_data()](#HATEOAS)
    + qry_funs$in_range()

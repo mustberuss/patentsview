@@ -6,7 +6,8 @@ asrt <- function(expr, ...) if (!expr) stop2(...)
 
 #' @noRd
 parse_resp <- function(resp) {
-  j <- httr::content(resp, as = "text", encoding = "UTF-8")
+  j <- resp |> httr2::resp_body_string(encoding = "UTF-8")
+
   jsonlite::fromJSON(
     j,
     simplifyVector = TRUE, simplifyDataFrame = TRUE, simplifyMatrix = TRUE

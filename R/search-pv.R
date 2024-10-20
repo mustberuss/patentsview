@@ -52,46 +52,28 @@ get_post_body <- function(query, arg_list) {
 
 #' @noRd
 one_request <- function(method, query, base_url, arg_list, api_key, ...) {
-  ua <- httr::user_agent("https://github.com/ropensci/patentsview")
-
   if (method == "GET") {
     get_url <- get_get_url(query, base_url, arg_list)
-    resp <- httr::GET(
-      get_url,
-      httr::add_headers("X-Api-Key" = api_key),
-      ua, ...
-    )
+    print(get_url)
+    req <- httr2::request(get_url) |>
+      httr2::req_method("GET")
   } else {
     body <- get_post_body(query, arg_list)
-    resp <- httr::POST(
-      base_url,
-      httr::add_headers(
-        "X-Api-Key" = api_key,
-        "Content-Type" = "application/json"
-      ),
-      body = body,
-      ua, ...
-    )
+    print(paste("body", body))
+    req <- httr2::request(base_url) |>
+      httr2::req_body_raw(body) |>
+      httr2::req_headers("Content-Type" = "application/json") |>
+      httr2::req_method("POST")
   }
 
-  # Sleep and retry on a 429 (too many requests). The Retry-After header is the
-  # seconds to sleep before the API will accept requests again
-  if (httr::status_code(resp) == 429) {
-    num_seconds <- httr::headers(resp)[["Retry-After"]]
-    maybe_an_s <- if (num_seconds == "1") "" else "s"
-    message(paste0(
-      "The API's requests per minute limit has been reached. ",
-      "Pausing for ", num_seconds, " second", maybe_an_s,
-      " before continuing."
-    ))
-    Sys.sleep(num_seconds)
+  resp <- req |>
+    httr2::req_user_agent("https://github.com/ropensci/patentsview") |>
+    httr2::req_options(...) |>
+    httr2::req_retry(max_tries = 2) |> # automatic 429 Retry-After
+    httr2::req_headers("X-Api-Key" = api_key, .redact = "X-Api-Key") |>
+    httr2::req_perform()
 
-    one_request(method, query, base_url, arg_list, api_key, ...)
-  } else {
-    if (httr::http_error(resp)) throw_er(resp)
-
-    resp
-  }
+  resp
 }
 
 #' @noRd
@@ -186,8 +168,8 @@ get_default_sort <- function(endpoint) {
 #' @param error_browser `r lifecycle::badge("deprecated")`
 #' @param api_key API key. See \href{https://patentsview.org/apis/keyrequest}{
 #'  Here} for info on creating a key.
-#' @param ... Arguments passed along to httr's \code{\link[httr]{GET}} or
-#'  \code{\link[httr]{POST}} function.
+#' @param ... Curl options passed along to httr2's \code{\link[httr2]{req_options}}
+#'  when we do GETs or POSTs.
 #'
 #' @return A list with the following three elements:
 #'  \describe{
@@ -238,7 +220,7 @@ get_default_sort <- function(endpoint) {
 #' search_pv(
 #'   query = qry_funs$contains(inventors.inventor_name_last = "Smith"),
 #'   endpoint = "patent",
-#'   config = httr::timeout(40)
+#'   timeout = 40
 #' )
 #'
 #' search_pv(
@@ -335,7 +317,7 @@ search_pv <- function(query,
 #'
 #' @param url The link that was returned by the API on a previous call or an example in the documentation.
 #'
-#' @param ... Arguments passed along to httr's \code{\link[httr]{GET}} function.
+#' @param ... Curl options passed along to httr2's \code{\link[httr2]{req_options}} function.
 #'
 #' @return A list with the following three elements:
 #'  \describe{
@@ -372,33 +354,33 @@ retrieve_linked_data <- function(url,
                                  ...) {
   # There wouldn't be url parameters on a HATEOAS link but we'll also accept
   # example urls from the documentation, where there could be parameters
-  url_peices <- httr::parse_url(url)
-  params <- list()
-  query <- ""
-
-  if (!is.null(url_peices$query)) {
-    url <- paste0(url_peices$scheme, "://", url_peices$hostname, "/", url_peices$path)
-
-    # need to change f to fields, s to sort and o to opts
-    # probably a whizbangy better way to do this in R
-    if (!is.null(url_peices$query$f)) {
-      params$fields <- jsonlite::fromJSON(url_peices$query$f)
-    }
-
-    if (!is.null(url_peices$query$s)) {
-      params$sort <- jsonlite::fromJSON(url_peices$query$s)
-    }
-
-    if (!is.null(url_peices$query$o)) {
-      params$opts <- jsonlite::fromJSON(url_peices$query$o)
-    }
-
-    query <- if (!is.null(url_peices$query$q)) url_peices$query$q else ""
-  }
+  url_peices <- httr2::url_parse(url)
 
   # Only send the API key to subdomains of patentsview.org
   if (!grepl("^.*\\.patentsview.org$", url_peices$hostname)) {
     stop2("retrieve_linked_data is only for patentsview.org urls")
+  }
+
+  params <- list()
+  query <- ""
+
+  if (!is.null(url_peices$query)) {
+    # Need to change f to fields vector, s to sort vector and o to opts
+    # There is probably a whizbangy better way to do this in R
+    if (!is.null(url_peices$query$f)) {
+      params$fields <- unlist(strsplit(gsub("[\\[\\]]", "", url_peices$query$f, perl = TRUE), ",\\s*"))
+    }
+
+    if (!is.null(url_peices$query$s)) {
+      params$sort <- jsonlite::fromJSON(sub(".*s=([^&]*).*", "\\1", url))
+    }
+
+    # need to parse this out, preserving double quotes
+    query <- if (!is.null(url_peices$query$q)) sub(".*q=([^&]*).*", "\\1", url) else ""
+
+    url <- paste0(url_peices$scheme, "://", url_peices$hostname, url_peices$path)
+
+    # todo set page and per_page? is there a method for that?
   }
 
   # Go through one_request, which handles resend on throttle errors

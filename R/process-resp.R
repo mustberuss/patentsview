@@ -1,13 +1,9 @@
 #' @noRd
 get_request <- function(resp) {
   gp <- structure(
-    list(method = resp$req$method, url = resp$req$url),
+    list(method = resp$request$method, url = resp$request$url),
     class = c("list", "pv_request")
   )
-
-  if (gp$method == "POST") {
-    gp$body <- rawToChar(resp$req$options$postfields)
-  }
 
   gp
 }
@@ -33,6 +29,8 @@ get_query_results <- function(prsd_resp) {
 
 #' @noRd
 process_resp <- function(resp) {
+  # prsd_resp <- resp |> httr2::resp_body_json()
+
   prsd_resp <- parse_resp(resp)
   request <- get_request(resp)
   data <- get_data(prsd_resp)
