@@ -217,9 +217,11 @@ library(patentsview)</p>
 <h2 id="highlights-of-the-r-package">Highlights of the R package:<a class="anchor" aria-label="anchor" href="#highlights-of-the-r-package"></a>
 </h2>
 <ol style="list-style-type: decimal">
-<li>Throttling is now enforced by the API and handled by the R package
-(sleep as specified by the throttle response then retry)</li>
-<li>There are two new vignettes
+<li><p>Throttling is now enforced by the API and handled by the R
+package (sleep as specified by the throttle response before
+retry)</p></li>
+<li>
+<p>There are two new vignettes</p>
 <ul>
 <li>There is a new “Converting an existing script” vignette</li>
 <li>The <a href="https://ropensci.org/blog/2017/09/19/patentsview/" class="external-link">ropensci
@@ -228,9 +230,14 @@ changed to work with the new version of the API and is now a new
 vignette.</li>
 </ul>
 </li>
-<li>A hex sticker was created using GuangchuangYu’s <a href="https://github.com/GuangchuangYu/hexSticker" class="external-link">hexSticker</a>
-</li>
-<li>Two new functions were added
+<li><p>A hex sticker was created using GuangchuangYu’s <a href="https://github.com/GuangchuangYu/hexSticker" class="external-link">hexSticker</a></p></li>
+<li><p>The R package changed internally from using httr to httr2. This
+only affects users if they passed additional arguments (…) to
+search_pv(). Previously if they passed config = httr::timeout(40) they’d
+now pass timeout = 40 (name-value pairs of valid curl options, as found
+in curl::curl_options() see <a href="https://httr2.r-lib.org/reference/req_options.html" class="external-link">req_options</a>)</p></li>
+<li>
+<p>Two new functions were added</p>
 <ul>
 <li>retrieve_linked_data() to retrieve data from a HATEOAS link the API
 sent back, retrying if throttled</li>

@@ -41,6 +41,33 @@ Note total_hits, in the previous version of the API this was capped at 100,000 r
 ``` r
 library(patentsview)
 search_pv('{"patent_type":"utility"}', all_pages = FALSE )
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22patent_type%22%3A%22utility%22%7D&f=&s=&o={\"size\":1000}"
+#> GET /api/v1/patent/?q=%7B%22patent_type%22%3A%22utility%22%7D&f=&s=&o={"size": 1000} HTTP/1.1
+#> Host: search.patentsview.org
+#> User-Agent: https://github.com/ropensci/patentsview
+#> Accept: */*
+#> Accept-Encoding: deflate, gzip
+#> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> 
+#> -> GET /api/v1/patent/?q=%7B%22patent_type%22%3A%22utility%22%7D&f=&s=&o={"size": 1000} HTTP/1.1
+#> -> Host: search.patentsview.org
+#> -> User-Agent: https://github.com/ropensci/patentsview
+#> -> Accept: */*
+#> -> Accept-Encoding: deflate, gzip
+#> -> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> -> 
+#> <- HTTP/1.1 200 OK
+#> <- Date: Sun, 20 Oct 2024 21:21:35 GMT
+#> <- Content-Type: application/json
+#> <- Content-Length: 129120
+#> <- Connection: keep-alive
+#> <- Server: nginx
+#> <- Vary: Accept, origin
+#> <- Allow: GET, POST, HEAD, OPTIONS
+#> <- X-Frame-Options: DENY
+#> <- X-Content-Type-Options: nosniff
+#> <- Referrer-Policy: same-origin
+#> <-
 #> $data
 #> #### A list with a single data frame on patents level:
 #> 
@@ -67,6 +94,10 @@ search_pv('{"patent_type":"utility"}', all_pages = FALSE )
 
 These changes were also made to the R package, in addition to the 
 [API changes](#summary-of-the-api-changes) outlined above and the [Other API Changes](#other-api-changes) below
+
+* The R package changed internally from using httr to httr2.  This only affects users if 
+they passed additional arguments (...) to search_pv().  Previously if they passed config = httr::timeout(40)
+they'd now pass timeout = 40 (name-value pairs of valid curl options, as found in curl::curl_options() see [req_options](https://httr2.r-lib.org/reference/req_options.html))
 
 * Two methods were added
    + HATEOAS and sample links can be retrieved using [retrieve_linked_data()](#HATEOAS)
@@ -142,6 +173,33 @@ by the R package.  The way total_hits comes back from the R package remains unch
 
 ``` r
    result <- search_pv('{"patent_id": "11530080"}')
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22patent_id%22%3A%20%2211530080%22%7D&f=&s=&o={\"size\":1000}"
+#> GET /api/v1/patent/?q=%7B%22patent_id%22%3A%20%2211530080%22%7D&f=&s=&o={"size": 1000} HTTP/1.1
+#> Host: search.patentsview.org
+#> User-Agent: https://github.com/ropensci/patentsview
+#> Accept: */*
+#> Accept-Encoding: deflate, gzip
+#> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> 
+#> -> GET /api/v1/patent/?q=%7B%22patent_id%22%3A%20%2211530080%22%7D&f=&s=&o={"size": 1000} HTTP/1.1
+#> -> Host: search.patentsview.org
+#> -> User-Agent: https://github.com/ropensci/patentsview
+#> -> Accept: */*
+#> -> Accept-Encoding: deflate, gzip
+#> -> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> -> 
+#> <- HTTP/1.1 200 OK
+#> <- Date: Sun, 20 Oct 2024 21:21:35 GMT
+#> <- Content-Type: application/json
+#> <- Content-Length: 160
+#> <- Connection: keep-alive
+#> <- Server: nginx
+#> <- Vary: Accept, origin
+#> <- Allow: GET, POST, HEAD, OPTIONS
+#> <- X-Frame-Options: DENY
+#> <- X-Content-Type-Options: nosniff
+#> <- Referrer-Policy: same-origin
+#> <-
    print (result$query_results$total_hits)
 #> [1] 1
 ```
@@ -209,12 +267,40 @@ the returned fields, like the cpc_group, are HATEOAS links:
   query <- '{"patent_id": "11530080"}'
   fields <- c('patent_id', get_fields('patent', groups = 'cpc_current'))
   fields
-#> [1] "patent_id"                   "cpc_current.cpc_class_id"   
-#> [3] "cpc_current.cpc_group_id"    "cpc_current.cpc_section"    
-#> [5] "cpc_current.cpc_sequence"    "cpc_current.cpc_subclass_id"
-#> [7] "cpc_current.cpc_type"
+#>  [1] "patent_id"                   "cpc_current.cpc_class"      
+#>  [3] "cpc_current.cpc_class_id"    "cpc_current.cpc_group"      
+#>  [5] "cpc_current.cpc_group_id"    "cpc_current.cpc_section"    
+#>  [7] "cpc_current.cpc_sequence"    "cpc_current.cpc_subclass"   
+#>  [9] "cpc_current.cpc_subclass_id" "cpc_current.cpc_type"
 
   result <- search_pv(query, fields=fields)
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22patent_id%22%3A%20%2211530080%22%7D&f=[\"patent_id\",\"cpc_current.cpc_class\",\"cpc_current.cpc_class_id\",\"cpc_current.cpc_group\",\"cpc_current.cpc_group_id\",\"cpc_current.cpc_section\",\"cpc_current.cpc_sequence\",\"cpc_current.cpc_subclass\",\"cpc_current.cpc_subclass_id\",\"cpc_current.cpc_type\"]&s=&o={\"size\":1000}"
+#> GET /api/v1/patent/?q=%7B%22patent_id%22%3A%20%2211530080%22%7D&f=["patent_id","cpc_current.cpc_class","cpc_current.cpc_class_id","cpc_current.cpc_group","cpc_current.cpc_group_id","cpc_current.cpc_section","cpc_current.cpc_sequence","cpc_current.cpc_subclass","cpc_current.cpc_subclass_id","cpc_current.cpc_type"]&s=&o={"size": 1000} HTTP/1.1
+#> Host: search.patentsview.org
+#> User-Agent: https://github.com/ropensci/patentsview
+#> Accept: */*
+#> Accept-Encoding: deflate, gzip
+#> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> 
+#> -> GET /api/v1/patent/?q=%7B%22patent_id%22%3A%20%2211530080%22%7D&f=["patent_id","cpc_current.cpc_class","cpc_current.cpc_class_id","cpc_current.cpc_group","cpc_current.cpc_group_id","cpc_current.cpc_section","cpc_current.cpc_sequence","cpc_current.cpc_subclass","cpc_current.cpc_subclass_id","cpc_current.cpc_type"]&s=&o={"size": 1000} HTTP/1.1
+#> -> Host: search.patentsview.org
+#> -> User-Agent: https://github.com/ropensci/patentsview
+#> -> Accept: */*
+#> -> Accept-Encoding: deflate, gzip
+#> -> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> -> 
+#> <- HTTP/1.1 200 OK
+#> <- Date: Sun, 20 Oct 2024 21:21:36 GMT
+#> <- Content-Type: application/json
+#> <- Content-Length: 2919
+#> <- Connection: keep-alive
+#> <- Server: nginx
+#> <- Vary: Accept, origin
+#> <- Allow: GET, POST, HEAD, OPTIONS
+#> <- X-Frame-Options: DENY
+#> <- X-Content-Type-Options: nosniff
+#> <- Referrer-Policy: same-origin
+#> <-
 
   # As noted above, the CPC related fields aren't the same as they were in the
   # original version of the API.  Also note that not all requested fields were
@@ -245,6 +331,33 @@ found in the [API's documentation](https://search.patentsview.org/docs/docs/Sear
 library(patentsview)
 
 pv_data <- retrieve_linked_data("https://search.patentsview.org/api/v1/cpc_group/G01S7:4865/")
+#> [1] "https://search.patentsview.org/api/v1/cpc_group/G01S7:4865/?q=&f=&s=&o="
+#> GET /api/v1/cpc_group/G01S7: 4865/?q=&f=&s=&o= HTTP/1.1
+#> Host: search.patentsview.org
+#> User-Agent: https://github.com/ropensci/patentsview
+#> Accept: */*
+#> Accept-Encoding: deflate, gzip
+#> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> 
+#> -> GET /api/v1/cpc_group/G01S7: 4865/?q=&f=&s=&o= HTTP/1.1
+#> -> Host: search.patentsview.org
+#> -> User-Agent: https://github.com/ropensci/patentsview
+#> -> Accept: */*
+#> -> Accept-Encoding: deflate, gzip
+#> -> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> -> 
+#> <- HTTP/1.1 200 OK
+#> <- Date: Sun, 20 Oct 2024 21:21:36 GMT
+#> <- Content-Type: application/json
+#> <- Content-Length: 521
+#> <- Connection: keep-alive
+#> <- Server: nginx
+#> <- Vary: Accept, origin
+#> <- Allow: GET, HEAD, OPTIONS
+#> <- X-Frame-Options: DENY
+#> <- X-Content-Type-Options: nosniff
+#> <- Referrer-Policy: same-origin
+#> <-
 pv_data
 #> $data
 #> #### A list with a single data frame on cpc_groups level:
@@ -264,6 +377,33 @@ pv_data
 # Here we'll use an example URL from the documentation
 # Note that going to that link in a browser will result in a 403 Unauthorized, as no API key is sent.
 retrieve_linked_data('https://search.patentsview.org/api/v1/patent/?q={"patent_id":"7861317"}')
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22patent_id%22%3A%227861317%22%7D&f=&s=&o="
+#> GET /api/v1/patent/?q=%7B%22patent_id%22%3A%227861317%22%7D&f=&s=&o= HTTP/1.1
+#> Host: search.patentsview.org
+#> User-Agent: https://github.com/ropensci/patentsview
+#> Accept: */*
+#> Accept-Encoding: deflate, gzip
+#> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> 
+#> -> GET /api/v1/patent/?q=%7B%22patent_id%22%3A%227861317%22%7D&f=&s=&o= HTTP/1.1
+#> -> Host: search.patentsview.org
+#> -> User-Agent: https://github.com/ropensci/patentsview
+#> -> Accept: */*
+#> -> Accept-Encoding: deflate, gzip
+#> -> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> -> 
+#> <- HTTP/1.1 200 OK
+#> <- Date: Sun, 20 Oct 2024 21:21:36 GMT
+#> <- Content-Type: application/json
+#> <- Content-Length: 131
+#> <- Connection: keep-alive
+#> <- Server: nginx
+#> <- Vary: Accept, origin
+#> <- Allow: GET, POST, HEAD, OPTIONS
+#> <- X-Frame-Options: DENY
+#> <- X-Content-Type-Options: nosniff
+#> <- Referrer-Policy: same-origin
+#> <-
 #> $data
 #> #### A list with a single data frame on patents level:
 #> 
@@ -286,6 +426,33 @@ instead of a colon.
 ``` r
 
 search_pv('{"cpc_group_id": "A01B1/00"}', endpoint = 'cpc_group')
+#> [1] "https://search.patentsview.org/api/v1/cpc_group/?q=%7B%22cpc_group_id%22%3A%20%22A01B1%2F00%22%7D&f=&s=&o={\"size\":1000}"
+#> GET /api/v1/cpc_group/?q=%7B%22cpc_group_id%22%3A%20%22A01B1%2F00%22%7D&f=&s=&o={"size": 1000} HTTP/1.1
+#> Host: search.patentsview.org
+#> User-Agent: https://github.com/ropensci/patentsview
+#> Accept: */*
+#> Accept-Encoding: deflate, gzip
+#> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> 
+#> -> GET /api/v1/cpc_group/?q=%7B%22cpc_group_id%22%3A%20%22A01B1%2F00%22%7D&f=&s=&o={"size": 1000} HTTP/1.1
+#> -> Host: search.patentsview.org
+#> -> User-Agent: https://github.com/ropensci/patentsview
+#> -> Accept: */*
+#> -> Accept-Encoding: deflate, gzip
+#> -> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> -> 
+#> <- HTTP/1.1 200 OK
+#> <- Date: Sun, 20 Oct 2024 21:21:37 GMT
+#> <- Content-Type: application/json
+#> <- Content-Length: 255
+#> <- Connection: keep-alive
+#> <- Server: nginx
+#> <- Vary: Accept, origin
+#> <- Allow: GET, POST, HEAD, OPTIONS
+#> <- X-Frame-Options: DENY
+#> <- X-Content-Type-Options: nosniff
+#> <- Referrer-Policy: same-origin
+#> <-
 #> $data
 #> #### A list with a single data frame on cpc_groups level:
 #> 
@@ -310,6 +477,33 @@ search_pv('{"cpc_group_id": "A01B1/00"}', endpoint = 'cpc_group')
   res <- search_pv('{"patent_id":"10000000"}',
     fields = c("inventors.inventor_id", "assignees.assignee_id")
   )
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22patent_id%22%3A%2210000000%22%7D&f=[\"inventors.inventor_id\",\"assignees.assignee_id\"]&s=&o={\"size\":1000}"
+#> GET /api/v1/patent/?q=%7B%22patent_id%22%3A%2210000000%22%7D&f=["inventors.inventor_id","assignees.assignee_id"]&s=&o={"size": 1000} HTTP/1.1
+#> Host: search.patentsview.org
+#> User-Agent: https://github.com/ropensci/patentsview
+#> Accept: */*
+#> Accept-Encoding: deflate, gzip
+#> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> 
+#> -> GET /api/v1/patent/?q=%7B%22patent_id%22%3A%2210000000%22%7D&f=["inventors.inventor_id","assignees.assignee_id"]&s=&o={"size": 1000} HTTP/1.1
+#> -> Host: search.patentsview.org
+#> -> User-Agent: https://github.com/ropensci/patentsview
+#> -> Accept: */*
+#> -> Accept-Encoding: deflate, gzip
+#> -> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> -> 
+#> <- HTTP/1.1 200 OK
+#> <- Date: Sun, 20 Oct 2024 21:21:37 GMT
+#> <- Content-Type: application/json
+#> <- Content-Length: 263
+#> <- Connection: keep-alive
+#> <- Server: nginx
+#> <- Vary: Accept, origin
+#> <- Allow: GET, POST, HEAD, OPTIONS
+#> <- X-Frame-Options: DENY
+#> <- X-Content-Type-Options: nosniff
+#> <- Referrer-Policy: same-origin
+#> <-
 
   # but note that the fields came back without the _id
   print(res$data$patents$assignees[[1]]$assignee) # not $assignee_id as requested
@@ -375,6 +569,33 @@ query1 <- '{"_contains":{"patent_title":"dog"}}'
 query2 <- '{"_text_any":{"patent_title":"dog"}}'
 
 search_pv(query1)
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_contains%22%3A%7B%22patent_title%22%3A%22dog%22%7D%7D&f=&s=&o={\"size\":1000}"
+#> GET /api/v1/patent/?q=%7B%22_contains%22%3A%7B%22patent_title%22%3A%22dog%22%7D%7D&f=&s=&o={"size": 1000} HTTP/1.1
+#> Host: search.patentsview.org
+#> User-Agent: https://github.com/ropensci/patentsview
+#> Accept: */*
+#> Accept-Encoding: deflate, gzip
+#> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> 
+#> -> GET /api/v1/patent/?q=%7B%22_contains%22%3A%7B%22patent_title%22%3A%22dog%22%7D%7D&f=&s=&o={"size": 1000} HTTP/1.1
+#> -> Host: search.patentsview.org
+#> -> User-Agent: https://github.com/ropensci/patentsview
+#> -> Accept: */*
+#> -> Accept-Encoding: deflate, gzip
+#> -> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> -> 
+#> <- HTTP/1.1 200 OK
+#> <- Date: Sun, 20 Oct 2024 21:21:39 GMT
+#> <- Content-Type: application/json
+#> <- Content-Length: 124489
+#> <- Connection: keep-alive
+#> <- Server: nginx
+#> <- Vary: Accept, origin
+#> <- Allow: GET, POST, HEAD, OPTIONS
+#> <- X-Frame-Options: DENY
+#> <- X-Content-Type-Options: nosniff
+#> <- Referrer-Policy: same-origin
+#> <-
 #> $data
 #> #### A list with a single data frame on patents level:
 #> 
@@ -390,6 +611,33 @@ search_pv(query1)
 #> total_hits = 3,652
 
 search_pv(query2)
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_text_any%22%3A%7B%22patent_title%22%3A%22dog%22%7D%7D&f=&s=&o={\"size\":1000}"
+#> GET /api/v1/patent/?q=%7B%22_text_any%22%3A%7B%22patent_title%22%3A%22dog%22%7D%7D&f=&s=&o={"size": 1000} HTTP/1.1
+#> Host: search.patentsview.org
+#> User-Agent: https://github.com/ropensci/patentsview
+#> Accept: */*
+#> Accept-Encoding: deflate, gzip
+#> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> 
+#> -> GET /api/v1/patent/?q=%7B%22_text_any%22%3A%7B%22patent_title%22%3A%22dog%22%7D%7D&f=&s=&o={"size": 1000} HTTP/1.1
+#> -> Host: search.patentsview.org
+#> -> User-Agent: https://github.com/ropensci/patentsview
+#> -> Accept: */*
+#> -> Accept-Encoding: deflate, gzip
+#> -> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> -> 
+#> <- HTTP/1.1 200 OK
+#> <- Date: Sun, 20 Oct 2024 21:21:39 GMT
+#> <- Content-Type: application/json
+#> <- Content-Length: 108867
+#> <- Connection: keep-alive
+#> <- Server: nginx
+#> <- Vary: Accept, origin
+#> <- Allow: GET, POST, HEAD, OPTIONS
+#> <- X-Frame-Options: DENY
+#> <- X-Content-Type-Options: nosniff
+#> <- Referrer-Policy: same-origin
+#> <-
 #> $data
 #> #### A list with a single data frame on patents level:
 #> 
@@ -412,6 +660,33 @@ query1 <- '{"_contains":{"summary_text":"paper cup holder"}}'
 query2 <- '{"_text_phrase":{"summary_text":"paper cup holder"}}'
 
 search_pv(query1, endpoint="brf_sum_text")
+#> [1] "https://search.patentsview.org/api/v1/brf_sum_text/?q=%7B%22_contains%22%3A%7B%22summary_text%22%3A%22paper%20cup%20holder%22%7D%7D&f=&s=&o={\"size\":1000}"
+#> GET /api/v1/brf_sum_text/?q=%7B%22_contains%22%3A%7B%22summary_text%22%3A%22paper%20cup%20holder%22%7D%7D&f=&s=&o={"size": 1000} HTTP/1.1
+#> Host: search.patentsview.org
+#> User-Agent: https://github.com/ropensci/patentsview
+#> Accept: */*
+#> Accept-Encoding: deflate, gzip
+#> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> 
+#> -> GET /api/v1/brf_sum_text/?q=%7B%22_contains%22%3A%7B%22summary_text%22%3A%22paper%20cup%20holder%22%7D%7D&f=&s=&o={"size": 1000} HTTP/1.1
+#> -> Host: search.patentsview.org
+#> -> User-Agent: https://github.com/ropensci/patentsview
+#> -> Accept: */*
+#> -> Accept-Encoding: deflate, gzip
+#> -> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> -> 
+#> <- HTTP/1.1 200 OK
+#> <- Date: Sun, 20 Oct 2024 21:21:41 GMT
+#> <- Content-Type: application/json
+#> <- Content-Length: 59
+#> <- Connection: keep-alive
+#> <- Server: nginx
+#> <- Vary: Accept, origin
+#> <- Allow: GET, POST, HEAD, OPTIONS
+#> <- X-Frame-Options: DENY
+#> <- X-Content-Type-Options: nosniff
+#> <- Referrer-Policy: same-origin
+#> <-
 #> $data
 #> #### A list with a single data frame on brf_sum_texts level:
 #> 
@@ -424,6 +699,33 @@ search_pv(query1, endpoint="brf_sum_text")
 #> total_hits = 0
 
 search_pv(query2, endpoint="brf_sum_text")
+#> [1] "https://search.patentsview.org/api/v1/brf_sum_text/?q=%7B%22_text_phrase%22%3A%7B%22summary_text%22%3A%22paper%20cup%20holder%22%7D%7D&f=&s=&o={\"size\":1000}"
+#> GET /api/v1/brf_sum_text/?q=%7B%22_text_phrase%22%3A%7B%22summary_text%22%3A%22paper%20cup%20holder%22%7D%7D&f=&s=&o={"size": 1000} HTTP/1.1
+#> Host: search.patentsview.org
+#> User-Agent: https://github.com/ropensci/patentsview
+#> Accept: */*
+#> Accept-Encoding: deflate, gzip
+#> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> 
+#> -> GET /api/v1/brf_sum_text/?q=%7B%22_text_phrase%22%3A%7B%22summary_text%22%3A%22paper%20cup%20holder%22%7D%7D&f=&s=&o={"size": 1000} HTTP/1.1
+#> -> Host: search.patentsview.org
+#> -> User-Agent: https://github.com/ropensci/patentsview
+#> -> Accept: */*
+#> -> Accept-Encoding: deflate, gzip
+#> -> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> -> 
+#> <- HTTP/1.1 200 OK
+#> <- Date: Sun, 20 Oct 2024 21:21:41 GMT
+#> <- Content-Type: application/json
+#> <- Content-Length: 6058
+#> <- Connection: keep-alive
+#> <- Server: nginx
+#> <- Vary: Accept, origin
+#> <- Allow: GET, POST, HEAD, OPTIONS
+#> <- X-Frame-Options: DENY
+#> <- X-Content-Type-Options: nosniff
+#> <- Referrer-Policy: same-origin
+#> <-
 #> $data
 #> #### A list with a single data frame on brf_sum_texts level:
 #> 
@@ -451,18 +753,126 @@ As you'll see from the queries below, the two forms of equal now seem to be case
 ``` r
 
 result <- search_pv('{"assignee_organization": "Johnson & Johnson International"}', endpoint="assignee")
+#> [1] "https://search.patentsview.org/api/v1/assignee/?q=%7B%22assignee_organization%22%3A%20%22Johnson%20%26%20Johnson%20International%22%7D&f=&s=&o={\"size\":1000}"
+#> GET /api/v1/assignee/?q=%7B%22assignee_organization%22%3A%20%22Johnson%20%26%20Johnson%20International%22%7D&f=&s=&o={"size": 1000} HTTP/1.1
+#> Host: search.patentsview.org
+#> User-Agent: https://github.com/ropensci/patentsview
+#> Accept: */*
+#> Accept-Encoding: deflate, gzip
+#> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> 
+#> -> GET /api/v1/assignee/?q=%7B%22assignee_organization%22%3A%20%22Johnson%20%26%20Johnson%20International%22%7D&f=&s=&o={"size": 1000} HTTP/1.1
+#> -> Host: search.patentsview.org
+#> -> User-Agent: https://github.com/ropensci/patentsview
+#> -> Accept: */*
+#> -> Accept-Encoding: deflate, gzip
+#> -> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> -> 
+#> <- HTTP/1.1 200 OK
+#> <- Date: Sun, 20 Oct 2024 21:21:41 GMT
+#> <- Content-Type: application/json
+#> <- Content-Length: 242
+#> <- Connection: keep-alive
+#> <- Server: nginx
+#> <- Vary: Accept, origin
+#> <- Allow: GET, POST, HEAD, OPTIONS
+#> <- X-Frame-Options: DENY
+#> <- X-Content-Type-Options: nosniff
+#> <- Referrer-Policy: same-origin
+#> <-
 print (result$query_results$total_hits)
 #> [1] 1
 
 result <- search_pv('{"assignee_organization": "johnson & Johnson International"}', endpoint="assignee")
+#> [1] "https://search.patentsview.org/api/v1/assignee/?q=%7B%22assignee_organization%22%3A%20%22johnson%20%26%20Johnson%20International%22%7D&f=&s=&o={\"size\":1000}"
+#> GET /api/v1/assignee/?q=%7B%22assignee_organization%22%3A%20%22johnson%20%26%20Johnson%20International%22%7D&f=&s=&o={"size": 1000} HTTP/1.1
+#> Host: search.patentsview.org
+#> User-Agent: https://github.com/ropensci/patentsview
+#> Accept: */*
+#> Accept-Encoding: deflate, gzip
+#> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> 
+#> -> GET /api/v1/assignee/?q=%7B%22assignee_organization%22%3A%20%22johnson%20%26%20Johnson%20International%22%7D&f=&s=&o={"size": 1000} HTTP/1.1
+#> -> Host: search.patentsview.org
+#> -> User-Agent: https://github.com/ropensci/patentsview
+#> -> Accept: */*
+#> -> Accept-Encoding: deflate, gzip
+#> -> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> -> 
+#> <- HTTP/1.1 200 OK
+#> <- Date: Sun, 20 Oct 2024 21:21:42 GMT
+#> <- Content-Type: application/json
+#> <- Content-Length: 55
+#> <- Connection: keep-alive
+#> <- Server: nginx
+#> <- Vary: Accept, origin
+#> <- Allow: GET, POST, HEAD, OPTIONS
+#> <- X-Frame-Options: DENY
+#> <- X-Content-Type-Options: nosniff
+#> <- Referrer-Policy: same-origin
+#> <-
 print (result$query_results$total_hits)
 #> [1] 0
 
 result <- search_pv('{"_eq":{"assignee_organization": "Johnson & Johnson International"}}', endpoint="assignee")
+#> [1] "https://search.patentsview.org/api/v1/assignee/?q=%7B%22_eq%22%3A%7B%22assignee_organization%22%3A%20%22Johnson%20%26%20Johnson%20International%22%7D%7D&f=&s=&o={\"size\":1000}"
+#> GET /api/v1/assignee/?q=%7B%22_eq%22%3A%7B%22assignee_organization%22%3A%20%22Johnson%20%26%20Johnson%20International%22%7D%7D&f=&s=&o={"size": 1000} HTTP/1.1
+#> Host: search.patentsview.org
+#> User-Agent: https://github.com/ropensci/patentsview
+#> Accept: */*
+#> Accept-Encoding: deflate, gzip
+#> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> 
+#> -> GET /api/v1/assignee/?q=%7B%22_eq%22%3A%7B%22assignee_organization%22%3A%20%22Johnson%20%26%20Johnson%20International%22%7D%7D&f=&s=&o={"size": 1000} HTTP/1.1
+#> -> Host: search.patentsview.org
+#> -> User-Agent: https://github.com/ropensci/patentsview
+#> -> Accept: */*
+#> -> Accept-Encoding: deflate, gzip
+#> -> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> -> 
+#> <- HTTP/1.1 200 OK
+#> <- Date: Sun, 20 Oct 2024 21:21:42 GMT
+#> <- Content-Type: application/json
+#> <- Content-Length: 242
+#> <- Connection: keep-alive
+#> <- Server: nginx
+#> <- Vary: Accept, origin
+#> <- Allow: GET, POST, HEAD, OPTIONS
+#> <- X-Frame-Options: DENY
+#> <- X-Content-Type-Options: nosniff
+#> <- Referrer-Policy: same-origin
+#> <-
 print (result$query_results$total_hits)
 #> [1] 1
 
 result <- search_pv('{"_eq":{"assignee_organization": "johnson & Johnson International"}}', endpoint="assignee")
+#> [1] "https://search.patentsview.org/api/v1/assignee/?q=%7B%22_eq%22%3A%7B%22assignee_organization%22%3A%20%22johnson%20%26%20Johnson%20International%22%7D%7D&f=&s=&o={\"size\":1000}"
+#> GET /api/v1/assignee/?q=%7B%22_eq%22%3A%7B%22assignee_organization%22%3A%20%22johnson%20%26%20Johnson%20International%22%7D%7D&f=&s=&o={"size": 1000} HTTP/1.1
+#> Host: search.patentsview.org
+#> User-Agent: https://github.com/ropensci/patentsview
+#> Accept: */*
+#> Accept-Encoding: deflate, gzip
+#> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> 
+#> -> GET /api/v1/assignee/?q=%7B%22_eq%22%3A%7B%22assignee_organization%22%3A%20%22johnson%20%26%20Johnson%20International%22%7D%7D&f=&s=&o={"size": 1000} HTTP/1.1
+#> -> Host: search.patentsview.org
+#> -> User-Agent: https://github.com/ropensci/patentsview
+#> -> Accept: */*
+#> -> Accept-Encoding: deflate, gzip
+#> -> X-Api-Key: 51vvjuNE.DT0Ztuy39IkBelX4a087QBhun3HqXjCG
+#> -> 
+#> <- HTTP/1.1 200 OK
+#> <- Date: Sun, 20 Oct 2024 21:21:43 GMT
+#> <- Content-Type: application/json
+#> <- Content-Length: 55
+#> <- Connection: keep-alive
+#> <- Server: nginx
+#> <- Vary: Accept, origin
+#> <- Allow: GET, POST, HEAD, OPTIONS
+#> <- X-Frame-Options: DENY
+#> <- X-Content-Type-Options: nosniff
+#> <- Referrer-Policy: same-origin
+#> <-
 print (result$query_results$total_hits)
 #> [1] 0
 ```

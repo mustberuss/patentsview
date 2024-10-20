@@ -84,8 +84,8 @@ your query is very long (say, over 2,000 characters in length).}
 \item{api_key}{API key. See \href{https://patentsview.org/apis/keyrequest}{
 Here} for info on creating a key.}
 
-\item{...}{Arguments passed along to httr's \code{\link[httr]{GET}} or
-\code{\link[httr]{POST}} function.}
+\item{...}{Curl options passed along to httr2's \code{\link[httr2]{req_options}}
+when we do GETs or POSTs.}
 }
 \value{
 A list with the following three elements:
@@ -141,7 +141,7 @@ search_pv(
 search_pv(
   query = qry_funs$contains(inventors.inventor_name_last = "Smith"),
   endpoint = "patent",
-  config = httr::timeout(40)
+  timeout = 40
 )
 
 search_pv(

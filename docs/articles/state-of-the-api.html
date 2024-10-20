@@ -337,6 +337,11 @@ requests all the non-nested attributes from the endpoint. Ex.
 conditions to related-entity fields</a></p></li>
 </ol>
 </li>
+<li><p>Under the covers, httr was changed to httr2 (see below). This
+only matters to users if they passed additional arguments (…) to
+search_pv(). Previously if they passed config = httr::timeout(40) they’d
+now pass timeout = 40 (name-value pairs of valid curl options, as found
+in curl::curl_options())</p></li>
 <li>
 <p>The endpoints are now singular, to match the API’s change. Some
 of the new endpoints are nested under patent/ and one is nested under
@@ -351,6 +356,10 @@ publication/, also matching the API’s change</p>
 <li>
 <p>Package contributor specific changes</p>
 <ul>
+<li><p>Changed httr to httr2 as <a href="https://httr.r-lib.org/index.html" class="external-link">httr</a> says it’s superseded
+by <a href="https://httr2.r-lib.org/" class="external-link">httr2</a> It’s trying to put us
+out of business by handling 429 retries etc. See their <a href="https://httr2.r-lib.org/articles/wrapping-apis.html" class="external-link">Wrapping APIs
+vignette</a></p></li>
 <li><p>My github repo is set to deliver to <a href="https://mustberuss.r-universe.dev/patentsview" class="external-link uri">https://mustberuss.r-universe.dev/patentsview</a>. The new
 version of the R package can be installed via<br><code>install.packages('patentsview', repos = c('https://mustberuss.r-universe.dev'))</code></p></li>
 <li><p>On the new <a href="api-changes.html#a-note-on-paging">implementation of paging</a>
@@ -390,7 +399,7 @@ of the API now imposes</p></li>
 that can be removed when bugs are fixed. We may need to retain some of
 the hard-coding, see the comments in data-raw/fieldsdf.R</p></li>
 <li>
-<p>Possible Package Improvements</p>
+<p><a name="improvements"> Possible Package Improvements</a></p>
 <ul>
 <li>The version number ought to be bumped to 1.0.0 since there are
 breaking API changes (singular endpoints and the addition of an API
@@ -405,6 +414,17 @@ key</li>
 everything, something like <a href="#findingscontributor-101">Findings/Contributor 101</a> below</li>
 <li>Navigation on the vignettes could be better, <a href="understanding-the-api.html">understanding-the-api</a> isn’t a link
 in the navigation yet, neither is the possible <a href="patentsview-breaking-change.html">tech note</a>
+</li>
+<li>httr2 improvements
+<ul>
+<li>need to figure out how to disply the X-Status-Reason header on 400
+errors <a href="https://httr2.r-lib.org/reference/req_error.html" class="external-link">docs</a> <a href="https://httr2.r-lib.org/articles/wrapping-apis.html" class="external-link">article</a>
+and is process-error.R still needed?</li>
+<li>Can the throttled test detect output to stdout etc? We used to
+expect_message “The API’s requests per minute limit has been reached.”
+Now “Waiting 45s for retry backoff” appears but doesn’t satisfy
+expect_message().</li>
+</ul>
 </li>
 </ul>
 </li>
@@ -536,7 +556,7 @@ plugins to keep you stylish
 <code>styler::style_file('path/file')</code> if necessary or use a
 plugin etc</p></li>
 <li><p>make sure the examples still run
-<code><a href="https://devtools.r-lib.org/reference/run_examples.html" class="external-link">devtools::run_examples()</a></code></p></li>
+<code>devtools::run_examples(run_dontrun = TRUE)</code></p></li>
 <li><p>check spelling using
 <code>devtools::spell_check(pkg = ".", vignettes = TRUE, use_wordlist = TRUE)</code>
 Locally I have an unchecked in inst/WORDLIST with additional words to

@@ -218,8 +218,8 @@ Here</a> for info on creating a key.</p></dd>
 
 
 <dt>...</dt>
-<dd><p>Arguments passed along to httr's <code><a href="https://httr.r-lib.org/reference/GET.html" class="external-link">GET</a></code> or
-<code><a href="https://httr.r-lib.org/reference/POST.html" class="external-link">POST</a></code> function.</p></dd>
+<dd><p>Curl options passed along to httr2's <code><a href="https://httr2.r-lib.org/reference/req_options.html" class="external-link">req_options</a></code>
+when we do GETs or POSTs.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -281,7 +281,7 @@ calls that were made to the server (one for each page of results).</p></dd>
 <span class="r-in"><span><span class="fu">search_pv</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  query <span class="op">=</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">contains</span><span class="op">(</span>inventors.inventor_name_last <span class="op">=</span> <span class="st">"Smith"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  endpoint <span class="op">=</span> <span class="st">"patent"</span>,</span></span>
-<span class="r-in"><span>  config <span class="op">=</span> <span class="fu">httr</span><span class="fu">::</span><span class="fu"><a href="https://httr.r-lib.org/reference/timeout.html" class="external-link">timeout</a></span><span class="op">(</span><span class="fl">40</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  timeout <span class="op">=</span> <span class="fl">40</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">search_pv</span><span class="op">(</span></span></span>
