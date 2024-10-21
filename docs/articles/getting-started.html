@@ -160,6 +160,7 @@ function, <code><a href="../reference/search_pv.html">search_pv()</a></code>:</p
 <span>  query <span class="op">=</span> <span class="st">'{"_gte":{"patent_date":"2007-01-01"}}'</span>,</span>
 <span>  endpoint <span class="op">=</span> <span class="st">"patent"</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_gte%22%3A%7B%22patent_date%22%3A%222007-01-01%22%7D%7D&amp;f=&amp;s=&amp;o={\"size\":1000}"</span></span>
 <span><span class="co">#&gt; $data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -233,6 +234,7 @@ argument:</p>
 <span>  query <span class="op">=</span> <span class="st">'{"_gte":{"patent_date":"2007-01-01"}}'</span>,</span>
 <span>  fields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patent_id"</span>, <span class="st">"patent_title"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_gte%22%3A%7B%22patent_date%22%3A%222007-01-01%22%7D%7D&amp;f=[\"patent_id\",\"patent_title\"]&amp;s=&amp;o={\"size\":1000}"</span></span>
 <span><span class="va">result</span></span>
 <span><span class="co">#&gt; $data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
@@ -302,6 +304,10 @@ to 1,000 and loop over all pages of output:</p>
 <span>  query <span class="op">=</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span>inventors.inventor_name_last <span class="op">=</span> <span class="st">"Chambers"</span><span class="op">)</span>,</span>
 <span>  all_pages <span class="op">=</span> <span class="cn">TRUE</span>, per_page <span class="op">=</span> <span class="fl">1000</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_eq%22%3A%7B%22inventors.inventor_name_last%22%3A%22Chambers%22%7D%7D&amp;f=[\"patent_id\"]&amp;s=[{\"patent_id\":\"asc\"}]&amp;o={\"size\":1000}"</span></span>
+<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_eq%22%3A%7B%22inventors.inventor_name_last%22%3A%22Chambers%22%7D%7D&amp;f=[\"patent_id\"]&amp;s=[{\"patent_id\":\"asc\"}]&amp;o={\"size\":1000}"</span></span>
+<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_eq%22%3A%7B%22inventors.inventor_name_last%22%3A%22Chambers%22%7D%7D&amp;f=[\"patent_id\"]&amp;s=[{\"patent_id\":\"asc\"}]&amp;o={\"size\":1000,\"after\":\"5904350\"}"</span></span>
+<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_eq%22%3A%7B%22inventors.inventor_name_last%22%3A%22Chambers%22%7D%7D&amp;f=[\"patent_id\"]&amp;s=[{\"patent_id\":\"asc\"}]&amp;o={\"size\":1000,\"after\":\"9023074\"}"</span></span>
 <span><span class="co">#&gt; $data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -336,13 +342,14 @@ patents.</p>
 <span><span class="co"># Here we'll request patent_id and the inventor fields from the patent endpoint</span></span>
 <span><span class="va">inv_fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"patent"</span>, groups <span class="op">=</span><span class="st">"inventors"</span><span class="op">)</span></span>
 <span><span class="va">inv_fields</span></span>
-<span><span class="co">#&gt; [1] "inventors.inventor_city"       "inventors.inventor_country"   </span></span>
-<span><span class="co">#&gt; [3] "inventors.inventor_id"         "inventors.inventor_name_first"</span></span>
+<span><span class="co">#&gt; [1] "inventors.inventor_id"         "inventors.inventor_city"      </span></span>
+<span><span class="co">#&gt; [3] "inventors.inventor_country"    "inventors.inventor_name_first"</span></span>
 <span><span class="co">#&gt; [5] "inventors.inventor_name_last"  "inventors.inventor_sequence"  </span></span>
 <span><span class="co">#&gt; [7] "inventors.inventor_state"</span></span>
 <span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">inv_fields</span>, <span class="st">"patent_id"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query</span>, endpoint <span class="op">=</span> <span class="st">"patent"</span>, fields <span class="op">=</span> <span class="va">fields</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_eq%22%3A%7B%22inventors.inventor_name_last%22%3A%22Chambers%22%7D%7D&amp;f=[\"inventors.inventor_id\",\"inventors.inventor_city\",\"inventors.inventor_country\",\"inventors.inventor_name_first\",\"inventors.inventor_name_last\",\"inventors.inventor_sequence\",\"inventors.inventor_state\",\"patent_id\"]&amp;s=&amp;o={\"size\":1000}"</span></span>
 <span><span class="va">result</span></span>
 <span><span class="co">#&gt; $data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on patents level:</span></span>
@@ -384,6 +391,7 @@ patents.</p>
 <span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"inventor"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query</span>, endpoint <span class="op">=</span> <span class="st">"inventor"</span>, fields <span class="op">=</span> <span class="va">fields</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/inventor/?q=%7B%22_eq%22%3A%7B%22inventor_name_last%22%3A%22Chambers%22%7D%7D&amp;f=[\"inventor_first_seen_date\",\"inventor_gender_code\",\"inventor_id\",\"inventor_last_seen_date\",\"inventor_lastknown_city\",\"inventor_lastknown_country\",\"inventor_lastknown_latitude\",\"inventor_lastknown_location\",\"inventor_lastknown_longitude\",\"inventor_lastknown_state\",\"inventor_name_first\",\"inventor_name_last\",\"inventor_num_assignees\",\"inventor_num_patents\",\"inventor_years.num_patents\",\"inventor_years.year\",\"inventor_years_active\"]&amp;s=&amp;o={\"size\":1000}"</span></span>
 <span><span class="co">#&gt; $data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on inventors level:</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -618,6 +626,7 @@ their preferred R types using <code><a href="../reference/cast_pv_data.html">cas
 <span>  query <span class="op">=</span> <span class="st">'{"patent_id":"5116621"}'</span>, </span>
 <span>  fields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patent_id"</span>, <span class="st">"patent_date"</span>, <span class="st">"patent_title"</span>, <span class="st">"patent_year"</span>, <span class="st">"assignees.assignee_type"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22patent_id%22%3A%225116621%22%7D&amp;f=[\"patent_id\",\"patent_date\",\"patent_title\",\"patent_year\",\"assignees.assignee_type\"]&amp;s=&amp;o={\"size\":1000}"</span></span>
 <span></span>
 <span><span class="co"># unnest_pv_data shows that the assignee_type field is received as a string and patent_year</span></span>
 <span><span class="co"># is received as an integer</span></span>
@@ -659,6 +668,10 @@ details on this. You can also try the string version of your query in
 the API’s <a href="https://search.patentsview.org/swagger-ui/" class="external-link">Swagger
 UI page</a>. Its error messages can sometimes help determine the
 problem.</p>
+<p>Now that the R package is using httr2, users can make use of its
+last_request() method to see what was sent to the API. This could be
+useful when trying to fix an invalid request.</p>
+<pre><code><span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_request</a></span><span class="op">(</span><span class="op">)</span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="does-the-api-have-any-rate-limitingthrottling-controls">Does the API have any rate limiting/throttling controls?<a class="anchor" aria-label="anchor" href="#does-the-api-have-any-rate-limitingthrottling-controls"></a>
@@ -679,7 +692,7 @@ your key.</p>
 entity while applications and “government interest statements” are the
 secondary entities (also referred to as subentities): Government
 interests fields are no longer present</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create field list -</span></span>
 <span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span><span class="st">"patent"</span><span class="op">)</span></span>
 <span></span>
@@ -689,6 +702,7 @@ interests fields are no longer present</p>
 <span>  endpoint <span class="op">=</span> <span class="st">"patent"</span>, </span>
 <span>  fields <span class="op">=</span> <span class="va">fields</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_text_any%22%3A%7B%22inventors.inventor_name_last%22%3A%22Smith%22%7D%7D&amp;f=[\"applicants.applicant_designation\",\"applicants.applicant_name_first\",\"applicants.applicant_name_last\",\"applicants.applicant_organization\",\"applicants.applicant_sequence\",\"applicants.applicant_type\",\"applicants.location_id\",\"application.application_id\",\"application.application_type\",\"application.filing_date\",\"application.filing_type\",\"application.rule_47_flag\",\"application.series_code\",\"assignees.assignee_id\",\"assignees.assignee_city\",\"assignees.assignee_country\",\"assignees.assignee_individual_name_first\",\"assignees.assignee_individual_name_last\",\"assignees.assignee_organization\",\"assignees.assignee_sequence\",\"assignees.assignee_state\",\"assignees.assignee_type\",\"attorneys.attorney_id\",\"attorneys.attorney_name_first\",\"attorneys.attorney_name_last\",\"attorneys.attorney_organization\",\"attorneys.attorney_sequence\",\"botanic.latin_name\",\"botanic.variety\",\"cpc_at_issue.cpc_class\",\"cpc_at_issue.cpc_class_id\",\"cpc_at_issue.cpc_group\",\"cpc_at_issue.cpc_group_id\",\"cpc_at_issue.cpc_section\",\"cpc_at_issue.cpc_sequence\",\"cpc_at_issue.cpc_subclass\",\"cpc_at_issue.cpc_subclass_id\",\"cpc_at_issue.cpc_type\",\"cpc_current.cpc_class\",\"cpc_current.cpc_class_id\",\"cpc_current.cpc_group\",\"cpc_current.cpc_group_id\",\"cpc_current.cpc_section\",\"cpc_current.cpc_sequence\",\"cpc_current.cpc_subclass\",\"cpc_current.cpc_subclass_id\",\"cpc_current.cpc_type\",\"examiners.art_group\",\"examiners.examiner_first_name\",\"examiners.examiner_id\",\"examiners.examiner_last_name\",\"examiners.examiner_role\",\"figures.num_figures\",\"figures.num_sheets\",\"foreign_priority.filing_date\",\"foreign_priority.foreign_application_id\",\"foreign_priority.foreign_country_filed\",\"foreign_priority.priority_claim_kind\",\"foreign_priority.priority_claim_sequence\",\"gov_interest_contract_award_numbers.award_number\",\"gov_interest_organizations.fedagency_name\",\"gov_interest_organizations.level_one\",\"gov_interest_organizations.level_three\",\"gov_interest_organizations.level_two\",\"gov_interest_statement\",\"granted_pregrant_crosswalk.application_number\",\"granted_pregrant_crosswalk.document_number\",\"inventors.inventor_id\",\"inventors.inventor_city\",\"inventors.inventor_country\",\"inventors.inventor_name_first\",\"inventors.inventor_name_last\",\"inventors.inventor_sequence\",\"inventors.inventor_state\",\"ipcr.ipc_action_date\",\"ipcr.ipc_class\",\"ipcr.ipc_classification_data_source\",\"ipcr.ipc_classification_value\",\"ipcr.ipc_id\",\"ipcr.ipc_main_group\",\"ipcr.ipc_section\",\"ipcr.ipc_sequence\",\"ipcr.ipc_subclass\",\"ipcr.ipc_subgroup\",\"ipcr.ipc_symbol_position\",\"patent_abstract\",\"patent_cpc_current_group_average_patent_processing_days\",\"patent_date\",\"patent_detail_desc_length\",\"patent_earliest_application_date\",\"patent_id\",\"patent_num_foreign_documents_cited\",\"patent_num_times_cited_by_us_patents\",\"patent_num_total_documents_cited\",\"patent_num_us_applications_cited\",\"patent_num_us_patents_cited\",\"patent_processing_days\",\"patent_term_extension\",\"patent_title\",\"patent_type\",\"patent_uspc_current_mainclass_average_patent_processing_days\",\"patent_year\",\"pct_data.application_kind\",\"pct_data.pct_102_date\",\"pct_data.pct_371_date\",\"pct_data.pct_doc_number\",\"pct_data.pct_doc_type\",\"pct_data.published_filed_date\",\"us_related_documents.published_country\",\"us_related_documents.related_doc_kind\",\"us_related_documents.related_doc_number\",\"us_related_documents.related_doc_published_date\",\"us_related_documents.related_doc_sequence\",\"us_related_documents.related_doc_status\",\"us_related_documents.related_doc_type\",\"us_related_documents.wipo_kind\",\"us_term_of_grant.disclaimer_date\",\"us_term_of_grant.term_disclaimer\",\"us_term_of_grant.term_extension\",\"us_term_of_grant.term_grant\",\"uspc_at_issue.uspc_mainclass\",\"uspc_at_issue.uspc_mainclass_id\",\"uspc_at_issue.uspc_sequence\",\"uspc_at_issue.uspc_subclass\",\"uspc_at_issue.uspc_subclass_id\",\"wipo.wipo_field\",\"wipo.wipo_field_id\",\"wipo.wipo_sequence\",\"wipo_kind\"]&amp;s=&amp;o={\"size\":1000}"</span></span>
 <span><span class="va">res</span><span class="op">$</span><span class="va">data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -741,7 +755,7 @@ columns:</p>
 <strong>Use tidyr::unnest.</strong> (This is probably the easier
 choice of the two).</li>
 </ol>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Get assignee data:</span></span>
@@ -772,7 +786,7 @@ each entity level) that are like tables in a relational database. You
 provide it with the data returned by <code><a href="../reference/search_pv.html">search_pv()</a></code> and a
 field that can act as a unique identifier for the primary entities:</li>
 </ol>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">res</span><span class="op">$</span><span class="va">data</span>, pk <span class="op">=</span> <span class="st">"patent_id"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; List of 19</span></span>
 <span><span class="co">#&gt;  $ application                        :'data.frame': 1000 obs. of  7 variables:</span></span>
@@ -810,11 +824,14 @@ field that can act as a unique identifier for the primary entities:</li>
 <span><span class="co">#&gt;   ..$ attorney_name_first  : chr [1:1131] "Jennifer L." ...</span></span>
 <span><span class="co">#&gt;   ..$ attorney_name_last   : chr [1:1131] "Riley" ...</span></span>
 <span><span class="co">#&gt;   ..$ attorney_organization: chr [1:1131] NA ...</span></span>
-<span><span class="co">#&gt;  $ cpc_at_issue                       :'data.frame': 7715 obs. of  5 variables:</span></span>
+<span><span class="co">#&gt;  $ cpc_at_issue                       :'data.frame': 7715 obs. of  8 variables:</span></span>
 <span><span class="co">#&gt;   ..$ patent_id      : chr [1:7715] "10000036" ...</span></span>
 <span><span class="co">#&gt;   ..$ cpc_sequence   : int [1:7715] 1 2 ...</span></span>
+<span><span class="co">#&gt;   ..$ cpc_class      : chr [1:7715] "https://search.patentsview.org/api/v1/cp"..</span></span>
 <span><span class="co">#&gt;   ..$ cpc_class_id   : chr [1:7715] "B32" ...</span></span>
+<span><span class="co">#&gt;   ..$ cpc_subclass   : chr [1:7715] "https://search.patentsview.org/api/v1/cp"..</span></span>
 <span><span class="co">#&gt;   ..$ cpc_subclass_id: chr [1:7715] "B32B" ...</span></span>
+<span><span class="co">#&gt;   ..$ cpc_group      : chr [1:7715] "https://search.patentsview.org/api/v1/cp"..</span></span>
 <span><span class="co">#&gt;   ..$ cpc_group_id   : chr [1:7715] "B32B5/26" ...</span></span>
 <span><span class="co">#&gt;  $ cpc_current                        :'data.frame': 9497 obs. of  8 variables:</span></span>
 <span><span class="co">#&gt;   ..$ patent_id      : chr [1:9497] "10000036" ...</span></span>

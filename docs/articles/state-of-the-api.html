@@ -306,6 +306,12 @@ the other is a string (line 8004)</p></li>
 publication/rel_app_text it’s a string as is citation_document_number
 from patent/us_application_citation</p></li>
 </ul>
+<p>PVS-1306 The API accepts invalid fields<br>
+The API accepts invalid fields that start out looking like valid fields
+when it should throw an error. Ex f: is[“patent_iddddddddddddd”,
+“patent_dateagogo”] and q: is {“patent_idd”:“10000000”} with this
+result: { “error”: false, “count”: 0, “total_hits”: 0, “patents”: []
+}</p>
 <p>PVS-1181 Improvement Suggestion<br>
 There isn’t a data dictionary for the API like there is for the bulk
 download files. A specific question would be what is the difference
@@ -337,11 +343,6 @@ requests all the non-nested attributes from the endpoint. Ex.
 conditions to related-entity fields</a></p></li>
 </ol>
 </li>
-<li><p>Under the covers, httr was changed to httr2 (see below). This
-only matters to users if they passed additional arguments (…) to
-search_pv(). Previously if they passed config = httr::timeout(40) they’d
-now pass timeout = 40 (name-value pairs of valid curl options, as found
-in curl::curl_options())</p></li>
 <li>
 <p>The endpoints are now singular, to match the API’s change. Some
 of the new endpoints are nested under patent/ and one is nested under
@@ -353,6 +354,20 @@ publication/, also matching the API’s change</p>
 <span><span class="co">## [5] "patent/us_application_citation" "patent/us_patent_citation"     </span></span>
 <span><span class="co">## [7] "publication/rel_app_text"</span></span></code></pre>
 </li>
+<li><p>Under the covers, httr was changed to httr2 (see several mentions
+below). This only matters to users if they passed additional arguments
+(…) to search_pv(). Previously if they passed config = httr::timeout(40)
+they’d now pass timeout = 40 (name-value pairs of valid curl options, as
+found in curl::curl_options())</p></li>
+<li><p>Now that the R package is using httr2, users can make use of its
+last_request() method to see what was sent to the API. This could be
+useful when trying to fix an invalid request. Also fun would be seeing
+the raw API response.</p></li>
+</ul>
+<pre><code><span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_request</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_response</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_response</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/resp_body_raw.html" class="external-link">resp_body_json</a></span><span class="op">(</span><span class="op">)</span> </span></code></pre>
+<ul>
 <li>
 <p>Package contributor specific changes</p>
 <ul>
@@ -417,13 +432,10 @@ in the navigation yet, neither is the possible <a href="patentsview-breaking-cha
 </li>
 <li>httr2 improvements
 <ul>
-<li>need to figure out how to disply the X-Status-Reason header on 400
-errors <a href="https://httr2.r-lib.org/reference/req_error.html" class="external-link">docs</a> <a href="https://httr2.r-lib.org/articles/wrapping-apis.html" class="external-link">article</a>
-and is process-error.R still needed?</li>
 <li>Can the throttled test detect output to stdout etc? We used to
 expect_message “The API’s requests per minute limit has been reached.”
 Now “Waiting 45s for retry backoff” appears but doesn’t satisfy
-expect_message().</li>
+expect_message(). Currently using system.time()</li>
 </ul>
 </li>
 </ul>

@@ -217,11 +217,9 @@ library(patentsview)</p>
 <h2 id="highlights-of-the-r-package">Highlights of the R package:<a class="anchor" aria-label="anchor" href="#highlights-of-the-r-package"></a>
 </h2>
 <ol style="list-style-type: decimal">
-<li><p>Throttling is now enforced by the API and handled by the R
-package (sleep as specified by the throttle response before
-retry)</p></li>
-<li>
-<p>There are two new vignettes</p>
+<li>Throttling is now enforced by the API and handled by the R package
+(sleep as specified by the throttle response before retry)</li>
+<li>There are two new vignettes
 <ul>
 <li>There is a new “Converting an existing script” vignette</li>
 <li>The <a href="https://ropensci.org/blog/2017/09/19/patentsview/" class="external-link">ropensci
@@ -230,14 +228,23 @@ changed to work with the new version of the API and is now a new
 vignette.</li>
 </ul>
 </li>
-<li><p>A hex sticker was created using GuangchuangYu’s <a href="https://github.com/GuangchuangYu/hexSticker" class="external-link">hexSticker</a></p></li>
-<li><p>The R package changed internally from using httr to httr2. This
-only affects users if they passed additional arguments (…) to
-search_pv(). Previously if they passed config = httr::timeout(40) they’d
-now pass timeout = 40 (name-value pairs of valid curl options, as found
-in curl::curl_options() see <a href="https://httr2.r-lib.org/reference/req_options.html" class="external-link">req_options</a>)</p></li>
-<li>
-<p>Two new functions were added</p>
+<li>A hex sticker was created using GuangchuangYu’s <a href="https://github.com/GuangchuangYu/hexSticker" class="external-link">hexSticker</a>
+</li>
+<li>The R package changed internally from using httr to httr2. This only
+affects users if they passed additional arguments (…) to search_pv().
+Previously if they passed config = httr::timeout(40) they’d now pass
+timeout = 40 (name-value pairs of valid curl options, as found in
+curl::curl_options() see <a href="https://httr2.r-lib.org/reference/req_options.html" class="external-link">req_options</a>)</li>
+<li>Now that the R package is using httr2, users can make use of its
+last_request() method to see what was sent to the API. This could be
+useful when trying to fix an invalid request. Also fun would be seeing
+the raw API response.</li>
+</ol>
+<pre><code><span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_request</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_response</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_response</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/resp_body_raw.html" class="external-link">resp_body_json</a></span><span class="op">(</span><span class="op">)</span> </span></code></pre>
+<ol start="6" style="list-style-type: decimal">
+<li>Two new functions were added
 <ul>
 <li>retrieve_linked_data() to retrieve data from a HATEOAS link the API
 sent back, retrying if throttled</li>
@@ -245,7 +252,7 @@ sent back, retrying if throttled</li>
 </ul>
 </li>
 </ol>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
 <span><span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1976-01-01"</span>, <span class="st">"1983-02-28"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; {"_and":[{"_gte":{"patent_date":"1976-01-01"}},{"_lte":{"patent_date":"1983-02-28"}}]}</span></span>
