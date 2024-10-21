@@ -51,6 +51,11 @@ get_post_body <- function(query, arg_list) {
 }
 
 #' @noRd
+patentsview_error_body <- function(resp) {
+  if (httr2::resp_status(resp) == 400) c(httr2::resp_header(resp, "X-Status-Reason")) else NULL
+}
+
+#' @noRd
 one_request <- function(method, query, base_url, arg_list, api_key, ...) {
   if (method == "GET") {
     get_url <- get_get_url(query, base_url, arg_list)
@@ -71,6 +76,7 @@ one_request <- function(method, query, base_url, arg_list, api_key, ...) {
     httr2::req_options(...) |>
     httr2::req_retry(max_tries = 2) |> # automatic 429 Retry-After
     httr2::req_headers("X-Api-Key" = api_key, .redact = "X-Api-Key") |>
+    httr2::req_error(body = patentsview_error_body) |>
     httr2::req_perform()
 
   resp

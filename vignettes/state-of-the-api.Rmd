@@ -104,6 +104,10 @@ openapi.json errors
 
 * Most of the document_numbers are integers but from publication/rel_app_text it's a string as is citation_document_number from patent/us_application_citation
 
+PVS-1306
+The API accepts invalid fields  
+The API accepts invalid fields that start out looking like valid fields when it should throw an error. Ex f: is["patent_iddddddddddddd", "patent_dateagogo"] and q: is {"patent_idd":"10000000"} with this result: { "error": false, "count": 0, "total_hits": 0, "patents": [] }
+
 PVS-1181
 Improvement Suggestion  
 There isn't a data dictionary for the API like there is for the bulk download files.
@@ -125,15 +129,22 @@ which then requests all the non-nested attributes from the endpoint. Ex. ```get_
 
   2. On [applying multiple conditions to related-entity fields](understanding-the-api.html#unexpected-results)
 
-* Under the covers, httr was changed to httr2 (see below).  This only matters to users if 
-they passed additional arguments (...) to search_pv().  Previously if they passed config = httr::timeout(40)
-they'd now pass timeout = 40 (name-value pairs of valid curl options, as found in curl::curl_options())
-
 * The endpoints are now singular, to match the API's change.  Some of the new endpoints are nested under patent/ and one is nested under publication/,
 also matching the API's change
   ```{r}
 print(unique(fieldsdf[grep("/", fieldsdf$endpoint), "endpoint"]), row.names = FALSE)
   ```
+* Under the covers, httr was changed to httr2 (see several mentions below).  This only matters to users if 
+they passed additional arguments (...) to search_pv().  Previously if they passed config = httr::timeout(40)
+they'd now pass timeout = 40 (name-value pairs of valid curl options, as found in curl::curl_options())
+
+* Now that the R package is using httr2, users can make use of its last_request() method to see what was sent to the API.  This could be useful when trying to fix an invalid request.  Also fun would be seeing the raw API response.
+```
+httr2::last_request()
+httr2::last_response()
+httr2::last_response() |> httr2::resp_body_json() 
+```
+
 * Package contributor specific changes
 
     + Changed httr to httr2 as [httr](https://httr.r-lib.org/index.html) says it's superseded by [httr2](https://httr2.r-lib.org/)
@@ -185,10 +196,7 @@ bugs are fixed.  We may need to retain some of the hard-coding, see the comments
     * Navigation on the vignettes could be better,  [understanding-the-api](understanding-the-api.html) isn't a link in the navigation yet,
 neither is the possible [tech note](patentsview-breaking-change.html)
     * httr2 improvements
-       +  need to figure out how to disply the X-Status-Reason header on 400 errors [docs](https://httr2.r-lib.org/reference/req_error.html)
-[article](https://httr2.r-lib.org/articles/wrapping-apis.html) and is process-error.R still needed?
-       + Can the throttled test detect output to stdout etc?  We used to expect_message "The API's requests per minute limit has been reached."
-  Now "Waiting 45s for retry backoff" appears but doesn't satisfy expect_message().
+       + Can the throttled test detect output to stdout etc?  We used to expect_message "The API's requests per minute limit has been reached." Now "Waiting 45s for retry backoff" appears but doesn't satisfy expect_message().  Currently using system.time()
 
 
 ## Worth Monitoring

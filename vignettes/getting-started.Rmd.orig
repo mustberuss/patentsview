@@ -187,6 +187,11 @@ unnest_pv_data(recast)
 
 The API query syntax guidelines do not cover all of the API's behavior. Specifically, there are several things that you cannot do which are not documented on the API's webpage. The [writing queries vignette](writing-queries.html) has more details on this. You can also try the string version of your query in the API's [Swagger UI page](https://search.patentsview.org/swagger-ui/).  Its error messages can sometimes help determine the problem.
 
+Now that the R package is using httr2, users can make use of its last_request() method to see what was sent to the API. This could be useful when trying to fix an invalid request.
+```
+httr2::last_request()
+```
+
 #### Does the API have any rate limiting/throttling controls?
 
 Yes, the API currently allows 45 calls per minute for each API key.  If this limit is exceeded the API will return an http status of 429 with a response header Retry-After set to the number of seconds to wait before making subsequent requests.  The R package should handle this for you.  You will need to [request an API key](https://patentsview.org/apis/keyrequest) and set the environmental variable PATENTSVIEW_API_KEY to the value of your key.
