@@ -8,6 +8,20 @@ add_base_url <- function(x) {
   paste0("https://search.patentsview.org/api/v1/", x)
 }
 
+test_that("invalid fields are accepted", {
+  skip_on_cran()
+  skip_on_ci()
+
+  # reported to the API team PVS-1306
+  # The API accepts invalid fields that start out looking like valid fields
+  # This test will fail when the API throws an error
+  results <- retrieve_linked_data(
+    'https://search.patentsview.org/api/v1/patent/?q={"patent_idd":"10000000"}&f=["patent_iddddddddddddd", "patent_dateagogo"]'
+  )
+
+  expect_equal(results$query_results$total_hits, 0)
+})
+
 test_that("there is case sensitivity on string equals", {
   skip_on_cran()
   skip_on_ci()
