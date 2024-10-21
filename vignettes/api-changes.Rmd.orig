@@ -259,15 +259,6 @@ search_pv('{"cpc_group_id": "A01B1/00"}', endpoint = 'cpc_group')
 ### API Throttling <a name="throttling"></a>
 The API will now allow 45 requests per minute, making more requests will anger the API.  It will send back an error code with a header indicating how many seconds to wait before sending more queries.  The R package will take care of this for you.  It will sleep for the required number of seconds before resubmitting your query, seamlessly to your script.
 
-```
-  # Sleep and retry on a 429 (too many requests). The Retry-After header is the
-  # seconds to sleep before the API will accept requests again
-  if (httr::status_code(resp) == 429) {
-    num_seconds <- httr::headers(resp)[["Retry-After"]]
-    Sys.sleep(num_seconds)
-  }
-```
-
 ### A Note on Paging <a name="a-note-on-paging">
 The API team changed [how paging works](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#pagination) and there is an 
 important subtlety that the R package handles for you.  This screams for a python library so python 
