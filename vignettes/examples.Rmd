@@ -21,6 +21,7 @@ Which patents have been cited by more than 500 US patents?
 library(patentsview)
 
 search_pv(query = qry_funs$gt(patent_num_times_cited_by_us_patents = 500))
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_gt%22%3A%7B%22patent_num_times_cited_by_us_patents%22%3A500%7D%7D&f=&s=&o={\"size\":1000,\"after\":\"\"}"
 #> $data
 #> #### A list with a single data frame on patents level:
 #> 
@@ -45,6 +46,7 @@ search_pv(
   query = qry_funs$gt(patent_num_times_cited_by_us_patents = 500),
   fields = c("patent_id", "inventors.inventor_id")
 )
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_gt%22%3A%7B%22patent_num_times_cited_by_us_patents%22%3A500%7D%7D&f=[\"patent_id\",\"inventors.inventor_id\"]&s=&o={\"size\":1000,\"after\":\"\"}"
 #> $data
 #> #### A list with a single data frame (with list column(s) inside) on patents level:
 #> 
@@ -65,6 +67,7 @@ What assignee's organizations start Microsoft?
 query <- qry_funs$begins(assignee_organization = "Microsoft")
 
 pv_out <- search_pv(query, endpoint = "assignee")
+#> [1] "https://search.patentsview.org/api/v1/assignee/?q=%7B%22_begins%22%3A%7B%22assignee_organization%22%3A%22Microsoft%22%7D%7D&f=&s=&o={\"size\":1000,\"after\":\"\"}"
 pv_out$data$assignees$assignee_organization
 #>  [1] "Microsoft Technology Beaming, LLC"               
 #>  [2] "MICROSOFT INTERNATIONAL HOLDINGS B.V."           
@@ -98,7 +101,12 @@ query <- with_qfuns(
 # Create a field list by getting the inventors fields
 inv_fields <- get_fields(endpoint = "patent", groups="inventors")
 # Pull the data
-pv_out <- search_pv(query, fields = inv_fields, all_pages = TRUE, per_page = 1000)
+pv_out <- search_pv(query, fields = inv_fields, all_pages = TRUE, size = 1000)
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222022-07-26%22%7D%7D%2C%7B%22_begins%22%3A%7B%22assignees.assignee_organization%22%3A%22Microsoft%22%7D%7D%5D%7D&f=[\"inventors.inventor_id\",\"inventors.inventor_city\",\"inventors.inventor_country\",\"inventors.inventor_name_first\",\"inventors.inventor_name_last\",\"inventors.inventor_sequence\",\"inventors.inventor_state\",\"patent_id\"]&s=[{\"patent_id\":\"asc\"}]&o={\"size\":1000,\"after\":\"\"}"
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222022-07-26%22%7D%7D%2C%7B%22_begins%22%3A%7B%22assignees.assignee_organization%22%3A%22Microsoft%22%7D%7D%5D%7D&f=[\"inventors.inventor_id\",\"inventors.inventor_city\",\"inventors.inventor_country\",\"inventors.inventor_name_first\",\"inventors.inventor_name_last\",\"inventors.inventor_sequence\",\"inventors.inventor_state\",\"patent_id\"]&s=[{\"patent_id\":\"asc\"}]&o={\"size\":1000,\"after\":\"\"}"
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222022-07-26%22%7D%7D%2C%7B%22_begins%22%3A%7B%22assignees.assignee_organization%22%3A%22Microsoft%22%7D%7D%5D%7D&f=[\"inventors.inventor_id\",\"inventors.inventor_city\",\"inventors.inventor_country\",\"inventors.inventor_name_first\",\"inventors.inventor_name_last\",\"inventors.inventor_sequence\",\"inventors.inventor_state\",\"patent_id\"]&s=[{\"patent_id\":\"asc\"}]&o={\"size\":1000,\"after\":\"11567995\"}"
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222022-07-26%22%7D%7D%2C%7B%22_begins%22%3A%7B%22assignees.assignee_organization%22%3A%22Microsoft%22%7D%7D%5D%7D&f=[\"inventors.inventor_id\",\"inventors.inventor_city\",\"inventors.inventor_country\",\"inventors.inventor_name_first\",\"inventors.inventor_name_last\",\"inventors.inventor_sequence\",\"inventors.inventor_state\",\"patent_id\"]&s=[{\"patent_id\":\"asc\"}]&o={\"size\":1000,\"after\":\"11745094\"}"
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_gte%22%3A%7B%22patent_date%22%3A%222022-07-26%22%7D%7D%2C%7B%22_begins%22%3A%7B%22assignees.assignee_organization%22%3A%22Microsoft%22%7D%7D%5D%7D&f=[\"inventors.inventor_id\",\"inventors.inventor_city\",\"inventors.inventor_country\",\"inventors.inventor_name_first\",\"inventors.inventor_name_last\",\"inventors.inventor_sequence\",\"inventors.inventor_state\",\"patent_id\"]&s=[{\"patent_id\":\"asc\"}]&o={\"size\":1000,\"after\":\"11922001\"}"
 
 # Unnest the inventor list column
 unnest_pv_data(pv_out$data, "patent_id")
@@ -127,6 +135,107 @@ pv_out <- search_pv(
                     {"_text_phrase": {"inventor_lastknown_state":"IL"}}]}',
   endpoint = "inventor"
 )
+#> [1] "https://search.patentsview.org/api/v1/inventor/?q=%7B%22_and%22%3A%5B%7B%22_text_phrase%22%3A%20%7B%22inventor_lastknown_city%22%3A%22Chicago%22%7D%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7B%22_text_phrase%22%3A%20%7B%22inventor_lastknown_state%22%3A%22IL%22%7D%7D%5D%7D&f=&s=&o={\"size\":1000,\"after\":\"\"}"
+#> Waiting 31s for retry backoff ■■ Waiting 31s for retry backoff ■■ Waiting 31s
+#> for retry backoff ■■ Waiting 31s for retry backoff ■■■ Waiting 31s for retry
+#> backoff ■■■ Waiting 31s for retry backoff ■■■ Waiting 31s for retry backoff ■■■
+#> Waiting 31s for retry backoff ■■■ Waiting 31s for retry backoff ■■■ Waiting 31s
+#> for retry backoff ■■■■ Waiting 31s for retry backoff ■■■■ Waiting 31s for retry
+#> backoff ■■■■ Waiting 31s for retry backoff ■■■■ Waiting 31s for retry backoff
+#> ■■■■ Waiting 31s for retry backoff ■■■■■ Waiting 31s for retry backoff ■■■■■
+#> Waiting 31s for retry backoff ■■■■■ Waiting 31s for retry backoff ■■■■■ Waiting
+#> 31s for retry backoff ■■■■■■ Waiting 31s for retry backoff ■■■■■■ Waiting 31s
+#> for retry backoff ■■■■■■ Waiting 31s for retry backoff ■■■■■■ Waiting 31s for
+#> retry backoff ■■■■■■ Waiting 31s for retry backoff ■■■■■■■ Waiting 31s for
+#> retry backoff ■■■■■■■ Waiting 31s for retry backoff ■■■■■■■ Waiting 31s for
+#> retry backoff ■■■■■■■ Waiting 31s for retry backoff ■■■■■■■ Waiting 31s for
+#> retry backoff ■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■ Waiting 31s for
+#> retry backoff ■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■ Waiting 31s for
+#> retry backoff ■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■ Waiting 31s for
+#> retry backoff ■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■ Waiting 31s for
+#> retry backoff ■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■ Waiting 31s for
+#> retry backoff ■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■ Waiting 31s
+#> for retry backoff ■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■ Waiting
+#> 31s for retry backoff ■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■
+#> Waiting 31s for retry backoff ■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■ Waiting 31s for retry
+#> backoff ■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■ Waiting 31s for
+#> retry backoff ■■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■■ Waiting
+#> 31s for retry backoff ■■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■■
+#> Waiting 31s for retry backoff ■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■■■ Waiting 31s for retry
+#> backoff ■■■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■■■ Waiting 31s
+#> for retry backoff ■■■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■■■■
+#> Waiting 31s for retry backoff ■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■■■■ Waiting 31s for
+#> retry backoff ■■■■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■■■■■
+#> Waiting 31s for retry backoff ■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■■■■■ Waiting 31s for
+#> retry backoff ■■■■■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■
+#> Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■ Waiting 31s for
+#> retry backoff ■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■
+#> Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■ Waiting 31s
+#> for retry backoff ■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■■ Waiting 31s
+#> for retry backoff ■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■■ Waiting 31s
+#> for retry backoff ■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■■■ Waiting
+#> 31s for retry backoff ■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■■■■ Waiting
+#> 31s for retry backoff ■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■■■■ Waiting
+#> 31s for retry backoff ■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■■■■■
+#> Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry
+#> backoff ■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■
+#> Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry
+#> backoff ■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■
+#> Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry
+#> backoff ■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■
+#> Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry
+#> backoff ■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■
+#> Waiting 31s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry
+#> backoff ■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 31s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 
 pv_out
 #> $data
@@ -154,8 +263,8 @@ Chicago, IL as their location when applying for a patent.
 ``` r
 fields <- c("patent_id", get_fields('patent', groups="inventors"))
 fields
-#> [1] "patent_id"                     "inventors.inventor_city"      
-#> [3] "inventors.inventor_country"    "inventors.inventor_id"        
+#> [1] "patent_id"                     "inventors.inventor_id"        
+#> [3] "inventors.inventor_city"       "inventors.inventor_country"   
 #> [5] "inventors.inventor_name_first" "inventors.inventor_name_last" 
 #> [7] "inventors.inventor_sequence"   "inventors.inventor_state"
 
@@ -163,6 +272,7 @@ query <- '{"_and":[{"_text_phrase": {"inventors.inventor_city":"Chicago"}},
                    {"_text_phrase": {"inventors.inventor_state":"IL"}}]}'
 
 search_pv(query, fields=fields, endpoint="patent")
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_and%22%3A%5B%7B%22_text_phrase%22%3A%20%7B%22inventors.inventor_city%22%3A%22Chicago%22%7D%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7B%22_text_phrase%22%3A%20%7B%22inventors.inventor_state%22%3A%22IL%22%7D%7D%5D%7D&f=[\"patent_id\",\"inventors.inventor_id\",\"inventors.inventor_city\",\"inventors.inventor_country\",\"inventors.inventor_name_first\",\"inventors.inventor_name_last\",\"inventors.inventor_sequence\",\"inventors.inventor_state\"]&s=&o={\"size\":1000,\"after\":\"\"}"
 #> $data
 #> #### A list with a single data frame (with list column(s) inside) on patents level:
 #> 
@@ -191,6 +301,7 @@ search_pv(
   query = qry_funs$contains(patent_title = "beer"),
   endpoint = "patent"
 )
+#> [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_contains%22%3A%7B%22patent_title%22%3A%22beer%22%7D%7D&f=&s=&o={\"size\":1000,\"after\":\"\"}"
 #> $data
 #> #### A list with a single data frame on patents level:
 #> 

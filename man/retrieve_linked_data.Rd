@@ -9,8 +9,8 @@ retrieve_linked_data(url, api_key = Sys.getenv("PATENTSVIEW_API_KEY"), ...)
 \arguments{
 \item{url}{The link that was returned by the API on a previous call or an example in the documentation.}
 
-\item{api_key}{API key. See \href{https://patentsview.org/apis/keyrequest}{
-Here} for info on creating a key.}
+\item{api_key}{API key, it defaults to Sys.getenv("PATENTSVIEW_API_KEY"). Request a key
+\href{https://patentsview.org/apis/keyrequest}{here}.}
 
 \item{...}{Curl options passed along to httr2's \code{\link[httr2]{req_options}} function.}
 }

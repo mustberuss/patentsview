@@ -11,7 +11,9 @@ search_pv(
   subent_cnts = FALSE,
   mtchd_subent_only,
   page,
-  per_page = 1000,
+  per_page,
+  size = 1000,
+  after = "",
   all_pages = FALSE,
   sort = NULL,
   method = "GET",
@@ -54,19 +56,27 @@ except it's the API that decides what fields to return.}
 \item{endpoint}{The web service resource you wish to search. Use
 \code{get_endpoints()} to list the available endpoints.}
 
-\item{subent_cnts}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Non-matched subentities
-will always be returned under the new version of the API}
+\item{subent_cnts}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This is always FALSE in the
+new version of the API as the total counts of unique subentities is no longer available.}
 
 \item{mtchd_subent_only}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This is always
-FALSE in the new version of the API.}
+FALSE in the new version of the API as non-matched subentities
+will always be returned.}
 
-\item{page}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} The page number of the results that should be returned.}
+\item{page}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} The new version of the API does not use
+\code{page} as a parameter for paging, it uses \code{after}.}
 
-\item{per_page}{The number of records that should be returned per page. This
-value can be as high as 1,000 (e.g., \code{per_page = 1000}).}
+\item{per_page}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} The API now uses \code{size}}
+
+\item{size}{The number of records that should be returned per page. This
+value can be as high as 1,000 (e.g., \code{size = 1000}).}
+
+\item{after}{Exposes the API's paging parameter for users who want to implement their own
+custom paging. It cannot be set when \code{all_pages = TRUE} as the R package manipulates it
+for users automatically.}
 
 \item{all_pages}{Do you want to download all possible pages of output? If
-\code{all_pages = TRUE}, the value \code{per_page} is ignored.}
+\code{all_pages = TRUE}, the value of \code{size} is ignored.}
 
 \item{sort}{A named character vector where the name indicates the field to
 sort by and the value indicates the direction of sorting (direction should
@@ -81,8 +91,8 @@ your query is very long (say, over 2,000 characters in length).}
 
 \item{error_browser}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 
-\item{api_key}{API key. See \href{https://patentsview.org/apis/keyrequest}{
-Here} for info on creating a key.}
+\item{api_key}{API key, it defaults to Sys.getenv("PATENTSVIEW_API_KEY"). Request a key
+\href{https://patentsview.org/apis/keyrequest}{here}.}
 
 \item{...}{Curl options passed along to httr2's \code{\link[httr2]{req_options}}
 when we do GETs or POSTs.}

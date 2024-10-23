@@ -267,6 +267,47 @@ endpoint with these exceptions:</p>
 <p>(Note that patent/rel_app_text returns rel_app_texts, following the
 singular/plural pattern)</p>
 </li>
+<li>
+<p>Not exactly an oddity, but with no better place for this, here’s
+a comparison of the old and new attributes that can be sent to the API
+in its o: (options) parameter via search_pv()</p>
+<table class="table">
+<colgroup>
+<col width="38%">
+<col width="35%">
+<col width="25%">
+</colgroup>
+<thead><tr class="header">
+<th>Original API</th>
+<th>New Version</th>
+<th>Purpose</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>per_page</td>
+<td>size</td>
+<td>maximum number of rows to return</td>
+</tr>
+<tr class="even">
+<td>page</td>
+<td>after</td>
+<td>page through large result sets</td>
+</tr>
+<tr class="odd">
+<td>subent_cnts</td>
+<td></td>
+<td>whether the query results should include the total counts of unique
+subentities</td>
+</tr>
+<tr class="even">
+<td>mtchd_subent_only</td>
+<td></td>
+<td>whether a query should return all related subentities or just those
+that match query criteria.</td>
+</tr>
+</tbody>
+</table>
+</li>
 </ul>
 </li>
 </ul>
@@ -418,7 +459,8 @@ the hard-coding, see the comments in data-raw/fieldsdf.R</p></li>
 <ul>
 <li>The version number ought to be bumped to 1.0.0 since there are
 breaking API changes (singular endpoints and the addition of an API
-key)</li>
+key). validate-args.R has some version specific code that may need
+modifying.</li>
 <li>Result set size seems unbounded now. Should we warn if a query would
 return more than 100,000 rows with all_pages = TRUE?</li>
 <li>Have get_fields() and search_pv() throw a specialized error if a
@@ -430,6 +472,8 @@ everything, something like <a href="#findingscontributor-101">Findings/Contribut
 <li>Navigation on the vignettes could be better, <a href="understanding-the-api.html">understanding-the-api</a> isn’t a link
 in the navigation yet, neither is the possible <a href="patentsview-breaking-change.html">tech note</a>
 </li>
+<li>API attribute changes page and per_page to be explained
+somewhere.</li>
 <li>httr2 improvements
 <ul>
 <li>Can the throttled test detect output to stdout etc? We used to
@@ -533,7 +577,8 @@ which is a wrapper for</p>
 If you make changes to method documentation, run</p>
 <ul>
 <li>devtools::document() and</li>
-<li>pkgdown::build_reference()</li>
+<li>pkgdown::build_reference() <br><br>
+</li>
 </ul>
 </li>
 <li>
@@ -610,6 +655,11 @@ is grayed out.</p>
 <p>Ah, on the build it shows Build pkgdown site (ropensci only) was
 skipped</p>
 </li>
+<li><p>Should we add a row_limit or something? We’d page our way and
+stop when the row_limit is met. For someone wanting more than a 1000
+rows but not necessarily all the rows, especially since there isn’t the
+100,000 row limitation now. The API’s <code>after</code> is now exposed
+in search_pv() so users could do their own paging.</p></li>
 </ul>
 </li>
 </ul>
