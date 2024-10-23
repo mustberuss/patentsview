@@ -11,13 +11,16 @@ tojson_2 <- function(x, ...) {
 }
 
 #' @noRd
-to_arglist <- function(fields, page, per_page, sort) {
+to_arglist <- function(fields, size, sort, after) {
+  opts = list(size = size)
+  if(after != "") {
+     opts$after = after
+  }
+
   list(
     fields = fields,
     sort = list(as.list(sort)),
-    opts = list(
-      size = per_page
-    )
+    opts = opts
   )
 }
 
@@ -59,12 +62,10 @@ patentsview_error_body <- function(resp) {
 one_request <- function(method, query, base_url, arg_list, api_key, ...) {
   if (method == "GET") {
     get_url <- get_get_url(query, base_url, arg_list)
-    print(get_url)
     req <- httr2::request(get_url) |>
       httr2::req_method("GET")
   } else {
     body <- get_post_body(query, arg_list)
-    print(paste("body", body))
     req <- httr2::request(base_url) |>
       httr2::req_body_raw(body) |>
       httr2::req_headers("Content-Type" = "application/json") |>
@@ -153,15 +154,21 @@ get_default_sort <- function(endpoint) {
 #'  except it's the API that decides what fields to return.
 #' @param endpoint The web service resource you wish to search. Use
 #'  \code{get_endpoints()} to list the available endpoints.
-#' @param subent_cnts `r lifecycle::badge("deprecated")` Non-matched subentities
-#' will always be returned under the new version of the API
+#' @param subent_cnts `r lifecycle::badge("deprecated")` This is always FALSE in the
+#' new version of the API as the total counts of unique subentities is no longer available.
 #' @param mtchd_subent_only `r lifecycle::badge("deprecated")` This is always
-#' FALSE in the new version of the API.
-#' @param page `r lifecycle::badge("deprecated")` The page number of the results that should be returned.
-#' @param per_page The number of records that should be returned per page. This
-#'  value can be as high as 1,000 (e.g., \code{per_page = 1000}).
+#' FALSE in the new version of the API as non-matched subentities
+#' will always be returned.
+#' @param page `r lifecycle::badge("deprecated")` The new version of the API does not use 
+#' \code{page} as a parameter for paging, it uses \code{after}.
+#' @param per_page `r lifecycle::badge("deprecated")` The API now uses \code{size}
+#' @param size The number of records that should be returned per page. This
+#'  value can be as high as 1,000 (e.g., \code{size = 1000}).
+#' @param after Exposes the API's paging parameter for users who want to implement their own
+#' custom paging. It cannot be set when \code{all_pages = TRUE} as the R package manipulates it 
+#' for users automatically.
 #' @param all_pages Do you want to download all possible pages of output? If
-#'  \code{all_pages = TRUE}, the value \code{per_page} is ignored.
+#'  \code{all_pages = TRUE}, the value of \code{size} is ignored.
 #' @param sort A named character vector where the name indicates the field to
 #'  sort by and the value indicates the direction of sorting (direction should
 #'  be either "asc" or "desc"). For example, \code{sort = c("patent_id" =
@@ -172,8 +179,8 @@ get_default_sort <- function(endpoint) {
 #'  Possible values include "GET" or "POST". Use the POST method when
 #'  your query is very long (say, over 2,000 characters in length).
 #' @param error_browser `r lifecycle::badge("deprecated")`
-#' @param api_key API key. See \href{https://patentsview.org/apis/keyrequest}{
-#'  Here} for info on creating a key.
+#' @param api_key API key, it defaults to Sys.getenv("PATENTSVIEW_API_KEY"). Request a key 
+#' \href{https://patentsview.org/apis/keyrequest}{here}.
 #' @param ... Curl options passed along to httr2's \code{\link[httr2]{req_options}}
 #'  when we do GETs or POSTs.
 #'
@@ -242,15 +249,17 @@ search_pv <- function(query,
                       subent_cnts = FALSE,
                       mtchd_subent_only,
                       page,
-                      per_page = 1000,
+                      per_page,
+                      size = 1000,
+                      after = "",
                       all_pages = FALSE,
                       sort = NULL,
                       method = "GET",
                       error_browser = NULL,
                       api_key = Sys.getenv("PATENTSVIEW_API_KEY"),
                       ...) {
-  validate_args(api_key, fields, endpoint, method, page, per_page, sort)
-  deprecate_warn_all(error_browser, subent_cnts, mtchd_subent_only)
+  validate_args(api_key, fields, endpoint, method, sort, after, size, all_pages)
+  deprecate_warn_all(error_browser, subent_cnts, mtchd_subent_only, page, per_page)
 
   if (is.list(query)) {
     # check_query(query, endpoint)
@@ -264,7 +273,7 @@ search_pv <- function(query,
     if (!names(sort) %in% fields) fields <- c(fields, names(sort))
   }
 
-  arg_list <- to_arglist(fields, page, per_page, sort)
+  arg_list <- to_arglist(fields, size, sort, after)
   base_url <- get_base(endpoint)
 
   result <- one_request(method, query, base_url, arg_list, api_key, ...)
@@ -303,7 +312,7 @@ search_pv <- function(query,
     need_remove <- FALSE
   }
 
-  arg_list <- to_arglist(fields, page, per_page, primary_sort_key)
+  arg_list <- to_arglist(fields, size, primary_sort_key, after)
   paged_data <- request_apply(result, method, query, base_url, arg_list, api_key, ...)
 
   # apply the user's sort
@@ -381,12 +390,12 @@ retrieve_linked_data <- function(url,
       params$sort <- jsonlite::fromJSON(sub(".*s=([^&]*).*", "\\1", url))
     }
 
-    # need to parse this out, preserving double quotes
+    if (!is.null(url_peices$query$o)) {
+       params$opts = jsonlite::fromJSON(sub(".*o=([^&]*).*", "\\1", url))
+    }
+
     query <- if (!is.null(url_peices$query$q)) sub(".*q=([^&]*).*", "\\1", url) else ""
-
     url <- paste0(url_peices$scheme, "://", url_peices$hostname, url_peices$path)
-
-    # todo set page and per_page? is there a method for that?
   }
 
   # Go through one_request, which handles resend on throttle errors

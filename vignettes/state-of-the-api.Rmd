@@ -73,6 +73,15 @@ that cast-pv-data casts to integers.[^2] [Additional details](getting-started.ht
      |publication/rel_app_text|rel_app_text_publications| 
      (Note that patent/rel_app_text returns rel_app_texts, following the singular/plural pattern)
 
+   + Not exactly an oddity, but with no better place for this, here's a comparison of the old and 
+new attributes that can be sent to the API in its o: (options) parameter via search_pv()
+
+     |Original API|New Version| Purpose|
+     |------------|-----------|--------|
+     | per_page   | size      |  maximum number of rows to return |
+     | page       | after     |  page through large result sets |
+     | subent_cnts|           |  whether the query results should include the total counts of unique subentities|
+     | mtchd_subent_only|     | whether a query should return all related subentities or just those that match query criteria.|
 
 ## Open API Bugs
 
@@ -187,7 +196,8 @@ bugs are fixed.  We may need to retain some of the hard-coding, see the comments
 
   + <a name="improvements"> Possible Package Improvements
 
-    * The version number ought to be bumped to 1.0.0 since there are breaking API changes (singular endpoints and the addition of an API key)
+    * The version number ought to be bumped to 1.0.0 since there are breaking API changes (singular endpoints and the addition of an API key).  validate-args.R has some version
+specific code that may need modifying.
     * Result set size seems unbounded now.  Should we warn if a query would return more than 100,000 rows with all_pages = TRUE?
     * Have get_fields() and search_pv() throw a specialized error if a plural endpoint is passed
     * Add an issue template that warns users not to share their API key
@@ -195,6 +205,7 @@ bugs are fixed.  We may need to retain some of the hard-coding, see the comments
 [Findings/Contributor 101](#findingscontributor-101) below
     * Navigation on the vignettes could be better,  [understanding-the-api](understanding-the-api.html) isn't a link in the navigation yet,
 neither is the possible [tech note](patentsview-breaking-change.html)
+    * API attribute changes page and per_page to be explained somewhere.
     * httr2 improvements
        + Can the throttled test detect output to stdout etc?  We used to expect_message "The API's requests per minute limit has been reached." Now "Waiting 45s for retry backoff" appears but doesn't satisfy expect_message().  Currently using system.time()
 
@@ -269,6 +280,8 @@ produce fieldsdf.csv and fieldsdf.rda
 If you make changes to method documentation, run 
       * devtools::document() and
       * pkgdown::build_reference()
+<br />
+<br />
    + see README.Rmd changes locally
       * knitr::knit("README.Rmd", "README.md")
       * pkgdown::build_home()
@@ -321,6 +334,9 @@ but the build will silently fail on r-universe.  Don't ask how I know that.
 
       Ah, on the build it shows Build pkgdown site (ropensci only) was skipped
 
+   + Should we add a row_limit or something?  We'd page our way and stop when the row_limit is met.  For someone wanting more than a 1000 rows but not necessarily all the rows, especially since
+there isn't the 100,000 row limitation now.  The API's ```after``` is now exposed 
+in search_pv() so users could do their own paging.
 
 [^1]: Observation sent to the API team.
 [^2]: Observation sent to the API team.

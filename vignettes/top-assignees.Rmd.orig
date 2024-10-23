@@ -71,7 +71,7 @@ fields <- c(
 )
 
 # Send an HTTP request to the PatentsView API to get the data
-pv_out <- search_pv(query, fields = fields, all_pages = TRUE, per_page = 1000)
+pv_out <- search_pv(query, fields = fields, all_pages = TRUE, size = 1000)
 pv_out
 ```
 
@@ -115,7 +115,7 @@ assignee_fields <- c(
 
 # We'll post to the API, the query is a pretty large string (an "or" of 75 assignee_ids)
 assignee_out <- search_pv(assignee_query , fields = assignee_fields, all_pages = TRUE, 
-   per_page = 1000, endpoint = "assignee", method = "POST")
+   size = 1000, endpoint = "assignee", method = "POST")
 
 assignee_counts <- unnest_pv_data(assignee_out$data, "assignee_id")
 assignee_counts

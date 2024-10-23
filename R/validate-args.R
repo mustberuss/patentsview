@@ -8,13 +8,12 @@ validate_endpoint <- function(endpoint) {
 }
 
 #' @noRd
-validate_args <- function(api_key, fields, endpoint, method, page, per_page,
-                          sort) {
+validate_args <- function(api_key, fields, endpoint, method, 
+                          sort, after, size, all_pages) {
   asrt(
     !identical(api_key, ""),
     "The new version of the API requires an API key"
   )
-
 
   flds_flt <- fieldsdf[fieldsdf$endpoint == endpoint, "field"]
 
@@ -36,17 +35,10 @@ validate_args <- function(api_key, fields, endpoint, method, page, per_page,
     all(method %in% c("GET", "POST"), length(method) == 1),
     "method must be either 'GET' or 'POST'"
   )
-  if (lifecycle::is_present(page)) {
-    lifecycle::deprecate_warn(
-      when = "1.0.0",
-      what = "search_pv(page)",
-      details = "The new version of the API does not support the page attribute."
-    )
-  }
 
   asrt(
-    all(is.numeric(per_page), length(per_page) == 1, per_page <= 1000),
-    "per_page must be a numeric value less than or equal to 1,000"
+    all(is.numeric(size), length(size) == 1, size <= 1000),
+    "size must be a numeric value less than or equal to 1,000"
   )
   if (!is.null(sort)) {
     asrt(
@@ -58,6 +50,11 @@ validate_args <- function(api_key, fields, endpoint, method, page, per_page,
       "specified in the field argument. See examples"
     )
   }
+
+  asrt(
+    any(after == "", !all_pages),
+    "after cannot be set when all_pages = TRUE"
+  )
 }
 
 #' @noRd
@@ -80,7 +77,7 @@ validate_pv_data <- function(data) {
 }
 
 #' @noRd
-deprecate_warn_all <- function(error_browser, subent_cnts, mtchd_subent_only) {
+deprecate_warn_all <- function(error_browser, subent_cnts, mtchd_subent_only, page, per_page) {
   if (!is.null(error_browser)) {
     lifecycle::deprecate_warn(when = "0.2.0", what = "search_pv(error_browser)")
   }
@@ -102,6 +99,22 @@ deprecate_warn_all <- function(error_browser, subent_cnts, mtchd_subent_only) {
       what = "search_pv(mtchd_subent_only)",
       details = "Non-matched subentities will always be returned under the new
       version of the API"
+    )
+  }
+
+  if (lifecycle::is_present(per_page)) {
+    lifecycle::deprecate_warn(
+      when = "0.3.0",
+      what = "search_pv(per_page)",
+      details = "The new version of the API uses 'size' instead of 'per_page'"
+    )
+  }
+
+  if (lifecycle::is_present(page)) {
+    lifecycle::deprecate_warn(
+      when = "0.3.0",
+      what = "search_pv(page)",
+      details = "The new version of the API does not support the page parameter"
     )
   }
 }

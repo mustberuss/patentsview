@@ -94,14 +94,14 @@ In the original version of the API, rawinventor_first_name and rawinventor_last_
 
 ## Paginated responses
 
-By default, `search_pv()` returns 1,000 records per page and only gives you the first page of results. I suggest starting with something smaller, like the `per_page` = 150 below, while you're figuring out the details of your request, such as the query you want to use and the fields you want returned. Once you have those items finalized, you can use the `per_page` argument to download up to 1,000 records per page. 
+By default, `search_pv()` returns 1,000 records per page and only gives you the first page of results. I suggest starting with something smaller, like the `size` = 150 below, while you're figuring out the details of your request, such as the query you want to use and the fields you want returned. Once you have those items finalized, you can use the `size` argument to download up to 1,000 records per page. 
 
-You can download all pages of output in one call by setting `all_pages = TRUE`. This will set `per_page` equal to 1,000 and loop over all pages of output:
+You can download all pages of output in one call by setting `all_pages = TRUE`. This will set `size` equal to 1,000 and loop over all pages of output:
 
 ```{r}
 search_pv(
   query = qry_funs$eq(inventors.inventor_name_last = "Chambers"),
-  all_pages = TRUE, per_page = 1000
+  all_pages = TRUE, size = 1000
 )
 ```
 

@@ -73,7 +73,7 @@ test_that("You can download up to 9,000+ records", {
       lte(patent_date = "2021-12-24")
     )
   )
-  out <- search_pv(query, per_page = 1000, all_pages = TRUE)
+  out <- search_pv(query, size = 1000, all_pages = TRUE)
   expect_gt(out$query_results$total_hits, 9000)
 })
 
@@ -117,7 +117,7 @@ test_that("Sort option works as expected", {
     fields = get_fields("assignee"),
     endpoint = "assignee",
     sort = c("assignee_lastknown_latitude" = "desc"),
-    per_page = 100
+    size = 100
   )
   lat <- as.numeric(out$data$assignees$assignee_lastknown_latitude)
   expect_true(lat[1] >= lat[100])
@@ -157,7 +157,7 @@ test_that("search_pv properly URL encodes queries", {
 test_that("Throttled requests are automatically retried", {
   skip_on_cran()
 
-  res <- search_pv('{"_gte":{"patent_date":"2007-01-04"}}', per_page = 50)
+  res <- search_pv('{"_gte":{"patent_date":"2007-01-04"}}', size = 50)
   patent_ids <- res$data$patents$patent_id
 
   # now we don't get message "The API's requests per minute limit has been reached. "
@@ -184,7 +184,7 @@ test_that("Throttled requests are automatically retried", {
     endpoint = "patent/us_patent_citation",
     fields = c("patent_id", "citation_patent_id"),
     sort = c("patent_id" = "asc", "citation_patent_id" = "asc"),
-    per_page = 1000,
+    size = 1000,
     all_pages = TRUE
   )
   result_all <- result_all$data$us_patent_citations

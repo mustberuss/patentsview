@@ -55,11 +55,11 @@ fields <- c(
 # Post a request to the API
 res <- search_pv(citing_query,
   fields = fields, all_pages = TRUE,
-  endpoint = "patent/us_patent_citation", method = "POST", per_page = 1000
+  endpoint = "patent/us_patent_citation", method = "POST", size = 1000
 )
 res2 <- search_pv(cited_query,
   fields = fields, all_pages = TRUE,
-  endpoint = "patent/us_patent_citation", method = "POST", per_page = 1000
+  endpoint = "patent/us_patent_citation", method = "POST", size = 1000
 )
 
 # Unnest the data found in the two lists of columns
@@ -134,7 +134,7 @@ rel_pats <-
 rel_pats_res <- search_pv(
   query = list(patent_id = rel_pats$patent_id),
   fields = c("citation_patent_id", "patent_id"),
-  all_pages = TRUE, per_page = 1000, method = "POST", endpoint = "patent/us_patent_citation"
+  all_pages = TRUE, size = 1000, method = "POST", endpoint = "patent/us_patent_citation"
 )
 
 rel_pats_lst <- unnest_pv_data(rel_pats_res$data, "patent_id")
