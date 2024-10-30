@@ -108,7 +108,7 @@ dl <- unnest_pv_data(pat_res$data)
 display_inventors <- 
    dl$inventors %>%
    filter(grepl("^(George|Thomas)", inventor_name_first ) | grepl("^(Washington|Jefferson)", inventor_name_last))  %>%
-   arrange(nchar(patent_id), patent_id)  # string sort
+   arrange(nchar(patent_id), patent_id)  # numeric sort on a string field
 
 display_inventors
 
@@ -167,17 +167,17 @@ dl$patents[[1]][[1]]
 display_inventors <- 
    dl$inventors %>%
    filter(grepl("^(George|Thomas)", inventor_name_first ) | grepl("^(Washington|Jefferson)", inventor_name_last))  %>%
-   arrange(nchar(patent_id), patent_id)  # string sort
+   arrange(nchar(patent_id), patent_id)  # numeric sort on a string field
 
 
 display_inventors
 
 ```
-## Worth Noting
+## Subtle Exceptions
 
 It's not directly mentioned, but toward the top of the notebook, the publication/rel_app_text endpoint appears in the
 special_keys hash. Its entity is a rel_app_text_publications.  There's a similar patent/rel_app_text
-endpoint whose entity is rel_app_texts.  Generally, the entity is the plural form of the
+endpoint whose entity is rel_app_texts.  Generally the entity is the plural form of the
 singular endpoint, special_keys lists the exceptions to that rule, as the code shows.
 
 ## Acknowledgment

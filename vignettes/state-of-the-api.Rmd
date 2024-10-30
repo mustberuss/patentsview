@@ -12,6 +12,8 @@ PatentSearch API, as announced [here](https://search.patentsview.org/docs/#namin
 
 ## On the Plus Side
 
+Here are the positive API changes:
+
 * All fields can be queried now.
 
 * The 100,000 row result set size limit seems to be gone.  Might be part curse as a user might not have
@@ -52,7 +54,7 @@ their respective HATEOAS links
       * https[]()://search.patentsview.org/api/v1/cpc_group/G01S7:4865/
       * https[]()://search.patentsview.org/api/v1/uspc_subclass/403:57/ (endpoint currently throws a 500)
 
-      An [API key](api-changes.html#an-api-key-is-required) is now required so, intentionally, these URLs aren't clickable since no API key would be sent, resulting in a 403, Forbidden response.
+      An [API key](api-changes.html#an-api-key-is-required) is now required so, intentionally, these URLs aren't clickable since no API key would be sent, resulting in a 403 Forbidden response.
 
    + Field inconsistencies
       * There are two rule_47_flag fields, one returned by the patent endpoint and one returned by the
@@ -78,20 +80,46 @@ new attributes that can be sent to the API in its o: (options) parameter via sea
 
      |Original API|New Version| Purpose|
      |------------|-----------|--------|
-     | per_page   | size      |  maximum number of rows to return |
+     | per_page (max 10,000)  | size (max 1,000)     |  maximum number of rows to return on each request |
      | page       | after     |  page through large result sets |
      | subent_cnts|           |  whether the query results should include the total counts of unique subentities|
      | mtchd_subent_only|     | whether a query should return all related subentities or just those that match query criteria.|
 
+   + As another not-exactly-an-oddity, the API's sort on patent_id, a string field, gets funky when mixing
+patent ids above and below 10,000,000 (the ones 10M and above come first).   The same thing happens with
+other patent types, like reissue, when the ids have different string lengths.  See the code block at 
+the bottom of the [understanding the api](understanding-the-api.html#unexpected-results) vignette.
+
+   + These oddities are not specific to the new version of the API, but are due to the
+source files that make up the patentsview database.  I opened these issues as API bug
+PVS-1342 "Underlying data issues", with slighly more diplomatic wording.
+     * One of the weirdest things is that there are approximately 8000 withdrawn patents 
+in the patentsview database.  The source of the database is the [bulk xml files](https://bulkdata.uspto.gov/) the US Patent Office releases weekly.  The problem is that sometimes patents are withdrawn after appearing in a bulk xml file but they are kept 
+in the patentsview database alongside non withdrawn patents.  How weird is that?  Here is the Patent Office's [withdrawn patent list](http://www.uspto.gov/patents-application-process/patent-search/withdrawn-patent-numbers), which is updated weekly.   
+     * An equally strange situation is the approximately 300 non-withdrawn patents that, for whatever reason, did not appear in the bulk xml file for the week they were issued.  They are granted patents that are not in the patentsview database.
+      * Plant patents and reissued patents do not have current CPC assignments where appropriate.  The problem is that the bulk Cooperative Patent Classification file for granted patents, produced the USPTO quarterly, only contains assignments for utility patents.  I didn't
+check but am assuming the USPTO's bulk CPC file for applications only contains current
+CPCs for utility patents.
+
+        The patentsview database does have cpc_at_issue fields for these patents but they only have cpc_current fields for utility patents.  E.g., thousands of plant patents have A01H 5/02 as one of their current CPCs in
+[ppubs](https://ppubs.uspto.gov/pubwebapp/external.html?db=USPAT&type=queryString&q=PP$.pn.%20AND%20A01H5/02.cpc.) yet none have it in the patentsview database.
+      * There is a similar problem with USPCs. The US Patent stopped assigning them to 
+utility patent in 2015, in favor of CPCs.  They are still used, however, on plant 
+patents, yet the US Patent office stopped producing a bulk file of USPCs in 2018. 
+Plant patents do have their uspc_at_issue fields set in the patentsview database, but 
+the API does not have a uspc_current field.
+
+        The lack of current CPCs and USPCs on plant patents means your classification searches
+aren't being preformed on the same version of the corresponding classification system.
+Here's a page showing how often the [CPC changes](https://www.cooperativepatentclassification.org/cpcSchemeAndDefinitions).
+Here's a page that shows that [USPC change orders](https://www.uspto.gov/patents/search/understanding-patent-classifications/classification-orders) 
+stopped in 2013.  If you are doing classification searches on plant patents,
+you may want to use [ppubs](https://ppubs.uspto.gov/pubwebapp/) or some other system.
+
 ## Open API Bugs
 
-Weirdly, you can only view bugs you've submitted.  I'm assuming there are other open bugs.
-
-PVS-1147 <a name="case-dependent">	
-Results are case dependent now when using an implied or explicit equals
-
-PVS-1125	
-Not all the fields in the OpenAPI object can be requested
+Weirdly, you can only view bugs you've submitted.  Based on the digits in the reference number, I'm assuming 
+there are other open bugs.
 
 PVS-1109 <a name="otherreference">  
 The otherreference endpoint rejects the default [Swagger UI](https://search.patentsview.org/swagger-ui/) parameters (throws a 400 Bad Request Error if
@@ -99,10 +127,22 @@ either reference_sequence or reference_text is requested) and returns no data wh
 patent_id is requested.  The OpenAPI object says the returned object is other_references which 
 is another exception to the singular endpoint/plural return pattern[^6].
 
+PVS-1125	
+Not all the fields in the OpenAPI object can be requested
+
+PVS-1147 <a name="case-dependent">	
+Results are case dependent now when using an implied or explicit equals
+
 PVS-1155  
 Documentation inconsistencies  
 The endpoint is listed as /api/v1/attorney/, it should be /api/v1/patent/attorney for the GET/POST and /api/v1/patent/attorney/{attorney_id}/ for the GET with a url parameter
 The beta endpoints say they are only GETs. The Swagger UI page and OpenAPI object say they accept posts too, which do work.
+
+PVS-1181  
+Improvement Suggestion  
+There isn't a data dictionary for the API like there is for the bulk download files.
+A specific question would be what is the difference between patent_earliest_application_date and application.filing_date returned by the new patent endpoint. 
+Other questions would be what do the values of the assignees.assignee_type field represent, are they all integers and if so should the field be received as an integer rather than a string?
 
 PVS-1218	
 openapi.json errors
@@ -113,15 +153,16 @@ openapi.json errors
 
 * Most of the document_numbers are integers but from publication/rel_app_text it's a string as is citation_document_number from patent/us_application_citation
 
-PVS-1306
+PVS-1306  
 The API accepts invalid fields  
 The API accepts invalid fields that start out looking like valid fields when it should throw an error. Ex f: is["patent_iddddddddddddd", "patent_dateagogo"] and q: is {"patent_idd":"10000000"} with this result: { "error": false, "count": 0, "total_hits": 0, "patents": [] }
 
-PVS-1181
-Improvement Suggestion  
-There isn't a data dictionary for the API like there is for the bulk download files.
-A specific question would be what is the difference between patent_earliest_application_date and application.filing_date returned by the new patent endpoint. 
-Other questions would be what do the values of the assignees.assignee_type field represent, are they all integers and if so should the field be received as an integer rather than a string?
+PVS-1342  
+Underlying data issues  
+There are ~300 issued patents are missing from the database, ~8000 withdrawn patents are present
+in the database, and plant patents and reissued patents don't have current CPC assigments when
+applicable.  I didn't check but am assuming the bulk CPC file for applications and the 
+publication endpoint have the same issue. (There's more detail above as the last API oddity)
 
 ## State of the R Package
 
@@ -147,7 +188,9 @@ print(unique(fieldsdf[grep("/", fieldsdf$endpoint), "endpoint"]), row.names = FA
 they passed additional arguments (...) to search_pv().  Previously if they passed config = httr::timeout(40)
 they'd now pass timeout = 40 (name-value pairs of valid curl options, as found in curl::curl_options())
 
-* Now that the R package is using httr2, users can make use of its last_request() method to see what was sent to the API.  This could be useful when trying to fix an invalid request.  Also fun would be seeing the raw API response.
+* Now that the R package is using httr2, users can make use of its last_request() method to see what was
+sent to the API.  This could be useful when trying to fix an invalid request.  Also fun, or useful when
+reporting a bug, would be seeing the raw API response.
 ```
 httr2::last_request()
 httr2::last_response()
@@ -166,7 +209,7 @@ version of the R package can be installed via
 
   + On the new [implementation of paging](api-changes.html#a-note-on-paging) and the
 [PR discussion](https://github.com/ropensci/patentsview/pull/29#discussion_r1059153136) on paging with more than a primary sort.
-This added a dependency to data.table.
+**This added a dependency to data.table.**  There is also a [new vignette](api-paging.html) on the new implementation of paging
 
   + The patent/otherreference endpoint isn't currently working (reported as a [bug](#otherreference) above).
 It is included in the return of get_endpoints() and has only a negative test case that will
@@ -197,17 +240,27 @@ bugs are fixed.  We may need to retain some of the hard-coding, see the comments
   + <a name="improvements"> Possible Package Improvements
 
     * The version number ought to be bumped to 1.0.0 since there are breaking API changes (singular endpoints and the addition of an API key).  validate-args.R has some version
-specific code that may need modifying.
-    * Result set size seems unbounded now.  Should we warn if a query would return more than 100,000 rows with all_pages = TRUE?
+specific code that may need modifying. A draft of a release is [here](https://github.com/mustberuss/patentsview/releases).
+    * Result set size seems unbounded now.  Should we warn if a query would return more than 100,000 rows with all_pages = TRUE?  Or maybe add a max_rows to search_pv()?
     * Have get_fields() and search_pv() throw a specialized error if a plural endpoint is passed
     * Add an issue template that warns users not to share their API key
     * Add a contributing.md or something that explains how to build everything, something like
 [Findings/Contributor 101](#findingscontributor-101) below
     * Navigation on the vignettes could be better,  [understanding-the-api](understanding-the-api.html) isn't a link in the navigation yet,
-neither is the possible [tech note](patentsview-breaking-change.html)
-    * API attribute changes page and per_page to be explained somewhere.
+neither is the possible [tech note](patentsview-breaking-change.html) or the new
+vignette on [the new implementation of paging](api-paging.html)
+    * API attribute changes to page and per_page should be explained somewhere.
+    * Not sure if there should be a monster comment in search_pv.R trying to explain 
+the new way of paging.
     * httr2 improvements
-       + Can the throttled test detect output to stdout etc?  We used to expect_message "The API's requests per minute limit has been reached." Now "Waiting 45s for retry backoff" appears but doesn't satisfy expect_message().  Currently using system.time()
+       + Currently requests are set to be retried once ```httr2::req_retry(max_tries = 2)```  Maybe set it
+to something higher?  429 errors can occur if the user runs more than a single program at a time, like half
+rendering while devtools::test() is running or running anything locally while an action is running in your 
+repo because of a push.   Errors did not occur when the retries were recursive, whether that was intended or not!
+       + Can the throttled test detect output to stdout etc?  We used to expect_message "The API's requests
+per minute limit has been reached." Now "Waiting 45s for retry backoff" appears but doesn't satisfy
+expect_message().  Currently it's using system.time() to assert that 50 transactions took over 60 seconds,
+implying that throttlilng occurred.
 
 
 ## Worth Monitoring
@@ -235,7 +288,7 @@ or Community -> Support using the nav on [patentsview.org](httsp://patentsview.o
 
   + Now all the endpoints are documented on a [single page](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints).
 The [query language]( https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#api-query-language) is also on that same page.
-Originally there was a separate page for each endpoint.
+Originally there was a separate page for the query language and each endpoint had its own page.
 
   + The patentsview forum isn't terribly active but it's worth keeping an eye on
 https://patentsview.org/forum
@@ -277,16 +330,16 @@ produce fieldsdf.csv and fieldsdf.rda
 <br />
 <br />
    + build reference pages locally   
-If you make changes to method documentation, run 
-      * devtools::document() and
-      * pkgdown::build_reference()
-<br />
-<br />
+    If you make changes to method documentation, run 
+    ```
+    devtools::document()
+    pkgdown::build_reference()
+    ```
    + see README.Rmd changes locally
-      * knitr::knit("README.Rmd", "README.md")
-      * pkgdown::build_home()
-<br />
-<br />
+    ```
+    knitr::knit("README.Rmd", "README.md")
+    pkgdown::build_home()
+    ```
 * Remotely
 
   + pkgdown remotely   
@@ -336,7 +389,7 @@ but the build will silently fail on r-universe.  Don't ask how I know that.
 
    + Should we add a row_limit or something?  We'd page our way and stop when the row_limit is met.  For someone wanting more than a 1000 rows but not necessarily all the rows, especially since
 there isn't the 100,000 row limitation now.  The API's ```after``` is now exposed 
-in search_pv() so users could do their own paging.
+in search_pv() so users could do their own paging. See the new [paging vignette](api-paging.html)
 
 [^1]: Observation sent to the API team.
 [^2]: Observation sent to the API team.
