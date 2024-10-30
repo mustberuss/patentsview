@@ -1,0 +1,148 @@
+---
+title: "API Paging"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{API Paging}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+  Paging changed in the new version of the Patentsview API.  This vignette tries to explain a
+subtle gotcha that the R package handles for you and to show how to do your own paging.  Or
+it's trying to make the case for adding a max_rows parameter to search_pv()!
+
+  The R package lets you make a single request of up to 1000 rows or to retrieve all rows,
+with nothing in between, unless you do your own paging.  This might be important if you
+want to retrieve a few thousand utility patents without retrieving all 8 million of them.
+If you do your own paging, you'll need to be careful when choosing your sort field, as
+shown in Example 2.
+
+## Example 1
+
+Here we'll retrieve 5000 utility patents by paging.
+
+```{r}
+library(patentsview)
+
+# Lets get 5000 utility patents, 1000 at a time (the API's maximum rows per request)
+requested_rows <- 1000
+sort <- c("patent_id" = "asc")
+query <- qry_funs$eq("patent_type" = "utility")
+fields <- c("patent_id", "patent_date", "patent_title")
+
+# The "after" parameter is explained a bit lower.  It's an Elasticsearch thing,
+# which is the attrbute the new version of the API uses to page.  For now, just be 
+# thankful that the R package handles this for you when you set all_pages = TRUE
+after <- NULL
+
+tmp <- lapply(seq_len(5), function(n) {
+  print(paste("page", n, "after is", ifelse(is.null(after),"NULL",after)))
+  page_n <- search_pv(query, fields = fields, sort = sort, 
+    all_pages = FALSE, size = requested_rows, after = after)
+   s <- names(sort)
+   index <- nrow(page_n$data[[1]])
+   after <<- page_n$data[[1]][[s]][[index]]
+   page_n$data
+})
+
+utility_patents <- as.data.frame(do.call(rbind, lapply(tmp, as.data.frame)))
+str(utility_patents)
+
+```
+## Example 2
+
+Here we will execute a query two different ways, the first having the R package do
+the paging, the second will be our misguided attempt to do the paging ourselves.
+
+uspto says @PD>=19760101<=19760131 is 6003 patents   
+pv says 5352
+
+```{r}
+
+fields <- c("patent_id", "patent_date", "patent_title")
+sort <- c("patent_date" = "asc")
+query <- qry_funs$in_range(patent_date=c("1976-01-01", "1976-01-31"))
+query
+#> {"_and":[{"_gte":{"patent_date":"1976-01-01"}},{"_lte":{"patent_date":"1976-01-31"}}]}
+
+r_pkg <- search_pv(query, sort = sort, fields = fields, all_pages = TRUE)
+
+# note the number of rows returned
+r_pkg$query_results$total_hits
+
+```
+
+Now we'll try to do our own paging but as you might notice, we'll run into trouble.
+
+```{r}
+
+library(patentsview)
+
+after <- NULL
+data <- NULL
+count <- 0
+requested_rows <- 1000  # API's maximum rows per request
+fields <- c("patent_id", "patent_date", "patent_title")
+sort <- c("patent_date" = "asc")
+query <- qry_funs$in_range(patent_date=c("1976-01-01", "1976-01-31"))
+query
+
+# We'll continue to make requests until we get back an empty or partial
+# response from the API
+n <- 1
+
+repeat {
+  print(paste("page", n, "after is", ifelse(is.null(after), "NULL", after)))
+
+  subsequent <- search_pv(query, sort = sort, all_pages = FALSE,
+    fields = fields, size = requested_rows, after = after)
+
+  # See if we got back an empty patents   
+  if(length(subsequent$data[[1]]) > 0) {
+    returned_rows <- length(subsequent$data[[1]][[1]])
+  } else {
+    returned_rows <- 0
+  }
+
+  n <- n + 1
+  count <- count + returned_rows
+
+  # We're done if we got an empty or partial reply from the API
+  if(returned_rows < requested_rows) {
+     break
+  }
+
+  # Now to page we need to set the "after" attribute to where the
+  # current results ended.  Its value is the last/first
+  # row's [[sort field]].  (It would need to be an array 
+  # of values if there are multiple sort fields)
+  s <- names(sort)[[1]]
+  if (sort[[1]][[1]] == "asc") {
+    index <- nrow(subsequent$data[[1]])
+  } else {
+    index <- 1
+  }
+
+  after <- subsequent$data[[1]][[s]][[index]]
+
+}
+
+print(paste("count is", count))
+
+```
+
+Here we ran into trouble since we chose patent_date as the sort field which
+isn't unique in our result set as patent_id is in Example 1.  The R package
+uses an appropriate primary key (```get_ok_pk(endpoint)```) when requesting
+paged data (```all_pages = TRUE```) from an endpoint.  After all the pages
+have been retrieved, the R package sorts the data as the user requested.
+(This sorting methodology lifted from the [Patentsview python wrapper](https://github.com/PatentsView/PatentsView-APIWrapper)
