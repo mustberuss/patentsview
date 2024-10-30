@@ -8,7 +8,7 @@ validate_endpoint <- function(endpoint) {
 }
 
 #' @noRd
-validate_args <- function(api_key, fields, endpoint, method, 
+validate_args <- function(api_key, fields, endpoint, method,
                           sort, after, size, all_pages) {
   asrt(
     !identical(api_key, ""),
@@ -52,8 +52,8 @@ validate_args <- function(api_key, fields, endpoint, method,
   }
 
   asrt(
-    any(after == "", !all_pages),
-    "after cannot be set when all_pages = TRUE"
+    any(is.null(after), !all_pages),
+    "'after' cannot be set when all_pages = TRUE"
   )
 }
 

@@ -12,9 +12,9 @@ tojson_2 <- function(x, ...) {
 
 #' @noRd
 to_arglist <- function(fields, size, sort, after) {
-  opts = list(size = size)
-  if(after != "") {
-     opts$after = after
+  opts <- list(size = size)
+  if (!is.null(after)) {
+    opts$after <- after
   }
 
   list(
@@ -159,13 +159,13 @@ get_default_sort <- function(endpoint) {
 #' @param mtchd_subent_only `r lifecycle::badge("deprecated")` This is always
 #' FALSE in the new version of the API as non-matched subentities
 #' will always be returned.
-#' @param page `r lifecycle::badge("deprecated")` The new version of the API does not use 
+#' @param page `r lifecycle::badge("deprecated")` The new version of the API does not use
 #' \code{page} as a parameter for paging, it uses \code{after}.
 #' @param per_page `r lifecycle::badge("deprecated")` The API now uses \code{size}
 #' @param size The number of records that should be returned per page. This
 #'  value can be as high as 1,000 (e.g., \code{size = 1000}).
 #' @param after Exposes the API's paging parameter for users who want to implement their own
-#' custom paging. It cannot be set when \code{all_pages = TRUE} as the R package manipulates it 
+#' custom paging. It cannot be set when \code{all_pages = TRUE} as the R package manipulates it
 #' for users automatically.
 #' @param all_pages Do you want to download all possible pages of output? If
 #'  \code{all_pages = TRUE}, the value of \code{size} is ignored.
@@ -179,7 +179,7 @@ get_default_sort <- function(endpoint) {
 #'  Possible values include "GET" or "POST". Use the POST method when
 #'  your query is very long (say, over 2,000 characters in length).
 #' @param error_browser `r lifecycle::badge("deprecated")`
-#' @param api_key API key, it defaults to Sys.getenv("PATENTSVIEW_API_KEY"). Request a key 
+#' @param api_key API key, it defaults to Sys.getenv("PATENTSVIEW_API_KEY"). Request a key
 #' \href{https://patentsview.org/apis/keyrequest}{here}.
 #' @param ... Curl options passed along to httr2's \code{\link[httr2]{req_options}}
 #'  when we do GETs or POSTs.
@@ -251,7 +251,7 @@ search_pv <- function(query,
                       page,
                       per_page,
                       size = 1000,
-                      after = "",
+                      after = NULL,
                       all_pages = FALSE,
                       sort = NULL,
                       method = "GET",
@@ -391,7 +391,7 @@ retrieve_linked_data <- function(url,
     }
 
     if (!is.null(url_peices$query$o)) {
-       params$opts = jsonlite::fromJSON(sub(".*o=([^&]*).*", "\\1", url))
+      params$opts <- jsonlite::fromJSON(sub(".*o=([^&]*).*", "\\1", url))
     }
 
     query <- if (!is.null(url_peices$query$q)) sub(".*q=([^&]*).*", "\\1", url) else ""

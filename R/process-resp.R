@@ -29,8 +29,6 @@ get_query_results <- function(prsd_resp) {
 
 #' @noRd
 process_resp <- function(resp) {
-  # prsd_resp <- resp |> httr2::resp_body_json()
-
   prsd_resp <- parse_resp(resp)
   request <- get_request(resp)
   data <- get_data(prsd_resp)
