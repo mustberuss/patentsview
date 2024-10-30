@@ -45,7 +45,6 @@ pat_res$request
 #> 
 #> Method: POST
 #> URL: https://search.patentsview.org/api/v1/patent/
-#> Body: {"q":{"_eq":{"patent_id":"10568228"}},"f":["application"],"o":{"size":1000}}
 ```
 
 The results should be the same if we used ```fields=get_fields("patent", groups=c("application"))```.  The difference
@@ -76,7 +75,6 @@ pat_res$request
 #> 
 #> Method: POST
 #> URL: https://search.patentsview.org/api/v1/patent/
-#> Body: {"q":{"_eq":{"patent_id":"10568228"}},"f":["application.application_id","application.application_type","application.filing_date","application.filing_type","application.rule_47_flag","application.series_code"],"o":{"size":1000}}
 ```
 ## Unexpected Results
 
@@ -125,7 +123,7 @@ dl <- unnest_pv_data(pat_res$data)
 display_inventors <- 
    dl$inventors %>%
    filter(grepl("^(George|Thomas)", inventor_name_first ) | grepl("^(Washington|Jefferson)", inventor_name_last))  %>%
-   arrange(nchar(patent_id), patent_id)  # string sort
+   arrange(nchar(patent_id), patent_id)  # numeric sort on a string field
 
 display_inventors
 #>    patent_id inventor_name_first inventor_name_last
@@ -222,7 +220,7 @@ dl$patents[[1]][[1]]
 display_inventors <- 
    dl$inventors %>%
    filter(grepl("^(George|Thomas)", inventor_name_first ) | grepl("^(Washington|Jefferson)", inventor_name_last))  %>%
-   arrange(nchar(patent_id), patent_id)  # string sort
+   arrange(nchar(patent_id), patent_id)  # numeric sort on a string field
 
 
 display_inventors
@@ -238,11 +236,11 @@ display_inventors
 #> 9    7144505              George         Washington
 #> 10  10568228      George Elliott         Washington
 ```
-## Worth Noting
+## Subtle Exceptions
 
 It's not directly mentioned, but toward the top of the notebook, the publication/rel_app_text endpoint appears in the
 special_keys hash. Its entity is a rel_app_text_publications.  There's a similar patent/rel_app_text
-endpoint whose entity is rel_app_texts.  Generally, the entity is the plural form of the
+endpoint whose entity is rel_app_texts.  Generally the entity is the plural form of the
 singular endpoint, special_keys lists the exceptions to that rule, as the code shows.
 
 ## Acknowledgment

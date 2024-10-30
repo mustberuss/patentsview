@@ -149,6 +149,7 @@ recently renamed PatentSearch API, as announced <a href="https://search.patentsv
 <div class="section level2">
 <h2 id="on-the-plus-side">On the Plus Side<a class="anchor" aria-label="anchor" href="#on-the-plus-side"></a>
 </h2>
+<p>Here are the positive API changes:</p>
 <ul>
 <li><p>All fields can be queried now.</p></li>
 <li><p>The 100,000 row result set size limit seems to be gone. Might be
@@ -219,7 +220,7 @@ links</a> use a colon instead of having two URL parameters</p>
 </ul>
 <p>An <a href="api-changes.html#an-api-key-is-required">API key</a> is
 now required so, intentionally, these URLs aren’t clickable since no API
-key would be sent, resulting in a 403, Forbidden response.</p>
+key would be sent, resulting in a 403 Forbidden response.</p>
 </li>
 <li>
 <p>Field inconsistencies</p>
@@ -284,9 +285,9 @@ in its o: (options) parameter via search_pv()</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td>per_page</td>
-<td>size</td>
-<td>maximum number of rows to return</td>
+<td>per_page (max 10,000)</td>
+<td>size (max 1,000)</td>
+<td>maximum number of rows to return on each request</td>
 </tr>
 <tr class="even">
 <td>page</td>
@@ -308,6 +309,61 @@ that match query criteria.</td>
 </tbody>
 </table>
 </li>
+<li><p>As another not-exactly-an-oddity, the API’s sort on patent_id, a
+string field, gets funky when mixing patent ids above and below
+10,000,000 (the ones 10M and above come first). The same thing happens
+with other patent types, like reissue, when the ids have different
+string lengths. See the code block at the bottom of the <a href="understanding-the-api.html#unexpected-results">understanding the
+api</a> vignette.</p></li>
+<li>
+<p>These oddities are not specific to the new version of the API,
+but are due to the source files that make up the patentsview database. I
+opened these issues as API bug PVS-1342 “Underlying data issues”, with
+slighly more diplomatic wording.</p>
+<ul>
+<li><p>One of the weirdest things is that there are approximately 8000
+withdrawn patents in the patentsview database. The source of the
+database is the <a href="https://bulkdata.uspto.gov/" class="external-link">bulk xml files</a>
+the US Patent Office releases weekly. The problem is that sometimes
+patents are withdrawn after appearing in a bulk xml file but they are
+kept in the patentsview database alongside non withdrawn patents. How
+weird is that? Here is the Patent Office’s <a href="http://www.uspto.gov/patents-application-process/patent-search/withdrawn-patent-numbers" class="external-link">withdrawn
+patent list</a>, which is updated weekly.<br></p></li>
+<li><p>An equally strange situation is the approximately 300
+non-withdrawn patents that, for whatever reason, did not appear in the
+bulk xml file for the week they were issued. They are granted patents
+that are not in the patentsview database.</p></li>
+<li>
+<p>Plant patents and reissued patents do not have current CPC
+assignments where appropriate. The problem is that the bulk Cooperative
+Patent Classification file for granted patents, produced the USPTO
+quarterly, only contains assignments for utility patents. I didn’t check
+but am assuming the USPTO’s bulk CPC file for applications only contains
+current CPCs for utility patents.</p>
+<p>The patentsview database does have cpc_at_issue fields for these
+patents but they only have cpc_current fields for utility patents. E.g.,
+thousands of plant patents have A01H 5/02 as one of their current CPCs
+in <a href="https://ppubs.uspto.gov/pubwebapp/external.html?db=USPAT&amp;type=queryString&amp;q=PP%24.pn.%20AND%20A01H5/02.cpc." class="external-link">ppubs</a>
+yet none have it in the patentsview database.</p>
+</li>
+<li>
+<p>There is a similar problem with USPCs. The US Patent stopped
+assigning them to utility patent in 2015, in favor of CPCs. They are
+still used, however, on plant patents, yet the US Patent office stopped
+producing a bulk file of USPCs in 2018. Plant patents do have their
+uspc_at_issue fields set in the patentsview database, but the API does
+not have a uspc_current field.</p>
+<p>The lack of current CPCs and USPCs on plant patents means your
+classification searches aren’t being preformed on the same version of
+the corresponding classification system. Here’s a page showing how often
+the <a href="https://www.cooperativepatentclassification.org/cpcSchemeAndDefinitions" class="external-link">CPC
+changes</a>. Here’s a page that shows that <a href="https://www.uspto.gov/patents/search/understanding-patent-classifications/classification-orders" class="external-link">USPC
+change orders</a> stopped in 2013. If you are doing classification
+searches on plant patents, you may want to use <a href="https://ppubs.uspto.gov/pubwebapp/" class="external-link">ppubs</a> or some other
+system.</p>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -315,13 +371,8 @@ that match query criteria.</td>
 <div class="section level2">
 <h2 id="open-api-bugs">Open API Bugs<a class="anchor" aria-label="anchor" href="#open-api-bugs"></a>
 </h2>
-<p>Weirdly, you can only view bugs you’ve submitted. I’m assuming there
-are other open bugs.</p>
-<p>PVS-1147 <a name="case-dependent"><br>
-Results are case dependent now when using an implied or explicit
-equals</a></p>
-<p>PVS-1125<br>
-Not all the fields in the OpenAPI object can be requested</p>
+<p>Weirdly, you can only view bugs you’ve submitted. Based on the digits
+in the reference number, I’m assuming there are other open bugs.</p>
 <p>PVS-1109 <a name="otherreference"><br>
 The otherreference endpoint rejects the default </a><a href="https://search.patentsview.org/swagger-ui/" class="external-link">Swagger UI</a>
 parameters (throws a 400 Bad Request Error if either reference_sequence
@@ -329,6 +380,11 @@ or reference_text is requested) and returns no data when only patent_id
 is requested. The OpenAPI object says the returned object is
 other_references which is another exception to the singular
 endpoint/plural return pattern<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;To be fixed by the API team&lt;/p&gt;"><sup>7</sup></a>.</p>
+<p>PVS-1125<br>
+Not all the fields in the OpenAPI object can be requested</p>
+<p>PVS-1147 <a name="case-dependent"><br>
+Results are case dependent now when using an implied or explicit
+equals</a></p>
 <p>PVS-1155<br>
 Documentation inconsistencies<br>
 The endpoint is listed as /api/v1/attorney/, it should be
@@ -336,6 +392,15 @@ The endpoint is listed as /api/v1/attorney/, it should be
 /api/v1/patent/attorney/{attorney_id}/ for the GET with a url parameter
 The beta endpoints say they are only GETs. The Swagger UI page and
 OpenAPI object say they accept posts too, which do work.</p>
+<p>PVS-1181<br>
+Improvement Suggestion<br>
+There isn’t a data dictionary for the API like there is for the bulk
+download files. A specific question would be what is the difference
+between patent_earliest_application_date and application.filing_date
+returned by the new patent endpoint. Other questions would be what do
+the values of the assignees.assignee_type field represent, are they all
+integers and if so should the field be received as an integer rather
+than a string?</p>
 <p>PVS-1218<br>
 openapi.json errors</p>
 <ul>
@@ -347,20 +412,21 @@ the other is a string (line 8004)</p></li>
 publication/rel_app_text it’s a string as is citation_document_number
 from patent/us_application_citation</p></li>
 </ul>
-<p>PVS-1306 The API accepts invalid fields<br>
+<p>PVS-1306<br>
+The API accepts invalid fields<br>
 The API accepts invalid fields that start out looking like valid fields
 when it should throw an error. Ex f: is[“patent_iddddddddddddd”,
 “patent_dateagogo”] and q: is {“patent_idd”:“10000000”} with this
 result: { “error”: false, “count”: 0, “total_hits”: 0, “patents”: []
 }</p>
-<p>PVS-1181 Improvement Suggestion<br>
-There isn’t a data dictionary for the API like there is for the bulk
-download files. A specific question would be what is the difference
-between patent_earliest_application_date and application.filing_date
-returned by the new patent endpoint. Other questions would be what do
-the values of the assignees.assignee_type field represent, are they all
-integers and if so should the field be received as an integer rather
-than a string?</p>
+<p>PVS-1342<br>
+Underlying data issues<br>
+There are ~300 issued patents are missing from the database, ~8000
+withdrawn patents are present in the database, and plant patents and
+reissued patents don’t have current CPC assigments when applicable. I
+didn’t check but am assuming the bulk CPC file for applications and the
+publication endpoint have the same issue. (There’s more detail above as
+the last API oddity)</p>
 </div>
 <div class="section level2">
 <h2 id="state-of-the-r-package">State of the R Package<a class="anchor" aria-label="anchor" href="#state-of-the-r-package"></a>
@@ -402,8 +468,8 @@ they’d now pass timeout = 40 (name-value pairs of valid curl options, as
 found in curl::curl_options())</p></li>
 <li><p>Now that the R package is using httr2, users can make use of its
 last_request() method to see what was sent to the API. This could be
-useful when trying to fix an invalid request. Also fun would be seeing
-the raw API response.</p></li>
+useful when trying to fix an invalid request. Also fun, or useful when
+reporting a bug, would be seeing the raw API response.</p></li>
 </ul>
 <pre><code><span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_request</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_response</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -420,8 +486,9 @@ vignette</a></p></li>
 version of the R package can be installed via<br><code>install.packages('patentsview', repos = c('https://mustberuss.r-universe.dev'))</code></p></li>
 <li><p>On the new <a href="api-changes.html#a-note-on-paging">implementation of paging</a>
 and the <a href="https://github.com/ropensci/patentsview/pull/29#discussion_r1059153136" class="external-link">PR
-discussion</a> on paging with more than a primary sort. This added a
-dependency to data.table.</p></li>
+discussion</a> on paging with more than a primary sort. <strong>This
+added a dependency to data.table.</strong> There is also a <a href="api-paging.html">new vignette</a> on the new implementation of
+paging</p></li>
 <li><p>The patent/otherreference endpoint isn’t currently working
 (reported as a <a href="#otherreference">bug</a> above). It is included
 in the return of get_endpoints() and has only a negative test case that
@@ -460,9 +527,10 @@ the hard-coding, see the comments in data-raw/fieldsdf.R</p></li>
 <li>The version number ought to be bumped to 1.0.0 since there are
 breaking API changes (singular endpoints and the addition of an API
 key). validate-args.R has some version specific code that may need
-modifying.</li>
+modifying. A draft of a release is <a href="https://github.com/mustberuss/patentsview/releases" class="external-link">here</a>.</li>
 <li>Result set size seems unbounded now. Should we warn if a query would
-return more than 100,000 rows with all_pages = TRUE?</li>
+return more than 100,000 rows with all_pages = TRUE? Or maybe add a
+max_rows to search_pv()?</li>
 <li>Have get_fields() and search_pv() throw a specialized error if a
 plural endpoint is passed</li>
 <li>Add an issue template that warns users not to share their API
@@ -470,16 +538,29 @@ key</li>
 <li>Add a contributing.md or something that explains how to build
 everything, something like <a href="#findingscontributor-101">Findings/Contributor 101</a> below</li>
 <li>Navigation on the vignettes could be better, <a href="understanding-the-api.html">understanding-the-api</a> isn’t a link
-in the navigation yet, neither is the possible <a href="patentsview-breaking-change.html">tech note</a>
+in the navigation yet, neither is the possible <a href="patentsview-breaking-change.html">tech note</a> or the new
+vignette on <a href="api-paging.html">the new implementation of
+paging</a>
 </li>
-<li>API attribute changes page and per_page to be explained
+<li>API attribute changes to page and per_page should be explained
 somewhere.</li>
+<li>Not sure if there should be a monster comment in search_pv.R trying
+to explain the new way of paging.</li>
 <li>httr2 improvements
 <ul>
+<li>Currently requests are set to be retried once
+<code>httr2::req_retry(max_tries = 2)</code> Maybe set it to something
+higher? 429 errors can occur if the user runs more than a single program
+at a time, like half rendering while devtools::test() is running or
+running anything locally while an action is running in your repo because
+of a push. Errors did not occur when the retries were recursive, whether
+that was intended or not!</li>
 <li>Can the throttled test detect output to stdout etc? We used to
 expect_message “The API’s requests per minute limit has been reached.”
 Now “Waiting 45s for retry backoff” appears but doesn’t satisfy
-expect_message(). Currently using system.time()</li>
+expect_message(). Currently it’s using system.time() to assert that 50
+transactions took over 60 seconds, implying that throttlilng
+occurred.</li>
 </ul>
 </li>
 </ul>
@@ -520,7 +601,7 @@ or Community -&gt; Support using the nav on <a href="httsp://patentsview.org">pa
 <li><p>Now all the endpoints are documented on a <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints" class="external-link">single
 page</a>. The <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#api-query-language" class="external-link">query
 language</a> is also on that same page. Originally there was a separate
-page for each endpoint.</p></li>
+page for the query language and each endpoint had its own page.</p></li>
 <li><p>The patentsview forum isn’t terribly active but it’s worth
 keeping an eye on <a href="https://patentsview.org/forum" class="external-link uri">https://patentsview.org/forum</a></p></li>
 </ul>
@@ -572,24 +653,16 @@ which is a wrapper for</p>
 </li>
 </ul>
 </li>
-<li>
-<p>build reference pages locally<br>
-If you make changes to method documentation, run</p>
+<li><p>build reference pages locally<br>
+If you make changes to method documentation, run</p></li>
+</ul>
+<pre><code><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/document.html" class="external-link">document</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">pkgdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgdown.r-lib.org/reference/build_reference.html" class="external-link">build_reference</a></span><span class="op">(</span><span class="op">)</span></span></code></pre>
 <ul>
-<li>devtools::document() and</li>
-<li>pkgdown::build_reference() <br><br>
-</li>
+<li>see README.Rmd changes locally</li>
 </ul>
-</li>
-<li>
-<p>see README.Rmd changes locally</p>
-<ul>
-<li>knitr::knit(“README.Rmd”, “README.md”)</li>
-<li>pkgdown::build_home() <br><br>
-</li>
-</ul>
-</li>
-</ul>
+<pre><code><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/knit.html" class="external-link">knit</a></span><span class="op">(</span><span class="st">"README.Rmd"</span>, <span class="st">"README.md"</span><span class="op">)</span></span>
+<span><span class="fu">pkgdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgdown.r-lib.org/reference/build_home.html" class="external-link">build_home</a></span><span class="op">(</span><span class="op">)</span></span></code></pre>
 </li>
 <li>
 <p>Remotely</p>
@@ -659,7 +732,7 @@ skipped</p>
 stop when the row_limit is met. For someone wanting more than a 1000
 rows but not necessarily all the rows, especially since there isn’t the
 100,000 row limitation now. The API’s <code>after</code> is now exposed
-in search_pv() so users could do their own paging.</p></li>
+in search_pv() so users could do their own paging. See the new <a href="api-paging.html">paging vignette</a></p></li>
 </ul>
 </li>
 </ul>
