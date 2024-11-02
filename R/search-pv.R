@@ -87,7 +87,7 @@ one_request <- function(method, query, base_url, arg_list, api_key, ...) {
   resp <- req |>
     httr2::req_user_agent("https://github.com/ropensci/patentsview") |>
     httr2::req_options(...) |>
-    httr2::req_retry(max_tries = 2) |> # automatic 429 Retry-After
+    httr2::req_retry(max_tries = 20) |> # automatic 429 Retry-After
     httr2::req_headers("X-Api-Key" = api_key, .redact = "X-Api-Key") |>
     httr2::req_error(body = patentsview_error_body) |>
     httr2::req_perform()
