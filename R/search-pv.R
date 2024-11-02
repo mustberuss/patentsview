@@ -107,12 +107,7 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, ..
     # now to page we need set the "after" attribute to where we left off
     # we want the value of the primary sort field
     s <- names(arg_list$sort[[1]])[[1]]
-    if (arg_list$sort[[1]][[1]] == "asc") {
-      index <- nrow(x$data[[1]])
-    } else {
-      index <- 1
-    }
-
+    index <- nrow(x$data[[1]])
     arg_list$opts$after <<- x$data[[1]][[s]][[index]]
 
     x$data[[1]]
