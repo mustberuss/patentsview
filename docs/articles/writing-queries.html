@@ -201,7 +201,7 @@ you could write such a query:</p>
 <span>    <span class="fu">and</span><span class="op">(</span></span>
 <span>      <span class="fu">gte</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2007-03-01"</span><span class="op">)</span>,</span>
 <span>      <span class="fu">or</span><span class="op">(</span></span>
-<span>        <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"dog"</span><span class="op">)</span>,</span>
+<span>        <span class="fu">contains</span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"dog"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_all</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="st">"dog"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span>,</span>
 <span>      <span class="fu">or</span><span class="op">(</span></span>
@@ -233,11 +233,10 @@ methods 2 or 3. This is not the case for method 1, where you would have
 to rely on the API’s error messages for guidance if your query is
 invalid. <code><a href="../reference/search_pv.html">search_pv()</a></code> checks queries for the following:</p>
 <ul>
-<li>The fields included in your query are <em>queryable</em> for the
-endpoint (i.e., the field can be used in the user query). For example,
-it would make sure that <code>assignees.assignee_country</code> can be
-used in the query argument if you sent the above query to the patent
-endpoint.</li>
+<li>The fields included in your query are available at the endpoint
+being used. For example, it would make sure that
+<code>assignees.assignee_country</code> can be used in the query
+argument if you sent the above query to the patent endpoint.</li>
 <li>The fields in your query are compatible with the comparison
 operators you used. For example, it would confirm that the
 <code>text_all</code> operator was used with a field whose type was
@@ -268,7 +267,7 @@ of the query
 separate equals statements that got or’d together.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;One may note that using “value arrays” is supposedly
 supported by the API. For example, the API documentation gives the
 following query as an example of their use:
-&lt;code&gt;'{&quot;inventor_last_name&quot;:[&quot;Whitney&quot;,&quot;Hopper&quot;]}'&lt;/code&gt;. The problem
+&lt;code&gt;'{&quot;inventor_name_last&quot;:[&quot;Whitney&quot;,&quot;Hopper&quot;]}'&lt;/code&gt;. The problem
 with this is that the API is not consistent in its handling of value
 arrays. For many of the comparison operators, one cannot “or” together
 values like this using arrays. Thus, the DSL in &lt;code&gt;patentsview&lt;/code&gt;
@@ -307,7 +306,7 @@ only work with certain data types. For example, you can’t use the
 calls to the comparison operators. For example, we can require that the
 patent date is less than or equal to 2001-01-05 <em>and</em> the
 inventor’s last name is “Ihaka”
-(<code>query = with_qfuns(and(lte(patent_date = "2001-01-05"), eq(inventor_last_name = "Ihaka")))</code>).</li>
+(<code>query = with_qfuns(and(lte(patent_date = "2001-01-05"), eq(inventor_name_last = "Ihaka")))</code>).</li>
 <li>
 <strong>not function</strong> (<code>not</code>). This function
 negates a comparison. For example, we could search for patents that
@@ -365,11 +364,11 @@ it:</li>
 <span>  <span class="fu">or</span><span class="op">(</span></span>
 <span>    <span class="fu">and</span><span class="op">(</span></span>
 <span>      <span class="fu">eq</span><span class="op">(</span>inventors.inventor_name_last <span class="op">=</span> <span class="st">"Smith"</span><span class="op">)</span>,</span>
-<span>      <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"cotton gin"</span><span class="op">)</span></span>
+<span>      <span class="fu">contains</span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"cotton gin"</span><span class="op">)</span></span>
 <span>    <span class="op">)</span>,</span>
 <span>    <span class="fu">and</span><span class="op">(</span></span>
 <span>      <span class="fu">eq</span><span class="op">(</span>inventors.inventor_name_last <span class="op">=</span> <span class="st">"Turner"</span><span class="op">)</span>,</span>
-<span>      <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"COBOL"</span><span class="op">)</span></span>
+<span>      <span class="fu">contains</span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"COBOL"</span><span class="op">)</span></span>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>

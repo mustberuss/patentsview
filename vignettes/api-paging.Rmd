@@ -45,6 +45,7 @@ tmp <- lapply(seq_len(5), function(n) {
    s <- names(sort)
    index <- nrow(page_n$data[[1]])
    after <<- page_n$data[[1]][[s]][[index]]
+   page_n$data
 })
 #> [1] "page 1 after is NULL"
 #> [1] "page 2 after is 10001014"
@@ -155,4 +156,4 @@ isn't unique in our result set as patent_id is in Example 1.  The R package
 uses an appropriate primary key (```get_ok_pk(endpoint)```) when requesting
 paged data (```all_pages = TRUE```) from an endpoint.  After all the pages
 have been retrieved, the R package sorts the data as the user requested.
-(This sorting methology lifted from the [Patentsview python wrapper](https://github.com/PatentsView/PatentsView-APIWrapper)
+(This sorting methodology lifted from the [Patentsview python wrapper](https://github.com/PatentsView/PatentsView-APIWrapper)

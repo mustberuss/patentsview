@@ -179,6 +179,7 @@ shown in Example 2.</p>
 <span>   <span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">sort</span><span class="op">)</span></span>
 <span>   <span class="va">index</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">page_n</span><span class="op">$</span><span class="va">data</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span>   <span class="va">after</span> <span class="op">&lt;&lt;-</span> <span class="va">page_n</span><span class="op">$</span><span class="va">data</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="va">s</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="va">index</span><span class="op">]</span><span class="op">]</span></span>
+<span>   <span class="va">page_n</span><span class="op">$</span><span class="va">data</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "page 1 after is NULL"</span></span>
 <span><span class="co">#&gt; [1] "page 2 after is 10001014"</span></span>
@@ -285,7 +286,7 @@ package uses an appropriate primary key
 (<code>get_ok_pk(endpoint)</code>) when requesting paged data
 (<code>all_pages = TRUE</code>) from an endpoint. After all the pages
 have been retrieved, the R package sorts the data as the user requested.
-(This sorting methology lifted from the <a href="https://github.com/PatentsView/PatentsView-APIWrapper" class="external-link">Patentsview
+(This sorting methodology lifted from the <a href="https://github.com/PatentsView/PatentsView-APIWrapper" class="external-link">Patentsview
 python wrapper</a></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

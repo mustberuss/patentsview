@@ -196,7 +196,6 @@ total_hits, in the previous version of the API this was capped at
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"patent_type":"utility"}'</span>, all_pages <span class="op">=</span> <span class="cn">FALSE</span> <span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22patent_type%22%3A%22utility%22%7D&amp;f=&amp;s=&amp;o={\"size\":1000}"</span></span>
 <span><span class="co">#&gt; $data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -211,7 +210,8 @@ total_hits, in the previous version of the API this was capped at
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; total_hits = 8,044,869</span></span></code></pre></div>
 <ul>
-<li>Endpoint Changes
+<li>
+<p>Endpoint Changes</p>
 <ul>
 <li>nber_subcategories went away- it was an endpoint in the original
 version of the API</li>
@@ -220,6 +220,47 @@ entities are still plural for the most part.</li>
 <li>Now there are <a href="#endpoints">23 endpoints</a>, up from the
 original 7  </li>
 </ul>
+</li>
+<li>
+<p>Comparison of the old and new attributes that can be sent to the
+API in its o: (options) parameter via search_pv(). Note that the old
+parameters are now deprecated.</p>
+<table class="table">
+<colgroup>
+<col width="38%">
+<col width="35%">
+<col width="25%">
+</colgroup>
+<thead><tr class="header">
+<th>Original API</th>
+<th>New Version</th>
+<th>Purpose</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>per_page (max 10,000)</td>
+<td>size (max 1,000)</td>
+<td>maximum number of rows to return on each request</td>
+</tr>
+<tr class="even">
+<td>page</td>
+<td>after</td>
+<td>page through large result sets</td>
+</tr>
+<tr class="odd">
+<td>subent_cnts</td>
+<td></td>
+<td>whether the query results should include the total counts of unique
+subentities</td>
+</tr>
+<tr class="even">
+<td>mtchd_subent_only</td>
+<td></td>
+<td>whether a query should return all related subentities or just those
+that match query criteria.</td>
+</tr>
+</tbody>
+</table>
 </li>
 </ul>
 </div>
@@ -342,7 +383,6 @@ comes back from the R package remains unchanged.</p>
 </ul>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>   <span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"patent_id": "11530080"}'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22patent_id%22%3A%20%2211530080%22%7D&amp;f=&amp;s=&amp;o={\"size\":1000}"</span></span>
 <span>   <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span> <span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">query_results</span><span class="op">$</span><span class="va">total_hits</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 1</span></span></code></pre></div>
 </div>
@@ -462,7 +502,6 @@ HATEOAS links:</p>
 <span><span class="co">#&gt;  [9] "cpc_current.cpc_subclass_id" "cpc_current.cpc_type"</span></span>
 <span></span>
 <span>  <span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query</span>, fields<span class="op">=</span><span class="va">fields</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22patent_id%22%3A%20%2211530080%22%7D&amp;f=[\"patent_id\",\"cpc_current.cpc_class\",\"cpc_current.cpc_class_id\",\"cpc_current.cpc_group\",\"cpc_current.cpc_group_id\",\"cpc_current.cpc_section\",\"cpc_current.cpc_sequence\",\"cpc_current.cpc_subclass\",\"cpc_current.cpc_subclass_id\",\"cpc_current.cpc_type\"]&amp;s=&amp;o={\"size\":1000}"</span></span>
 <span></span>
 <span>  <span class="co"># As noted above, the CPC related fields aren't the same as they were in the</span></span>
 <span>  <span class="co"># original version of the API.  Also note that not all requested fields were</span></span>
@@ -492,7 +531,6 @@ documentation</a>.</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">pv_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/retrieve_linked_data.html">retrieve_linked_data</a></span><span class="op">(</span><span class="st">"https://search.patentsview.org/api/v1/cpc_group/G01S7:4865/"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/cpc_group/G01S7:4865/?q=&amp;f=&amp;s=&amp;o="</span></span>
 <span><span class="va">pv_data</span></span>
 <span><span class="co">#&gt; $data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame on cpc_groups level:</span></span>
@@ -512,7 +550,6 @@ documentation</a>.</p>
 <span><span class="co"># Here we'll use an example URL from the documentation</span></span>
 <span><span class="co"># Note that going to that link in a browser will result in a 403 Unauthorized, as no API key is sent.</span></span>
 <span><span class="fu"><a href="../reference/retrieve_linked_data.html">retrieve_linked_data</a></span><span class="op">(</span><span class="st">'https://search.patentsview.org/api/v1/patent/?q={"patent_id":"7861317"}'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22patent_id%22%3A%227861317%22%7D&amp;f=&amp;s=&amp;o="</span></span>
 <span><span class="co">#&gt; $data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -531,7 +568,6 @@ HATEOAS link, you’d use a slash instead of a colon.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"cpc_group_id": "A01B1/00"}'</span>, endpoint <span class="op">=</span> <span class="st">'cpc_group'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/cpc_group/?q=%7B%22cpc_group_id%22%3A%20%22A01B1%2F00%22%7D&amp;f=&amp;s=&amp;o={\"size\":1000}"</span></span>
 <span><span class="co">#&gt; $data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame on cpc_groups level:</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -553,7 +589,6 @@ the returned field name looses the _id of the requested field</p>
 <span>  <span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"patent_id":"10000000"}'</span>,</span>
 <span>    fields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"inventors.inventor_id"</span>, <span class="st">"assignees.assignee_id"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22patent_id%22%3A%2210000000%22%7D&amp;f=[\"inventors.inventor_id\",\"assignees.assignee_id\"]&amp;s=&amp;o={\"size\":1000}"</span></span>
 <span></span>
 <span>  <span class="co"># but note that the fields came back without the _id</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span><span class="op">$</span><span class="va">assignees</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">assignee</span><span class="op">)</span> <span class="co"># not $assignee_id as requested</span></span>
@@ -618,7 +653,6 @@ that no errors were thrown by the API:</p>
 <span><span class="va">query2</span> <span class="op">&lt;-</span> <span class="st">'{"_text_any":{"patent_title":"dog"}}'</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query1</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_contains%22%3A%7B%22patent_title%22%3A%22dog%22%7D%7D&amp;f=&amp;s=&amp;o={\"size\":1000}"</span></span>
 <span><span class="co">#&gt; $data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -634,7 +668,6 @@ that no errors were thrown by the API:</p>
 <span><span class="co">#&gt; total_hits = 3,652</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query2</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/patent/?q=%7B%22_text_any%22%3A%7B%22patent_title%22%3A%22dog%22%7D%7D&amp;f=&amp;s=&amp;o={\"size\":1000}"</span></span>
 <span><span class="co">#&gt; $data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -654,7 +687,6 @@ that no errors were thrown by the API:</p>
 <span><span class="va">query2</span> <span class="op">&lt;-</span> <span class="st">'{"_text_phrase":{"summary_text":"paper cup holder"}}'</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query1</span>, endpoint<span class="op">=</span><span class="st">"brf_sum_text"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/brf_sum_text/?q=%7B%22_contains%22%3A%7B%22summary_text%22%3A%22paper%20cup%20holder%22%7D%7D&amp;f=&amp;s=&amp;o={\"size\":1000}"</span></span>
 <span><span class="co">#&gt; $data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame on brf_sum_texts level:</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -667,7 +699,6 @@ that no errors were thrown by the API:</p>
 <span><span class="co">#&gt; total_hits = 0</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query2</span>, endpoint<span class="op">=</span><span class="st">"brf_sum_text"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/brf_sum_text/?q=%7B%22_text_phrase%22%3A%7B%22summary_text%22%3A%22paper%20cup%20holder%22%7D%7D&amp;f=&amp;s=&amp;o={\"size\":1000}"</span></span>
 <span><span class="co">#&gt; $data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame on brf_sum_texts level:</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -693,22 +724,18 @@ to be case sensitive.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"assignee_organization": "Johnson &amp; Johnson International"}'</span>, endpoint<span class="op">=</span><span class="st">"assignee"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/assignee/?q=%7B%22assignee_organization%22%3A%20%22Johnson%20%26%20Johnson%20International%22%7D&amp;f=&amp;s=&amp;o={\"size\":1000}"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span> <span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">query_results</span><span class="op">$</span><span class="va">total_hits</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 1</span></span>
 <span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"assignee_organization": "johnson &amp; Johnson International"}'</span>, endpoint<span class="op">=</span><span class="st">"assignee"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/assignee/?q=%7B%22assignee_organization%22%3A%20%22johnson%20%26%20Johnson%20International%22%7D&amp;f=&amp;s=&amp;o={\"size\":1000}"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span> <span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">query_results</span><span class="op">$</span><span class="va">total_hits</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0</span></span>
 <span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"_eq":{"assignee_organization": "Johnson &amp; Johnson International"}}'</span>, endpoint<span class="op">=</span><span class="st">"assignee"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/assignee/?q=%7B%22_eq%22%3A%7B%22assignee_organization%22%3A%20%22Johnson%20%26%20Johnson%20International%22%7D%7D&amp;f=&amp;s=&amp;o={\"size\":1000}"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span> <span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">query_results</span><span class="op">$</span><span class="va">total_hits</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 1</span></span>
 <span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"_eq":{"assignee_organization": "johnson &amp; Johnson International"}}'</span>, endpoint<span class="op">=</span><span class="st">"assignee"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/assignee/?q=%7B%22_eq%22%3A%7B%22assignee_organization%22%3A%20%22johnson%20%26%20Johnson%20International%22%7D%7D&amp;f=&amp;s=&amp;o={\"size\":1000}"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span> <span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">query_results</span><span class="op">$</span><span class="va">total_hits</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
 </div>
