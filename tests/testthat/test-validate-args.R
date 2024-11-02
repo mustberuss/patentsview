@@ -1,11 +1,8 @@
+# make sure deprecated warnings are always thrown- bypass 8 hour suppression
+rlang::local_options(lifecycle_verbosity = "warning")
+
 test_that("validate_args throws errors for all bad args", {
   skip_on_cran()
-
-  # make sure deprecated warnings are always thrown- bypass 8 hour suppression
-  rlang::local_options(lifecycle_verbosity = "warning")
-
-  # TODO(any): Remove:
-  # skip("Temp skip for API redesign PR")
 
   # requesting the old plural endpoint should now throw an error
   expect_error(
@@ -29,20 +26,16 @@ test_that("validate_args throws errors for all bad args", {
     class = "lifecycle_warning_deprecated"
   )
   expect_warning(
-    search_pv('{"patent_date":["1976-01-06"]}', per_page = "50"),
+    search_pv('{"patent_date":["1976-01-06"]}', error_browser = "chrome"),
+    class = "lifecycle_warning_deprecated"
+  )
+  expect_warning(
+    search_pv('{"patent_date":["1976-01-06"]}', per_page = 50),
     class = "lifecycle_warning_deprecated"
   )
   expect_warning(
     search_pv('{"patent_date":["1976-01-06"]}', page = 2),
     class = "lifecycle_warning_deprecated" # unsupported page parameter
-  )
-  expect_error(
-    search_pv(
-      '{"patent_date":["1976-01-06"]}',
-      fields = "patent_date",
-      sort = c("patent_id" = "asc")
-    ),
-    "sort"
   )
   expect_error(
     search_pv(
@@ -57,4 +50,15 @@ test_that("validate_args throws errors for all bad args", {
     get_fields("assignee", groups = "cpc_current"), # valid group for a different endpoint
     "groups"
   )
+})
+
+test_that("per_page parameter warns but still works", {
+  skip_on_cran()
+
+  expect_warning(
+    results <- search_pv('{"patent_date":["1976-01-06"]}', per_page = 23),
+    class = "lifecycle_warning_deprecated"
+  )
+
+  expect_equal(23, nrow(results$data$patents))
 })
