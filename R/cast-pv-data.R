@@ -5,11 +5,11 @@ as_is <- function(x) x
 get_cast_fun <- function(data_type) {
   # Some fields aren't documented, so we don't know what their data type is. Use
   # string type for these.
+  # new version of the API: state of string vs fulltext is in flux. Latter currently unused
   if (length(data_type) != 1) data_type <- "string"
   switch(data_type,
     "string" = as_is,
     "date" = as.Date,
-    "float" = as.numeric,
     "number" = as_is,
     "integer" = as_is,
     "int" = as.integer,
@@ -33,12 +33,6 @@ cast_one.character <- function(one, name, typesdf) {
 
 #' @noRd
 cast_one.double <- function(one, name, typesdf) {
-  cast_fun <- lookup_cast_fun(name, typesdf)
-  cast_fun(one)
-}
-
-#' @noRd
-cast_one.boolean <- function(one, name, typesdf) {
   cast_fun <- lookup_cast_fun(name, typesdf)
   cast_fun(one)
 }
