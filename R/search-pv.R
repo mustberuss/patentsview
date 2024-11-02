@@ -303,18 +303,26 @@ search_pv <- function(query,
   # of a particular date, we wouldn't want the after parameter to
   # to begin the next page of data after this date.)
 
-  # We also need to insure we have the value of the primary sort field.
-  # We'll throw an error if the sort field is not present in the fields list
-  # Remember if we added the primary_sort_key to fields and remove it from the
-  # API's return before returning data to the user- even if the user didn't
-  # pass any fields?
   primary_sort_key <- get_default_sort(endpoint)
 
-  if (!names(primary_sort_key) %in% fields) {
-    fields <- c(fields, names(primary_sort_key))
-    need_remove <- TRUE
+  # We check what fields we got back from the first call. If the user didn't
+  # specify fields, we'd get back the API's defaults.  We may need to request
+  # additional fields from the API so we can apply the users sort and then remove
+  # the additional fields.
+  returned_fields <- list(names(result$data[[1]]))
+
+  if (!is.null(sort)) {
+    sort_fields <- list(names(sort))
+    additional_fields <- sort_fields[!sort_fields %in% returned_fields]
+    if (is.null(fields)) {
+      fields_list <- returned_fields # the default fields
+    } else {
+      fields_list <- list(fields) # user passed
+    }
+    fields_list <- append(fields_list, additional_fields)
+    fields <- unlist(fields_list, use.names = FALSE)
   } else {
-    need_remove <- FALSE
+    additional_fields <- list()
   }
 
   arg_list <- to_arglist(fields, size, primary_sort_key, after)
@@ -322,9 +330,13 @@ search_pv <- function(query,
 
   # apply the user's sort
   data.table::setorderv(paged_data, names(sort), ifelse(as.vector(sort) == "asc", 1, -1))
-  result$data[[1]] <- paged_data
 
-  if (need_remove) result$data[[1]][[names(primary_sort_key)]] <- NULL
+  # remove the fields we added in order to sort
+  lapply(unlist(additional_fields, use.names = FALSE), function(f) {
+    paged_data[[f]] <- NULL
+  })
+
+  result$data[[1]] <- paged_data
 
   result
 }
