@@ -99,9 +99,6 @@ one_request <- function(method, query, base_url, arg_list, api_key, ...) {
 request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, ...) {
   matched_records <- ex_res$query_results[[1]]
   req_pages <- ceiling(matched_records / arg_list$opts$size)
-  if (req_pages < 1) {
-    stop2("No records matched your query...Can't download multiple pages")
-  }
 
   tmp <- lapply(seq_len(req_pages), function(i) {
     x <- one_request(method, query, base_url, arg_list, api_key, ...)
@@ -272,17 +269,11 @@ search_pv <- function(query,
                       ...) {
   validate_args(api_key, fields, endpoint, method, sort, after, size, all_pages)
   deprecate_warn_all(error_browser, subent_cnts, mtchd_subent_only, page, per_page)
+  if (lifecycle::is_present(per_page)) size <- per_page
 
   if (is.list(query)) {
-    # check_query(query, endpoint)
+    check_query(query, endpoint)
     query <- jsonlite::toJSON(query, auto_unbox = TRUE)
-  }
-
-  # now for paging to work there needs to be a sort field
-  if (all_pages && is.null(sort)) {
-    sort <- get_default_sort(endpoint)
-    # insure we'll have the value of the sort field
-    if (!names(sort) %in% fields) fields <- c(fields, names(sort))
   }
 
   arg_list <- to_arglist(fields, size, sort, after)
@@ -290,7 +281,14 @@ search_pv <- function(query,
 
   result <- one_request(method, query, base_url, arg_list, api_key, ...)
   result <- process_resp(result)
-  if (!all_pages) {
+
+  if (all_pages && result$query_result$total_hits == 0) {
+    stop2("No records matched your query...Can't download multiple pages")
+  }
+
+  # return if we don't need to make additional API requests
+  if (!all_pages ||
+    result$query_result$total_hits == nrow(result$data[[1]])) {
     return(result)
   }
 
