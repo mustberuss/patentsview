@@ -72,14 +72,6 @@ validate_groups <- function(endpoint, groups) {
 }
 
 #' @noRd
-validate_pv_data <- function(data) {
-  asrt(
-    "pv_data_result" %in% class(data),
-    "Wrong input type for data...See example for correct input type"
-  )
-}
-
-#' @noRd
 deprecate_warn_all <- function(error_browser, subent_cnts, mtchd_subent_only, page, per_page) {
   if (!is.null(error_browser)) {
     lifecycle::deprecate_warn(when = "0.2.0", what = "search_pv(error_browser)")
@@ -109,7 +101,8 @@ deprecate_warn_all <- function(error_browser, subent_cnts, mtchd_subent_only, pa
     lifecycle::deprecate_warn(
       when = "0.3.0",
       what = "search_pv(per_page)",
-      details = "The new version of the API uses 'size' instead of 'per_page'"
+      details = "The new version of the API uses 'size' instead of 'per_page'",
+      with = "search_pv(size)"
     )
   }
 
