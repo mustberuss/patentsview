@@ -55,6 +55,16 @@ search_pv('{"patent_type":"utility"}', all_pages = FALSE )
    - Now there are [23 endpoints](#endpoints), up from the original 7
 &nbsp;  
 
+* Comparison of the old and new attributes that can be sent to the API in its o: (options)
+parameter via search_pv().  Note that the old parameters are now deprecated.
+
+     |Original API|New Version| Purpose|
+     |------------|-----------|--------|
+     | per_page (max 10,000)  | size (max 1,000)     |  maximum number of rows to return on each request |
+     | page       | after     |  page through large result sets |
+     | subent_cnts|           |  whether the query results should include the total counts of unique subentities|
+     | mtchd_subent_only|     | whether a query should return all related subentities or just those that match query criteria.|
+
 
 ## Additional R Package Changes <a name="r-package-changes">
 

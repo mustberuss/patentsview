@@ -90,6 +90,10 @@ patent ids above and below 10,000,000 (the ones 10M and above come first).   The
 other patent types, like reissue, when the ids have different string lengths.  See the code block at 
 the bottom of the [understanding the api](understanding-the-api.html#unexpected-results) vignette.
 
+   + Along the same lines, this query currently returns 38,470,760 rows when that isn't 
+at all what I expected!  (I checked and the original version of the API did this too.)
+```{"_and":[{"_gte":{"patent_id":"10"}},{"_lte":{"patent_id":"13"}}]}```
+
    + These oddities are not specific to the new version of the API, but are due to the
 source files that make up the patentsview database.  I opened these issues as API bug
 PVS-1342 "Underlying data issues", with slighly more diplomatic wording.
@@ -164,6 +168,12 @@ in the database, and plant patents and reissued patents don't have current CPC a
 applicable.  I didn't check but am assuming the bulk CPC file for applications and the 
 publication endpoint have the same issue. (There's more detail above as the last API oddity)
 
+Unknown Reference Number 
+A sort field needs to be specified when paging results.  
+This was mentioned as a bug in the [API's forum](https://patentsview.org/forum/7/topic/804#comment-749).
+It causes some awkardness in search_pv (we add a sort field and the primary key if not included
+in fields.  Awkard if no fields were specified)
+
 ## State of the R Package
 
 * [Two new methods](api-changes.html#additional-r-package-changes) were added to the R package
@@ -237,6 +247,8 @@ once they're fixed).
   + data-raw/fieldsdf.R is working again!  There is some hard-coding that can be removed when
 bugs are fixed.  We may need to retain some of the hard-coding, see the comments in data-raw/fieldsdf.R
 
+  + renamed test-arg-validation.R to test-validate-args.R for code coverage match up
+
   + <a name="improvements"> Possible Package Improvements
 
     * The version number ought to be bumped to 1.0.0 since there are breaking API changes (singular endpoints and the addition of an API key).  validate-args.R has some version
@@ -249,12 +261,12 @@ specific code that may need modifying. A draft of a release is [here](https://gi
     * Navigation on the vignettes could be better,  [understanding-the-api](understanding-the-api.html) isn't a link in the navigation yet,
 neither is the possible [tech note](patentsview-breaking-change.html) or the new
 vignette on [the new implementation of paging](api-paging.html)
-    * API attribute changes to page and per_page should be explained somewhere.
     * Not sure if there should be a monster comment in search_pv.R trying to explain 
-the new way of paging.
+the new way of paging.  Possibly just say to see the new [api paging vignette](api-paging.html)?
+    * [Sign up](https://coveralls.io/sign-up) for coveralls and add a code coverage badge?
     * httr2 improvements
-       + Currently requests are set to be retried once ```httr2::req_retry(max_tries = 2)```  Maybe set it
-to something higher?  429 errors can occur if the user runs more than a single program at a time, like half
+       + Currently requests are set to be retried 19 times ```httr2::req_retry(max_tries = 20)```  Is this a reasonable
+number? 429 errors can occur if the user runs more than a single program at a time, like half
 rendering while devtools::test() is running or running anything locally while an action is running in your 
 repo because of a push.   Errors did not occur when the retries were recursive, whether that was intended or not!
        + Can the throttled test detect output to stdout etc?  We used to expect_message "The API's requests
@@ -340,6 +352,12 @@ produce fieldsdf.csv and fieldsdf.rda
     knitr::knit("README.Rmd", "README.md")
     pkgdown::build_home()
     ```
+<br />
+<br />
+   + Run code coverage locally on the whole package: ```devtools::test_coverage()```
+or an individual file: ```devtools::test_coverage_active_file(file = "R/print.R")``` You'd need to have covr installed
+<br />
+<br />
 * Remotely
 
   + pkgdown remotely   
