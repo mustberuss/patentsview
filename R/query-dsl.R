@@ -146,14 +146,14 @@ create_between_fun <- function(fun) {
 #'
 #' qry_funs$in_range(patent_year = c(2010, 2021))
 #'
-#' qry_funs$in_range(patent_date = c("1970-01-01", "1983-02-28"))
+#' qry_funs$in_range(patent_date = c("1976-01-01", "1983-02-28"))
 
 #' @export
 qry_funs <- c(
   lapply2(
     c(
       "eq", "neq", "gt", "gte", "lt", "lte", "begins", "contains", "text_all",
-      "text_any", "text_phrase", "trees"
+      "text_any", "text_phrase"
     ), create_key_fun
   ),
   lapply2(c("and", "or"), create_array_fun),
