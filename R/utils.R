@@ -57,8 +57,6 @@ to_singular <- function(plural) {
 
   if (plural == "wipo") {
     singular <- plural
-  } else if (endsWith(plural, "ies")) {
-    singular <- sub("ies$", "y", plural)
   } else if (endsWith(plural, "es") && !endsWith(plural, "ees")) {
     singular <- sub("es$", "", plural)
   } else {
@@ -80,8 +78,6 @@ to_plural <- function(singular) {
     plural <- singular
   } else if (singular == "attorney") {
     plural <- "attorneys"
-  } else if (endsWith(singular, "y")) {
-    plural <- sub("y$", "ies", singular)
   } else if (endsWith(singular, "s")) {
     plural <- paste0(singular, "es")
   } else {
@@ -95,10 +91,8 @@ endpoint_from_entity <- function(entity) {
 
   if (entity == "rel_app_text_publications") {
     "publication/rel_app_texts"
-  } else if (entity == "rel_app_text") {
-    "publication/rel_app_text"
-  } else if (entity == "other_reference") {
-    "patent/otherreference"
+  } else if (entity == "other_reference") { # broken endpoint
+    "patent/otherreference" # nocov
   } else {
     singular <- to_singular(entity)
 
