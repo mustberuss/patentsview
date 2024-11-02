@@ -55,6 +55,22 @@ test_that("cast_pv_data casts assignee fields as expected", {
   #  expect_true(date && assignee_type && years_active)
 })
 
+test_that("we can cast a bool", {
+  skip_on_cran()
+
+  # TODO(any): remove when the API returns this as a boolean
+  fields <- c("rule_47_flag")
+  endpoint <- "publication"
+  results <- search_pv(query = TEST_QUERIES[[endpoint]], endpoint = endpoint, fields = fields)
+
+  # this would fail when the API is fixed
+  expect_true(is.character(results$data$publications$rule_47_flag))
+
+  cast_results <- cast_pv_data(results$data)
+
+  expect_true(is.logical(cast_results$publications$rule_47_flag))
+})
+
 # rats, the util method would have to be public - maybe special local run?
 # iterate through the helper queries, make the call and see
 # if the return of endpoint_from_entity matches the helper endpoint

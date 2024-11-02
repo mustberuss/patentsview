@@ -150,52 +150,6 @@ test_that("search_pv properly URL encodes queries", {
   expect_true(eq_search$query_results$total_hits == 0)
 })
 
-# Below we request the same data in built_singly and result_all, with the only
-# difference being that we intentionally get throttled in built_singly by
-# sending one request per patent number (instead of all requests at once). If
-# the two responses match, then we've correctly handled throttling errors.
-test_that("Throttled requests are automatically retried", {
-  skip_on_cran()
-
-  res <- search_pv('{"_gte":{"patent_date":"2007-01-04"}}', size = 50)
-  patent_ids <- res$data$patents$patent_id
-
-  # now we don't get message "The API's requests per minute limit has been reached. "
-  # so we'll testthat it takes over 60 seconds to run (since we got throttled)
-  # TODO(any): can we use evaluate_promise to find "Waiting 45s for retry backoff"?
-
-  duration <- system.time(
-    built_singly <- lapply(patent_ids, function(patent_id) {
-      search_pv(
-        query = qry_funs$eq(patent_id = patent_id),
-        endpoint = "patent/us_patent_citation",
-        fields = c("patent_id", "citation_patent_id"),
-        sort = c("citation_patent_id" = "asc")
-      )[["data"]][["us_patent_citations"]]
-    })
-  )
-
-  expect_gt(duration[["elapsed"]], 60)
-
-  built_singly <- do.call(rbind, built_singly)
-
-  result_all <- search_pv(
-    query = qry_funs$eq(patent_id = patent_ids),
-    endpoint = "patent/us_patent_citation",
-    fields = c("patent_id", "citation_patent_id"),
-    sort = c("patent_id" = "asc", "citation_patent_id" = "asc"),
-    size = 1000,
-    all_pages = TRUE
-  )
-  result_all <- result_all$data$us_patent_citations
-
-  # TODO(any): fix this:
-  # expect_equal says actual row.names are an integer vector and expected
-  # row.names is a character vector.  Not sure why
-  row.names(result_all) <- NULL
-  row.names(built_singly) <- NULL
-  expect_equal(built_singly, result_all)
-})
 
 test_that("We won't expose the user's patentsview API key to random websites", {
   skip_on_cran()
@@ -278,34 +232,6 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
   expect_true(location$query_results$total_hits == 1)
 })
 
-test_that("individual fields are still broken", {
-  skip_on_cran()
-
-  # Sample fields that cause 500 errors when requested by themselves.
-  # Some don't throw errors when included in get_fields() but they do if
-  # they are the only field requested.  Other individual fields at these
-  # same endpoints throw errors.  Check fields again when these fail.
-  sample_bad_fields <- c(
-    "assignee_organization" = "assignee",
-    "inventor_lastknown_longitude" = "inventor",
-    "inventor_gender_attr_status" = "inventor",
-    "location_name" = "location",
-    "attorney_name_last" = "patent/attorney",
-    "citation_country" = "patent/foreign_citation",
-    "ipc_id" = "ipc"
-  )
-
-  dev_null <- lapply(names(sample_bad_fields), function(x) {
-    endpoint <- sample_bad_fields[[x]]
-    expect_error(
-      out <- search_pv(query = TEST_QUERIES[[endpoint]], endpoint = endpoint, fields = c(x))
-    )
-  })
-
-  # make it noticeable that all is not right with the API
-  skip("Skip for API bugs") # TODO: remove when the API is fixed
-})
-
 # Make sure gets and posts return the same data.
 # Posts had issues that went undetected for a while using the new API
 # (odd results with posts when either no fields or sort was passed
@@ -363,4 +289,137 @@ test_that("nested shorthand produces the same results as fully qualified ones", 
   # the request$urls will be different but the data should match
   expect_failure(expect_equal(shorthand_res$request$url, qualified_res$request$url))
   expect_equal(shorthand_res$data, qualified_res$data)
+})
+
+
+test_that("the 'after' parameter works properly", {
+  skip_on_cran()
+
+  big_query <- qry_funs$eq(patent_date = "2000-01-04") # 3003 total_hits
+  results <- search_pv(big_query, all_pages = FALSE)
+  expect_gt(results$query_results$total_hits, 1000)
+
+  after <- results$data$patents$patent_id[[nrow(results$data$patents)]]
+  subsequent <- search_pv(big_query, all_pages = FALSE, after = after)
+  expect_equal(nrow(subsequent$data$patents), 1000)
+
+  # the first row's patent_id should be bigger than after
+  expect_gt(as.integer(subsequent$data$patents$patent_id[[1]]), as.integer(after))
+
+  # now we'll add a descending sort to make sure that also works
+  sort <- c("patent_id" = "desc")
+  fields <- NULL #  c("patent_id")
+
+  results <- search_pv(big_query, all_pages = FALSE, fields = fields, sort = sort)
+  after <- results$data$patents$patent_id[[nrow(results$data$patents)]]
+
+  subsequent <- search_pv(big_query,
+    all_pages = FALSE, after = after, sort = sort,
+    fields = fields
+  )
+
+  # now the first row's patent_id should be smaller than after
+  expect_lt(as.integer(subsequent$data$patents$patent_id[[1]]), as.integer(after))
+})
+
+test_that("the documentation URLs work properly", {
+  skip_on_cran()
+
+  url <-
+    'https://search.patentsview.org/api/v1/patent/?q={"_text_any":{"patent_title":"COBOL cotton gin"}}&s=[{"patent_id": "asc" }]&o={"size":50}&f=["inventors.inventor_name_last","patent_id","patent_date","patent_title"]'
+
+  results <- retrieve_linked_data(url)
+
+  expect_gt(results$query_results$total_hits, 0)
+})
+
+test_that("an error occurs if all_pages is TRUE and there aren't any results", {
+  skip_on_cran()
+
+  too_early <- qry_funs$lt(patent_date = "1976-01-01")
+
+  results <- search_pv(too_early, all_pages = FALSE)
+
+  # would like this test to fail! (meaning API added earlier data)
+  expect_equal(results$query_results$total_hits, 0)
+
+  expect_error(
+    search_pv(too_early, all_pages = TRUE),
+    "No records matched your query"
+  )
+})
+
+test_that("we can retrieve all_pages = TRUE without specifiying fields", {
+  skip_on_cran()
+
+  query <- qry_funs$eq(patent_date = "1976-01-06")
+  sort <- c("patent_type" = "asc", "patent_id" = "asc")
+
+  # here we aren't requesting fields but are requesting a sort
+  results <- search_pv(query, sort = sort, all_pages = TRUE)
+
+  expect_gt(results$query_results$total_hits, 1300)
+})
+
+# Below we request the same data in built_singly and result_all, with the only
+# difference being that we intentionally get throttled in built_singly by
+# sending one request per patent number (instead of all requests at once). If
+# the two responses match, then we've correctly handled throttling errors.
+test_that("Throttled requests are automatically retried", {
+  skip_on_cran()
+
+  res <- search_pv('{"_gte":{"patent_date":"2007-01-04"}}', size = 50)
+  patent_ids <- res$data$patents$patent_id
+
+  # now we don't get message "The API's requests per minute limit has been reached. "
+  # so we'll testthat it takes over 60 seconds to run (since we got throttled)
+  # TODO(any): can we use evaluate_promise to find "Waiting 45s for retry backoff"?
+
+  duration <- system.time(
+    built_singly <- lapply(patent_ids, function(patent_id) {
+      search_pv(
+        query = qry_funs$eq(patent_id = patent_id),
+        endpoint = "patent/us_patent_citation",
+        fields = c("patent_id", "citation_patent_id"),
+        sort = c("citation_patent_id" = "asc")
+      )[["data"]][["us_patent_citations"]]
+    })
+  )
+
+  expect_gt(duration[["elapsed"]], 60)
+
+  built_singly <- do.call(rbind, built_singly)
+
+  # we'll also test that the results are the same for a post and get
+  # when there is a secondary sort on the bulk requests
+  sort <- c("patent_id" = "asc", "citation_patent_id" = "asc")
+  methods <- c("POST", "GET")
+  output <- lapply(methods, function(method) {
+    result_all <- search_pv(
+      query = qry_funs$eq(patent_id = patent_ids),
+      endpoint = "patent/us_patent_citation",
+      fields = c("patent_id", "citation_patent_id"),
+      sort = sort,
+      size = 1000,
+      all_pages = TRUE,
+      method = method
+    )
+    result_all <- result_all$data$us_patent_citations
+  })
+
+  expect_equal(output[[1]], output[[2]])
+
+  # We'll do our own sort and check that it matches the API output
+  # We want to make sure we sent in the sort parameter correctly, where
+  # the API is doing the sort (since the we didn't need to page)
+  data.table::setorderv(output[[2]], names(sort), ifelse(as.vector(sort) == "asc", 1, -1))
+  expect_equal(output[[1]], output[[2]])
+
+  # TODO(any): fix this:
+  # expect_equal says actual row.names are an integer vector and expected
+  # row.names is a character vector.  Not sure why
+  row.names(output[[1]]) <- NULL
+  row.names(built_singly) <- NULL
+
+  expect_equal(built_singly, output[[1]])
 })

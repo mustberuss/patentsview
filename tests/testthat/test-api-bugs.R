@@ -264,7 +264,6 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
   })
 })
 
-# from test-search-pv.R
 test_that("individual fields are still broken", {
   skip_on_cran()
 
