@@ -4,10 +4,19 @@
 \alias{retrieve_linked_data}
 \title{Retrieve Linked Data}
 \usage{
-retrieve_linked_data(url, api_key = Sys.getenv("PATENTSVIEW_API_KEY"), ...)
+retrieve_linked_data(
+  url,
+  encoded_url = FALSE,
+  api_key = Sys.getenv("PATENTSVIEW_API_KEY"),
+  ...
+)
 }
 \arguments{
-\item{url}{The link that was returned by the API on a previous call or an example in the documentation.}
+\item{url}{A link that was returned by the API on a previous call, an example
+in the documentation or a Request URL from the \href{https://search.patentsview.org/swagger-ui/}{API's Swagger UI page}.}
+
+\item{encoded_url}{boolean to indicate whether the url has been URL encoded, defaults to FALSE.
+Set to TRUE for Request URLs from Swagger UI.}
 
 \item{api_key}{API key, it defaults to Sys.getenv("PATENTSVIEW_API_KEY"). Request a key
 \href{https://patentsview.org/apis/keyrequest}{here}.}
@@ -44,6 +53,11 @@ retrieve_linked_data(
 
 retrieve_linked_data(
   'https://search.patentsview.org/api/v1/patent/?q={"_text_any":{"patent_title":"COBOL cotton gin"}}&s=[{"patent_id": "asc" }]&o={"size":50}&f=["inventors.inventor_name_last","patent_id","patent_date","patent_title"]'
+)
+
+retrieve_linked_data(
+  "https://search.patentsview.org/api/v1/patent/?q=\%7B\%22patent_date\%22\%3A\%221976-01-06\%22\%7D",
+  encoded_url = TRUE
 )
 }
 

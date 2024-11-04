@@ -431,8 +431,14 @@ reissued patents don’t have current CPC assigments when applicable. I
 didn’t check but am assuming the bulk CPC file for applications and the
 publication endpoint have the same issue. (There’s more detail above as
 the last API oddity)</p>
-<p>Unknown Reference Number A sort field needs to be specified when
-paging results.<br>
+<p>PVS-1377<br>
+The sort field doesn’t accept all unnested fields<br>
+The API throws errors when some fields are specified as the sort,
+e.g. patent_title at the patent endpoint. 39 other endpoint/field pairs
+currently fail. See test_that(“we can’t sort by all fields”) in
+test-api-bugs.R</p>
+<p>Unknown Reference Number<br>
+A sort field needs to be specified when paging results.<br>
 This was mentioned as a bug in the <a href="https://patentsview.org/forum/7/topic/804#comment-749" class="external-link">API’s
 forum</a>. It causes some awkardness in search_pv (we add a sort field
 and the primary key if not included in fields. Awkard if no fields were
@@ -500,9 +506,9 @@ discussion</a> on paging with more than a primary sort. <strong>This
 added a dependency to data.table.</strong> There is also a <a href="api-paging.html">new vignette</a> on the new implementation of
 paging</p></li>
 <li><p>The patent/otherreference endpoint isn’t currently working
-(reported as a <a href="#otherreference">bug</a> above). It is included
-in the return of get_endpoints() and has only a negative test case that
-will fail when the API responds with something other than an
+(reported as a <a href="#otherreference">bug</a> above). It isn’t
+included in the return of get_endpoints() and has only a negative test
+case that will fail when the API responds with something other than an
 error.</p></li>
 <li><p>The R package unit tests have some skips and other negative tests
 that API bugs still exist (they’ll fail when bugs are fixed). The tests
@@ -531,6 +537,8 @@ of the API now imposes</p></li>
 <li><p>data-raw/fieldsdf.R is working again! There is some hard-coding
 that can be removed when bugs are fixed. We may need to retain some of
 the hard-coding, see the comments in data-raw/fieldsdf.R</p></li>
+<li><p>renamed test-arg-validation.R to test-validate-args.R for code
+coverage match up</p></li>
 <li>
 <p><a name="improvements"> Possible Package Improvements</a></p>
 <ul>
@@ -677,7 +685,9 @@ If you make changes to method documentation, run</p></li>
 <p><br><br></p>
 <ul>
 <li>Run code coverage locally on the whole package:
-<code><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">devtools::test_coverage()</a></code> or an individual file:
+<code><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">devtools::test_coverage()</a></code> or
+<code>devtools::test_coverage(function_exclusions = "\\.onLoad")</code>
+or on an individual file:
 <code>devtools::test_coverage_active_file(file = "R/print.R")</code>
 You’d need to have covr installed <br><br>
 </li>

@@ -5,7 +5,7 @@
 \alias{qry_funs}
 \title{List of query functions}
 \format{
-An object of class \code{list} of length 16.
+An object of class \code{list} of length 15.
 }
 \usage{
 qry_funs
@@ -80,6 +80,6 @@ qry_funs$not(qry_funs$eq(patent_date = "2001-01-01"))
 
 qry_funs$in_range(patent_year = c(2010, 2021))
 
-qry_funs$in_range(patent_date = c("1970-01-01", "1983-02-28"))
+qry_funs$in_range(patent_date = c("1976-01-01", "1983-02-28"))
 }
 \keyword{datasets}
