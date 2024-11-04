@@ -13,7 +13,7 @@ get_cast_fun <- function(data_type) {
     "number" = as_is,
     "integer" = as_is,
     "int" = as.integer,
-    "fulltext" = as_is,
+    "fulltext" = as_is, # nocov
     "boolean" = as_is,
     "bool" = as.logical
   )
