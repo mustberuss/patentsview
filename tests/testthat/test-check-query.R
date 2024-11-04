@@ -28,6 +28,11 @@ test_that("errors are thrown on invalid queries", {
   )
 
   expect_error(
+    search_pv(qry_funs$gt("patent_year" = "1980")),
+    "^.* must be an integer$"
+  )
+
+  expect_error(
     search_pv(qry_funs$eq("application.rule_47_flag" = "TRUE")),
     "^.* must be a boolean$"
   )
@@ -67,11 +72,27 @@ test_that("a valid nested field can be queried", {
   expect_gt(results$query_results$total_hits, 8000000)
 })
 
-test_that("messaages are thrown when appropriate", {
+test_that("the _eq message is thrown when appropriate", {
   skip_on_cran()
 
   expect_message(
     search_pv(list(patent_date = "2007-03-06")),
     "^The _eq operator is a safer alternative to using field:value pairs"
   )
+})
+
+test_that("a query with an and operator returns results", {
+  skip_on_cran()
+
+  patents_query <-
+    with_qfuns(
+      and(
+        text_phrase(inventors.inventor_name_first = "George"),
+        text_phrase(inventors.inventor_name_last = "Washington")
+      )
+    )
+
+  result <- search_pv(patents_query)
+
+  expect_gte(result$query_results$total_hits, 1)
 })

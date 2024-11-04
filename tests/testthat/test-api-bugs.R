@@ -179,36 +179,44 @@ test_that("API returns all requested groups", {
   skip("Skip for API bugs") # TODO: remove when the API is fixed
 })
 
-# test-fetch-each-field.R
+eps <- (get_endpoints())
+
+# request size 0?
+
 test_that("each field in fieldsdf can be retrieved", {
   skip_on_cran()
 
+  # PVS-1125
   # Iterate through fieldsdf, requesting one field at a time to see if the field
   # really can be retrieved.  What fields work and don't work is constantly changing
   # as the new version of the api is being developed
 
-  # maybe have the return be the fields that failed?  "endpoint"    "field"
-  count <- 0
+  endpoints <- get_endpoints()
+  endpoints <- c("uspc_subclass", "location")
 
-  dev_null <- sapply(get_endpoints(), function(endpoint) {
+  troubled <- sapply(endpoints, function(endpoint) {
     fields <- fieldsdf[fieldsdf$endpoint == endpoint, c("field")]
 
     # here we want to remove nested fields like assignees.assignee_id
+    # probably should check these once the non nested ones stop throwing errors
     fields <- fields[!fields %in% fields[grepl("\\.", fields)]]
 
     # should also test that there are unique values, some fields come back all NULLS
 
-    lapply(fields, function(field) {
+    result <- lapply(fields, function(field) {
       tryCatch(
         expr = {
           # try adding the primary key to fields to see if that stops the 500s- helped some but not all
           # pk <- get_ok_pk(endpoint)
           pv_out <- search_pv(query = TEST_QUERIES[[endpoint]], endpoint = endpoint, fields = c(field))
 
+          error_reason <- NULL
+
           # see if the field actually came back - a fair amount don't come back
           # make sure pv_out$query_results$total_hits >= 1 first
           if (pv_out$query_results$total_hits == 0) {
             print(paste(endpoint, "zero hits"))
+            error_reason <- "zero hits"
           } else {
             found <- FALSE
             if (!field %in% colnames(pv_out$data[[1]])) {
@@ -219,27 +227,30 @@ test_that("each field in fieldsdf can be retrieved", {
 
                 found <- idless %in% colnames(pv_out$data[[1]])
                 if (found) {
-                  print(paste("id dance on ", endpoint, field))
+                  print(paste("id dance on", endpoint, field))
                 }
               }
               if (!found) {
-                print(paste(endpoint, field, "not returned"))
+                print(paste("not returned", endpoint, field))
+                error_reson <- "not returned"
               }
             }
           }
-          NA
+          if (is.null(error_reson)) NA else paste(error_reson, endpoint, field)
         },
         error = function(e) {
-          print(paste("error", endpoint, field))
-          print(e)
-          count <<- count + 1
-          c(endpoint, field)
+          paste("error", endpoint, field)
         }
       )
     })
+    result[!is.na(result)]
   })
 
-  expect_true(count > 0) # would fail when the API doesn't throw errors
+  troubled_fields <- do.call(c, unlist(troubled, recursive = FALSE))
+
+  names(troubled_fields) <- NULL
+  print(troubled_fields)
+  expect_gt(length(troubled_fields), 0) # would fail when the API doesn't throw errors etc.
 })
 
 # from test-search-pv.R

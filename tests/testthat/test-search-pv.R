@@ -322,15 +322,19 @@ test_that("the 'after' parameter works properly", {
   expect_lt(as.integer(subsequent$data$patents$patent_id[[1]]), as.integer(after))
 })
 
-test_that("the documentation URLs work properly", {
+test_that("the documentation and Swagger UI URLs work properly", {
   skip_on_cran()
 
-  url <-
+  documentation_url <-
     'https://search.patentsview.org/api/v1/patent/?q={"_text_any":{"patent_title":"COBOL cotton gin"}}&s=[{"patent_id": "asc" }]&o={"size":50}&f=["inventors.inventor_name_last","patent_id","patent_date","patent_title"]'
 
-  results <- retrieve_linked_data(url)
+  results <- retrieve_linked_data(documentation_url)
 
   expect_gt(results$query_results$total_hits, 0)
+
+  swagger_url <- "https://search.patentsview.org/api/v1/patent/?q=%7B%22patent_date%22%3A%221976-01-06%22%7D"
+
+  results <- retrieve_linked_data(swagger_url, encoded = TRUE)
 })
 
 test_that("an error occurs if all_pages is TRUE and there aren't any results", {
@@ -422,4 +426,70 @@ test_that("Throttled requests are automatically retried", {
   row.names(built_singly) <- NULL
 
   expect_equal(built_singly, output[[1]])
+})
+
+test_that("we can sort on an unrequested field across page boundaries", {
+  skip_on_cran()
+
+  # total_hits = 5,352
+  query <- qry_funs$in_range(patent_date = c("1976-01-01", "1976-01-31"))
+  fields <- c("patent_title", "patent_date")
+  sort <- c("patent_date" = "desc", "patent_id" = "desc")
+
+  r_ordered <- search_pv(
+    query = query,
+    fields = fields,
+    sort = sort,
+    all_pages = TRUE
+  )
+
+  fields <- c(fields, "patent_id")
+  api_ordered <- search_pv(
+    query = query,
+    fields = fields,
+    sort = sort,
+    all_pages = TRUE
+  )
+
+  # Remove patent_id before comparison.  We're also indirectly testing that the
+  # patent_id field added by the first search_pv was removed, otherwise this
+  # expect equal would fail
+  api_ordered$data$patents[["patent_id"]] <- NULL
+  expect_equal(r_ordered$data, api_ordered$data)
+})
+
+test_that("deprecated per_page parameter still works", {
+  skip_on_cran()
+
+  # make sure deprecated warnings are always thrown- bypass 8 hour suppression
+  rlang::local_options(lifecycle_verbosity = "warning")
+  per_page <- 17
+
+  expect_warning(
+    results <- search_pv(
+      qry_funs$eq(patent_date = "1976-01-06"),
+      per_page = per_page
+    )
+  )
+
+  expect_equal(per_page, nrow(results$data$patents))
+})
+
+# Trying to pick up coverage when supplying a sort and non default fields
+# line 320 when this was writting. Ah needs all_pages = TRUE
+test_that("sort works across page boundaries", {
+  skip_on_cran()
+
+  sort <- c("patent_type" = "desc", "patent_id" = "desc")
+  results <- search_pv(
+    qry_funs$eq(patent_date = "1976-01-06"),
+    fields = c("patent_type", "patent_id"),
+    sort = sort,
+    all_pages = TRUE
+  )
+
+  double_check <- results$data$patents
+  data.table::setorderv(double_check, names(sort), ifelse(as.vector(sort) == "asc", 1, -1))
+
+  expect_equal(results$data$patents, double_check)
 })
