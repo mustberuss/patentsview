@@ -343,7 +343,11 @@ search_pv <- function(query,
 #' the patent endpoint may return a link such as:
 #' "https://search.patentsview.org/api/v1/inventor/fl:th_ln:jefferson-1/"
 #'
-#' @param url The link that was returned by the API on a previous call or an example in the documentation.
+#' @param url A link that was returned by the API on a previous call, an example
+#'  in the documentation or a Request URL from the \href{https://search.patentsview.org/swagger-ui/}{API's Swagger UI page}.
+#'
+#' @param encoded_url boolean to indicate whether the url has been URL encoded, defaults to FALSE.
+#'  Set to TRUE for Request URLs from Swagger UI.
 #'
 #' @param ... Curl options passed along to httr2's \code{\link[httr2]{req_options}} function.
 #'
@@ -374,12 +378,22 @@ search_pv <- function(query,
 #' retrieve_linked_data(
 #'   'https://search.patentsview.org/api/v1/patent/?q={"_text_any":{"patent_title":"COBOL cotton gin"}}&s=[{"patent_id": "asc" }]&o={"size":50}&f=["inventors.inventor_name_last","patent_id","patent_date","patent_title"]'
 #' )
+#'
+#' retrieve_linked_data(
+#'   "https://search.patentsview.org/api/v1/patent/?q=%7B%22patent_date%22%3A%221976-01-06%22%7D",
+#'   encoded_url = TRUE
+#' )
 #' }
 #'
 #' @export
 retrieve_linked_data <- function(url,
+                                 encoded_url = FALSE,
                                  api_key = Sys.getenv("PATENTSVIEW_API_KEY"),
                                  ...) {
+  if (encoded_url) {
+    url <- URLdecode(url)
+  }
+
   # There wouldn't be url parameters on a HATEOAS link but we'll also accept
   # example urls from the documentation, where there could be parameters
   url_peices <- httr2::url_parse(url)
