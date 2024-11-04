@@ -128,14 +128,17 @@ there are other open bugs.
 PVS-1109 <a name="otherreference">  
 The otherreference endpoint rejects the default [Swagger UI](https://search.patentsview.org/swagger-ui/) parameters (throws a 400 Bad Request Error if
 either reference_sequence or reference_text is requested) and returns no data when only
-patent_id is requested.  The OpenAPI object says the returned object is other_references which 
+patent_id is requested. See test_that("the otherreferences endpoint is still broken") in test-api-bugs.R
+Also, the OpenAPI object says the returned object is other_references which 
 is another exception to the singular endpoint/plural return pattern[^6].
 
 PVS-1125	
 Not all the fields in the OpenAPI object can be requested
+See test_that("each field in fieldsdf can be retrieved") in test-api-bugs.r
 
 PVS-1147 <a name="case-dependent">	
 Results are case dependent now when using an implied or explicit equals
+See test_that("there is case sensitivity on string equals") in test-api-bugs.R
 
 PVS-1155  
 Documentation inconsistencies  
@@ -159,7 +162,9 @@ openapi.json errors
 
 PVS-1306  
 The API accepts invalid fields  
-The API accepts invalid fields that start out looking like valid fields when it should throw an error. Ex f: is["patent_iddddddddddddd", "patent_dateagogo"] and q: is {"patent_idd":"10000000"} with this result: { "error": false, "count": 0, "total_hits": 0, "patents": [] }
+The API accepts invalid fields that start out looking like valid fields when it should throw an error. 
+Ex f: is["patent_iddddddddddddd", "patent_dateagogo"] and q: is {"patent_idd":"10000000"} with this result: { "error": false, "count": 0, "total_hits": 0, "patents": [] }
+See test_that("invalid fields are accepted") in test-api-bugs.R
 
 PVS-1342  
 Underlying data issues  
@@ -168,7 +173,13 @@ in the database, and plant patents and reissued patents don't have current CPC a
 applicable.  I didn't check but am assuming the bulk CPC file for applications and the 
 publication endpoint have the same issue. (There's more detail above as the last API oddity)
 
-Unknown Reference Number 
+PVS-1377  
+The sort field doesn't accept all unnested fields   
+The API throws errors when some fields are specified as the sort, e.g. patent_title at the
+patent endpoint.  39 other endpoint/field pairs currently fail.  See test_that("we can't sort by all fields") in test-api-bugs.R
+Add test cases?
+
+Unknown Reference Number  
 A sort field needs to be specified when paging results.  
 This was mentioned as a bug in the [API's forum](https://patentsview.org/forum/7/topic/804#comment-749).
 It causes some awkardness in search_pv (we add a sort field and the primary key if not included
@@ -222,7 +233,7 @@ version of the R package can be installed via
 **This added a dependency to data.table.**  There is also a [new vignette](api-paging.html) on the new implementation of paging
 
   + The patent/otherreference endpoint isn't currently working (reported as a [bug](#otherreference) above).
-It is included in the return of get_endpoints() and has only a negative test case that will
+It isn't included in the return of get_endpoints() and has only a negative test case that will
 fail when the API responds with something other than an error.
 
   + The R package unit tests have some skips and other negative tests that API bugs still exist
@@ -354,8 +365,9 @@ produce fieldsdf.csv and fieldsdf.rda
     ```
 <br />
 <br />
-   + Run code coverage locally on the whole package: ```devtools::test_coverage()```
-or an individual file: ```devtools::test_coverage_active_file(file = "R/print.R")``` You'd need to have covr installed
+   + Run code coverage locally on the whole package: ```devtools::test_coverage()``` or
+```devtools::test_coverage(function_exclusions = "\\.onLoad")``` or on an 
+individual file: ```devtools::test_coverage_active_file(file = "R/print.R")``` You'd need to have covr installed
 <br />
 <br />
 * Remotely
