@@ -288,3 +288,38 @@ test_that("individual fields are still broken", {
     )
   })
 })
+
+test_that("we can't sort by all fields", {
+  skip_on_cran()
+
+  # seems to behave differently for POSTs than GETs ?
+  # PVS-1377
+
+  endpoint_bad_fields <- lapply(eps, function(endpoint) {
+    unnested_fields <- get_fields(endpoint, groups = "")
+
+    result <- lapply(unnested_fields, function(field) {
+      tryCatch(
+        {
+          sort <- c("asc")
+          names(sort) <- field
+          j <- search_pv(
+            query = TEST_QUERIES[[endpoint]],
+            endpoint = endpoint, sort = sort, method = "GET"
+          )
+          NA
+        },
+        error = function(e) {
+          paste(endpoint, field)
+        }
+      )
+    })
+    result[!is.na(result)]
+  })
+
+  bad_sort_fields <- do.call(c, unlist(endpoint_bad_fields, recursive = FALSE))
+
+  print(bad_sort_fields)
+
+  expect_gt(length(bad_sort_fields), 0)
+})
