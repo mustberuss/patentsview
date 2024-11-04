@@ -309,20 +309,19 @@ search_pv <- function(query,
   # specify fields, we'd get back the API's defaults.  We may need to request
   # additional fields from the API so we can apply the users sort and then remove
   # the additional fields.
-  returned_fields <- list(names(result$data[[1]]))
+  returned_fields <- names(result$data[[1]])
 
   if (!is.null(sort)) {
-    sort_fields <- list(names(sort))
-    additional_fields <- sort_fields[!sort_fields %in% returned_fields]
+    sort_fields <- names(sort)
+    additional_fields <- sort_fields[!(sort_fields %in% returned_fields)]
     if (is.null(fields)) {
-      fields_list <- returned_fields # the default fields
+      fields <- returned_fields # the default fields
     } else {
-      fields_list <- list(fields) # user passed
+      fields <- fields # user passed
     }
-    fields_list <- append(fields_list, additional_fields)
-    fields <- unlist(fields_list, use.names = FALSE)
+    fields <- append(fields, additional_fields)
   } else {
-    additional_fields <- list()
+    additional_fields <- c()
   }
 
   arg_list <- to_arglist(fields, size, primary_sort_key, after)
@@ -331,13 +330,10 @@ search_pv <- function(query,
   # apply the user's sort
   data.table::setorderv(paged_data, names(sort), ifelse(as.vector(sort) == "asc", 1, -1))
 
-  # remove the fields we added in order to sort
-  lapply(unlist(additional_fields, use.names = FALSE), function(f) {
-    paged_data[[f]] <- NULL
-  })
+  # remove the fields we added in order to do the user's sort ourselves
+  paged_data <- paged_data[, !names(paged_data) %in% additional_fields]
 
   result$data[[1]] <- paged_data
-
   result
 }
 
