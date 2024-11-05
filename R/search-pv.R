@@ -104,7 +104,7 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, ..
     x <- one_request(method, query, base_url, arg_list, api_key, ...)
     x <- process_resp(x)
 
-    # now to page we need set the "after" attribute to where we left off
+    # now to page we need to set the "after" attribute to where we left off
     # we want the value of the primary sort field
     s <- names(arg_list$sort[[1]])[[1]]
     index <- nrow(x$data[[1]])
@@ -283,7 +283,7 @@ search_pv <- function(query,
 
   # return if we don't need to make additional API requests
   if (!all_pages ||
-    result$query_result$total_hits == nrow(result$data[[1]])) {
+    result$query_result$total_hits == result$query_result$count) {
     return(result)
   }
 
