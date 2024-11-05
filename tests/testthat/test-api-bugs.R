@@ -334,3 +334,41 @@ test_that("we can't sort by all fields", {
 
   expect_gt(length(bad_sort_fields), 0)
 })
+
+
+test_that("withdrawn patents are still present in the database", {
+  # PVS-1342 Underlying data issues
+  # There are 8,000 patents that were in the bulk xml files patentsiew is based on.
+  # The patents were subsequently withdrawn but not removed from the database
+  withdrawn <- c(
+    "9978309", "9978406", "9978509", "9978615", "9978659",
+    "9978697", "9978830", "9978838", "9978886", "9978906", "9978916",
+    "9979255", "9979355", "9979482", "9979700", "9979841", "9979847",
+    "9980139", "9980711", "9980782", "9981222", "9981277", "9981423",
+    "9981472", "9981603", "9981760", "9981914", "9982126", "9982172",
+    "9982670", "9982860", "9982871", "9983588", "9983756", "9984058",
+    "9984899", "9984952", "9985340", "9985480", "9985987", "9986046"
+  )
+
+  query <- qry_funs$eq("patent_id" = c(withdrawn))
+  results <- search_pv(query, method = "POST")
+  expect_equal(results$query_results$total_hits, length(withdrawn))
+})
+
+test_that("missing patents are still missing", {
+  # PVS-1342 Underlying data issues
+  # There are around 300 patents tht aren't in the bulk xml files patentsiew is based on.
+  missing <- c(
+    "4097517", "4424514", "4480077", "4487876", "4704648", "4704721",
+    "4705017", "4705031", "4705032", "4705036", "4705037", "4705097", "4705107",
+    "4705125", "4705142", "4705169", "4705170", "4705230", "4705274", "4705328",
+    "4705412", "4705416", "4705437", "4705455", "4705462", "5493812", "5509710",
+    "5697964", "5922850", "6087542", "6347059", "6680878", "6988922", "7151114",
+    "7200832", "7464613", "7488564", "7606803", "8309694", "8455078"
+  )
+  query <- qry_funs$eq("patent_id" = missing)
+  results <- search_pv(query, method = "POST")
+
+  # This would fail if these patents are added to the patentsview database
+  expect_equal(results$query_results$total_hits, 0)
+})
