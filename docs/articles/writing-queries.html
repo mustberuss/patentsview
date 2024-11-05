@@ -282,7 +282,7 @@ never relies on arrays when creating queries.&lt;/p&gt;"><sup>1</sup></a></p>
 evaluate code in the context of this list using the function
 <code><a href="../reference/with_qfuns.html">with_qfuns()</a></code> (see <code>?with_qfuns()</code> for an example
 that demonstrates how <code><a href="../reference/with_qfuns.html">with_qfuns()</a></code> can save you typing).
-There are three types of functions in <code>qry_funs</code>:</p>
+There are four types of functions in <code>qry_funs</code>:</p>
 <ol style="list-style-type: decimal">
 <li>
 <strong>Comparison operator functions</strong> (<code>eq</code>,
@@ -312,6 +312,9 @@ inventor’s last name is “Ihaka”
 negates a comparison. For example, we could search for patents that
 don’t have the word “hi” in their titles like this:
 <code>qry_funs$not(qry_funs$text_phrase(patent_title = "hi"))</code>.</li>
+<li>
+<strong>Convenience function</strong> (<code>in_range</code>). This
+function makes it easy to query for a date or integer range.</li>
 </ol>
 </div>
 <div class="section level2">
@@ -373,6 +376,12 @@ it:</li>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; {"_or":[{"_and":[{"_eq":{"inventors.inventor_name_last":"Smith"}},{"_contains":{"patent_title":"cotton gin"}}]},{"_and":[{"_eq":{"inventors.inventor_name_last":"Turner"}},{"_contains":{"patent_title":"COBOL"}}]}]}</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span><span class="st">"patent_date"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2000-01-01"</span>, <span class="st">"2000-01-31"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; {"_and":[{"_gte":{"patent_date":"2000-01-01"}},{"_lte":{"patent_date":"2000-01-31"}}]}</span></span>
+<span></span>
+<span><span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span><span class="st">"patent_year"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1980</span>, <span class="fl">1983</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; {"_and":[{"_gte":{"patent_year":1980}},{"_lte":{"patent_year":1983}}]}</span></span></code></pre></div>
 </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

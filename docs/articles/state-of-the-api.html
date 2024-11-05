@@ -381,14 +381,18 @@ in the reference number, I’m assuming there are other open bugs.</p>
 The otherreference endpoint rejects the default </a><a href="https://search.patentsview.org/swagger-ui/" class="external-link">Swagger UI</a>
 parameters (throws a 400 Bad Request Error if either reference_sequence
 or reference_text is requested) and returns no data when only patent_id
-is requested. The OpenAPI object says the returned object is
-other_references which is another exception to the singular
+is requested. See test_that(“the otherreferences endpoint is still
+broken”) in test-api-bugs.R Also, the OpenAPI object says the returned
+object is other_references which is another exception to the singular
 endpoint/plural return pattern<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;To be fixed by the API team&lt;/p&gt;"><sup>7</sup></a>.</p>
 <p>PVS-1125<br>
-Not all the fields in the OpenAPI object can be requested</p>
+Not all the fields in the OpenAPI object can be requested See
+test_that(“each field in fieldsdf can be retrieved”) in
+test-api-bugs.r</p>
 <p>PVS-1147 <a name="case-dependent"><br>
-Results are case dependent now when using an implied or explicit
-equals</a></p>
+Results are case dependent now when using an implied or explicit equals
+See test_that(“there is case sensitivity on string equals”) in
+test-api-bugs.R</a></p>
 <p>PVS-1155<br>
 Documentation inconsistencies<br>
 The endpoint is listed as /api/v1/attorney/, it should be
@@ -421,8 +425,8 @@ The API accepts invalid fields<br>
 The API accepts invalid fields that start out looking like valid fields
 when it should throw an error. Ex f: is[“patent_iddddddddddddd”,
 “patent_dateagogo”] and q: is {“patent_idd”:“10000000”} with this
-result: { “error”: false, “count”: 0, “total_hits”: 0, “patents”: []
-}</p>
+result: { “error”: false, “count”: 0, “total_hits”: 0, “patents”: [] }
+See test_that(“invalid fields are accepted”) in test-api-bugs.R</p>
 <p>PVS-1342<br>
 Underlying data issues<br>
 There are ~300 issued patents are missing from the database, ~8000
@@ -436,7 +440,7 @@ The sort field doesn’t accept all unnested fields<br>
 The API throws errors when some fields are specified as the sort,
 e.g. patent_title at the patent endpoint. 39 other endpoint/field pairs
 currently fail. See test_that(“we can’t sort by all fields”) in
-test-api-bugs.R</p>
+test-api-bugs.R Add test cases?</p>
 <p>Unknown Reference Number<br>
 A sort field needs to be specified when paging results.<br>
 This was mentioned as a bug in the <a href="https://patentsview.org/forum/7/topic/804#comment-749" class="external-link">API’s

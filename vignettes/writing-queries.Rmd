@@ -109,11 +109,12 @@ Compared to method 1, method 3 will correctly "or" together values if you put th
 
 ## Basics of the language
 
-All of the functions that make up the DSL are found in the `qry_funs` list (e.g., `qry_funs$eq()`). You can evaluate code in the context of this list using the function `with_qfuns()` (see `?with_qfuns()` for an example that demonstrates how `with_qfuns()` can save you typing). There are three types of functions in `qry_funs`:
+All of the functions that make up the DSL are found in the `qry_funs` list (e.g., `qry_funs$eq()`). You can evaluate code in the context of this list using the function `with_qfuns()` (see `?with_qfuns()` for an example that demonstrates how `with_qfuns()` can save you typing). There are four types of functions in `qry_funs`:
 
 1. **Comparison operator functions** (`eq`, `neq`, `gt`, `gte`, `lt`, `lte`, `begins`, `contains`, `text_all`, `text_any`, `text_phrase`). These functions are used to compare a field to a value. For example, using the "less than or equal to" function (`lte`), we can filter out patents published after some date (e.g., `query = qry_funs$lte(patent_date = "2001-01-05")`). See the "comparison operators" section of the API's [query language page](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#api-query-language) for a description of the 11 comparison operators. One important thing to keep in mind is that certain comparison operators only work with certain data types. For example, you can't use the `begins` function on `patent_abstract` because `patent_abstract` is of data type "full text" and `begins` only works with fields of data type "string." 
 2. **Array functions** (`and` and `or`). You can use these functions to logically combine your calls to the comparison operators. For example, we can require that the patent date is less than or equal to 2001-01-05 _and_ the inventor's last name is "Ihaka" (`query = with_qfuns(and(lte(patent_date = "2001-01-05"), eq(inventor_name_last = "Ihaka")))`).
 3. **not function** (`not`). This function negates a comparison. For example, we could search for patents that don't have the word "hi" in their titles like this: `qry_funs$not(qry_funs$text_phrase(patent_title = "hi"))`.
+4. **Convenience function** (`in_range`). This function makes it easy to query for a date or integer range.
 
 ## Query examples 
 
@@ -182,6 +183,15 @@ with_qfuns(
   )
 )
 #> {"_or":[{"_and":[{"_eq":{"inventors.inventor_name_last":"Smith"}},{"_contains":{"patent_title":"cotton gin"}}]},{"_and":[{"_eq":{"inventors.inventor_name_last":"Turner"}},{"_contains":{"patent_title":"COBOL"}}]}]}
+```
+
+
+``` r
+qry_funs$in_range("patent_date" = c("2000-01-01", "2000-01-31"))
+#> {"_and":[{"_gte":{"patent_date":"2000-01-01"}},{"_lte":{"patent_date":"2000-01-31"}}]}
+
+qry_funs$in_range("patent_year" = c(1980, 1983))
+#> {"_and":[{"_gte":{"patent_year":1980}},{"_lte":{"patent_year":1983}}]}
 ```
 
 [^1]: One may note that using "value arrays" is supposedly supported by the API. For example, the API documentation gives the following query as an example of their use: `'{"inventor_name_last":["Whitney","Hopper"]}'`. The problem with this is that the API is not consistent in its handling of value arrays. For many of the comparison operators, one cannot "or" together values like this using arrays. Thus, the DSL in `patentsview` never relies on arrays when creating queries.
