@@ -337,6 +337,8 @@ test_that("we can't sort by all fields", {
 
 
 test_that("withdrawn patents are still present in the database", {
+  skip_on_cran()
+
   # PVS-1342 Underlying data issues
   # There are 8,000 patents that were in the bulk xml files patentsiew is based on.
   # The patents were subsequently withdrawn but not removed from the database
@@ -356,6 +358,8 @@ test_that("withdrawn patents are still present in the database", {
 })
 
 test_that("missing patents are still missing", {
+  skip_on_cran()
+
   # PVS-1342 Underlying data issues
   # There are around 300 patents tht aren't in the bulk xml files patentsiew is based on.
   missing <- c(
