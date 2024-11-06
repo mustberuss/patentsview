@@ -38,7 +38,7 @@ search_pv(
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 5,362,291
+#> total_hits = 5,362,291, count = 1,000
 ```
 
 This call to `search_pv()` sends our query to the patent endpoint (the default). The API has 23 different endpoints, corresponding to 23 different entity types
@@ -97,7 +97,7 @@ result
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 5,362,291
+#> total_hits = 5,362,291, count = 1,000
 ```
 
 To list all of the fields for a given endpoint, use `get_fields()`:
@@ -136,13 +136,15 @@ search_pv(
 #> #### A list with a single data frame on patents level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	2459 obs. of  1 variable:
-#>   ..$ patent_id: chr [1:2459] "10000988" ...
+#>  $ patents:'data.frame':	2459 obs. of  3 variables:
+#>   ..$ patent_id   : chr [1:2459] "10000988" ...
+#>   ..$ patent_title: chr [1:2459] "Seal assemblies in subsea rotating control "..
+#>   ..$ patent_date : chr [1:2459] "2018-06-19" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 2,459
+#> total_hits = 2,459, count = 1,000
 ```
 
 ## Entity counts
@@ -181,7 +183,7 @@ result
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 2,459
+#> total_hits = 2,459, count = 1,000
 
 # Here's the first inventors
 result$data$patents$inventors[[1]]
@@ -235,7 +237,7 @@ search_pv(query, endpoint = "inventor", fields = fields)
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 434
+#> total_hits = 434, count = 434
 ```
 
 Your choice of endpoint determines two things:

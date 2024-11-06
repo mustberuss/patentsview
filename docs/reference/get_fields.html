@@ -43,6 +43,16 @@ possible fields for each endpoint)."><meta property="og:image" content="https://
        
       Converting an Existing Script
     </a>
+    <a class="dropdown-item" href="../articles/result-set-paging.html">
+      <span class="fa fa-book"></span>
+       
+      Result Set Paging
+    </a>
+    <a class="dropdown-item" href="../articles/understanding-the-api.html">
+      <span class="fa fa-school"></span>
+       
+      Understanding the API
+    </a>
   </div>
 </li>
 <li class="nav-item">
@@ -125,7 +135,7 @@ possible fields for each endpoint).</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_fields</span><span class="op">(</span><span class="va">endpoint</span>, groups <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_fields</span><span class="op">(</span><span class="va">endpoint</span>, groups <span class="op">=</span> <span class="cn">NULL</span>, include_pk <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -146,6 +156,12 @@ endpoint table</a>), or use the <code>fieldsdf</code> table
 (e.g., <code>unique(fieldsdf[fieldsdf$endpoint == "patent", "group"])</code>).
 An empty string can also be specified to return all top level
 (non-nested) fields for the endpoint.</p></dd>
+
+
+<dt>include_pk</dt>
+<dd><p>Boolean on whether to include the endpoint's primary key,
+defaults to FALSE.  The primary key is needed if you plan on calling
+<code><a href="unnest_pv_data.html">unnest_pv_data</a></code> on the results of <code><a href="search_pv.html">search_pv</a></code></p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -177,6 +193,19 @@ An empty string can also be specified to return all top level
 <span class="r-in"><span>  query <span class="op">=</span> <span class="st">'{"_gte":{"patent_date":"2007-01-04"}}'</span>,</span></span>
 <span class="r-in"><span>  fields <span class="op">=</span> <span class="va">fields</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="co"># Get the nested inventors fields and the primary key in order to call unnest_pv_data</span></span></span>
+<span class="r-in"><span><span class="co"># on the returned data.  unnest_pv_data would throw an error if the primary key was</span></span></span>
+<span class="r-in"><span><span class="co"># not present in the results.</span></span></span>
+<span class="r-in"><span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu">get_fields</span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"patent"</span>, groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"inventors"</span><span class="op">)</span>, include_pk <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co"># ...Then pass to search_pv and unnest the results</span></span></span>
+<span class="r-in"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="search_pv.html">search_pv</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  query <span class="op">=</span> <span class="st">'{"_gte":{"patent_date":"2007-01-04"}}'</span>,</span></span>
+<span class="r-in"><span>  fields <span class="op">=</span> <span class="va">fields</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

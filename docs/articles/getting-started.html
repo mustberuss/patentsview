@@ -60,6 +60,16 @@
        
       Converting an Existing Script
     </a>
+    <a class="dropdown-item" href="../articles/result-set-paging.html">
+      <span class="fa fa-book"></span>
+       
+      Result Set Paging
+    </a>
+    <a class="dropdown-item" href="../articles/understanding-the-api.html">
+      <span class="fa fa-school"></span>
+       
+      Understanding the API
+    </a>
   </div>
 </li>
 <li class="active nav-item">
@@ -172,7 +182,7 @@ function, <code><a href="../reference/search_pv.html">search_pv()</a></code>:</p
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 5,362,291</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 5,362,291, count = 1,000</span></span></code></pre></div>
 <p>This call to <code><a href="../reference/search_pv.html">search_pv()</a></code> sends our query to the patent
 endpoint (the default). The API has 23 different endpoints,
 corresponding to 23 different entity types (assignees, attorneys,
@@ -210,7 +220,7 @@ using one of the functions in the DSL, <code>qry_funs$gte()</code>:</p>
 <p>More complex queries are also possible:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>  <span class="fu">and</span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
 <span>    <span class="fu">gte</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2007-01-01"</span><span class="op">)</span>,</span>
 <span>    <span class="fu">text_phrase</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"computer program"</span>, <span class="st">"dog leash"</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
@@ -245,7 +255,7 @@ argument:</p>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 5,362,291</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 5,362,291, count = 1,000</span></span></code></pre></div>
 <p>To list all of the fields for a given endpoint, use
 <code><a href="../reference/get_fields.html">get_fields()</a></code>:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -306,13 +316,15 @@ finalized, you can use the <code>size</code> argument to download up to
 <span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ patents:'data.frame': 2459 obs. of  1 variable:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id: chr [1:2459] "10000988" ...</span></span>
+<span><span class="co">#&gt;  $ patents:'data.frame': 2459 obs. of  3 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id   : chr [1:2459] "10000988" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_title: chr [1:2459] "Seal assemblies in subsea rotating control "..</span></span>
+<span><span class="co">#&gt;   ..$ patent_date : chr [1:2459] "2018-06-19" ...</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 2,459</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 2,459, count = 1,000</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="entity-counts">Entity counts<a class="anchor" aria-label="anchor" href="#entity-counts"></a>
@@ -355,7 +367,7 @@ patents.</p>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 2,459</span></span>
+<span><span class="co">#&gt; total_hits = 2,459, count = 1,000</span></span>
 <span></span>
 <span><span class="co"># Here's the first inventors</span></span>
 <span><span class="va">result</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span><span class="op">$</span><span class="va">inventors</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
@@ -409,7 +421,7 @@ patents.</p>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 434</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 434, count = 434</span></span></code></pre></div>
 <p>Your choice of endpoint determines two things:</p>
 <ol style="list-style-type: decimal">
 <li><p><strong>Which entity your query is applied to.</strong> The first

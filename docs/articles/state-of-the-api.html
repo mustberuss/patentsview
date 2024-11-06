@@ -60,6 +60,16 @@
        
       Converting an Existing Script
     </a>
+    <a class="dropdown-item" href="../articles/result-set-paging.html">
+      <span class="fa fa-book"></span>
+       
+      Result Set Paging
+    </a>
+    <a class="dropdown-item" href="../articles/understanding-the-api.html">
+      <span class="fa fa-school"></span>
+       
+      Understanding the API
+    </a>
   </div>
 </li>
 <li class="nav-item">
@@ -181,7 +191,14 @@ set to int or bool for these fields.</p>
 <span><span class="co">##        publication/rel_app_text          document_number       int</span></span></code></pre>
 </li>
 <li><p>The API team created a <a href="patentsview-breaking-change.html#online-documentation">Swagger
-UI</a> page for the new version of the API. On the <a href="https://patentsview.historicip.com/swagger/articles/" class="external-link">Joys of
+UI</a> page for the new version of the API. It has a nice feature where
+it will show you what the Request URL was for a GET request. The Request
+URL can be passed to <code>retrieve_linked_data</code> to see its output
+from the R package, as explained below. On a POST request, it will show
+you the Curl command that will make the same request to the API. It can
+be helpful to see the exact return from the API, making it possible to
+tell if the results weren’t what you expected or if the R package is
+somehow misinterpreting them. On other <a href="https://patentsview.historicip.com/swagger/articles/" class="external-link">Joys of
 Swagger UI</a></p></li>
 </ul>
 </div>
@@ -440,7 +457,7 @@ The sort field doesn’t accept all unnested fields<br>
 The API throws errors when some fields are specified as the sort,
 e.g. patent_title at the patent endpoint. 39 other endpoint/field pairs
 currently fail. See test_that(“we can’t sort by all fields”) in
-test-api-bugs.R Add test cases?</p>
+test-api-bugs.R</p>
 <p>Unknown Reference Number<br>
 A sort field needs to be specified when paging results.<br>
 This was mentioned as a bug in the <a href="https://patentsview.org/forum/7/topic/804#comment-749" class="external-link">API’s
@@ -454,7 +471,7 @@ specified)</p>
 <ul>
 <li><p><a href="api-changes.html#additional-r-package-changes">Two new
 methods</a> were added to the R package</p></li>
-<li><p>The reworked <a href="ropensci_blog_post.html">ropensci post</a>
+<li><p>The reworked <a href="ropensci-blog-post.html">ropensci post</a>
 explains what changes had to be made since assignee latitude and
 longitude are no longer available from the patent endpoint.</p></li>
 <li>
@@ -481,15 +498,43 @@ publication/, also matching the API’s change</p>
 <span><span class="co">## [5] "patent/us_application_citation" "patent/us_patent_citation"     </span></span>
 <span><span class="co">## [7] "publication/rel_app_text"</span></span></code></pre>
 </li>
+<li>
+<p>There’s a new, optional, include_pk parameter on get_fields()
+that defaults to FALSE. It’s useful if you’re planning on unnesting the
+return from search_pv().</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"patent"</span>, groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"inventors"</span><span class="op">)</span>, include_pk <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span></span>
+<span>  query <span class="op">=</span> <span class="st">'{"_gte":{"patent_date":"2007-01-04"}}'</span>,</span>
+<span>  fields <span class="op">=</span> <span class="va">fields</span></span>
+<span> <span class="op">)</span></span>
+<span> <span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## List of 2</span></span>
+<span><span class="co">##  $ inventors:'data.frame': 2272 obs. of  8 variables:</span></span>
+<span><span class="co">##   ..$ patent_id          : chr [1:2272] "7159246" ...</span></span>
+<span><span class="co">##   ..$ inventor           : chr [1:2272] "https://search.patentsview.org/api/v"..</span></span>
+<span><span class="co">##   ..$ inventor_name_first: chr [1:2272] "Darold Dean" ...</span></span>
+<span><span class="co">##   ..$ inventor_name_last : chr [1:2272] "Tippey" ...</span></span>
+<span><span class="co">##   ..$ inventor_city      : chr [1:2272] "Neenah" ...</span></span>
+<span><span class="co">##   ..$ inventor_state     : chr [1:2272] "WI" ...</span></span>
+<span><span class="co">##   ..$ inventor_country   : chr [1:2272] "US" ...</span></span>
+<span><span class="co">##   ..$ inventor_sequence  : int [1:2272] 0 0 ...</span></span>
+<span><span class="co">##  $ patents  :'data.frame': 1000 obs. of  1 variable:</span></span>
+<span><span class="co">##   ..$ patent_id: chr [1:1000] "7159246" ...</span></span></code></pre>
+</li>
 <li><p>Under the covers, httr was changed to httr2 (see several mentions
 below). This only matters to users if they passed additional arguments
 (…) to search_pv(). Previously if they passed config = httr::timeout(40)
 they’d now pass timeout = 40 (name-value pairs of valid curl options, as
-found in curl::curl_options())</p></li>
+found in <code><a href="https://rdrr.io/pkg/curl/man/curl_options.html" class="external-link">curl::curl_options()</a></code>)</p></li>
 <li><p>Now that the R package is using httr2, users can make use of its
 last_request() method to see what was sent to the API. This could be
-useful when trying to fix an invalid request. Also fun, or useful when
-reporting a bug, would be seeing the raw API response.</p></li>
+useful when trying to fix an invalid request. Note that when
+<code>all_pages = TRUE</code> the R package changes the sort parameter
+(details <a href="result-set-paging.html">here</a>) and sets the ‘after’
+options parameter so the request shown might not be what you’d expect it
+to be. Also fun, or useful, when reporting a bug, would be seeing the
+raw API response.</p></li>
 </ul>
 <pre><code><span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_request</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_response</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -507,8 +552,8 @@ version of the R package can be installed via<br><code>install.packages('patents
 <li><p>On the new <a href="api-changes.html#a-note-on-paging">implementation of paging</a>
 and the <a href="https://github.com/ropensci/patentsview/pull/29#discussion_r1059153136" class="external-link">PR
 discussion</a> on paging with more than a primary sort. <strong>This
-added a dependency to data.table.</strong> There is also a <a href="api-paging.html">new vignette</a> on the new implementation of
-paging</p></li>
+added a dependency to data.table.</strong> There is also a <a href="result-set-paging.html">new vignette</a> on the new implementation
+of paging</p></li>
 <li><p>The patent/otherreference endpoint isn’t currently working
 (reported as a <a href="#otherreference">bug</a> above). It isn’t
 included in the return of get_endpoints() and has only a negative test
@@ -559,13 +604,11 @@ plural endpoint is passed</li>
 key</li>
 <li>Add a contributing.md or something that explains how to build
 everything, something like <a href="#findingscontributor-101">Findings/Contributor 101</a> below</li>
-<li>Navigation on the vignettes could be better, <a href="understanding-the-api.html">understanding-the-api</a> isn’t a link
-in the navigation yet, neither is the possible <a href="patentsview-breaking-change.html">tech note</a> or the new
-vignette on <a href="api-paging.html">the new implementation of
-paging</a>
-</li>
+<li>Navigation on the vignettes could be better, the possible <a href="patentsview-breaking-change.html">tech note</a> and the reworked
+<a href="ropensci-blog-post.html">ropensci blog post</a> aren’t part of
+the navigation.</li>
 <li>Not sure if there should be a monster comment in search_pv.R trying
-to explain the new way of paging. Possibly just say to see the new <a href="api-paging.html">api paging vignette</a>?</li>
+to explain the new way of paging. Possibly just say to see the new <a href="result-set-paging.html">api paging vignette</a>?</li>
 <li>
 <a href="https://coveralls.io/sign-up" class="external-link">Sign up</a> for coveralls and
 add a code coverage badge?</li>
@@ -765,7 +808,7 @@ skipped</p>
 stop when the row_limit is met. For someone wanting more than a 1000
 rows but not necessarily all the rows, especially since there isn’t the
 100,000 row limitation now. The API’s <code>after</code> is now exposed
-in search_pv() so users could do their own paging. See the new <a href="api-paging.html">paging vignette</a></p></li>
+in search_pv() so users could do their own paging. See the new <a href="result-set-paging.html">paging vignette</a></p></li>
 </ul>
 </li>
 </ul>

@@ -4,7 +4,7 @@
 \alias{get_fields}
 \title{Get list of retrievable fields}
 \usage{
-get_fields(endpoint, groups = NULL)
+get_fields(endpoint, groups = NULL, include_pk = FALSE)
 }
 \arguments{
 \item{endpoint}{The API endpoint whose field list you want to get. See
@@ -20,6 +20,10 @@ endpoint table}), or use the \code{fieldsdf} table
 (e.g., \code{unique(fieldsdf[fieldsdf$endpoint == "patent", "group"])}).
 An empty string can also be specified to return all top level
 (non-nested) fields for the endpoint.}
+
+\item{include_pk}{Boolean on whether to include the endpoint's primary key,
+defaults to FALSE.  The primary key is needed if you plan on calling
+\code{\link{unnest_pv_data}} on the results of \code{\link{search_pv}}}
 }
 \value{
 A character vector with field names.
@@ -52,6 +56,19 @@ search_pv(
   query = '{"_gte":{"patent_date":"2007-01-04"}}',
   fields = fields
 )
+}
+# Get the nested inventors fields and the primary key in order to call unnest_pv_data
+# on the returned data.  unnest_pv_data would throw an error if the primary key was
+# not present in the results.
+fields <- get_fields(endpoint = "patent", groups = c("inventors"), include_pk = TRUE)
+
+\dontrun{
+# ...Then pass to search_pv and unnest the results
+results <- search_pv(
+  query = '{"_gte":{"patent_date":"2007-01-04"}}',
+  fields = fields
+)
+unnest_pv_data(results$data)
 }
 
 }

@@ -43,7 +43,7 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item dropdown">
+<li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown--api-changes">
     <span class="fa fa-flag"></span>
      
@@ -59,6 +59,16 @@
       <span class="fa fa-sync"></span>
        
       Converting an Existing Script
+    </a>
+    <a class="dropdown-item" href="../articles/result-set-paging.html">
+      <span class="fa fa-book"></span>
+       
+      Result Set Paging
+    </a>
+    <a class="dropdown-item" href="../articles/understanding-the-api.html">
+      <span class="fa fa-school"></span>
+       
+      Understanding the API
     </a>
   </div>
 </li>
@@ -242,12 +252,12 @@ or two dollar bills in the US.</p>
 <span></span>
 <span><span class="va">patents_query</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>    <span class="fu">or</span><span class="op">(</span></span>
-<span>      <span class="fu">and</span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">or</a></span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_first <span class="op">=</span> <span class="st">"George"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_last <span class="op">=</span> <span class="st">"Washington"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span>,</span>
-<span>      <span class="fu">and</span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_first <span class="op">=</span> <span class="st">"Thomas"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_last <span class="op">=</span> <span class="st">"Jefferson"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span></span>
@@ -306,12 +316,12 @@ jupyter notebook suggests.</p>
 <code class="sourceCode R"><span></span>
 <span><span class="va">inventors_query</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>    <span class="fu">or</span><span class="op">(</span></span>
-<span>      <span class="fu">and</span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">or</a></span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventor_name_first <span class="op">=</span> <span class="st">"George"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventor_name_last <span class="op">=</span> <span class="st">"Washington"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span>,</span>
-<span>      <span class="fu">and</span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventor_name_first <span class="op">=</span> <span class="st">"Thomas"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventor_name_last <span class="op">=</span> <span class="st">"Jefferson"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span></span>

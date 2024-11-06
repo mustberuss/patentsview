@@ -31,7 +31,7 @@ fields are returned in nested objects and would need to be fully qualified in th
   In the fields parameter, nested fields can be fully qualified or a new API shorthand can be used, where group names can specified.
 When group names are used, all of the group's nested fields will be returned by the API.  Ex. the new version 
 of the API and R package will accept fields=c("assignees") when using the patent endpoint and all nested assignees
-fields will be returned by the API.  This would be similar to get_fields("patent", groups=c("assignees")) except that it's the API deciding what fields to return
+fields will be returned by the API.  This would be similar to `get_fields("patent", groups=c("assignees"))` except that it's the API deciding what fields to return
 (in this case, all of the assignees fields).
   
 * <a name="unbounded"> A result set's size seems unbounded now, you can now retrieve more than 100,000 rows. You'd need to be careful when setting all_pages = TRUE
@@ -53,7 +53,7 @@ search_pv('{"patent_type":"utility"}', all_pages = FALSE )
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 8,044,869
+#> total_hits = 8,044,869, count = 1,000
 ```
 
 * Endpoint Changes
@@ -107,7 +107,7 @@ range_query <- qry_funs$in_range(patent_year=c(2010, 2021))
 range_query
 #> {"_and":[{"_gte":{"patent_year":2010}},{"_lte":{"patent_year":2021}}]}
 ```
-* The ropensci_blog_post that announced the original version of the R package was [reworked](ropensci_blog_post.html) to use the new version of the R package and API
+* The ropensci blog post that announced the original version of the R package was [reworked](ropensci-blog-post.html) to use the new version of the R package and API
 * A hex sticker was created using GuangchuangYu's [hexSticker](https://github.com/GuangchuangYu/hexSticker)
 
 ## Swagger UI Page <a name="swagger-ui-page"></a>
@@ -229,7 +229,7 @@ the returned fields, like the cpc_group, are HATEOAS links:
 ``` r
 
   query <- '{"patent_id": "11530080"}'
-  fields <- c('patent_id', get_fields('patent', groups = 'cpc_current'))
+  fields <- get_fields('patent', groups = 'cpc_current', include_pk = TRUE)
   fields
 #>  [1] "patent_id"                   "cpc_current.cpc_class"      
 #>  [3] "cpc_current.cpc_class_id"    "cpc_current.cpc_group"      
@@ -282,7 +282,7 @@ pv_data
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 1
+#> total_hits = 1, count = 1
 
 # Here we'll use an example URL from the documentation
 # Note that going to that link in a browser will result in a 403 Unauthorized, as no API key is sent.
@@ -299,7 +299,7 @@ retrieve_linked_data('https://search.patentsview.org/api/v1/patent/?q={"patent_i
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 1
+#> total_hits = 1, count = 1
 ```
 
 Note that when calling the cpc_group endpoint instead of using the HATEOAS link, you'd use a slash
@@ -322,7 +322,7 @@ search_pv('{"cpc_group_id": "A01B1/00"}', endpoint = 'cpc_group')
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 1
+#> total_hits = 1, count = 1
 ```
 
 <a name="slight-weirdness">Slight weirdness</a>/sleight of hand where the returned field name looses the _id of the requested field
@@ -401,7 +401,7 @@ search_pv(query1)
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 3,652
+#> total_hits = 3,652, count = 1,000
 
 search_pv(query2)
 #> $data
@@ -416,7 +416,7 @@ search_pv(query2)
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 2,075
+#> total_hits = 2,075, count = 1,000
 ```
 
 hitting the brf_sum_text endpoint:
@@ -435,7 +435,7 @@ search_pv(query1, endpoint="brf_sum_text")
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 0
+#> total_hits = 0, count = 0
 
 search_pv(query2, endpoint="brf_sum_text")
 #> $data
@@ -450,7 +450,7 @@ search_pv(query2, endpoint="brf_sum_text")
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 1
+#> total_hits = 1, count = 1
 ```
 
 

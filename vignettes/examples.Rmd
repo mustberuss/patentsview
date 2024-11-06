@@ -33,7 +33,7 @@ search_pv(query = qry_funs$gt(patent_num_times_cited_by_us_patents = 500))
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 13,199
+#> total_hits = 13,199, count = 1,000
 ```
 
 How many distinct inventors are represented by these highly-cited patents?
@@ -56,7 +56,7 @@ search_pv(
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 13,199
+#> total_hits = 13,199, count = 1,000
 ```
 What assignee's organizations start Microsoft?
 
@@ -95,8 +95,10 @@ query <- with_qfuns(
   )
 )
 
-# Create a field list by getting the inventors fields
-inv_fields <- get_fields(endpoint = "patent", groups="inventors")
+# Create a field list by getting the inventors fields- the primary key is needed
+# for unnest_pv_data()
+inv_fields <- get_fields(endpoint = "patent", groups="inventors", include_pk = TRUE)
+
 # Pull the data
 pv_out <- search_pv(query, fields = inv_fields, all_pages = TRUE, size = 1000)
 
@@ -141,7 +143,7 @@ pv_out
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 13,447
+#> total_hits = 13,447, count = 1,000
 ```
  In the new version of the API, the behavior of this endpoint has changed.  See the similar example
 on the [legacy inventors endpoint](https://patentsview.org/apis/api-endpoints/inventors) page
@@ -152,7 +154,7 @@ Chicago, IL as their location when applying for a patent.
 
 
 ``` r
-fields <- c("patent_id", get_fields('patent', groups="inventors"))
+fields <- get_fields('patent', groups="inventors", include_pk = TRUE)
 fields
 #> [1] "patent_id"                     "inventors.inventor_id"        
 #> [3] "inventors.inventor_city"       "inventors.inventor_country"   
@@ -174,7 +176,7 @@ search_pv(query, fields=fields, endpoint="patent")
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 46,544
+#> total_hits = 46,544, count = 1,000
 ```
 
 Note that here all the inventors on a particular patent will be returned, not just the ones whose
@@ -203,5 +205,5 @@ search_pv(
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 592
+#> total_hits = 592, count = 592
 ```

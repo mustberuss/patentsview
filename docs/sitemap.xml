@@ -37,13 +37,22 @@
     <loc>https://mustberuss.github.io/patentsview/index.html/articles/index.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/articles/ropensci_blog_post.html</loc>
+    <loc>https://mustberuss.github.io/patentsview/index.html/articles/patentsview-breaking-change.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/articles/ropensci_tech_note.html</loc>
+    <loc>https://mustberuss.github.io/patentsview/index.html/articles/result-set-paging.html</loc>
+  </url>
+  <url>
+    <loc>https://mustberuss.github.io/patentsview/index.html/articles/ropensci-blog-post.html</loc>
+  </url>
+  <url>
+    <loc>https://mustberuss.github.io/patentsview/index.html/articles/state-of-the-api.html</loc>
   </url>
   <url>
     <loc>https://mustberuss.github.io/patentsview/index.html/articles/top-assignees.html</loc>
+  </url>
+  <url>
+    <loc>https://mustberuss.github.io/patentsview/index.html/articles/understanding-the-api.html</loc>
   </url>
   <url>
     <loc>https://mustberuss.github.io/patentsview/index.html/articles/writing-queries.html</loc>

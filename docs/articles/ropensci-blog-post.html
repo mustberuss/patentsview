@@ -60,6 +60,16 @@
        
       Converting an Existing Script
     </a>
+    <a class="dropdown-item" href="../articles/result-set-paging.html">
+      <span class="fa fa-book"></span>
+       
+      Result Set Paging
+    </a>
+    <a class="dropdown-item" href="../articles/understanding-the-api.html">
+      <span class="fa fa-school"></span>
+       
+      Understanding the API
+    </a>
   </div>
 </li>
 <li class="nav-item">
@@ -76,7 +86,7 @@
     Writing queries
   </a>
 </li>
-<li class="active nav-item dropdown">
+<li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown--applications">
     <span class="fa fa-bar-chart"></span>
      
@@ -143,8 +153,8 @@ Allen</h4>
                         
             <h4 data-toc-skip class="date">2024-09-12</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/ropensci/patentsview/blob/HEAD/vignettes/ropensci_blog_post.Rmd" class="external-link"><code>vignettes/ropensci_blog_post.Rmd</code></a></small>
-      <div class="d-none name"><code>ropensci_blog_post.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/ropensci/patentsview/blob/HEAD/vignettes/ropensci-blog-post.Rmd" class="external-link"><code>vignettes/ropensci-blog-post.Rmd</code></a></small>
+      <div class="d-none name"><code>ropensci-blog-post.Rmd</code></div>
     </div>
 
     
@@ -291,7 +301,7 @@ string to <code><a href="../reference/search_pv.html">search_pv()</a></code>:</p
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 3,401,344</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 3,401,344, count = 1,000</span></span></code></pre></div>
 <p>…Or you can use the domain specific language (DSL) provided in the
 <code>patentsview</code> package to help you write the query:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -312,7 +322,7 @@ string to <code><a href="../reference/search_pv.html">search_pv()</a></code>:</p
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 3,401,344</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 3,401,344, count = 1,000</span></span></code></pre></div>
 <p><code>qry_1</code> and <code>qry_2</code> will result in the same
 HTTP call to the API. Both queries search for patents in USPTO that were
 published after 2014. There are three gotchas to look out for when
@@ -370,7 +380,7 @@ fields are no longer available from the patent endpoint.</p>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 3,401,344</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 3,401,344, count = 1,000</span></span></code></pre></div>
 <p>The fields that you can retrieve depends on the endpoint that you are
 hitting. We’ve been using the “patent” endpoint thus far, so all of
 these are retrievable:
@@ -411,7 +421,7 @@ level (the “” in groups) fields</p>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 3,401,344</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 3,401,344, count = 1,000</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -498,7 +508,7 @@ we’ll get a list of the most prolific assignee_organizations</p>
 <span><span class="co"># (note the field name change as well as it being nested inside the cpc_current object)</span></span>
 <span><span class="co"># Oh, and we bumped the patent_year to give us data for the last ten years</span></span>
 <span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span> <span class="co"># with_qfuns is basically just: with(qry_funs, ...)</span></span>
-<span>  <span class="fu">and</span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
 <span>    <span class="fu">begins</span><span class="op">(</span>cpc_current.cpc_group_id <span class="op">=</span> <span class="st">"H04L63/02"</span><span class="op">)</span>,</span>
 <span>    <span class="fu">gte</span><span class="op">(</span>patent_year <span class="op">=</span> <span class="fl">2014</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
