@@ -38,6 +38,12 @@ navbar:
         - text: "Converting an Existing Script"
           icon: fa-sync
           href: articles/converting-an-existing-script.html
+        - text: "Result Set Paging"
+          icon: fa-book
+          href: articles/result-set-paging.html
+        - text: "Understanding the API"
+          icon: fa-school
+          href: articles/understanding-the-api.html
     starting:
       text: "Getting started"
       icon: fa-play
