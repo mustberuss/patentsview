@@ -32,7 +32,13 @@ nrow(fieldsdf[grep("number|integer|boolean", fieldsdf$data_type), ])
 
 print(fieldsdf[grep("bool$|int$", fieldsdf$data_type), c("endpoint", "field", "data_type")], row.names = FALSE)
   ```
-* The API team created a [Swagger UI](patentsview-breaking-change.html#online-documentation) page for the new version of the API. On the [Joys of Swagger UI](https://patentsview.historicip.com/swagger/articles/)
+* The API team created a [Swagger UI](patentsview-breaking-change.html#online-documentation) page for the new version of the API. 
+It has a nice feature where it will show you what the Request URL was for a GET request.
+The Request URL can be passed to `retrieve_linked_data` to see its output from the R package, 
+as explained below. On a POST request, it will show you the Curl command that will make
+the same request to the API.  It can be helpful to see the exact return from the API,
+making it possible to tell if the results weren't what you expected or if the R package
+is somehow misinterpreting them. On other [Joys of Swagger UI](https://patentsview.historicip.com/swagger/articles/)
 
 ## Issues
 
@@ -177,7 +183,6 @@ PVS-1377
 The sort field doesn't accept all unnested fields   
 The API throws errors when some fields are specified as the sort, e.g. patent_title at the
 patent endpoint.  39 other endpoint/field pairs currently fail.  See test_that("we can't sort by all fields") in test-api-bugs.R
-Add test cases?
 
 Unknown Reference Number  
 A sort field needs to be specified when paging results.  
@@ -189,7 +194,7 @@ in fields.  Awkard if no fields were specified)
 
 * [Two new methods](api-changes.html#additional-r-package-changes) were added to the R package
 
-* The reworked [ropensci post](ropensci_blog_post.html) explains what changes had to be made since assignee 
+* The reworked [ropensci post](ropensci-blog-post.html) explains what changes had to be made since assignee 
 latitude and longitude are no longer available from the patent endpoint.
 
 * A new vignette, inspired by the API team's jupyter notebook, was created showing two of the things it mentions
@@ -205,12 +210,26 @@ also matching the API's change
   ```{r}
 print(unique(fieldsdf[grep("/", fieldsdf$endpoint), "endpoint"]), row.names = FALSE)
   ```
+
+* There's a new, optional, include_pk parameter on get_fields() that defaults to FALSE.
+It's useful if you're planning on unnesting the return from search_pv().
+  ```{r}
+  fields <- get_fields(endpoint = "patent", groups = c("inventors"), include_pk = TRUE)
+  results <- search_pv(
+    query = '{"_gte":{"patent_date":"2007-01-04"}}',
+    fields = fields
+   )
+   unnest_pv_data(results$data)
+  ```
+
 * Under the covers, httr was changed to httr2 (see several mentions below).  This only matters to users if 
 they passed additional arguments (...) to search_pv().  Previously if they passed config = httr::timeout(40)
-they'd now pass timeout = 40 (name-value pairs of valid curl options, as found in curl::curl_options())
+they'd now pass timeout = 40 (name-value pairs of valid curl options, as found in `curl::curl_options()`)
 
 * Now that the R package is using httr2, users can make use of its last_request() method to see what was
-sent to the API.  This could be useful when trying to fix an invalid request.  Also fun, or useful when
+sent to the API.  This could be useful when trying to fix an invalid request. Note that when `all_pages = TRUE`
+the R package changes the sort parameter (details [here](result-set-paging.html)) and sets the 'after' 
+options parameter so the request shown might not be what you'd expect it to be.  Also fun, or useful, when
 reporting a bug, would be seeing the raw API response.
 ```
 httr2::last_request()
@@ -230,7 +249,7 @@ version of the R package can be installed via
 
   + On the new [implementation of paging](api-changes.html#a-note-on-paging) and the
 [PR discussion](https://github.com/ropensci/patentsview/pull/29#discussion_r1059153136) on paging with more than a primary sort.
-**This added a dependency to data.table.**  There is also a [new vignette](api-paging.html) on the new implementation of paging
+**This added a dependency to data.table.**  There is also a [new vignette](result-set-paging.html) on the new implementation of paging
 
   + The patent/otherreference endpoint isn't currently working (reported as a [bug](#otherreference) above).
 It isn't included in the return of get_endpoints() and has only a negative test case that will
@@ -269,11 +288,9 @@ specific code that may need modifying. A draft of a release is [here](https://gi
     * Add an issue template that warns users not to share their API key
     * Add a contributing.md or something that explains how to build everything, something like
 [Findings/Contributor 101](#findingscontributor-101) below
-    * Navigation on the vignettes could be better,  [understanding-the-api](understanding-the-api.html) isn't a link in the navigation yet,
-neither is the possible [tech note](patentsview-breaking-change.html) or the new
-vignette on [the new implementation of paging](api-paging.html)
+    * Navigation on the vignettes could be better, the possible [tech note](patentsview-breaking-change.html) and the reworked [ropensci blog post](ropensci-blog-post.html) aren't part of the navigation.
     * Not sure if there should be a monster comment in search_pv.R trying to explain 
-the new way of paging.  Possibly just say to see the new [api paging vignette](api-paging.html)?
+the new way of paging.  Possibly just say to see the new [api paging vignette](result-set-paging.html)?
     * [Sign up](https://coveralls.io/sign-up) for coveralls and add a code coverage badge?
     * httr2 improvements
        + Currently requests are set to be retried 19 times ```httr2::req_retry(max_tries = 20)```  Is this a reasonable
@@ -419,7 +436,7 @@ but the build will silently fail on r-universe.  Don't ask how I know that.
 
    + Should we add a row_limit or something?  We'd page our way and stop when the row_limit is met.  For someone wanting more than a 1000 rows but not necessarily all the rows, especially since
 there isn't the 100,000 row limitation now.  The API's ```after``` is now exposed 
-in search_pv() so users could do their own paging. See the new [paging vignette](api-paging.html)
+in search_pv() so users could do their own paging. See the new [paging vignette](result-set-paging.html)
 
 [^1]: Observation sent to the API team.
 [^2]: Observation sent to the API team.

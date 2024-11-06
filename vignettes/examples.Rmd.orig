@@ -56,8 +56,10 @@ query <- with_qfuns(
   )
 )
 
-# Create a field list by getting the inventors fields
-inv_fields <- get_fields(endpoint = "patent", groups="inventors")
+# Create a field list by getting the inventors fields- the primary key is needed
+# for unnest_pv_data()
+inv_fields <- get_fields(endpoint = "patent", groups="inventors", include_pk = TRUE)
+
 # Pull the data
 pv_out <- search_pv(query, fields = inv_fields, all_pages = TRUE, size = 1000)
 
@@ -87,7 +89,7 @@ We could also call the new version of the patent endpoint to find inventors who 
 Chicago, IL as their location when applying for a patent.
 
 ```{r}
-fields <- c("patent_id", get_fields('patent', groups="inventors"))
+fields <- get_fields('patent', groups="inventors", include_pk = TRUE)
 fields
 
 query <- '{"_and":[{"_text_phrase": {"inventors.inventor_city":"Chicago"}},
