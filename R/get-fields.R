@@ -18,6 +18,9 @@
 #'   (e.g., \code{unique(fieldsdf[fieldsdf$endpoint == "patent", "group"])}).
 #'   An empty string can also be specified to return all top level
 #'   (non-nested) fields for the endpoint.
+#' @param include_pk Boolean on whether to include the endpoint's primary key,
+#'    defaults to FALSE.  The primary key is needed if you plan on calling
+#'    \code{\link{unnest_pv_data}} on the results of \code{\link{search_pv}}
 #'
 #' @return A character vector with field names.
 #'
@@ -43,15 +46,34 @@
 #'   fields = fields
 #' )
 #' }
+#' # Get the nested inventors fields and the primary key in order to call unnest_pv_data
+#' # on the returned data.  unnest_pv_data would throw an error if the primary key was
+#' # not present in the results.
+#' fields <- get_fields(endpoint = "patent", groups = c("inventors"), include_pk = TRUE)
+#'
+#' \dontrun{
+#' # ...Then pass to search_pv and unnest the results
+#' results <- search_pv(
+#'   query = '{"_gte":{"patent_date":"2007-01-04"}}',
+#'   fields = fields
+#' )
+#' unnest_pv_data(results$data)
+#' }
 #'
 #' @export
-get_fields <- function(endpoint, groups = NULL) {
+get_fields <- function(endpoint, groups = NULL, include_pk = FALSE) {
   validate_endpoint(endpoint)
   if (is.null(groups)) {
     fieldsdf[fieldsdf$endpoint == endpoint, "field"]
   } else {
     validate_groups(endpoint, groups = groups)
-    fieldsdf[fieldsdf$endpoint == endpoint & fieldsdf$group %in% groups, "field"]
+    # don't include pk if unnested ("") groups are requested (pk would be an unnested field)
+    extra_field <- if (include_pk && !"" %in% groups) get_ok_pk(endpoint = endpoint) else NULL
+
+    c(
+      extra_field,
+      fieldsdf[fieldsdf$endpoint == endpoint & fieldsdf$group %in% groups, "field"]
+    )
   }
 }
 

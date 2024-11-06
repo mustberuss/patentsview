@@ -12,4 +12,11 @@ test_that("get_fields works as expected", {
     "groups for the patent endpoint",
     fixed = TRUE
   )
+
+  patent_pk <- get_ok_pk("patent")
+  fields <- get_fields(endpoint = "patent", groups = c("inventors"))
+  expect_false(patent_pk %in% fields)
+
+  fields <- get_fields(endpoint = "patent", groups = c("inventors"), include_pk = TRUE)
+  expect_true(patent_pk %in% fields)
 })
