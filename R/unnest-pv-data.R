@@ -4,17 +4,19 @@
 #' in \code{\link{unnest_pv_data}}, based on the endpoint you searched.
 #' It will return a potential unique identifier for a given entity (i.e., a
 #' given endpoint). For example, it will return "patent_id" when
-#' \code{endpoint = "patent"}.
+#' \code{endpoint_or_entity = "patent"}.  It would return the same value if 
+#' the entity name "patents" was passed via \code{get_ok_pk(names(pv_return$data))}
+#' where pv_return was returned from \code{\link{search_pv}}.
 #'
-#' @param endpoint The endpoint which you would like to know a potential primary
-#'   key for.
+#' @param endpoint_or_entity The endpoint or entity name for which you
+#' would like to know a potential primary key for.
 #'
 #' @return The name of a primary key (\code{pk}) that you could pass to
 #'   \code{\link{unnest_pv_data}}.
 #'
 #' @examples
-#' get_ok_pk(endpoint = "inventor") # Returns "inventor_id"
-#' get_ok_pk(endpoint = "cpc_group") # Returns "cpc_group_id"
+#' get_ok_pk(endpoint_or_entity = "inventor") # Returns "inventor_id"
+#' get_ok_pk(endpoint_or_entity = "cpc_group") # Returns "cpc_group_id"
 #'
 #' @export
 get_ok_pk <- function(endpoint_or_entity) {
