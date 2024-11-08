@@ -12,8 +12,7 @@ corrections <- read.table(
   patent assignees.assignee_type int
   patent/us_application_citation citation_document_number int
   publication assignees.assignee_type int
-  publication rule_47_flag bool
-  publication/rel_app_text document_number int",
+  publication rule_47_flag bool",
   header = TRUE,
   stringsAsFactors = FALSE
 )

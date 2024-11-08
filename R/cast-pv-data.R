@@ -91,10 +91,18 @@ cast_one <- function(one, name, typesdf) UseMethod("cast_one")
 cast_pv_data <- function(data) {
   validate_pv_data(data)
 
+  rel_app_text_eps <- c("patent/rel_app_text", "publication/rel_app_text")
+
   entity_name <- names(data) # preserve insanity, singular/plural/nonsensical name
   endpoint <- endpoint_from_entity(entity_name)
 
-  typesdf <- fieldsdf[fieldsdf$endpoint == endpoint, c("common_name", "data_type")]
+  if (endpoint %in% rel_app_text_eps) {
+    # blend the fields from both rel_app_texts entities
+    typesdf <- fieldsdf[fieldsdf$endpoint %in% rel_app_text_eps, c("common_name", "data_type")]
+    typesdf <- unique(typesdf)
+  } else {
+    typesdf <- fieldsdf[fieldsdf$endpoint == endpoint, c("common_name", "data_type")]
+  }
 
   df <- data[[1]]
 

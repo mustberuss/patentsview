@@ -51,57 +51,49 @@ validate_pv_data <- function(data) {
 
 #' @noRd
 to_singular <- function(plural) {
-  # assignees is an exception, singular isn't assigne
-  # wipo endpoint returns singluar wipo as the entity
-  # attorneys accidently works
+  # ipcr and wipo are funky exceptions.  On assignees and other_references
+  # we only want to remove the "s", not the "es"
 
-  if (plural == "wipo") {
+  if (plural == "ipcr") {
+    singular <- "ipc"
+  } else if (plural == "wipo") {
     singular <- plural
-  } else if (endsWith(plural, "es") && !endsWith(plural, "ees")) {
+  } else if (endsWith(plural, "classes")) {
     singular <- sub("es$", "", plural)
   } else {
     singular <- sub("s$", "", plural)
   }
+  singular
 }
 
 
 #' @noRd
 to_plural <- function(singular) {
-  # wipo endpoint returns singluar wipo as the entity
-  # attorneys not attorneies
+  # wipo endpoint returns singular wipo as the entity
 
   # remove the patent/ and publication/ from nested endpoints when present
-  singular <- sub("^patent/", "", singular)
-  singular <- sub("^publication/", "", singular)
+  singular <- sub("^(patent|publication)/", "", singular)
 
-  if (singular == "wipo") {
+  if (singular == "ipc") {
+    plural <- "ipcr"
+  } else if (singular == "wipo") {
     plural <- singular
-  } else if (singular == "attorney") {
-    plural <- "attorneys"
   } else if (endsWith(singular, "s")) {
     plural <- paste0(singular, "es")
   } else {
     plural <- paste0(singular, "s")
   }
+  plural
 }
 
 #' @noRd
 endpoint_from_entity <- function(entity) {
   # needed for casting to work with singular endpoints and mostly plural entities
 
-  if (entity == "rel_app_text_publications") {
-    "publication/rel_app_texts"
-  } else if (entity == "other_reference") { # broken endpoint
-    "patent/otherreference" # nocov
-  } else {
-    singular <- to_singular(entity)
+  # we can't distinguish rel_app_texts, could be from patent/rel_app_text or
+  # publication/rel_app_text
+  singular <- to_singular(entity)
+  nested <- nrow(fieldsdf[fieldsdf$endpoint == singular, ]) == 0
 
-    # figure out if the endpoint is nested
-    nested <- c(
-      "attorney", "foreign_citation", "us_application_citation",
-      "us_patent_citation", "rel_app_text"
-    )
-
-    if (singular %in% nested) paste0("patent/", singular) else singular
-  }
+  if (nested) paste0("patent/", singular) else singular
 }

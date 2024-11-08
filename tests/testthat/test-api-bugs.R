@@ -8,20 +8,6 @@ add_base_url <- function(x) {
   paste0("https://search.patentsview.org/api/v1/", x)
 }
 
-test_that("invalid fields are accepted", {
-  skip_on_cran()
-  skip_on_ci()
-
-  # reported to the API team PVS-1306
-  # The API accepts invalid fields that start out looking like valid fields
-  # This test will fail when the API throws an error
-  results <- retrieve_linked_data(
-    'https://search.patentsview.org/api/v1/patent/?q={"patent_idd":"10000000"}&f=["patent_iddddddddddddd", "patent_dateagogo"]'
-  )
-
-  expect_equal(results$query_results$total_hits, 0)
-})
-
 test_that("there is case sensitivity on string equals", {
   skip_on_cran()
   skip_on_ci()
@@ -99,6 +85,9 @@ test_that("API returns all requested groups", {
     , "draw_desc_text" # Error: Invalid field: description_sequence
     , "cpc_subclass" # 404?  check the test query
     , "uspc_subclass" # 404
+    , "assignee" # Invalid field: assignee_years.num_patents. assignee_years is not a nested field
+    , "inventor" # Invalid field: inventor_years.num_patents.
+    , "pg_claim" # Invalid field: claim_dependent
   )
 
   mismatched_returns <- c(
@@ -106,8 +95,7 @@ test_that("API returns all requested groups", {
     "publication"
   )
 
-  good_eps <- eps[!eps %in% bad_eps]
-  good_eps <- good_eps[!good_eps %in% mismatched_returns]
+  good_eps <- eps[!eps %in% c(mismatched_returns, bad_eps)]
 
   z <- lapply(good_eps, function(x) {
     print(x)
@@ -126,16 +114,9 @@ test_that("API returns all requested groups", {
     # we now need to unnest the endpoints for the comparison to work
     expected_groups <- gsub("^(patent|publication)/", "", expected_groups)
 
-
-    # for "publication/rel_app_text" the expected group is really "rel_app_text_publications"
-    # which doesn't match the endpoint
-    if (x == "publication/rel_app_text") {
-      expected_groups <- replace(expected_groups, expected_groups == "", "rel_app_text_publications")
-    } else {
-      # the expected group for unnested attributes would be "" in actuality the come back
-      # in an entity matching the plural form of the unnested endpoint
-      expected_groups <- replace(expected_groups, expected_groups == "", to_plural(x))
-    }
+    # the expected group for unnested attributes would be "" in actuality they come back
+    # in an entity matching the plural form of the unnested endpoint
+    expected_groups <- replace(expected_groups, expected_groups == "", to_plural(x))
 
     expect_setequal(actual_groups, expected_groups)
     show_failure(expect_setequal(actual_groups, expected_groups))
@@ -375,4 +356,17 @@ test_that("missing patents are still missing", {
 
   # This would fail if these patents are added to the patentsview database
   expect_equal(results$query_results$total_hits, 0)
+})
+
+test_that("we can't request assignee_years.num_patents", {
+  skip_on_cran()
+
+  expect_error(
+    pv_out <- search_pv(
+      query = '{"_text_phrase":{"assignee_individual_name_last": "Clinton"}}',
+      endpoint = "assignee",
+      fields = get_fields("assignee")
+    ),
+    "Invalid field: assignee_years.num_patents"
+  )
 })

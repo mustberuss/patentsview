@@ -1,6 +1,6 @@
 eps <- get_endpoints()
 
-test_that("", {
+test_that("we can unnest all entities", {
   skip_on_cran()
 
   # TODO(any): add back fields = get_fields(x)
@@ -10,7 +10,7 @@ test_that("", {
   bad_eps <- c(
     "location", "cpc_subclass",
     "uspc_subclass", "uspc_mainclass", "wipo",
-    "claim", "draw_desc_text"
+    "claim", "draw_desc_text", "pg_claim"
   )
 
   good_eps <- eps[!eps %in% bad_eps]
@@ -18,20 +18,13 @@ test_that("", {
   z <- lapply(good_eps, function(x) {
     print(x)
 
-    # the groups are different for the two rel_app_texts endpoints
-    # from the current OpenAPI object
-    #      "rel_app_texts": {
-    #      "rel_app_text_publications": {
-
-    # group for publication/rel_app_texts is publication/rel_app_text_publications
-    # which doesn't match the endpoint as it does for the endpoints
-    # g <- if (x == "publication/rel_app_texts") "publication/rel_app_text_publications" else x
-
     pv_out <- search_pv(
       query = TEST_QUERIES[[x]],
       endpoint = x,
       fields = get_fields(x, group = "") # requesting non-nested attributes
     )
+
+    expect_gt(pv_out$query_results$total_hits, 0) # check that the query worked
     unnest_pv_data(pv_out[["data"]])
   })
 
@@ -51,4 +44,32 @@ test_that("", {
 
   # make it noticeable that all is not right with the API
   skip("Skip for API bugs") # TODO: remove when the API is fixed/bad_eps removed
+})
+
+test_that("endpoint's pks match their entity's pks", {
+  skip_on_cran()
+
+  # these to endpoints return the same entity, rel_app_texts so can't
+  # so we can't determine the endpoint from the entity like we can
+  # for the other endpoints
+  overloaded_entities <- c("patent/rel_app_text", "publication/rel_app_text")
+  bad_endpoints <- c("uspc_subclass", "cpc_subclass", "uspc_mainclass", "wipo")
+  good_eps <- eps[!eps %in% c(bad_endpoints, overloaded_entities)]
+
+  endpoint_pks <- lapply(good_eps, function(endpoint) {
+    print(endpoint)
+    get_ok_pk(endpoint)
+  })
+
+  entity_pks <- lapply(good_eps, function(endpoint) {
+    result <- search_pv(TEST_QUERIES[[endpoint]], endpoint = endpoint)
+    get_ok_pk(names(result$data))
+  })
+
+  expect_equal(endpoint_pks, entity_pks)
+
+  # test here that we can get the endpoints from the entities?
+  # or test for that in util's test of endpoint_from_entity?
+
+  # add expect errors for bad_endpoints
 })

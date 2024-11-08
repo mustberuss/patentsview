@@ -23,7 +23,7 @@ test_that("coverage todo: move", {
   )
 })
 
-test_that("we can cast some of the new endpoints", {
+test_that("we can cast the endpoints that return the same entity", {
   skip_on_cran()
 
   endpoints <- c("patent/rel_app_text", "publication/rel_app_text")

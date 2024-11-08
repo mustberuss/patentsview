@@ -29,10 +29,16 @@ test_that("validate_args throws errors for all bad args", {
     search_pv('{"patent_date":["1976-01-06"]}', error_browser = "chrome"),
     class = "lifecycle_warning_deprecated"
   )
+
+  per_page <- 17
   expect_warning(
-    search_pv('{"patent_date":["1976-01-06"]}', per_page = 50),
+    results <- search_pv('{"patent_date":["1976-01-06"]}', per_page = per_page),
     class = "lifecycle_warning_deprecated"
   )
+
+  # make sure the size attribute was set from the per_page parameter
+  expect_equal(per_page, nrow(results$data$patents))
+
   expect_warning(
     search_pv('{"patent_date":["1976-01-06"]}', page = 2),
     class = "lifecycle_warning_deprecated" # unsupported page parameter

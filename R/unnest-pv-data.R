@@ -17,36 +17,18 @@
 #' get_ok_pk(endpoint = "cpc_group") # Returns "cpc_group_id"
 #'
 #' @export
-get_ok_pk <- function(endpoint) {
-  # most of the nested endpoints use patent_id, except patent/attorney uses "attorney_id"
-  # publications (unnested) uses document_number
-  use_document_number <- c(
-    # if endpoint is passed
-    "publication", "publication/rel_app_text",
-
-    # if names(pv_out[["data"]]) passed
-    "publications", "rel_app_text_publications"
-  )
-
-  use_patent_id <- c(
-    # if endpoint passed
-    "patent/us_application_citation", "patent/us_patent_citation",
-    "patent/rel_app_text", "patent/foreign_citation", "patent/rel_app_text",
-    "publication/rel_app_text",
-
-    # if names(pv_out[["data"]]) passed
-    "us_application_citations", "us_patent_citations", "foreign_citations",
-    "rel_app_texts", "patents", "brf_sum_texts", "detail_desc_texts",
-    "draw_desc_texts"
-  )
-  if (endpoint %in% use_document_number) {
-    "document_number"
-  } else if (endpoint %in% use_patent_id) {
-    "patent_id"
+get_ok_pk <- function(endpoint_or_entity) {
+  endpoint_df <- fieldsdf[fieldsdf$endpoint == endpoint_or_entity, ]
+  if (nrow(endpoint_df) > 0) {
+    endpoint <- endpoint_or_entity
   } else {
-    key <- to_singular(endpoint)
-    paste0(key, "_id")
+    endpoint <- endpoint_from_entity(endpoint_or_entity)
+    endpoint_df <- fieldsdf[fieldsdf$endpoint == endpoint, ]
   }
+
+  unnested_endpoint <- sub("^(patent|publication)/", "", endpoint)
+  possible_pks <- c("patent_id", "document_number", paste0(unnested_endpoint, "_id"))
+  endpoint_df[endpoint_df$field %in% possible_pks, "field"]
 }
 
 #' Unnest PatentsView data
@@ -87,6 +69,12 @@ unnest_pv_data <- function(data, pk = get_ok_pk(names(data))) {
   validate_pv_data(data)
 
   df <- data[[1]]
+
+  # now there are two endpoints that return rel_app_texts entities
+  if (names(data) == "rel_app_texts") {
+    # we would have guessed patent_id as the pk, adjust if we were wrong
+    pk <- if ("document_number" %in% names(df)) "document_number" else pk
+  }
 
   asrt(
     pk %in% colnames(df),

@@ -26,10 +26,11 @@ test_that("cast_pv_data casts assignee fields as expected", {
   skip_on_cran()
   skip_on_ci()
 
+  # **  Invalid field: assignee_years.num_patents. assignee_years is not a nested field
   pv_out <- search_pv(
     query = '{"_text_phrase":{"assignee_individual_name_last": "Clinton"}}',
     endpoint = "assignee",
-    fields = get_fields("assignee")
+    fields = get_fields("assignee", groups = "") # **
   )
 
   dat <- cast_pv_data(data = pv_out$data)
@@ -52,7 +53,7 @@ test_that("cast_pv_data casts assignee fields as expected", {
   expect_true(cast_date)
   expect_true(years_active)
 
-  #  expect_true(date && assignee_type && years_active)
+  skip("Skip for API bugs")
 })
 
 test_that("we can cast a bool", {

@@ -76,10 +76,10 @@ that cast-pv-data casts to integers.[^2] [Additional details](getting-started.ht
      |endpoint|returned entity|
      |--------|---------------|
      |ipc|ipcr|
-     |otherreference|other_references[^5]|
      |wipo|wipo|
-     |publication/rel_app_text|rel_app_text_publications| 
-     (Note that patent/rel_app_text returns rel_app_texts, following the singular/plural pattern)
+
+   +  Two endpoints, publication/rel_app_text and patent/|rel_app_text return the same
+entity, rel_app_texts.
 
    + Not exactly an oddity, but with no better place for this, here's a comparison of the old and 
 new attributes that can be sent to the API in its o: (options) parameter via search_pv()
@@ -131,7 +131,7 @@ you may want to use [ppubs](https://ppubs.uspto.gov/pubwebapp/) or some other sy
 Weirdly, you can only view bugs you've submitted.  Based on the digits in the reference number, I'm assuming 
 there are other open bugs.
 
-PVS-1109 <a name="otherreference">  
+~~PVS-1109~~ This is fixed <a name="otherreference">  
 The otherreference endpoint rejects the default [Swagger UI](https://search.patentsview.org/swagger-ui/) parameters (throws a 400 Bad Request Error if
 either reference_sequence or reference_text is requested) and returns no data when only
 patent_id is requested. See test_that("the otherreferences endpoint is still broken") in test-api-bugs.R
@@ -146,7 +146,7 @@ PVS-1147 <a name="case-dependent">
 Results are case dependent now when using an implied or explicit equals
 See test_that("there is case sensitivity on string equals") in test-api-bugs.R
 
-PVS-1155  
+~~PVS-1155~~ This is fixed  
 Documentation inconsistencies  
 The endpoint is listed as /api/v1/attorney/, it should be /api/v1/patent/attorney for the GET/POST and /api/v1/patent/attorney/{attorney_id}/ for the GET with a url parameter
 The beta endpoints say they are only GETs. The Swagger UI page and OpenAPI object say they accept posts too, which do work.
@@ -166,7 +166,7 @@ openapi.json errors
 
 * Most of the document_numbers are integers but from publication/rel_app_text it's a string as is citation_document_number from patent/us_application_citation
 
-PVS-1306  
+~~PVS-1306~~  Seems to be fixed  
 The API accepts invalid fields  
 The API accepts invalid fields that start out looking like valid fields when it should throw an error. 
 Ex f: is["patent_iddddddddddddd", "patent_dateagogo"] and q: is {"patent_idd":"10000000"} with this result: { "error": false, "count": 0, "total_hits": 0, "patents": [] }
@@ -189,6 +189,13 @@ A sort field needs to be specified when paging results.
 This was mentioned as a bug in the [API's forum](https://patentsview.org/forum/7/topic/804#comment-749).
 It causes some awkardness in search_pv (we add a sort field and the primary key if not included
 in fields.  Awkard if no fields were specified)
+
+Unknown Reference Number  
+Paging seems broken with the most recent release but I'm not able to report it yet.
+test_that("the 'after' parameter works properly") in test-search-pv.R broke.
+Its first request has a total_hits of 3003 with 1000 rows returned but the
+subsequent request returns 399 rows.
+
 
 ## State of the R Package
 
@@ -214,12 +221,12 @@ print(unique(fieldsdf[grep("/", fieldsdf$endpoint), "endpoint"]), row.names = FA
 * There's a new, optional, include_pk parameter on get_fields() that defaults to FALSE.
 It's useful if you're planning on unnesting the return from search_pv().
   ```{r}
-  fields <- get_fields(endpoint = "patent", groups = c("inventors"), include_pk = TRUE)
-  results <- search_pv(
-    query = '{"_gte":{"patent_date":"2007-01-04"}}',
-    fields = fields
-   )
-   unnest_pv_data(results$data)
+fields <- get_fields(endpoint = "patent", groups = c("inventors"), include_pk = TRUE)
+results <- search_pv(
+  query = '{"_gte":{"patent_date":"2007-01-04"}}',
+  fields = fields
+)
+unnest_pv_data(results$data)
   ```
 
 * Under the covers, httr was changed to httr2 (see several mentions below).  This only matters to users if 
@@ -316,12 +323,15 @@ Helpful info after you've forked https://github.com/ropensci/patentsview
 
 * API related
 
-  + Updated versions of the new API are unannounced for the most part, maybe on a three week release cycle, often on 
+  + Updated versions of the new API are unannounced for the most part, maybe on a three 
+or four week release cycle, often on 
 Saturdays.  I do head requests from time to time on the [API's OpenAPI object](https://search.patentsview.org/static/openapi.json)
 to detect when its Last-Modified changes. When it changes, I back up data-raw/fieldsdf.csv, run data-raw/fieldsdf.R and 
 compare the backed up fieldsdf.csv to the new one to see if anything changed. If it did change, I'll do a
 local build and run all of the tests to see what happens and push any changes to keep the tests passing.
-Quarterly or so they'll update https://patentsview.org/release-notes
+Quarterly or so they'll update https://patentsview.org/release-notes  Another indication of
+a release is that their support page stops working for a day or two, guessing while they 
+plan their next sprint.
 
   + Report API suggestions/bugs etc [here](https://patentsview-support.atlassian.net/servicedesk/customer/portals)
 or Community -> Support using the nav on [patentsview.org](httsp://patentsview.org)
@@ -442,6 +452,5 @@ in search_pv() so users could do their own paging. See the new [paging vignette]
 [^2]: Observation sent to the API team.
 [^3]: There isn't a data dictionary for the API so I suggested they create one.
 [^4]: Observation sent to the API team but they might not see it as a bug.
-[^5]: To be fixed by the API team
 [^6]: To be fixed by the API team
 [^7]: Observation sent to the API team.

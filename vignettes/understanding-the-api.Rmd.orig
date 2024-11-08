@@ -173,12 +173,6 @@ display_inventors <-
 display_inventors
 
 ```
-## Subtle Exceptions
-
-It's not directly mentioned, but toward the top of the notebook, the publication/rel_app_text endpoint appears in the
-special_keys hash. Its entity is a rel_app_text_publications.  There's a similar patent/rel_app_text
-endpoint whose entity is rel_app_texts.  Generally the entity is the plural form of the
-singular endpoint, special_keys lists the exceptions to that rule, as the code shows.
 
 ## Acknowledgment
 
