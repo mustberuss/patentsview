@@ -51,8 +51,15 @@ retrieve_linked_data(
   "https://search.patentsview.org/api/v1/cpc_group/G01S7:4811/"
 )
 
+endpoint_url <- "https://search.patentsview.org/api/v1/patent/"
+q_param <- '?q={"_text_any":{"patent_title":"COBOL cotton gin"}}'
+s_and_o_params <- '&s=[{"patent_id": "asc" }]&o={"size":50}'
+f_param <- '&f=["inventors.inventor_name_last","patent_id","patent_date","patent_title"]'
+# (URL broken up to avoid a long line warning in this Rd)
+
 retrieve_linked_data(
-  'https://search.patentsview.org/api/v1/patent/?q={"_text_any":{"patent_title":"COBOL cotton gin"}}&s=[{"patent_id": "asc" }]&o={"size":50}&f=["inventors.inventor_name_last","patent_id","patent_date","patent_title"]'
+  paste0(endpoint_url, q_param, s_and_o_params, f_param)
+  
 )
 
 retrieve_linked_data(

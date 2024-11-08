@@ -190,8 +190,15 @@ the page returned to you).</p></dd>
 <span class="r-in"><span>  <span class="st">"https://search.patentsview.org/api/v1/cpc_group/G01S7:4811/"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">endpoint_url</span> <span class="op">&lt;-</span> <span class="st">"https://search.patentsview.org/api/v1/patent/"</span></span></span>
+<span class="r-in"><span><span class="va">q_param</span> <span class="op">&lt;-</span> <span class="st">'?q={"_text_any":{"patent_title":"COBOL cotton gin"}}'</span></span></span>
+<span class="r-in"><span><span class="va">s_and_o_params</span> <span class="op">&lt;-</span> <span class="st">'&amp;s=[{"patent_id": "asc" }]&amp;o={"size":50}'</span></span></span>
+<span class="r-in"><span><span class="va">f_param</span> <span class="op">&lt;-</span> <span class="st">'&amp;f=["inventors.inventor_name_last","patent_id","patent_date","patent_title"]'</span></span></span>
+<span class="r-in"><span><span class="co"># (URL broken up to avoid a long line warning in this Rd)</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">retrieve_linked_data</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="st">'https://search.patentsview.org/api/v1/patent/?q={"_text_any":{"patent_title":"COBOL cotton gin"}}&amp;s=[{"patent_id": "asc" }]&amp;o={"size":50}&amp;f=["inventors.inventor_name_last","patent_id","patent_date","patent_title"]'</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">endpoint_url</span>, <span class="va">q_param</span>, <span class="va">s_and_o_params</span>, <span class="va">f_param</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  </span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">retrieve_linked_data</span><span class="op">(</span></span></span>
