@@ -4,7 +4,7 @@
 \alias{get_ok_pk}
 \title{Get OK primary key}
 \usage{
-get_ok_pk(endpoint)
+get_ok_pk(endpoint_or_entity)
 }
 \arguments{
 \item{endpoint}{The endpoint which you would like to know a potential primary

@@ -252,12 +252,12 @@ or two dollar bills in the US.</p>
 <span></span>
 <span><span class="va">patents_query</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">or</a></span><span class="op">(</span></span>
-<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
+<span>    <span class="fu">or</span><span class="op">(</span></span>
+<span>      <span class="fu">and</span><span class="op">(</span></span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_first <span class="op">=</span> <span class="st">"George"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_last <span class="op">=</span> <span class="st">"Washington"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span>,</span>
-<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
+<span>      <span class="fu">and</span><span class="op">(</span></span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_first <span class="op">=</span> <span class="st">"Thomas"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_last <span class="op">=</span> <span class="st">"Jefferson"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span></span>
@@ -316,12 +316,12 @@ jupyter notebook suggests.</p>
 <code class="sourceCode R"><span></span>
 <span><span class="va">inventors_query</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">or</a></span><span class="op">(</span></span>
-<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
+<span>    <span class="fu">or</span><span class="op">(</span></span>
+<span>      <span class="fu">and</span><span class="op">(</span></span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventor_name_first <span class="op">=</span> <span class="st">"George"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventor_name_last <span class="op">=</span> <span class="st">"Washington"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span>,</span>
-<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
+<span>      <span class="fu">and</span><span class="op">(</span></span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventor_name_first <span class="op">=</span> <span class="st">"Thomas"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventor_name_last <span class="op">=</span> <span class="st">"Jefferson"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span></span>
@@ -361,7 +361,7 @@ not necessarily both occur on the same inventor.)</p>
 <span><span class="co"># Also, the API's sort on patent_id, a string field, puts 10568228 first at the time of </span></span>
 <span><span class="co"># this writing.  Would that be a bug or feature?  Below we'll apply our own sort</span></span>
 <span><span class="va">dl</span><span class="op">$</span><span class="va">patents</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="co">#&gt; [1] "10568228"</span></span>
+<span><span class="co">#&gt; [1] "4078607"</span></span>
 <span></span>
 <span><span class="co"># we'll repeat the same filter we used on the first query's results</span></span>
 <span><span class="va">display_inventors</span> <span class="op">&lt;-</span> </span>
@@ -382,16 +382,6 @@ not necessarily both occur on the same inventor.)</p>
 <span><span class="co">#&gt; 8    6881337              George         Washington</span></span>
 <span><span class="co">#&gt; 9    7144505              George         Washington</span></span>
 <span><span class="co">#&gt; 10  10568228      George Elliott         Washington</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="subtle-exceptions">Subtle Exceptions<a class="anchor" aria-label="anchor" href="#subtle-exceptions"></a>
-</h2>
-<p>It’s not directly mentioned, but toward the top of the notebook, the
-publication/rel_app_text endpoint appears in the special_keys hash. Its
-entity is a rel_app_text_publications. There’s a similar
-patent/rel_app_text endpoint whose entity is rel_app_texts. Generally
-the entity is the plural form of the singular endpoint, special_keys
-lists the exceptions to that rule, as the code shows.</p>
 </div>
 <div class="section level2">
 <h2 id="acknowledgment">Acknowledgment<a class="anchor" aria-label="anchor" href="#acknowledgment"></a>

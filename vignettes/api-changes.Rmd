@@ -46,20 +46,20 @@ search_pv('{"patent_type":"utility"}', all_pages = FALSE )
 #> 
 #> List of 1
 #>  $ patents:'data.frame':	1000 obs. of  3 variables:
-#>   ..$ patent_id   : chr [1:1000] "10000000" ...
-#>   ..$ patent_title: chr [1:1000] "Coherent LADAR using intra-pixel quadrature"..
-#>   ..$ patent_date : chr [1:1000] "2018-06-19" ...
+#>   ..$ patent_id   : chr [1:1000] "3930271" ...
+#>   ..$ patent_title: chr [1:1000] "Golf glove" ...
+#>   ..$ patent_date : chr [1:1000] "1976-01-06" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 8,044,869, count = 1,000
+#> total_hits = 8,123,346, count = 1,000
 ```
 
 * Endpoint Changes
    - nber_subcategories went away- it was an endpoint in the original version of the API
    - Endpoints are now singular, ex. patent not patents.  The returned entities are still plural for the most part.
-   - Now there are [23 endpoints](#endpoints), up from the original 7
+   - Now there are [27 endpoints](#endpoints), up from the original 7
 &nbsp;  
 
 * Comparison of the old and new attributes that can be sent to the API in its o: (options)
@@ -180,13 +180,17 @@ httr::add_headers("X-Api-Key" = api_key)
 ```
 
 ### Endpoints <a name="endpoints">
- Now there are 23 endpoints, up from the original 7, and each returns a smaller, more specific data structure pertinent to that endpoint. As an example, previously the inventor endpoint could return assignee information, it no longer does that.  The exception is the patent endpoint.  It now can return assignees, inventors, cpc_current along with patent specific fields.  Note that some new endpoints are nested under patent/ and one is under publication/
+ Now there are 27 endpoints, up from the original 7, and each returns a smaller, more specific data structure pertinent to that endpoint. As an example, previously the inventor endpoint could return assignee information, it no longer does that.  The exception is the patent endpoint.  It now can return assignees, inventors, cpc_current along with patent specific fields.  Note that some new endpoints are nested under patent/ and one is under publication/
 
-1. There are 15 totally new endpoints
-   -  /api/v1/brf_sum_text/
-   -  /api/v1/claim/
-   -  /api/v1/detail_desc_text/
-   -  /api/v1/draw_desc_text/
+1. There are 19 totally new endpoints
+   -  /api/v1/g_brf_sum_text/
+   -  /api/v1/g_claim/
+   -  /api/v1/g_detail_desc_text/
+   -  /api/v1/g_draw_desc_text/
+   -  /api/v1/pg_brf_sum_text/
+   -  /api/v1/pg_claim/
+   -  /api/v1/pg_detail_desc_text/
+   -  /api/v1/pg_draw_desc_text/
    -  /api/v1/ipc/
    -  /api/v1/uspc_subclass/
    -  /api/v1/patent/attorney/
@@ -212,9 +216,8 @@ httr::add_headers("X-Api-Key" = api_key)
 
 #### Things to note <a name="things-to-note">
 
-1. Four of the new endpoints, brf_sum_text, claims, draw_desc_text and detail_desc_text, are marked 'beta' on the [Swagger UI page](#swagger-ui-page) and their data is not fully populated.  See this [page](https://search.patentsview.org/docs/docs/Search%20API/TextEndpointStatus) to see what data is currently populated.  The [API documentation](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#brief-summary-text) says these 4 endpoint are GET only, though they do respond to POSTs[^4].
 1. Currently some endpoints do not return all the attributes listed in the API’s OpenAPI object. Some throw 500 errors when requested[^1] (see test-api-bugs.R)
-1. There are two rel_app_text endpoints, one under patent/ and one under publication/ They return different entities, rel_app_texts (patent) and rel_app_text_publications (publication)
+1. There are two rel_app_text endpoints, one under patent/ and one under publication/ They both return rel_app_texts entities
 1. Some endpoints now return [HATEOAS links](#HATEOAS)
 1. Some fields went away, like rawinventor_first_name and rawinventor_last_name, and some have new names, most significantly, patent_number is now patent_id. Requesting patent_number will result in an error being thrown. Note also that the CPC related fields have new names, see the next section.
 
@@ -336,7 +339,7 @@ search_pv('{"cpc_group_id": "A01B1/00"}', endpoint = 'cpc_group')
 
   # but note that the fields came back without the _id
   print(res$data$patents$assignees[[1]]$assignee) # not $assignee_id as requested
-#> [1] "https://search.patentsview.org/api/v1/assignee/aeef7c1f-e757-467f-8e07-289dc8c6ed95/"
+#> [1] "https://search.patentsview.org/api/v1/assignee/b06175c5-768b-43af-bb65-1978370e6ce2/"
 
   print(res$data$patents$inventors[[1]]$inventor) # not $inventor_id as requested
 #> [1] "https://search.patentsview.org/api/v1/inventor/fl:jo_ln:marron-5/"
@@ -394,14 +397,14 @@ search_pv(query1)
 #> 
 #> List of 1
 #>  $ patents:'data.frame':	1000 obs. of  3 variables:
-#>   ..$ patent_id   : chr [1:1000] "10000747" ...
-#>   ..$ patent_title: chr [1:1000] "Endoglycosidase mutants for glycoprotein re"..
-#>   ..$ patent_date : chr [1:1000] "2018-06-19" ...
+#>   ..$ patent_id   : chr [1:1000] "3937418" ...
+#>   ..$ patent_title: chr [1:1000] "Retractable dog leash" ...
+#>   ..$ patent_date : chr [1:1000] "1976-02-10" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 3,652, count = 1,000
+#> total_hits = 3,706, count = 1,000
 
 search_pv(query2)
 #> $data
@@ -409,48 +412,45 @@ search_pv(query2)
 #> 
 #> List of 1
 #>  $ patents:'data.frame':	1000 obs. of  3 variables:
-#>   ..$ patent_id   : chr [1:1000] "10028486" ...
-#>   ..$ patent_title: chr [1:1000] "Lightweight flexible dog shoes" ...
-#>   ..$ patent_date : chr [1:1000] "2018-07-24" ...
+#>   ..$ patent_id   : chr [1:1000] "3937418" ...
+#>   ..$ patent_title: chr [1:1000] "Retractable dog leash" ...
+#>   ..$ patent_date : chr [1:1000] "1976-02-10" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 2,075, count = 1,000
+#> total_hits = 2,115, count = 1,000
 ```
 
-hitting the brf_sum_text endpoint:
+hitting the g_brf_sum_text endpoint:
 
 ``` r
 query1 <- '{"_contains":{"summary_text":"paper cup holder"}}'
 query2 <- '{"_text_phrase":{"summary_text":"paper cup holder"}}'
 
-search_pv(query1, endpoint="brf_sum_text")
+search_pv(query1, endpoint="g_brf_sum_text")
 #> $data
-#> #### A list with a single data frame on brf_sum_texts level:
+#> #### A list with a single data frame on g_brf_sum_texts level:
 #> 
 #> List of 1
-#>  $ brf_sum_texts: list()
+#>  $ g_brf_sum_texts: list()
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
 #> total_hits = 0, count = 0
 
-search_pv(query2, endpoint="brf_sum_text")
+search_pv(query2, endpoint="g_brf_sum_text")
 #> $data
-#> #### A list with a single data frame on brf_sum_texts level:
+#> #### A list with a single data frame on g_brf_sum_texts level:
 #> 
 #> List of 1
-#>  $ brf_sum_texts:'data.frame':	1 obs. of  3 variables:
-#>   ..$ patent_id      : chr "11530080"
-#>   ..$ summary_text   : chr "FIELD OF THE INVENTION\n\nThe invention relates t"..
-#>   ..$ document_number: num 2.02e+10
+#>  $ g_brf_sum_texts: list()
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 1, count = 1
+#> total_hits = 0, count = 0
 ```
 
 

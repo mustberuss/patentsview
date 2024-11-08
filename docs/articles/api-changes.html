@@ -211,14 +211,14 @@ total_hits, in the previous version of the API this was capped at
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
 <span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  3 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id   : chr [1:1000] "10000000" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_title: chr [1:1000] "Coherent LADAR using intra-pixel quadrature"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_date : chr [1:1000] "2018-06-19" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_id   : chr [1:1000] "3930271" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_title: chr [1:1000] "Golf glove" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_date : chr [1:1000] "1976-01-06" ...</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 8,044,869, count = 1,000</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 8,123,346, count = 1,000</span></span></code></pre></div>
 <ul>
 <li>
 <p>Endpoint Changes</p>
@@ -227,7 +227,7 @@ total_hits, in the previous version of the API this was capped at
 version of the API</li>
 <li>Endpoints are now singular, ex. patent not patents. The returned
 entities are still plural for the most part.</li>
-<li>Now there are <a href="#endpoints">23 endpoints</a>, up from the
+<li>Now there are <a href="#endpoints">27 endpoints</a>, up from the
 original 7  </li>
 </ul>
 </li>
@@ -413,7 +413,7 @@ the value of your API key for the R package to use.</p>
 <div class="section level3">
 <h3 id="endpoints">Endpoints <a name="endpoints"></a><a class="anchor" aria-label="anchor" href="#endpoints"></a>
 </h3>
-<p>Now there are 23 endpoints, up from the original 7, and each returns
+<p>Now there are 27 endpoints, up from the original 7, and each returns
 a smaller, more specific data structure pertinent to that endpoint. As
 an example, previously the inventor endpoint could return assignee
 information, it no longer does that. The exception is the patent
@@ -421,12 +421,16 @@ endpoint. It now can return assignees, inventors, cpc_current along with
 patent specific fields. Note that some new endpoints are nested under
 patent/ and one is under publication/</p>
 <ol style="list-style-type: decimal">
-<li>There are 15 totally new endpoints
+<li>There are 19 totally new endpoints
 <ul>
-<li>/api/v1/brf_sum_text/</li>
-<li>/api/v1/claim/</li>
-<li>/api/v1/detail_desc_text/</li>
-<li>/api/v1/draw_desc_text/</li>
+<li>/api/v1/g_brf_sum_text/</li>
+<li>/api/v1/g_claim/</li>
+<li>/api/v1/g_detail_desc_text/</li>
+<li>/api/v1/g_draw_desc_text/</li>
+<li>/api/v1/pg_brf_sum_text/</li>
+<li>/api/v1/pg_claim/</li>
+<li>/api/v1/pg_detail_desc_text/</li>
+<li>/api/v1/pg_draw_desc_text/</li>
 <li>/api/v1/ipc/</li>
 <li>/api/v1/uspc_subclass/</li>
 <li>/api/v1/patent/attorney/</li>
@@ -464,18 +468,11 @@ endpoints
 <h4 id="things-to-note">Things to note <a name="things-to-note"></a><a class="anchor" aria-label="anchor" href="#things-to-note"></a>
 </h4>
 <ol style="list-style-type: decimal">
-<li>Four of the new endpoints, brf_sum_text, claims, draw_desc_text and
-detail_desc_text, are marked ‘beta’ on the <a href="#swagger-ui-page">Swagger UI page</a> and their data is not fully
-populated. See this <a href="https://search.patentsview.org/docs/docs/Search%20API/TextEndpointStatus" class="external-link">page</a>
-to see what data is currently populated. The <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#brief-summary-text" class="external-link">API
-documentation</a> says these 4 endpoint are GET only, though they do
-respond to POSTs<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>1</sup></a>.</li>
 <li>Currently some endpoints do not return all the attributes listed in
-the API’s OpenAPI object. Some throw 500 errors when requested<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>2</sup></a> (see
+the API’s OpenAPI object. Some throw 500 errors when requested<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>1</sup></a> (see
 test-api-bugs.R)</li>
 <li>There are two rel_app_text endpoints, one under patent/ and one
-under publication/ They return different entities, rel_app_texts
-(patent) and rel_app_text_publications (publication)</li>
+under publication/ They both return rel_app_texts entities</li>
 <li>Some endpoints now return <a href="#HATEOAS">HATEOAS links</a>
 </li>
 <li>Some fields went away, like rawinventor_first_name and
@@ -602,7 +599,7 @@ the returned field name looses the _id of the requested field</p>
 <span></span>
 <span>  <span class="co"># but note that the fields came back without the _id</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span><span class="op">$</span><span class="va">assignees</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">assignee</span><span class="op">)</span> <span class="co"># not $assignee_id as requested</span></span>
-<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/assignee/aeef7c1f-e757-467f-8e07-289dc8c6ed95/"</span></span>
+<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/assignee/b06175c5-768b-43af-bb65-1978370e6ce2/"</span></span>
 <span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span><span class="op">$</span><span class="va">inventors</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">inventor</span><span class="op">)</span> <span class="co"># not $inventor_id as requested</span></span>
 <span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/inventor/fl:jo_ln:marron-5/"</span></span></code></pre></div>
@@ -655,7 +652,7 @@ performant. The “full text” fields are identified in the API Endpoint
 specification with the value “text” for the data type.</p>
 </blockquote>
 <p>Not sure if that only applies to the beta endpoints or not. Also not
-sure what to make of the result set size differences<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>3</sup></a>, total_hits, noting
+sure what to make of the result set size differences<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>2</sup></a>, total_hits, noting
 that no errors were thrown by the API:</p>
 <p>hitting the patent endpoint:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
@@ -668,14 +665,14 @@ that no errors were thrown by the API:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
 <span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  3 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id   : chr [1:1000] "10000747" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_title: chr [1:1000] "Endoglycosidase mutants for glycoprotein re"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_date : chr [1:1000] "2018-06-19" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_id   : chr [1:1000] "3937418" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_title: chr [1:1000] "Retractable dog leash" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_date : chr [1:1000] "1976-02-10" ...</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 3,652, count = 1,000</span></span>
+<span><span class="co">#&gt; total_hits = 3,706, count = 1,000</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $data</span></span>
@@ -683,51 +680,48 @@ that no errors were thrown by the API:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
 <span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  3 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id   : chr [1:1000] "10028486" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_title: chr [1:1000] "Lightweight flexible dog shoes" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_date : chr [1:1000] "2018-07-24" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_id   : chr [1:1000] "3937418" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_title: chr [1:1000] "Retractable dog leash" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_date : chr [1:1000] "1976-02-10" ...</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 2,075, count = 1,000</span></span></code></pre></div>
-<p>hitting the brf_sum_text endpoint:</p>
+<span><span class="co">#&gt; total_hits = 2,115, count = 1,000</span></span></code></pre></div>
+<p>hitting the g_brf_sum_text endpoint:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">query1</span> <span class="op">&lt;-</span> <span class="st">'{"_contains":{"summary_text":"paper cup holder"}}'</span></span>
 <span><span class="va">query2</span> <span class="op">&lt;-</span> <span class="st">'{"_text_phrase":{"summary_text":"paper cup holder"}}'</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query1</span>, endpoint<span class="op">=</span><span class="st">"brf_sum_text"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query1</span>, endpoint<span class="op">=</span><span class="st">"g_brf_sum_text"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $data</span></span>
-<span><span class="co">#&gt; #### A list with a single data frame on brf_sum_texts level:</span></span>
+<span><span class="co">#&gt; #### A list with a single data frame on g_brf_sum_texts level:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ brf_sum_texts: list()</span></span>
+<span><span class="co">#&gt;  $ g_brf_sum_texts: list()</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; total_hits = 0, count = 0</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query2</span>, endpoint<span class="op">=</span><span class="st">"brf_sum_text"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query2</span>, endpoint<span class="op">=</span><span class="st">"g_brf_sum_text"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $data</span></span>
-<span><span class="co">#&gt; #### A list with a single data frame on brf_sum_texts level:</span></span>
+<span><span class="co">#&gt; #### A list with a single data frame on g_brf_sum_texts level:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ brf_sum_texts:'data.frame':   1 obs. of  3 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id      : chr "11530080"</span></span>
-<span><span class="co">#&gt;   ..$ summary_text   : chr "FIELD OF THE INVENTION\n\nThe invention relates t"..</span></span>
-<span><span class="co">#&gt;   ..$ document_number: num 2.02e+10</span></span>
+<span><span class="co">#&gt;  $ g_brf_sum_texts: list()</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 1, count = 1</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 0, count = 0</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="case-sensitivity-caveat">Case Sensitivity Caveat <a name="case-sensitivity-caveat"></a><a class="anchor" aria-label="anchor" href="#case-sensitivity-caveat"></a>
 </h3>
 <p>The original version of the API seemed to be case insensitive. Not
-sure if this is a bug or feature<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>4</sup></a> in the new version of the API but it’s
+sure if this is a bug or feature<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>3</sup></a> in the new version of the API but it’s
 something to be aware of.</p>
 <p>As you’ll see from the queries below, the two forms of equal now seem
 to be case sensitive.</p>

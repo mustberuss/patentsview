@@ -38,7 +38,7 @@ The original version of the R package is available on CRAN with the new version 
    - cpc_subsections is now cpc_group
    - The remaining five original endpoints went from plural to singular, "patents" is now "patent" for example.
 Interestingly, the returned data structures are still plural for the most part.
-   - There are now 23 endpoints, some may need to be called to retrieve fields that are  currently (soon-to-be-were)
+   - There are now 27 endpoints, some may need to be called to retrieve fields that are  currently (soon-to-be-were)
 available from the original endpoints (now some endpoint's returns are lighter, requiring additional calls to be made).
    - Now some of the endpoints return HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more data
 (URLs for additional calls back to the API)
