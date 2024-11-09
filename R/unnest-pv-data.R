@@ -4,7 +4,7 @@
 #' in \code{\link{unnest_pv_data}}, based on the endpoint you searched.
 #' It will return a potential unique identifier for a given entity (i.e., a
 #' given endpoint). For example, it will return "patent_id" when
-#' \code{endpoint_or_entity = "patent"}.  It would return the same value if 
+#' \code{endpoint_or_entity = "patent"}.  It would return the same value if
 #' the entity name "patents" was passed via \code{get_ok_pk(names(pv_return$data))}
 #' where pv_return was returned from \code{\link{search_pv}}.
 #'

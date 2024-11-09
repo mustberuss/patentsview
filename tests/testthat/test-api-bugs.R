@@ -370,3 +370,22 @@ test_that("we can't request assignee_years.num_patents", {
     "Invalid field: assignee_years.num_patents"
   )
 })
+
+test_that("paging is still broken", {
+  skip_on_cran()
+
+  sort <- c("patent_id" = "asc")
+  big_query <- qry_funs$eq(patent_date = "2000-01-04") # 3003 total_hits
+  results <- search_pv(big_query, all_pages = FALSE, sort = sort, size = 1000)
+  expect_gt(results$query_results$total_hits, 1000)
+
+  after <- results$data$patents$patent_id[[nrow(results$data$patents)]]
+  subsequent <- search_pv(big_query,
+    all_pages = FALSE, after = after, sort = sort,
+    size = 1000
+  )
+
+  # ** New API bug?  we should get three full requests before getting
+  # a partial response
+  expect_lt(nrow(subsequent$data$patents), 1000)
+})

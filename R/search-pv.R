@@ -96,11 +96,11 @@ one_request <- function(method, query, base_url, arg_list, api_key, ...) {
 }
 
 #' @noRd
-wrap <- function (users_query, primary_key, after) {
+wrap <- function(users_query, primary_key, after) {
   # crib from Shakespeare, to quote or not to quote...
-  after = if(is.character(after)) paste0('"', after, '"') else after
+  after <- if (is.character(after)) paste0('"', after, '"') else after
 
-  paste0('{"_and":[', users_query, ',{"_gt":{"', primary_key, '":',after,'}}]}')
+  paste0('{"_and":[', users_query, ',{"_gt":{"', primary_key, '":', after, "}}]}")
 }
 
 # Unbelievably, the latest API code push broke paging so we'll handle it ourselves!
@@ -112,9 +112,8 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, pr
   after <- NULL
 
   tmp <- lapply(seq_len(req_pages), function(i) {
-
     # make an initial unwrapped query, then wrap the rest
-    query <- if(!is.null(after)) wrap(query, primary_key, after) else query
+    query <- if (!is.null(after)) wrap(query, primary_key, after) else query
 
     x <- one_request(method, query, base_url, arg_list, api_key, ...)
     x <- process_resp(x)
@@ -123,7 +122,7 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, pr
     # we want the value of the primary sort field
     s <- names(arg_list$sort[[1]])[[1]]
     index <- nrow(x$data[[1]])
-    #arg_list$opts$after <<- x$data[[1]][[s]][[index]]
+    # arg_list$opts$after <<- x$data[[1]][[s]][[index]]
     after <<- x$data[[1]][[s]][[index]]
 
     x$data[[1]]
@@ -375,7 +374,7 @@ search_pv <- function(query,
 
   # here we adjust 'count', otherwise it looks like something went wrong
   # was returning total_hits = 3,003, count = 1,000
-  result$query_results$count = nrow(paged_data)
+  result$query_results$count <- nrow(paged_data)
   result
 }
 
