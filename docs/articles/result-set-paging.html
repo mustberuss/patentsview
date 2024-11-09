@@ -169,6 +169,9 @@ field, as shown in Example 2.</p>
 <div class="section level2">
 <h2 id="example-1">Example 1<a class="anchor" aria-label="anchor" href="#example-1"></a>
 </h2>
+<p><strong>Note:</strong> A recent API release seems to have broke
+paging. Example 1 worked until recently but now returns the results
+below.</p>
 <p>Here we’ll retrieve 5000 utility patents by paging.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
@@ -194,17 +197,17 @@ field, as shown in Example 2.</p>
 <span>   <span class="va">page_n</span><span class="op">$</span><span class="va">data</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "page 1 after is NULL"</span></span>
-<span><span class="co">#&gt; [1] "page 2 after is 10001014"</span></span>
-<span><span class="co">#&gt; [1] "page 3 after is 10002021"</span></span>
-<span><span class="co">#&gt; [1] "page 4 after is 10003025"</span></span>
-<span><span class="co">#&gt; [1] "page 5 after is 10004043"</span></span>
+<span><span class="co">#&gt; [1] "page 2 after is 3931271"</span></span>
+<span><span class="co">#&gt; [1] "page 3 after is NULL"</span></span>
+<span><span class="co">#&gt; [1] "page 4 after is 3931271"</span></span>
+<span><span class="co">#&gt; [1] "page 5 after is NULL"</span></span>
 <span></span>
 <span><span class="va">utility_patents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">tmp</span>, <span class="va">as.data.frame</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">utility_patents</span><span class="op">)</span></span>
-<span><span class="co">#&gt; 'data.frame':    5000 obs. of  3 variables:</span></span>
-<span><span class="co">#&gt;  $ patents.patent_id   : chr  "10000000" "10000001" "10000002" "10000003" ...</span></span>
-<span><span class="co">#&gt;  $ patents.patent_title: chr  "Coherent LADAR using intra-pixel quadrature detection" "Injection molding machine and mold thickness control method" "Method for manufacturing polymer film and co-extruded film" "Method for producing a container from a thermoplastic" ...</span></span>
-<span><span class="co">#&gt;  $ patents.patent_date : chr  "2018-06-19" "2018-06-19" "2018-06-19" "2018-06-19" ...</span></span></code></pre></div>
+<span><span class="co">#&gt; 'data.frame':    3000 obs. of  3 variables:</span></span>
+<span><span class="co">#&gt;  $ patents.patent_id   : chr  "3930271" "3930272" "3930273" "3930274" ...</span></span>
+<span><span class="co">#&gt;  $ patents.patent_title: chr  "Golf glove" "Crib leg lock" "Bed safety side rail arrangement" "Assembly for use in recreational activities" ...</span></span>
+<span><span class="co">#&gt;  $ patents.patent_date : chr  "1976-01-06" "1976-01-06" "1976-01-06" "1976-01-06" ...</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="example-2">Example 2<a class="anchor" aria-label="anchor" href="#example-2"></a>

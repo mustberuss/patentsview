@@ -156,6 +156,8 @@
     
 <p>There’s a lot going on with the new version of the Patentsview API,
 recently renamed PatentSearch API, as announced <a href="https://search.patentsview.org/docs/#naming-update" class="external-link">here</a>.</p>
+<p>To not burry the lead, the 2024-11-06 API release seems to have
+<strong>broken paging</strong>, details <a href="#big-trouble">below</a></p>
 <div class="section level2">
 <h2 id="on-the-plus-side">On the Plus Side<a class="anchor" aria-label="anchor" href="#on-the-plus-side"></a>
 </h2>
@@ -423,9 +425,10 @@ openapi.json errors</p>
 “keyword” when it should be “string”</p></li>
 <li><p>There are two rule_47_flag fields, one is a boolean (line 7019),
 the other is a string (line 8004)</p></li>
-<li><p>Most of the document_numbers are integers but from
-publication/rel_app_text it’s a string as is citation_document_number
-from patent/us_application_citation</p></li>
+<li><p>Most of the document_numbers are integers but
+citation_document_number from patent/us_application_citation is a
+string. document_number from publication/rel_app_text is now correctly
+coming back as an integer.</p></li>
 </ul>
 <p><del>PVS-1306</del> Seems to be fixed<br>
 The API accepts invalid fields<br>
@@ -454,11 +457,14 @@ This was mentioned as a bug in the <a href="https://patentsview.org/forum/7/topi
 forum</a>. It causes some awkardness in search_pv (we add a sort field
 and the primary key if not included in fields. Awkard if no fields were
 specified)</p>
-<p>Unknown Reference Number<br>
-Paging seems broken with the most recent release but I’m not able to
-report it yet. test_that(“the ‘after’ parameter works properly”) in
-test-search-pv.R broke. Its first request has a total_hits of 3003 with
-1000 rows returned but the subsequent request returns 399 rows.</p>
+<p>Unknown Reference Number <a name="big-trouble"><br><strong>Paging seems broken with a recent API release</strong> but I’m
+not able to report it yet. test_that(“the ‘after’ parameter works
+properly”) in test-search-pv.R broke, as did the </a><a href="result-set-paging.html">paging vignette</a>. Their first requests
+have a total_hits of 3003 with 1000 rows returned but the subsequent
+requests return 399 rows when we set the ‘after’ parameter. There’s a
+work around in search-pv when all_pages = TRUE (we page without using
+the after parameter) but, because of the bug, users cannot implement
+their own paging using the ‘after’ parameter.</p>
 </div>
 <div class="section level2">
 <h2 id="state-of-the-r-package">State of the R Package<a class="anchor" aria-label="anchor" href="#state-of-the-r-package"></a>
@@ -781,6 +787,8 @@ article</a> on the newer repo naming convention <br><br>
 <li>
 <p>Notes</p>
 <ul>
+<li>It’s a good idea to review the action logs on successful builds.
+There can be warnings about long lines etc.</li>
 <li>By default, patentsview is on r-universe <a href="https://ropensci.r-universe.dev/patentsview" class="external-link uri">https://ropensci.r-universe.dev/patentsview</a>
 </li>
 <li>Someone really smart should write a python library for the API!

@@ -23,6 +23,9 @@ shown in Example 2.
 
 ## Example 1
 
+**Note:** A recent API release seems to have broke paging.  Example 1 worked until recently
+but now returns the results below.
+
 Here we'll retrieve 5000 utility patents by paging.
 
 
@@ -50,17 +53,17 @@ tmp <- lapply(seq_len(5), function(n) {
    page_n$data
 })
 #> [1] "page 1 after is NULL"
-#> [1] "page 2 after is 10001014"
-#> [1] "page 3 after is 10002021"
-#> [1] "page 4 after is 10003025"
-#> [1] "page 5 after is 10004043"
+#> [1] "page 2 after is 3931271"
+#> [1] "page 3 after is NULL"
+#> [1] "page 4 after is 3931271"
+#> [1] "page 5 after is NULL"
 
 utility_patents <- as.data.frame(do.call(rbind, lapply(tmp, as.data.frame)))
 str(utility_patents)
-#> 'data.frame':	5000 obs. of  3 variables:
-#>  $ patents.patent_id   : chr  "10000000" "10000001" "10000002" "10000003" ...
-#>  $ patents.patent_title: chr  "Coherent LADAR using intra-pixel quadrature detection" "Injection molding machine and mold thickness control method" "Method for manufacturing polymer film and co-extruded film" "Method for producing a container from a thermoplastic" ...
-#>  $ patents.patent_date : chr  "2018-06-19" "2018-06-19" "2018-06-19" "2018-06-19" ...
+#> 'data.frame':	3000 obs. of  3 variables:
+#>  $ patents.patent_id   : chr  "3930271" "3930272" "3930273" "3930274" ...
+#>  $ patents.patent_title: chr  "Golf glove" "Crib leg lock" "Bed safety side rail arrangement" "Assembly for use in recreational activities" ...
+#>  $ patents.patent_date : chr  "1976-01-06" "1976-01-06" "1976-01-06" "1976-01-06" ...
 ```
 ## Example 2
 
