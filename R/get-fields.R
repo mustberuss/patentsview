@@ -68,7 +68,7 @@ get_fields <- function(endpoint, groups = NULL, include_pk = FALSE) {
   } else {
     validate_groups(endpoint, groups = groups)
     # don't include pk if unnested ("") groups are requested (pk would be an unnested field)
-    extra_field <- if (include_pk && !"" %in% groups) get_ok_pk(endpoint = endpoint) else NULL
+    extra_field <- if (include_pk && !"" %in% groups) get_ok_pk(endpoint_or_entity = endpoint) else NULL
 
     c(
       extra_field,
