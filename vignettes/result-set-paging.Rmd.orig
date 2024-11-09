@@ -30,6 +30,9 @@ shown in Example 2.
 
 ## Example 1
 
+**Note:** A recent API release seems to have broke paging.  Example 1 worked until recently
+but now returns the results below.
+
 Here we'll retrieve 5000 utility patents by paging.
 
 ```{r}

@@ -96,7 +96,45 @@ one_request <- function(method, query, base_url, arg_list, api_key, ...) {
 }
 
 #' @noRd
-request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, ...) {
+wrap <- function (users_query, primary_key, after) {
+  # crib from Shakespeare, to quote or not to quote...
+  after = if(is.character(after)) paste0('"', after, '"') else after
+
+  paste0('{"_and":[', users_query, ',{"_gt":{"', primary_key, '":',after,'}}]}')
+}
+
+# Unbelievably, the latest API code push broke paging so we'll handle it ourselves!
+#' @noRd
+request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, primary_key, ...) {
+  matched_records <- ex_res$query_results[[1]]
+  req_pages <- ceiling(matched_records / arg_list$opts$size)
+
+  after <- NULL
+
+  tmp <- lapply(seq_len(req_pages), function(i) {
+
+    # make an initial unwrapped query, then wrap the rest
+    query <- if(!is.null(after)) wrap(query, primary_key, after) else query
+
+    x <- one_request(method, query, base_url, arg_list, api_key, ...)
+    x <- process_resp(x)
+
+    # now to page we need to set the "after" attribute to where we left off
+    # we want the value of the primary sort field
+    s <- names(arg_list$sort[[1]])[[1]]
+    index <- nrow(x$data[[1]])
+    #arg_list$opts$after <<- x$data[[1]][[s]][[index]]
+    after <<- x$data[[1]][[s]][[index]]
+
+    x$data[[1]]
+  })
+
+  do.call("rbind", c(tmp, make.row.names = FALSE))
+}
+
+# This uses the now broken 'after' parameter- keeping until paging is fixed
+#' @noRd
+real_request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, ...) {
   matched_records <- ex_res$query_results[[1]]
   req_pages <- ceiling(matched_records / arg_list$opts$size)
 
@@ -325,7 +363,7 @@ search_pv <- function(query,
   }
 
   arg_list <- to_arglist(fields, size, primary_sort_key, after)
-  paged_data <- request_apply(result, method, query, base_url, arg_list, api_key, ...)
+  paged_data <- request_apply(result, method, query, base_url, arg_list, api_key, get_ok_pk(endpoint), ...)
 
   # apply the user's sort
   data.table::setorderv(paged_data, names(sort), ifelse(as.vector(sort) == "asc", 1, -1))
@@ -334,6 +372,10 @@ search_pv <- function(query,
   paged_data <- paged_data[, !names(paged_data) %in% additional_fields]
 
   result$data[[1]] <- paged_data
+
+  # here we adjust 'count', otherwise it looks like something went wrong
+  # was returning total_hits = 3,003, count = 1,000
+  result$query_results$count = nrow(paged_data)
   result
 }
 
@@ -397,7 +439,7 @@ retrieve_linked_data <- function(url,
                                  api_key = Sys.getenv("PATENTSVIEW_API_KEY"),
                                  ...) {
   if (encoded_url) {
-    url <- URLdecode(url)
+    url <- utils::URLdecode(url)
   }
 
   # There wouldn't be url parameters on a HATEOAS link but we'll also accept

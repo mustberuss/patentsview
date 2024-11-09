@@ -10,6 +10,8 @@ vignette: >
 There's a lot going on with the new version of the Patentsview API, recently renamed
 PatentSearch API, as announced [here](https://search.patentsview.org/docs/#naming-update).
 
+To not burry the lead, the 2024-11-06 API release seems to have **broken paging**, details [below](#big-trouble)
+
 ## On the Plus Side
 
 Here are the positive API changes:
@@ -41,7 +43,6 @@ making it possible to tell if the results weren't what you expected or if the R 
 is somehow misinterpreting them. On other [Joys of Swagger UI](https://patentsview.historicip.com/swagger/articles/)
 
 ## Issues
-
 * The original API's sunset date is currently February 12, 2025 though the new version 
 still has [issues](api-changes.html#things-to-note)
 * On a new [string case sensitivity](api-changes.html#case-sensitivity-caveat), opened as a [bug](#case-dependent) listed below
@@ -164,7 +165,8 @@ openapi.json errors
 
 * There are two rule_47_flag fields, one is a boolean (line 7019), the other is a string (line 8004) 
 
-* Most of the document_numbers are integers but from publication/rel_app_text it's a string as is citation_document_number from patent/us_application_citation
+* Most of the document_numbers are integers but citation_document_number from patent/us_application_citation
+is a string.  document_number from publication/rel_app_text is now correctly coming back as an integer.
 
 ~~PVS-1306~~  Seems to be fixed  
 The API accepts invalid fields  
@@ -190,12 +192,15 @@ This was mentioned as a bug in the [API's forum](https://patentsview.org/forum/7
 It causes some awkardness in search_pv (we add a sort field and the primary key if not included
 in fields.  Awkard if no fields were specified)
 
-Unknown Reference Number  
-Paging seems broken with the most recent release but I'm not able to report it yet.
-test_that("the 'after' parameter works properly") in test-search-pv.R broke.
-Its first request has a total_hits of 3003 with 1000 rows returned but the
-subsequent request returns 399 rows.
-
+Unknown Reference Number  <a name="big-trouble">  
+**Paging seems broken with a recent API release** but I'm not able to report it yet.
+test_that("the 'after' parameter works properly") in test-search-pv.R broke,
+as did the [paging vignette](result-set-paging.html).
+Their first requests have a total_hits of 3003 with 1000 rows returned but the
+subsequent requests return 399 rows when we set the 'after' parameter.
+There's a work around in search-pv when all_pages = TRUE (we page without using the
+after parameter) but, because of the bug, users cannot implement their own paging
+using the 'after' parameter.
 
 ## State of the R Package
 
@@ -419,7 +424,7 @@ There are plugins to keep you stylish ```styler::style_pkg(".", dry = "fail")```
    + check spelling using ```devtools::spell_check(pkg = ".", vignettes = TRUE, use_wordlist = TRUE)```
 Locally I have an unchecked in inst/WORDLIST with additional words to allow (one word per line)
 see https://devtools.r-lib.org/reference/spell_check.html
-
+ 
 * Optional
 
   + you can set up your own r-universe by creating a special github repo, as explained 
@@ -430,6 +435,8 @@ See [this article](https://ropensci.org/blog/2023/02/07/runiverse-registry-repo/
 <br />
 <br />
 * Notes
+   + It's a good idea to review the action logs on successful builds.  There can be 
+warnings about long lines etc.
    + By default, patentsview is on r-universe https://ropensci.r-universe.dev/patentsview
    + Someone really smart should write a python library for the API!
 <br />
