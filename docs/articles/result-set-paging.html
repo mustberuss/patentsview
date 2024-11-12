@@ -169,12 +169,29 @@ field, as shown in Example 2.</p>
 <div class="section level2">
 <h2 id="example-1">Example 1<a class="anchor" aria-label="anchor" href="#example-1"></a>
 </h2>
-<p><strong>Note:</strong> A recent API release seems to have broke
-paging. Example 1 worked until recently but now returns the results
-below.</p>
+<p><strong>Note: A recent API release seems to have broken
+paging.</strong> Example 1 used to work, where we passed the last value
+we received as the after parameter to search_pv. Now we need to pad the
+patent_id to 8 characters, see <a href="state-of-the-api.html#big-trouble">PVS-1435</a> It’s unclear if
+this is a bug or intentional change (i.e. whether padding is temporary
+or permanent).</p>
 <p>Here we’ll retrieve 5000 utility patents by paging.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="va">pad_patent_id</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">patent_id</span><span class="op">)</span> <span class="op">{</span></span>
+<span></span>
+<span>  <span class="co"># not trying too hard- may need to pad reissued or design patents</span></span>
+<span>  <span class="co"># ex RE36479.  hoping this isn't permanent or we'll have to add pad()</span></span>
+<span>  <span class="co"># to the r package</span></span>
+<span>  <span class="kw">while</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nchar.html" class="external-link">nchar</a></span><span class="op">(</span><span class="va">patent_id</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">8</span><span class="op">)</span></span>
+<span>  <span class="op">{</span></span>
+<span>    <span class="va">patent_id</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">"([[:alpha:]]*)([[:digit:]]+)"</span>, <span class="st">"\\10\\2"</span>, <span class="va">patent_id</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="va">patent_id</span></span>
+<span><span class="op">}</span></span>
+<span></span>
 <span></span>
 <span><span class="co"># Lets get 5000 utility patents, 1000 at a time (the API's maximum rows per request)</span></span>
 <span><span class="va">requested_rows</span> <span class="op">&lt;-</span> <span class="fl">1000</span></span>
@@ -186,25 +203,29 @@ below.</p>
 <span><span class="co"># which is the attrbute the new version of the API uses to page.  For now, just be </span></span>
 <span><span class="co"># thankful that the R package handles this for you when you set all_pages = TRUE</span></span>
 <span><span class="va">after</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">tmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">n</span><span class="op">)</span> <span class="op">{</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">n</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">after</span> <span class="op">&lt;-</span> <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">after</span><span class="op">)</span><span class="op">)</span> <span class="va">after</span> <span class="kw">else</span> <span class="fu">pad_patent_id</span><span class="op">(</span><span class="va">after</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"page"</span>, <span class="va">n</span>, <span class="st">"after is"</span>, <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">after</span><span class="op">)</span>,<span class="st">"NULL"</span>,<span class="va">after</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
 <span>  <span class="va">page_n</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query</span>, fields <span class="op">=</span> <span class="va">fields</span>, sort <span class="op">=</span> <span class="va">sort</span>, </span>
 <span>    all_pages <span class="op">=</span> <span class="cn">FALSE</span>, size <span class="op">=</span> <span class="va">requested_rows</span>, after <span class="op">=</span> <span class="va">after</span><span class="op">)</span></span>
 <span>   <span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">sort</span><span class="op">)</span></span>
 <span>   <span class="va">index</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">page_n</span><span class="op">$</span><span class="va">data</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span>   <span class="va">after</span> <span class="op">&lt;&lt;-</span> <span class="va">page_n</span><span class="op">$</span><span class="va">data</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="va">s</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="va">index</span><span class="op">]</span><span class="op">]</span></span>
-<span>   <span class="va">page_n</span><span class="op">$</span><span class="va">data</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
+<span>   <span class="va">after</span> <span class="op">&lt;-</span> <span class="va">page_n</span><span class="op">$</span><span class="va">data</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="va">s</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="va">index</span><span class="op">]</span><span class="op">]</span></span>
+<span>   <span class="va">results</span><span class="op">[[</span><span class="va">n</span><span class="op">]</span><span class="op">]</span> <span class="op">=</span> <span class="va">page_n</span><span class="op">$</span><span class="va">data</span></span>
+<span><span class="op">}</span></span>
 <span><span class="co">#&gt; [1] "page 1 after is NULL"</span></span>
-<span><span class="co">#&gt; [1] "page 2 after is 3931271"</span></span>
-<span><span class="co">#&gt; [1] "page 3 after is NULL"</span></span>
-<span><span class="co">#&gt; [1] "page 4 after is 3931271"</span></span>
-<span><span class="co">#&gt; [1] "page 5 after is NULL"</span></span>
+<span><span class="co">#&gt; [1] "page 2 after is 03931271"</span></span>
+<span><span class="co">#&gt; [1] "page 3 after is 03932272"</span></span>
+<span><span class="co">#&gt; [1] "page 4 after is 03933272"</span></span>
+<span><span class="co">#&gt; [1] "page 5 after is 03934274"</span></span>
 <span></span>
-<span><span class="va">utility_patents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">tmp</span>, <span class="va">as.data.frame</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">utility_patents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">results</span>, <span class="va">as.data.frame</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">utility_patents</span><span class="op">)</span></span>
-<span><span class="co">#&gt; 'data.frame':    3000 obs. of  3 variables:</span></span>
+<span><span class="co">#&gt; 'data.frame':    5000 obs. of  3 variables:</span></span>
 <span><span class="co">#&gt;  $ patents.patent_id   : chr  "3930271" "3930272" "3930273" "3930274" ...</span></span>
 <span><span class="co">#&gt;  $ patents.patent_title: chr  "Golf glove" "Crib leg lock" "Bed safety side rail arrangement" "Assembly for use in recreational activities" ...</span></span>
 <span><span class="co">#&gt;  $ patents.patent_date : chr  "1976-01-06" "1976-01-06" "1976-01-06" "1976-01-06" ...</span></span></code></pre></div>
@@ -298,8 +319,8 @@ python wrapper</a>)</p>
 <div class="section level2">
 <h2 id="reader-exercise">Reader Exercise<a class="anchor" aria-label="anchor" href="#reader-exercise"></a>
 </h2>
-<p>Ok, we’ll get you started on the user exercise. Trivia: with a
-handful of exceptions, patents were issued on Tuesdays.</p>
+<p>Ok, I’ll get you started on the user exercise. Trivia: with a handful
+of exceptions, patents were issued on Tuesdays.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>   <span class="va">uspto_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1478</span>, <span class="fl">1312</span>, <span class="fl">1449</span>, <span class="fl">1438</span><span class="op">)</span></span>
 <span></span>
@@ -324,6 +345,73 @@ handful of exceptions, patents were issued on Tuesdays.</p>
 <span><span class="co">#&gt; [1] "patentsview total 5351"</span></span>
 <span>   <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"uspto total"</span>, <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">uspto_counts</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "uspto total 5677"</span></span></code></pre></div>
+<p>Ok, I couldn’t resist, I feel an API bug report submission coming on.
+It look like there are reissued patents in our range, but there aren’t
+design patents. Here’s a USPTO <a href="https://ppubs.uspto.gov/pubwebapp/external.html?q=@PD%3E=19760106%3C=19760127%20and%20(D23%24).pn.&amp;db=USPAT&amp;type=queryString" class="external-link">search</a>
+that shows the design patents issued in January 1976.</p>
+<p><a name="missing">As this shows, there aren’t design patents in the
+patentsview database until 1976-12-07 and plant patents don’t appear
+until 1976-12-14.</a></p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span>  <span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patent_id"</span>,<span class="st">"patent_title"</span>,<span class="st">"patent_date"</span>,<span class="st">"patent_type"</span><span class="op">)</span></span>
+<span>  <span class="va">sort</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patent_date"</span> <span class="op">=</span> <span class="st">"asc"</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span><span class="st">"patent_type"</span> <span class="op">=</span> <span class="st">"design"</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">1</span>, sort <span class="op">=</span> <span class="va">sort</span>, fields <span class="op">=</span> <span class="va">fields</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span>
+<span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; List of 1</span></span>
+<span><span class="co">#&gt;  $ patents:'data.frame': 1 obs. of  4 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id   : chr "D242583"</span></span>
+<span><span class="co">#&gt;   ..$ patent_title: chr "Sports shoe"</span></span>
+<span><span class="co">#&gt;   ..$ patent_type : chr "design"</span></span>
+<span><span class="co">#&gt;   ..$ patent_date : chr "1976-12-07"</span></span>
+<span></span>
+<span>  <span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span><span class="st">"patent_type"</span> <span class="op">=</span> <span class="st">"plant"</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">1</span>, sort <span class="op">=</span> <span class="va">sort</span>, fields <span class="op">=</span> <span class="va">fields</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span>
+<span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; List of 1</span></span>
+<span><span class="co">#&gt;  $ patents:'data.frame': 1 obs. of  4 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id   : chr "PP3987"</span></span>
+<span><span class="co">#&gt;   ..$ patent_title: chr "Strawberry plant"</span></span>
+<span><span class="co">#&gt;   ..$ patent_type : chr "plant"</span></span>
+<span><span class="co">#&gt;   ..$ patent_date : chr "1976-12-14"</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span>   <span class="va">uspto_design_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">88</span>, <span class="fl">54</span>, <span class="fl">63</span>, <span class="fl">103</span><span class="op">)</span></span>
+<span></span>
+<span>   <span class="va">issue_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"1976-01-06"</span><span class="op">)</span>  <span class="co"># first Tuesday of January 1976</span></span>
+<span></span>
+<span>   <span class="va">weekly_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span>from <span class="op">=</span> <span class="fl">0</span>, to <span class="op">=</span> <span class="fl">21</span>, by <span class="op">=</span> <span class="fl">7</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">additional_days</span>, <span class="va">base_issue_date</span><span class="op">)</span> <span class="op">{</span></span>
+<span>     <span class="va">issue_date</span> <span class="op">&lt;-</span> <span class="va">base_issue_date</span> <span class="op">+</span> <span class="va">additional_days</span></span>
+<span>     <span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
+<span>       <span class="fu">and</span><span class="op">(</span></span>
+<span>         <span class="fu">eq</span><span class="op">(</span><span class="st">"patent_date"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">issue_date</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>         <span class="fu">eq</span><span class="op">(</span><span class="st">"patent_type"</span> <span class="op">=</span> <span class="st">"design"</span><span class="op">)</span></span>
+<span>        <span class="op">)</span></span>
+<span>      <span class="op">)</span></span>
+<span></span>
+<span>     <span class="va">design_patents</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query</span><span class="op">)</span></span>
+<span>     <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"issue date"</span>, <span class="va">issue_date</span>, <span class="va">design_patents</span><span class="op">$</span><span class="va">query_results</span><span class="op">$</span><span class="va">total_hits</span>, </span>
+<span>        <span class="st">"design patents"</span><span class="op">)</span><span class="op">)</span></span>
+<span>     <span class="va">design_patents</span><span class="op">$</span><span class="va">query_results</span><span class="op">$</span><span class="va">total_hits</span></span>
+<span>   <span class="op">}</span>, <span class="va">issue_date</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "issue date 1976-01-06 0 design patents"</span></span>
+<span><span class="co">#&gt; [1] "issue date 1976-01-13 0 design patents"</span></span>
+<span><span class="co">#&gt; [1] "issue date 1976-01-20 0 design patents"</span></span>
+<span><span class="co">#&gt; [1] "issue date 1976-01-27 0 design patents"</span></span>
+<span></span>
+<span>   <span class="va">total</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">sum</span>, <span class="va">weekly_counts</span><span class="op">)</span></span>
+<span>   <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"patentsview total"</span>, <span class="va">total</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "patentsview total 0"</span></span>
+<span>   <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"uspto design total"</span>, <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">uspto_design_counts</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "uspto design total 308"</span></span></code></pre></div>
+<p>There is still a small discrepancy if you need something to look
+into. (uspto total - patentsview total = 325 patents.<br>
+308 are the missing design patents but where did the other 17 go?)
+Slight hint if you want it, there were 4 <a href="https://ppubs.uspto.gov/pubwebapp/external.html?q=@PD%3E=19760106%3C=19760127%20and%20(D23%24).pn.&amp;db=USPAT&amp;type=queryString" class="external-link">plant
+patents</a> issued in January 1976, but that leaves 10 to still
+find…</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

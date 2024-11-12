@@ -156,7 +156,7 @@
     
 <p>There’s a lot going on with the new version of the Patentsview API,
 recently renamed PatentSearch API, as announced <a href="https://search.patentsview.org/docs/#naming-update" class="external-link">here</a>.</p>
-<p>To not burry the lead, the 2024-11-06 API release seems to have
+<p>To not bury the lead, the 2024-11-06 API release seems to have
 <strong>broken paging</strong>, details <a href="#big-trouble">below</a></p>
 <div class="section level2">
 <h2 id="on-the-plus-side">On the Plus Side<a class="anchor" aria-label="anchor" href="#on-the-plus-side"></a>
@@ -332,7 +332,11 @@ version of the API did this too.)
 <p>These oddities are not specific to the new version of the API,
 but are due to the source files that make up the patentsview database. I
 opened these issues as API bug PVS-1342 “Underlying data issues”, with
-slighly more diplomatic wording.</p>
+slighly more diplomatic wording. It’s my expectation that I’d get the
+same results by querying <a href="https://www.uspto.gov/patents/search/patent-public-search" class="external-link">ppubs’
+advanced search</a> as I would with patentsview. Differences due to
+disambiguation would be one thing, but I’m expecting the underlying data
+to be the same.</p>
 <ul>
 <li><p>One of the weirdest things is that there are approximately 8000
 withdrawn patents in the patentsview database. The source of the
@@ -341,11 +345,14 @@ the US Patent Office releases weekly. The problem is that sometimes
 patents are withdrawn after appearing in a bulk xml file but they are
 kept in the patentsview database alongside non withdrawn patents. How
 weird is that? Here is the Patent Office’s <a href="http://www.uspto.gov/patents-application-process/patent-search/withdrawn-patent-numbers" class="external-link">withdrawn
-patent list</a>, which is updated weekly.<br></p></li>
+patent list</a>, which is updated weekly.</p></li>
 <li><p>An equally strange situation is the approximately 300
 non-withdrawn patents that, for whatever reason, did not appear in the
 bulk xml file for the week they were issued. They are granted patents
 that are not in the patentsview database.</p></li>
+<li><p>Also, not sure why, but there aren’t any design patents before
+1976-12-07 or plant patents before 1976-12-14 while there are utility
+and reissue patents starting 1976-01-06. See <a href="result-set-paging.html#missing">this page</a></p></li>
 <li>
 <p>Plant patents and reissued patents do not have current CPC
 assignments where appropriate. The problem is that the bulk Cooperative
@@ -457,14 +464,20 @@ This was mentioned as a bug in the <a href="https://patentsview.org/forum/7/topi
 forum</a>. It causes some awkardness in search_pv (we add a sort field
 and the primary key if not included in fields. Awkard if no fields were
 specified)</p>
-<p>Unknown Reference Number <a name="big-trouble"><br><strong>Paging seems broken with a recent API release</strong> but I’m
-not able to report it yet. test_that(“the ‘after’ parameter works
-properly”) in test-search-pv.R broke, as did the </a><a href="result-set-paging.html">paging vignette</a>. Their first requests
-have a total_hits of 3003 with 1000 rows returned but the subsequent
-requests return 399 rows when we set the ‘after’ parameter. There’s a
-work around in search-pv when all_pages = TRUE (we page without using
-the after parameter) but, because of the bug, users cannot implement
-their own paging using the ‘after’ parameter.</p>
+<p>PVS-1435 <a name="big-trouble"><br><strong>Paging seems broken with a recent API release</strong><br>
+test_that(“the ‘after’ parameter works properly”) in test-search-pv.R
+broke, as did the </a><a href="result-set-paging.html">paging vignette</a>.
+Their first requests have a total_hits of 3003 with 1000 rows returned
+but the subsequent requests return 399 rows when we set the ‘after’
+parameter. There’s a work around in search-pv when all_pages = TRUE (we
+page without using the after parameter) but, because of the bug, users
+cannot implement their own paging using the ‘after’ parameter.</p>
+<p>I think I figured out a work around: if the after: parameter is a
+patent_id, it needed to be padded to 8 characters. E.g. “6010555” needs
+to be submitted as <code>{"after": "06010555"}</code>, “RE36479” needs
+to become <code>{"after": "RE036479"}</code>. I don’t know if this is a
+bug or feature, i.e. if paging will be fixed to work the way it used to,
+or whether padding will become permanent.</p>
 </div>
 <div class="section level2">
 <h2 id="state-of-the-r-package">State of the R Package<a class="anchor" aria-label="anchor" href="#state-of-the-r-package"></a>
@@ -659,14 +672,21 @@ part, maybe on a three or four week release cycle, often on Saturdays. I
 do head requests from time to time on the <a href="https://search.patentsview.org/static/openapi.json" class="external-link">API’s OpenAPI
 object</a> to detect when its Last-Modified changes. When it changes, I
 back up data-raw/fieldsdf.csv, run data-raw/fieldsdf.R and compare the
-backed up fieldsdf.csv to the new one to see if anything changed. If it
-did change, I’ll do a local build and run all of the tests to see what
-happens and push any changes to keep the tests passing. Quarterly or so
-they’ll update <a href="https://patentsview.org/release-notes" class="external-link uri">https://patentsview.org/release-notes</a> Another indication
+backed up fieldsdf.csv to the new one to see if anything changed (new
+endpoint added etc.) If it did change, I’ll do a local build before
+running all of the tests to see what happens. I’ll then push any changes
+to keep the tests passing. Quarterly or so they’ll update <a href="https://patentsview.org/release-notes" class="external-link uri">https://patentsview.org/release-notes</a> Another indication
 of a release is that their support page stops working for a day or two,
 guessing while they plan their next sprint.</p></li>
-<li><p>Report API suggestions/bugs etc <a href="https://patentsview-support.atlassian.net/servicedesk/customer/portals" class="external-link">here</a>
-or Community -&gt; Support using the nav on <a href="httsp://patentsview.org">patentsview.org</a></p></li>
+<li>
+<p>Request an API key, Report API suggestions/bugs etc <a href="https://patentsview-support.atlassian.net/servicedesk/customer/portals" class="external-link">here</a>
+or Community -&gt; Support using the nav on <a href="httsp://patentsview.org">patentsview.org</a>. Currently it’s
+displaying</p>
+<blockquote>
+<p>We couldn’t load the content in this help center<br>
+Refresh the page and try again in sometime.</p>
+</blockquote>
+</li>
 <li><p>Now all the endpoints are documented on a <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints" class="external-link">single
 page</a>. The <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#api-query-language" class="external-link">query
 language</a> is also on that same page. Originally there was a separate
