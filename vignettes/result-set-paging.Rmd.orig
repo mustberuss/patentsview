@@ -30,13 +30,30 @@ shown in Example 2.
 
 ## Example 1
 
-**Note:** A recent API release seems to have broke paging.  Example 1 worked until recently
-but now returns the results below.
+**Note: A recent API release seems to have broken paging.**  Example 1 used to work,
+where we passed the last value we received as the after parameter to search_pv.
+Now we need to pad the patent_id to 8 characters, see [PVS-1435](state-of-the-api.html#big-trouble)
+It's unclear if this is a bug or intentional change (i.e. whether padding is temporary or
+permanent).
 
 Here we'll retrieve 5000 utility patents by paging.
 
 ```{r}
 library(patentsview)
+
+
+pad_patent_id <- function(patent_id) {
+
+  # not trying too hard- may need to pad reissued or design patents
+  # ex RE36479.  hoping this isn't permanent or we'll have to add pad()
+  # to the r package
+  while(nchar(patent_id) < 8)
+  {
+    patent_id <- sub("([[:alpha:]]*)([[:digit:]]+)", "\\10\\2", patent_id)
+  }
+  patent_id
+}
+
 
 # Lets get 5000 utility patents, 1000 at a time (the API's maximum rows per request)
 requested_rows <- 1000
@@ -48,18 +65,22 @@ fields <- c("patent_id", "patent_date", "patent_title")
 # which is the attrbute the new version of the API uses to page.  For now, just be 
 # thankful that the R package handles this for you when you set all_pages = TRUE
 after <- NULL
+results <- list()
 
-tmp <- lapply(seq_len(5), function(n) {
+for (n in seq_len(5)) {
+  after <- if(is.null(after)) after else pad_patent_id(after)
   print(paste("page", n, "after is", ifelse(is.null(after),"NULL",after)))
+
   page_n <- search_pv(query, fields = fields, sort = sort, 
     all_pages = FALSE, size = requested_rows, after = after)
    s <- names(sort)
    index <- nrow(page_n$data[[1]])
-   after <<- page_n$data[[1]][[s]][[index]]
-   page_n$data
-})
+   after <- page_n$data[[1]][[s]][[index]]
+   results[[n]] = page_n$data
+}
 
-utility_patents <- as.data.frame(do.call(rbind, lapply(tmp, as.data.frame)))
+utility_patents <- as.data.frame(do.call(rbind, lapply(results, as.data.frame)))
+
 str(utility_patents)
 
 ```
@@ -144,7 +165,7 @@ have been retrieved, the R package sorts the data as the user requested.
 
 ## Reader Exercise
 
-Ok, we'll get you started on the user exercise. Trivia: with a handful of exceptions,
+Ok, I'll get you started on the user exercise. Trivia: with a handful of exceptions,
 patents were issued on Tuesdays.
 
 ```{r}
@@ -167,3 +188,59 @@ patents were issued on Tuesdays.
    print(paste("uspto total", sum(uspto_counts)))
 
 ```
+
+
+Ok, I couldn't resist, I feel an API bug report submission coming on.  It look like there
+are reissued patents in our range, but there aren't design patents.
+Here's a USPTO [search](https://ppubs.uspto.gov/pubwebapp/external.html?q=@PD>=19760106<=19760127%20and%20(D23$).pn.&db=USPAT&type=queryString) 
+that shows the design patents issued in January 1976.
+
+
+<a name="missing">As this shows, there aren't design patents in the patentsview database until 1976-12-07 and plant patents don't appear until 1976-12-14.
+
+```{r}
+  fields <- c("patent_id","patent_title","patent_date","patent_type")
+  sort <- c("patent_date" = "asc")
+
+  result <- search_pv(qry_funs$eq("patent_type" = "design"), size = 1, sort = sort, fields = fields)
+  print(result$data)
+
+  result <- search_pv(qry_funs$eq("patent_type" = "plant"), size = 1, sort = sort, fields = fields)
+  print(result$data)
+```
+
+```{r}
+   uspto_design_counts <- c(88, 54, 63, 103)
+
+   issue_date <- as.Date("1976-01-06")  # first Tuesday of January 1976
+
+   weekly_counts <- lapply(seq(from = 0, to = 21, by = 7), function(additional_days, base_issue_date) {
+     issue_date <- base_issue_date + additional_days
+     query <- with_qfuns(
+       and(
+         eq("patent_date" = as.character(issue_date)),
+         eq("patent_type" = "design")
+        )
+      )
+
+     design_patents <- search_pv(query)
+     print(paste("issue date", issue_date, design_patents$query_results$total_hits, 
+        "design patents"))
+     design_patents$query_results$total_hits
+   }, issue_date)
+
+   total <- do.call(sum, weekly_counts)
+   print(paste("patentsview total", total))
+   print(paste("uspto design total", sum(uspto_design_counts)))
+
+```
+
+There is still a small discrepancy if you need something to look into.  (uspto total - patentsview total = 325 patents.  
+308 are the missing design patents but where did the other 17 go?)  Slight hint if you want it,
+there were 4 [plant patents](https://ppubs.uspto.gov/pubwebapp/external.html?q=@PD>=19760106<=19760127%20and%20(D23$).pn.&db=USPAT&type=queryString) 
+issued in January 1976, but that leaves 10 to still find...
+
+
+
+
+

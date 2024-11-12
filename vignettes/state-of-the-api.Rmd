@@ -10,7 +10,7 @@ vignette: >
 There's a lot going on with the new version of the Patentsview API, recently renamed
 PatentSearch API, as announced [here](https://search.patentsview.org/docs/#naming-update).
 
-To not burry the lead, the 2024-11-06 API release seems to have **broken paging**, details [below](#big-trouble)
+To not bury the lead, the 2024-11-06 API release seems to have **broken paging**, details [below](#big-trouble)
 
 ## On the Plus Side
 
@@ -103,11 +103,19 @@ at all what I expected!  (I checked and the original version of the API did this
 
    + These oddities are not specific to the new version of the API, but are due to the
 source files that make up the patentsview database.  I opened these issues as API bug
-PVS-1342 "Underlying data issues", with slighly more diplomatic wording.
+PVS-1342 "Underlying data issues", with slighly more diplomatic wording.  It's my
+expectation that I'd get the same results by querying [ppubs' advanced search](https://www.uspto.gov/patents/search/patent-public-search) 
+as I would with patentsview.  Differences due to disambiguation would be one thing,
+but I'm expecting the underlying data to be the same.
      * One of the weirdest things is that there are approximately 8000 withdrawn patents 
 in the patentsview database.  The source of the database is the [bulk xml files](https://bulkdata.uspto.gov/) the US Patent Office releases weekly.  The problem is that sometimes patents are withdrawn after appearing in a bulk xml file but they are kept 
 in the patentsview database alongside non withdrawn patents.  How weird is that?  Here is the Patent Office's [withdrawn patent list](http://www.uspto.gov/patents-application-process/patent-search/withdrawn-patent-numbers), which is updated weekly.   
+
      * An equally strange situation is the approximately 300 non-withdrawn patents that, for whatever reason, did not appear in the bulk xml file for the week they were issued.  They are granted patents that are not in the patentsview database.
+
+     *  Also, not sure why, but there aren't any design patents before 1976-12-07 or plant patents
+before 1976-12-14 while there are utility and reissue patents starting 1976-01-06.  See [this page](result-set-paging.html#missing)
+
       * Plant patents and reissued patents do not have current CPC assignments where appropriate.  The problem is that the bulk Cooperative Patent Classification file for granted patents, produced the USPTO quarterly, only contains assignments for utility patents.  I didn't
 check but am assuming the USPTO's bulk CPC file for applications only contains current
 CPCs for utility patents.
@@ -192,8 +200,8 @@ This was mentioned as a bug in the [API's forum](https://patentsview.org/forum/7
 It causes some awkardness in search_pv (we add a sort field and the primary key if not included
 in fields.  Awkard if no fields were specified)
 
-Unknown Reference Number  <a name="big-trouble">  
-**Paging seems broken with a recent API release** but I'm not able to report it yet.
+PVS-1435  <a name="big-trouble">  
+**Paging seems broken with a recent API release**  
 test_that("the 'after' parameter works properly") in test-search-pv.R broke,
 as did the [paging vignette](result-set-paging.html).
 Their first requests have a total_hits of 3003 with 1000 rows returned but the
@@ -201,6 +209,11 @@ subsequent requests return 399 rows when we set the 'after' parameter.
 There's a work around in search-pv when all_pages = TRUE (we page without using the
 after parameter) but, because of the bug, users cannot implement their own paging
 using the 'after' parameter.
+
+I think I figured out a work around:  if the after: parameter is a patent_id, it needed to 
+be padded to 8 characters.  E.g. "6010555" needs to be submitted as `{"after": "06010555"}`,
+"RE36479" needs to become `{"after": "RE036479"}`.  I don't know if this is a bug or feature,
+i.e. if paging will be fixed to work the way it used to, or whether padding will become permanent.
 
 ## State of the R Package
 
@@ -332,14 +345,18 @@ Helpful info after you've forked https://github.com/ropensci/patentsview
 or four week release cycle, often on 
 Saturdays.  I do head requests from time to time on the [API's OpenAPI object](https://search.patentsview.org/static/openapi.json)
 to detect when its Last-Modified changes. When it changes, I back up data-raw/fieldsdf.csv, run data-raw/fieldsdf.R and 
-compare the backed up fieldsdf.csv to the new one to see if anything changed. If it did change, I'll do a
-local build and run all of the tests to see what happens and push any changes to keep the tests passing.
-Quarterly or so they'll update https://patentsview.org/release-notes  Another indication of
+compare the backed up fieldsdf.csv to the new one to see if anything changed (new endpoint added
+etc.) If it did change, I'll do a local build before running all of the tests to see what happens.  I'll then push any changes 
+to keep the tests passing.  Quarterly or so they'll update https://patentsview.org/release-notes  Another indication of
 a release is that their support page stops working for a day or two, guessing while they 
 plan their next sprint.
 
-  + Report API suggestions/bugs etc [here](https://patentsview-support.atlassian.net/servicedesk/customer/portals)
-or Community -> Support using the nav on [patentsview.org](httsp://patentsview.org)
+  + Request an API key, Report API suggestions/bugs etc [here](https://patentsview-support.atlassian.net/servicedesk/customer/portals)
+or Community -> Support using the nav on [patentsview.org](httsp://patentsview.org).
+Currently it's displaying 
+
+    > We couldn’t load the content in this help center  
+    > Refresh the page and try again in sometime.
 
   + Now all the endpoints are documented on a [single page](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints).
 The [query language]( https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#api-query-language) is also on that same page.
