@@ -369,6 +369,19 @@ https://patentsview.org/forum
 
   + Build and install the local code ```devtools::install('.')```
 
+     You can also do a full blown local build but you'll need to clean up afterwards (delete
+     the gz and patentsview.Rcheck  directory).  This runs the same things the github action runs 
+     on pushes to ropensci/patentsview (including running the tests with skip_on_cran() being TRUE)
+     This can be useful to catch missing skip_on_cran()'s or undocumented parameters etc.
+     Without the `--no-manual` it'll try to create a pdf of the documentation, which can fail 
+     if pdflatex is not available. It's probably a good idea to run without PATENTSVIEW_API_KEY in 
+     your environment.
+
+     ```
+     system("R CMD build .")   
+     system("R CMD check patentsview_0.3.0.tar.gz --no-manual")
+     ```
+
   + rscript data-raw/fieldsdf.R to run the fieldsdf creator locally.  It parses the Patentsview OpenAPI object to 
 produce fieldsdf.csv and fieldsdf.rda
 
@@ -407,7 +420,8 @@ produce fieldsdf.csv and fieldsdf.rda
     devtools::document()
     pkgdown::build_reference()
     ```
-   + see README.Rmd changes locally
+
+   + To see README.Rmd changes locally
     ```
     knitr::knit("README.Rmd", "README.md")
     pkgdown::build_home()
