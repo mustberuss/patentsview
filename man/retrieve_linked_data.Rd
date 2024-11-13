@@ -59,7 +59,6 @@ f_param <- '&f=["inventors.inventor_name_last","patent_id","patent_date","patent
 
 retrieve_linked_data(
   paste0(endpoint_url, q_param, s_and_o_params, f_param)
-  
 )
 
 retrieve_linked_data(

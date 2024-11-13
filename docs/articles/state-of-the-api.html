@@ -698,8 +698,21 @@ keeping an eye on <a href="https://patentsview.org/forum" class="external-link u
 <li>
 <p>Locally</p>
 <ul>
-<li><p>Build and install the local code
-<code>devtools::install('.')</code></p></li>
+<li>
+<p>Build and install the local code
+<code>devtools::install('.')</code></p>
+<p>You can also do a full blown local build but you’ll need to clean up
+afterwards (delete the gz and patentsview.Rcheck directory). This runs
+the same things the github action runs on pushes to ropensci/patentsview
+(including running the tests with skip_on_cran() being TRUE) This can be
+useful to catch missing skip_on_cran()’s or undocumented parameters etc.
+Without the <code>--no-manual</code> it’ll try to create a pdf of the
+documentation, which can fail if pdflatex is not available. It’s
+probably a good idea to run without PATENTSVIEW_API_KEY in your
+environment.</p>
+<pre><code><span><span class="fu"><a href="https://rdrr.io/r/base/system.html" class="external-link">system</a></span><span class="op">(</span><span class="st">"R CMD build ."</span><span class="op">)</span>   </span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.html" class="external-link">system</a></span><span class="op">(</span><span class="st">"R CMD check patentsview_0.3.0.tar.gz --no-manual"</span><span class="op">)</span></span></code></pre>
+</li>
 <li><p>rscript data-raw/fieldsdf.R to run the fieldsdf creator locally.
 It parses the Patentsview OpenAPI object to produce fieldsdf.csv and
 fieldsdf.rda</p></li>
@@ -748,7 +761,7 @@ If you make changes to method documentation, run</p></li>
 <pre><code><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/document.html" class="external-link">document</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">pkgdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgdown.r-lib.org/reference/build_reference.html" class="external-link">build_reference</a></span><span class="op">(</span><span class="op">)</span></span></code></pre>
 <ul>
-<li>see README.Rmd changes locally</li>
+<li>To see README.Rmd changes locally</li>
 </ul>
 <pre><code><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/knit.html" class="external-link">knit</a></span><span class="op">(</span><span class="st">"README.Rmd"</span>, <span class="st">"README.md"</span><span class="op">)</span></span>
 <span><span class="fu">pkgdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgdown.r-lib.org/reference/build_home.html" class="external-link">build_home</a></span><span class="op">(</span><span class="op">)</span></span></code></pre>

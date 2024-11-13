@@ -207,9 +207,10 @@ value can be as high as 1,000 (e.g., <code>size = 1000</code>).</p></dd>
 
 
 <dt>after</dt>
-<dd><p>Exposes the API's paging parameter for users who want to implement their own
-custom paging. It cannot be set when <code>all_pages = TRUE</code> as the R package manipulates it
-for users automatically.</p></dd>
+<dd><p>A list of sort key values that defaults to NULL.  This
+exposes the API's paging parameter for users who want to implement their own
+paging. It cannot be set when <code>all_pages = TRUE</code> as the R package manipulates it
+for users automatically. See <a href="../articles/result-set-paging.html">result set paging</a></p></dd>
 
 
 <dt>all_pages</dt>

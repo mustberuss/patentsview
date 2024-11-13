@@ -71,9 +71,10 @@ will always be returned.}
 \item{size}{The number of records that should be returned per page. This
 value can be as high as 1,000 (e.g., \code{size = 1000}).}
 
-\item{after}{Exposes the API's paging parameter for users who want to implement their own
-custom paging. It cannot be set when \code{all_pages = TRUE} as the R package manipulates it
-for users automatically.}
+\item{after}{A list of sort key values that defaults to NULL.  This
+exposes the API's paging parameter for users who want to implement their own
+paging. It cannot be set when \code{all_pages = TRUE} as the R package manipulates it
+for users automatically. See \href{../articles/result-set-paging.html}{result set paging}}
 
 \item{all_pages}{Do you want to download all possible pages of output? If
 \code{all_pages = TRUE}, the value of \code{size} is ignored.}
