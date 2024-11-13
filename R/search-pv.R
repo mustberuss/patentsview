@@ -103,7 +103,8 @@ wrap <- function(users_query, primary_key, after) {
   paste0('{"_and":[', users_query, ',{"_gt":{"', primary_key, '":', after, "}}]}")
 }
 
-# Unbelievably, the latest API code push broke paging so we'll handle it ourselves!
+# Unbelievably, the latest API code push broke paging so we'll handle it ourselves
+# without using the after parameter!  (patent_id needs to be padded to 8 characters)
 #' @noRd
 request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, primary_key, ...) {
   matched_records <- ex_res$query_results[[1]]
@@ -205,9 +206,10 @@ get_default_sort <- function(endpoint) {
 #' @param per_page `r lifecycle::badge("deprecated")` The API now uses \code{size}
 #' @param size The number of records that should be returned per page. This
 #'  value can be as high as 1,000 (e.g., \code{size = 1000}).
-#' @param after Exposes the API's paging parameter for users who want to implement their own
-#' custom paging. It cannot be set when \code{all_pages = TRUE} as the R package manipulates it
-#' for users automatically.
+#' @param after A list of sort key values that defaults to NULL.  This
+#' exposes the API's paging parameter for users who want to implement their own
+#' paging. It cannot be set when \code{all_pages = TRUE} as the R package manipulates it
+#' for users automatically. See \href{../articles/result-set-paging.html}{result set paging}
 #' @param all_pages Do you want to download all possible pages of output? If
 #'  \code{all_pages = TRUE}, the value of \code{size} is ignored.
 #' @param sort A named character vector where the name indicates the field to
