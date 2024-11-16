@@ -59,6 +59,10 @@ operators used on full text fields, as there was in the original
 version of the API.  See the tip below the Syntax section [here](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#syntax).
 Note that the result sizes aren't matching currently though, see
 [testthat/test-api-bugs.R](https://github.com/mustberuss/patentsview/blob/api-redesign/tests/testthat/test-api-bugs.R)
+7. Result set paging has changed.  This would matter only if users implemented their own
+paging, the R package continues to handle result set paging when search_pv's all_pages = TRUE. 
+There is a [new vignette](result-set-paging.html) to explain the way the API now pages, 
+using the `after` parameter rather than using `page` and `per_page`.
 
 The API team also renamed the API, PatentsView's Search API is now the PatentSearch API, as announced 
 [here](https://search.patentsview.org/docs/#naming-update). 

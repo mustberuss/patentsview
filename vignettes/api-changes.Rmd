@@ -83,6 +83,9 @@ they passed additional arguments (...) to search_pv().  Previously if they passe
 they'd now pass timeout = 40 (name-value pairs of valid curl options, as found in curl::curl_options() see [req_options](https://httr2.r-lib.org/reference/req_options.html))
 
 * Now that the R package is using httr2, users can make use of its last_request() method to see what was sent to the API.  This could be useful when trying to fix an invalid request.  Also fun would be seeing the raw API response.
+The R package sets the after parameter and changes the sort sent to the API, so viewing the last_request() 
+after calling search_pv with all_pages = TRUE might not be what you'd expect.  There is more about this
+[here](result-set-paging.html).
 ```
 httr2::last_request()
 httr2::last_response()
@@ -372,7 +375,7 @@ to explain the danger.
 
 ```
 
-See the paging discussion in this [PR](https://github.com/ropensci/patentsview/pull/29#discussion_r1059137212)
+See the new [Result Set Paging vignette](result-set-paging.html).
 
 ### String and Full Text Operators <a name="operators">
 The Tip below "Syntax" in the API's [documentation](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#syntax) says:

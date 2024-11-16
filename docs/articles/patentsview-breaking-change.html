@@ -217,6 +217,11 @@ because a field you were interested in was not queryable.</p></li>
 difference between operators used on full text fields, as there was in
 the original version of the API. See the tip below the Syntax section <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#syntax" class="external-link">here</a>.
 Note that the result sizes aren’t matching currently though, see <a href="https://github.com/mustberuss/patentsview/blob/api-redesign/tests/testthat/test-api-bugs.R" class="external-link">testthat/test-api-bugs.R</a></p></li>
+<li><p>Result set paging has changed. This would matter only if users
+implemented their own paging, the R package continues to handle result
+set paging when search_pv’s all_pages = TRUE. There is a <a href="result-set-paging.html">new vignette</a> to explain the way the
+API now pages, using the <code>after</code> parameter rather than using
+<code>page</code> and <code>per_page</code>.</p></li>
 </ol>
 <p>The API team also renamed the API, PatentsView’s Search API is now
 the PatentSearch API, as announced <a href="https://search.patentsview.org/docs/#naming-update" class="external-link">here</a>. Note

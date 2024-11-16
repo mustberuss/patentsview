@@ -288,7 +288,10 @@ in curl::curl_options() see <a href="https://httr2.r-lib.org/reference/req_optio
 <li><p>Now that the R package is using httr2, users can make use of its
 last_request() method to see what was sent to the API. This could be
 useful when trying to fix an invalid request. Also fun would be seeing
-the raw API response.</p></li>
+the raw API response. The R package sets the after parameter and changes
+the sort sent to the API, so viewing the last_request() after calling
+search_pv with all_pages = TRUE might not be what you’d expect. There is
+more about this <a href="result-set-paging.html">here</a>.</p></li>
 </ul>
 <pre><code><span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_request</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_response</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -637,7 +640,8 @@ that tries to explain the danger.</p>
 <span>  <span class="co"># (Say the last patent in a retrieved page is the first patent</span></span>
 <span>  <span class="co"># of a particular date, we wouldn't want the after parameter to</span></span>
 <span>  <span class="co"># to begin the next page of data after this date.)</span></span></code></pre>
-<p>See the paging discussion in this <a href="https://github.com/ropensci/patentsview/pull/29#discussion_r1059137212" class="external-link">PR</a></p>
+<p>See the new <a href="result-set-paging.html">Result Set Paging
+vignette</a>.</p>
 </div>
 <div class="section level3">
 <h3 id="string-and-full-text-operators">String and Full Text Operators <a name="operators"></a><a class="anchor" aria-label="anchor" href="#string-and-full-text-operators"></a>

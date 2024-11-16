@@ -157,7 +157,7 @@
 <p>There’s a lot going on with the new version of the Patentsview API,
 recently renamed PatentSearch API, as announced <a href="https://search.patentsview.org/docs/#naming-update" class="external-link">here</a>.</p>
 <p>To not bury the lead, the 2024-11-06 API release seems to have
-<strong>broken paging</strong>, details <a href="#big-trouble">below</a></p>
+<strong>broken paging by patent_id</strong>, details <a href="#big-trouble">below</a></p>
 <div class="section level2">
 <h2 id="on-the-plus-side">On the Plus Side<a class="anchor" aria-label="anchor" href="#on-the-plus-side"></a>
 </h2>
@@ -207,6 +207,8 @@ Swagger UI</a></p></li>
 <h2 id="issues">Issues<a class="anchor" aria-label="anchor" href="#issues"></a>
 </h2>
 <ul>
+<li><p>As mentioned up top, the 2024-11-06 API release seems to have
+broken paging by patent_id, details <a href="#big-trouble">below</a></p></li>
 <li><p>The original API’s sunset date is currently February 12, 2025
 though the new version still has <a href="api-changes.html#things-to-note">issues</a></p></li>
 <li><p>On a new <a href="api-changes.html#case-sensitivity-caveat">string case
@@ -257,7 +259,7 @@ details</a></p></li>
 </li>
 <li>
 <p>Most endpoints’ returns are the plural form of the singular
-endpoint with these exceptions:</p>
+endpoint with these two exceptions:</p>
 <table class="table">
 <thead><tr class="header">
 <th>endpoint</th>
@@ -324,8 +326,8 @@ string field, gets funky when mixing patent ids above and below
 with other patent types, like reissue, when the ids have different
 string lengths. See the code block at the bottom of the <a href="understanding-the-api.html#unexpected-results">understanding the
 api</a> vignette.</p></li>
-<li><p>Along the same lines, this query currently returns 38,470,760
-rows when that isn’t at all what I expected! (I checked and the original
+<li><p>Along the same lines, this query currently returns 2,084,459 rows
+when that isn’t at all what I expected! (I checked and the original
 version of the API did this too.)
 <code>{"_and":[{"_gte":{"patent_id":"10"}},{"_lte":{"patent_id":"13"}}]}</code></p></li>
 <li>
@@ -428,8 +430,8 @@ than a string?</p>
 <p>PVS-1218<br>
 openapi.json errors</p>
 <ul>
-<li><p>“publication”,“us_parties.applicant_authority” has a type of
-“keyword” when it should be “string”</p></li>
+<li><p>Fixed: <del>“publication”,“us_parties.applicant_authority” has a
+type of “keyword” when it should be “string”</del></p></li>
 <li><p>There are two rule_47_flag fields, one is a boolean (line 7019),
 the other is a string (line 8004)</p></li>
 <li><p>Most of the document_numbers are integers but
@@ -437,7 +439,7 @@ citation_document_number from patent/us_application_citation is a
 string. document_number from publication/rel_app_text is now correctly
 coming back as an integer.</p></li>
 </ul>
-<p><del>PVS-1306</del> Seems to be fixed<br>
+<p><del>PVS-1306</del> This is fixed<br>
 The API accepts invalid fields<br>
 The API accepts invalid fields that start out looking like valid fields
 when it should throw an error. Ex f: is[“patent_iddddddddddddd”,
@@ -472,8 +474,8 @@ but the subsequent requests return 399 rows when we set the ‘after’
 parameter. There’s a work around in search-pv when all_pages = TRUE (we
 page without using the after parameter) but, because of the bug, users
 cannot implement their own paging using the ‘after’ parameter.</p>
-<p>I think I figured out a work around: if the after: parameter is a
-patent_id, it needed to be padded to 8 characters. E.g. “6010555” needs
+<p>I think I figured out a work around: if the after: parameter contains
+a patent_id, it needs to be padded to 8 characters. E.g. “6010555” needs
 to be submitted as <code>{"after": "06010555"}</code>, “RE36479” needs
 to become <code>{"after": "RE036479"}</code>. I don’t know if this is a
 bug or feature, i.e. if paging will be fixed to work the way it used to,
@@ -667,26 +669,25 @@ but seems to work otherwise.</p>
 <li>
 <p>API related</p>
 <ul>
-<li><p>Updated versions of the new API are unannounced for the most
+<li>
+<p>Updated versions of the new API are unannounced for the most
 part, maybe on a three or four week release cycle, often on Saturdays. I
 do head requests from time to time on the <a href="https://search.patentsview.org/static/openapi.json" class="external-link">API’s OpenAPI
 object</a> to detect when its Last-Modified changes. When it changes, I
 back up data-raw/fieldsdf.csv, run data-raw/fieldsdf.R and compare the
-backed up fieldsdf.csv to the new one to see if anything changed (new
-endpoint added etc.) If it did change, I’ll do a local build before
-running all of the tests to see what happens. I’ll then push any changes
-to keep the tests passing. Quarterly or so they’ll update <a href="https://patentsview.org/release-notes" class="external-link uri">https://patentsview.org/release-notes</a> Another indication
-of a release is that their support page stops working for a day or two,
-guessing while they plan their next sprint.</p></li>
-<li>
-<p>Request an API key, Report API suggestions/bugs etc <a href="https://patentsview-support.atlassian.net/servicedesk/customer/portals" class="external-link">here</a>
-or Community -&gt; Support using the nav on <a href="httsp://patentsview.org">patentsview.org</a>. Currently it’s
-displaying</p>
-<blockquote>
-<p>We couldn’t load the content in this help center<br>
-Refresh the page and try again in sometime.</p>
-</blockquote>
+backed up fieldsdf.csv to the new one to see what, if anything, changed.
+(It seems they update openapi.json on a release, whether is changed or
+not.)</p>
+<p>If it did change, I’ll do a local build to incorporate the changed
+fieldsdf. Either way (openapi.json changed or not), I’ll run all the
+tests to see if any fail, especially noting if test_that(“the endpoints
+are stable”) fails, indicting changes in endpoints. I’ll then push any
+changes needed to keep the R package working and the tests passing,
+sometimes half rendering vignettes if they are affected by the change.
+Quarterly or so they’ll update <a href="https://patentsview.org/release-notes" class="external-link uri">https://patentsview.org/release-notes</a></p>
 </li>
+<li><p>Request an API key, report API suggestions/bugs etc <a href="https://patentsview-support.atlassian.net/servicedesk/customer/portals" class="external-link">here</a>
+or Community -&gt; Support using the nav on <a href="httsp://patentsview.org">patentsview.org</a>.</p></li>
 <li><p>Now all the endpoints are documented on a <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints" class="external-link">single
 page</a>. The <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#api-query-language" class="external-link">query
 language</a> is also on that same page. Originally there was a separate
@@ -765,7 +766,6 @@ If you make changes to method documentation, run</p></li>
 </ul>
 <pre><code><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/knit.html" class="external-link">knit</a></span><span class="op">(</span><span class="st">"README.Rmd"</span>, <span class="st">"README.md"</span><span class="op">)</span></span>
 <span><span class="fu">pkgdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgdown.r-lib.org/reference/build_home.html" class="external-link">build_home</a></span><span class="op">(</span><span class="op">)</span></span></code></pre>
-<p><br><br></p>
 <ul>
 <li>Run code coverage locally on the whole package:
 <code><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">devtools::test_coverage()</a></code> or
@@ -820,8 +820,8 @@ article</a> on the newer repo naming convention <br><br>
 <li>
 <p>Notes</p>
 <ul>
-<li>It’s a good idea to review the action logs on successful builds.
-There can be warnings about long lines etc.</li>
+<li>It’s a good idea to review the action logs, even on successful
+builds. There can be warnings about long lines etc.</li>
 <li>By default, patentsview is on r-universe <a href="https://ropensci.r-universe.dev/patentsview" class="external-link uri">https://ropensci.r-universe.dev/patentsview</a>
 </li>
 <li>Someone really smart should write a python library for the API!
