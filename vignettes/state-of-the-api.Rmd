@@ -10,7 +10,7 @@ vignette: >
 There's a lot going on with the new version of the Patentsview API, recently renamed
 PatentSearch API, as announced [here](https://search.patentsview.org/docs/#naming-update).
 
-To not bury the lead, the 2024-11-06 API release seems to have **broken paging**, details [below](#big-trouble)
+To not bury the lead, the 2024-11-06 API release seems to have **broken paging by patent_id**, details [below](#big-trouble)
 
 ## On the Plus Side
 
@@ -43,6 +43,7 @@ making it possible to tell if the results weren't what you expected or if the R 
 is somehow misinterpreting them. On other [Joys of Swagger UI](https://patentsview.historicip.com/swagger/articles/)
 
 ## Issues
+* As mentioned up top, the 2024-11-06 API release seems to have broken paging by patent_id, details [below](#big-trouble)
 * The original API's sunset date is currently February 12, 2025 though the new version 
 still has [issues](api-changes.html#things-to-note)
 * On a new [string case sensitivity](api-changes.html#case-sensitivity-caveat), opened as a [bug](#case-dependent) listed below
@@ -72,7 +73,7 @@ publication endpoint.  The former is returned as a boolean, the latter as a stri
       * Most document_number fields are integers but there are two that are returned as strings
 that cast-pv-data casts to integers.[^2] [Additional details](getting-started.html#casting-fields)
 
-   + Most endpoints' returns are the plural form of the singular endpoint with these exceptions: 
+   + Most endpoints' returns are the plural form of the singular endpoint with these two exceptions: 
 
      |endpoint|returned entity|
      |--------|---------------|
@@ -97,7 +98,7 @@ patent ids above and below 10,000,000 (the ones 10M and above come first).   The
 other patent types, like reissue, when the ids have different string lengths.  See the code block at 
 the bottom of the [understanding the api](understanding-the-api.html#unexpected-results) vignette.
 
-   + Along the same lines, this query currently returns 38,470,760 rows when that isn't 
+   + Along the same lines, this query currently returns 2,084,459 rows when that isn't 
 at all what I expected!  (I checked and the original version of the API did this too.)
 ```{"_and":[{"_gte":{"patent_id":"10"}},{"_lte":{"patent_id":"13"}}]}```
 
@@ -169,14 +170,14 @@ Other questions would be what do the values of the assignees.assignee_type field
 PVS-1218	
 openapi.json errors
   
-* "publication","us_parties.applicant_authority" has a type of "keyword" when it should be "string"
+* Fixed: ~~"publication","us_parties.applicant_authority" has a type of "keyword" when it should be "string"~~
 
 * There are two rule_47_flag fields, one is a boolean (line 7019), the other is a string (line 8004) 
 
 * Most of the document_numbers are integers but citation_document_number from patent/us_application_citation
 is a string.  document_number from publication/rel_app_text is now correctly coming back as an integer.
 
-~~PVS-1306~~  Seems to be fixed  
+~~PVS-1306~~  This is fixed  
 The API accepts invalid fields  
 The API accepts invalid fields that start out looking like valid fields when it should throw an error. 
 Ex f: is["patent_iddddddddddddd", "patent_dateagogo"] and q: is {"patent_idd":"10000000"} with this result: { "error": false, "count": 0, "total_hits": 0, "patents": [] }
@@ -210,9 +211,9 @@ There's a work around in search-pv when all_pages = TRUE (we page without using 
 after parameter) but, because of the bug, users cannot implement their own paging
 using the 'after' parameter.
 
-I think I figured out a work around:  if the after: parameter is a patent_id, it needed to 
-be padded to 8 characters.  E.g. "6010555" needs to be submitted as `{"after": "06010555"}`,
-"RE36479" needs to become `{"after": "RE036479"}`.  I don't know if this is a bug or feature,
+I think I figured out a work around:  if the after: parameter contains a patent_id, it needs to 
+be padded to 8 characters.  E.g. "6010555" needs to be submitted as ```{"after": "06010555"}```,
+"RE36479" needs to become ```{"after": "RE036479"}```.  I don't know if this is a bug or feature,
 i.e. if paging will be fixed to work the way it used to, or whether padding will become permanent.
 
 ## State of the R Package
@@ -345,18 +346,17 @@ Helpful info after you've forked https://github.com/ropensci/patentsview
 or four week release cycle, often on 
 Saturdays.  I do head requests from time to time on the [API's OpenAPI object](https://search.patentsview.org/static/openapi.json)
 to detect when its Last-Modified changes. When it changes, I back up data-raw/fieldsdf.csv, run data-raw/fieldsdf.R and 
-compare the backed up fieldsdf.csv to the new one to see if anything changed (new endpoint added
-etc.) If it did change, I'll do a local build before running all of the tests to see what happens.  I'll then push any changes 
-to keep the tests passing.  Quarterly or so they'll update https://patentsview.org/release-notes  Another indication of
-a release is that their support page stops working for a day or two, guessing while they 
-plan their next sprint.
+compare the backed up fieldsdf.csv to the new one to see what, if anything, changed. (It seems
+they update openapi.json on a release, whether it changed or not.)  
 
-  + Request an API key, Report API suggestions/bugs etc [here](https://patentsview-support.atlassian.net/servicedesk/customer/portals)
+    If it did change, I'll do a local build to incorporate the changed fieldsdf. Either way (openapi.json changed or not), I'll
+run all the tests to see if any fail, especially noting if test_that("the endpoints are stable")
+fails, indicting changes in endpoints. I'll then push any changes needed
+to keep the R package working and the tests passing, sometimes half rendering vignettes
+if they are affected by the change.  Quarterly or so they'll update https://patentsview.org/release-notes  
+
+  + Request an API key, report API suggestions/bugs etc [here](https://patentsview-support.atlassian.net/servicedesk/customer/portals)
 or Community -> Support using the nav on [patentsview.org](httsp://patentsview.org).
-Currently it's displaying 
-
-    > We couldn’t load the content in this help center  
-    > Refresh the page and try again in sometime.
 
   + Now all the endpoints are documented on a [single page](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints).
 The [query language]( https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#api-query-language) is also on that same page.
@@ -426,8 +426,7 @@ produce fieldsdf.csv and fieldsdf.rda
     knitr::knit("README.Rmd", "README.md")
     pkgdown::build_home()
     ```
-<br />
-<br />
+
    + Run code coverage locally on the whole package: ```devtools::test_coverage()``` or
 ```devtools::test_coverage(function_exclusions = "\\.onLoad")``` or on an 
 individual file: ```devtools::test_coverage_active_file(file = "R/print.R")``` You'd need to have covr installed
@@ -466,7 +465,7 @@ See [this article](https://ropensci.org/blog/2023/02/07/runiverse-registry-repo/
 <br />
 <br />
 * Notes
-   + It's a good idea to review the action logs on successful builds.  There can be 
+   + It's a good idea to review the action logs, even on successful builds.  There can be 
 warnings about long lines etc.
    + By default, patentsview is on r-universe https://ropensci.r-universe.dev/patentsview
    + Someone really smart should write a python library for the API!
