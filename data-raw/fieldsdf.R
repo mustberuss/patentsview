@@ -45,10 +45,7 @@ data_type_intuit <- function(field_definition) {
   example <- if ("example" %in% names(field_definition)) field_definition$example else ""
   as_is_types <- c("integer", "boolean", "array")
 
-  # TODO(any): remove keyword when the bug is fixed
-  if (type == "keyword") { # reported bug on "publication","us_parties.applicant_authority"
-    "string"
-  } else if (type %in% as_is_types) {
+  if (type %in% as_is_types) {
     type
   } else if (type == "number") {
     "integer"
