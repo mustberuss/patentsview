@@ -223,7 +223,48 @@ httr::add_headers("X-Api-Key" = api_key)
 1. There are two rel_app_text endpoints, one under patent/ and one under publication/ They both return rel_app_texts entities
 1. Some endpoints now return [HATEOAS links](#HATEOAS)
 1. Some fields went away, like rawinventor_first_name and rawinventor_last_name, and some have new names, most significantly, patent_number is now patent_id. Requesting patent_number will result in an error being thrown. Note also that the CPC related fields have new names, see the next section.
+1. On the [Swagger UI page](https://search.patentsview.org/swagger-ui/) before the 
+2024-10-06 API release, there were four
+endpoints listed under "Patent Text" with a link that showed how far back the data went
+https://search.patentsview.org/docs/docs/Search%20API/TextEndpointStatus
+Now there are eight endpoints.  There are still four grant endpoints (with a g_ prepended 
+to the names originally released) listed under "Patent Text" but now there are four more
+ pre-grant (pg_) endpoints listed under "Publication Text".
 
+    It looks like the TextEndpointStatus page isn't being updated, so we'll check 
+one pair for ourselves.  patent_date isn't available from g_brf_sum_text so we'll
+ask the patent endpoint for it once we have the smallest patent_id from g_brf_sum_text.
+
+    
+    ``` r
+    qry <- qry_funs$ne(patent_id = "")
+    sort <- c("patent_id" = "asc")
+    grant <- search_pv(qry, sort = sort, endpoint = "g_brf_sum_text", size = 1)
+    res <- search_pv(qry_funs$eq(patent_id = grant$data$g_brf_sum_texts$patent_id), size = 1)
+    res$data
+    #> #### A list with a single data frame on patents level:
+    #> 
+    #> List of 1
+    #>  $ patents:'data.frame':	1 obs. of  3 variables:
+    #>   ..$ patent_id   : chr "11540434"
+    #>   ..$ patent_title: chr "Curved cultivating disc with a straight cutting edge"..
+    #>   ..$ patent_date : chr "2023-01-03"
+    ```
+
+    
+    ``` r
+    qry <- qry_funs$gt(document_number = 0)
+    sort <- c("document_number" = "asc")
+    pre_grant <- search_pv(qry, sort = sort, endpoint = "pg_brf_sum_text", size = 1)
+    pre_grant$data
+    #> #### A list with a single data frame on pg_brf_sum_texts level:
+    #> 
+    #> List of 1
+    #>  $ pg_brf_sum_texts:'data.frame':	1 obs. of  2 variables:
+    #>   ..$ document_number: num 20230000001
+    #>   ..$ summary_text   : chr "TECHNICAL FIELD\n\nThe present disclosure relates"..
+    ```
+    So, at this moment, both endpoints appear to have data going back to 2023.
 
 ### HATEOAS Links <a name="HATEOAS">
 Some of the returned fields are HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more information about that field. Slightly funky is the cpc_current's cpc_group, returned by the patent endpoint.  Here the slash in the CPC is turned into a colon.  This is a peculiarity of two of the new convenience URLs (new endpoints that accept a single URL parameter) that shouldn't be noticeable in the R package, unless you are trying to infer the USPC and CPC values from the returned URLs, without actually calling back for this data.
@@ -487,4 +528,3 @@ print (result$query_results$total_hits)
 [^1]: Observation sent to the API team.
 [^2]: Observation sent to the API team.
 [^3]: Observation sent to the API team.
-[^4]: Observation sent to the API team.
