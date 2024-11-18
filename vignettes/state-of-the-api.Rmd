@@ -110,9 +110,10 @@ as I would with patentsview.  Differences due to disambiguation would be one thi
 but I'm expecting the underlying data to be the same.
      * One of the weirdest things is that there are approximately 8000 withdrawn patents 
 in the patentsview database.  The source of the database is the [bulk xml files](https://bulkdata.uspto.gov/) the US Patent Office releases weekly.  The problem is that sometimes patents are withdrawn after appearing in a bulk xml file but they are kept 
-in the patentsview database alongside non withdrawn patents.  How weird is that?  Here is the Patent Office's [withdrawn patent list](http://www.uspto.gov/patents-application-process/patent-search/withdrawn-patent-numbers), which is updated weekly.   
+in the patentsview database alongside non withdrawn patents.  How weird is that?  Here is the Patent Office's [withdrawn patent list](http://www.uspto.gov/patents-application-process/patent-search/withdrawn-patent-numbers), which is updated weekly.  See
+test_that("withdrawn patents are still present in the database") in test-api-bugs.R
 
-     * An equally strange situation is the approximately 300 non-withdrawn patents that, for whatever reason, did not appear in the bulk xml file for the week they were issued.  They are granted patents that are not in the patentsview database.
+     * An equally strange situation is the approximately 300 non-withdrawn patents that, for whatever reason, did not appear in the bulk xml file for the week they were issued.  They are granted patents that are not in the patentsview database.  See test_that("missing patents are still missing") in test-api-bugs.R
 
      *  Also, not sure why, but there aren't any design patents before 1976-12-07 or plant patents
 before 1976-12-14 while there are utility and reissue patents starting 1976-01-06.  See [this page](result-set-paging.html#missing)
@@ -446,7 +447,7 @@ viewable)
 * Before doing a push 
 
   + make sure you are following the [Tidyverse style guide](https://style.tidyverse.org/).
-There are plugins to keep you stylish ```styler::style_pkg(".", dry = "fail")```
+There are plugins to keep you stylish ```styler::style_pkg(".", dry = "fail")``` or 
 ```styler::style_file('path/file')``` if necessary or use a plugin etc
 
    + make sure the examples still run ```devtools::run_examples(run_dontrun = TRUE)```
