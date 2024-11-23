@@ -86,8 +86,9 @@ httr2::last_response() |> httr2::resp_body_json()
 ```
 
 
-* Two methods were added
+* Three methods were added
    + HATEOAS and sample links can be retrieved using [retrieve_linked_data()](#HATEOAS)
+   + In some cases the patent_id value needs to be padded with zeroes, see `pad_patent_id()`
    + qry_funs$in_range()
 ```{r}
 range_query <- qry_funs$in_range(patent_date=c("1970-01-01","1983-02-28")) 
@@ -240,7 +241,7 @@ pre_grant$data
     So, at this moment, both endpoints appear to have data going back to 2023.
 
 ### HATEOAS Links <a name="HATEOAS">
-Some of the returned fields are HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more information about that field. Slightly funky is the cpc_current's cpc_group, returned by the patent endpoint.  Here the slash in the CPC is turned into a colon.  This is a peculiarity of two of the new convenience URLs (new endpoints that accept a single URL parameter) that shouldn't be noticeable in the R package, unless you are trying to infer the USPC and CPC values from the returned URLs, without actually calling back for this data.
+Some of the returned fields are HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more information about that field. Slightly funky is the cpc_current's cpc_group, returned by the patent endpoint.  Here the slash in the CPC is turned into a colon.  This is a peculiarity of two of the new convenience URLs (new endpoints that accept a single URL parameter) that shouldn't be noticeable in the R package, unless you are trying to infer the USPC and CPC values from the returned URLs, without actually calling back for this data.  See `retrieve_linked_data()`
 
 Here we'll call the patent endpoint to get CPC fields for a particular patent, some of
 the returned fields, like the cpc_group, are HATEOAS links:

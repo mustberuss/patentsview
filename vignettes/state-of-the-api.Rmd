@@ -10,8 +10,6 @@ vignette: >
 There's a lot going on with the new version of the Patentsview API, recently renamed
 PatentSearch API, as announced [here](https://search.patentsview.org/docs/#naming-update).
 
-To not bury the lead, the 2024-11-06 API release seems to have **broken paging by patent_id**, details [below](#big-trouble)
-
 ## On the Plus Side
 
 Here are the positive API changes:
@@ -23,7 +21,7 @@ intended to [retrieve all utility patents](api-changes.html#unbounded) etc.
 
 * The new version of the API returns data in types other than strings, e.g. application.rule_47_flag from the patent endpoint is a boolean.  ```View(fieldsdf[grep('number|integer|boolean',fieldsdf$data_type),c("endpoint","field","data_type")])``` currently returns 90 rows
 
-  There are still a few fields where the API returns strings that cast-pv-data() casts to a more appropriate data type[^7].
+  There are still a few fields where the API returns strings that `cast-pv-data()` casts to a more appropriate data type[^7].
 fieldsdf$data_type is set to int or bool for these fields.
 
   ```{r}
@@ -43,7 +41,7 @@ making it possible to tell if the results weren't what you expected or if the R 
 is somehow misinterpreting them. On other [Joys of Swagger UI](https://patentsview.historicip.com/swagger/articles/)
 
 ## Issues
-* As mentioned up top, the 2024-11-06 API release seems to have broken paging by patent_id, details [below](#big-trouble)
+* The 2024-11-06 API release seems to have intentionally changed paging by patent_id, details [below](#big-trouble)
 * The original API's sunset date is currently February 12, 2025 though the new version 
 still has [issues](api-changes.html#things-to-note)
 * On a new [string case sensitivity](api-changes.html#case-sensitivity-caveat), opened as a [bug](#case-dependent) listed below
@@ -84,7 +82,7 @@ that cast-pv-data casts to integers.[^2] [Additional details](getting-started.ht
 entity, rel_app_texts.
 
    + Not exactly an oddity, but with no better place for this, here's a comparison of the old and 
-new attributes that can be sent to the API in its o: (options) parameter via search_pv()
+new attributes that can be sent to the API in its o: (options) parameter via `search_pv()`
 
      |Original API|New Version| Purpose|
      |------------|-----------|--------|
@@ -151,7 +149,7 @@ is another exception to the singular endpoint/plural return pattern[^6].
 
 PVS-1125	
 Not all the fields in the OpenAPI object can be requested
-See test_that("each field in fieldsdf can be retrieved") in test-api-bugs.r
+See test_that("each field in fieldsdf can be retrieved") in test-api-bugs.R
 
 PVS-1147 <a name="case-dependent">	
 Results are case dependent now when using an implied or explicit equals
@@ -203,23 +201,25 @@ It causes some awkardness in search_pv (we add a sort field and the primary key 
 in fields.  Awkard if no fields were specified)
 
 PVS-1435  <a name="big-trouble">  
-**Paging seems broken with a recent API release**  
+**Paging seems to have been changed with a recent API release**  
 test_that("the 'after' parameter works properly") in test-search-pv.R broke,
 as did the [paging vignette](result-set-paging.html).
 Their first requests have a total_hits of 3003 with 1000 rows returned but the
-subsequent requests return 399 rows when we set the 'after' parameter.
-There's a work around in search-pv when all_pages = TRUE (we page without using the
-after parameter) but, because of the bug, users cannot implement their own paging
-using the 'after' parameter.
+subsequent requests return 399 rows when we set the 'after' parameter to the unaltered
+value of the last patent_id we received.
 
-I think I figured out a work around:  if the after: parameter contains a patent_id, it needs to 
+Here's the new reality:  if the after: parameter is the value of a patent_id, it needs to 
 be padded to 8 characters.  E.g. "6010555" needs to be submitted as ```{"after": "06010555"}```,
-"RE36479" needs to become ```{"after": "RE036479"}```.  I don't know if this is a bug or feature,
-i.e. if paging will be fixed to work the way it used to, or whether padding will become permanent.
+"RE36479" needs to become ```{"after": "RE036479"}```.  This seems to be an intentional change
+so that sorting by patent_id doesn't behave oddly above and below 10,000,000 (where the leading 1
+put anything above 10M before anything below 10M).  As a result, paging by patent_id now requires
+padding.  Not sure if querying by patent_id would also need to be padded, I feel a test case
+coming on.  Oh, and the R package has a new method, `pad_patent_id()` should you need to pad patent_ids.
+
 
 ## State of the R Package
 
-* [Two new methods](api-changes.html#additional-r-package-changes) were added to the R package
+* [Three new methods](api-changes.html#additional-r-package-changes) were added to the R package
 
 * The reworked [ropensci post](ropensci-blog-post.html) explains what changes had to be made since assignee 
 latitude and longitude are no longer available from the patent endpoint.
@@ -227,7 +227,7 @@ latitude and longitude are no longer available from the patent endpoint.
 * A new vignette, inspired by the API team's jupyter notebook, was created showing two of the things it mentions
 
   1. The API and now the R package allow nested attributes to be [wildcarded](understanding-the-api.html#fields-shorthand),
-where the group's name will retrieve all the group's nested fields.  An empty string can also be passed as a group name to get_fields()
+where the group's name will retrieve all the group's nested fields.  An empty string can also be passed as a group name to `get_fields()`
 which then requests all the non-nested attributes from the endpoint. Ex. ```get_fields("patent", group=c("", "inventors")```
 
   2. On [applying multiple conditions to related-entity fields](understanding-the-api.html#unexpected-results)
@@ -238,8 +238,8 @@ also matching the API's change
 print(unique(fieldsdf[grep("/", fieldsdf$endpoint), "endpoint"]), row.names = FALSE)
   ```
 
-* There's a new, optional, include_pk parameter on get_fields() that defaults to FALSE.
-It's useful if you're planning on unnesting the return from search_pv().
+* There's a new, optional, include_pk parameter on `get_fields()` that defaults to FALSE.
+It's useful if you're planning on unnesting the return from `search_pv()`.
   ```{r}
 fields <- get_fields(endpoint = "patent", groups = c("inventors"), include_pk = TRUE)
 results <- search_pv(
@@ -250,7 +250,7 @@ unnest_pv_data(results$data)
   ```
 
 * Under the covers, httr was changed to httr2 (see several mentions below).  This only matters to users if 
-they passed additional arguments (...) to search_pv().  Previously if they passed config = httr::timeout(40)
+they passed additional arguments (...) to `search_pv()`.  Previously if they passed config = httr::timeout(40)
 they'd now pass timeout = 40 (name-value pairs of valid curl options, as found in `curl::curl_options()`)
 
 * Now that the R package is using httr2, users can make use of its last_request() method to see what was
@@ -309,7 +309,9 @@ bugs are fixed.  We may need to retain some of the hard-coding, see the comments
   + <a name="improvements"> Possible Package Improvements
 
     * The version number ought to be bumped to 1.0.0 since there are breaking API changes (singular endpoints and the addition of an API key).  validate-args.R has some version
-specific code that may need modifying. A draft of a release is [here](https://github.com/mustberuss/patentsview/releases).
+specific code that may need modifying. A draft of a release would look something like this:
+![pre-release](https://patentsview.historicip.com/release.png)
+
     * Result set size seems unbounded now.  Should we warn if a query would return more than 100,000 rows with all_pages = TRUE?  Or maybe add a max_rows to search_pv()?
     * Have get_fields() and search_pv() throw a specialized error if a plural endpoint is passed
     * Add an issue template that warns users not to share their API key
@@ -392,7 +394,7 @@ produce fieldsdf.csv and fieldsdf.rda
 
     * devtools::test(filter="utils") to just run just test-utils.R
 
-    * note that if you add new test methods, they must start with ```skip_on_cran()``` or builds will fail on r-universe (see Optional below) and eventually on CRAN.
+    * note that if you add new test methods, they must start with `skip_on_cran()` or builds will fail on r-universe (see Optional below) and eventually on CRAN.
 
   + Half building vignettes locally - see vignettes/README.md
 
@@ -416,11 +418,9 @@ produce fieldsdf.csv and fieldsdf.rda
 <br />
 <br />
    + build reference pages locally   
-    If you make changes to method documentation, run 
-    ```
-    devtools::document()
-    pkgdown::build_reference()
-    ```
+    If you make changes to method documentation, run   
+    `devtools::document()`  
+    `pkgdown::build_reference()`
 
    + To see README.Rmd changes locally
     ```
@@ -428,7 +428,7 @@ produce fieldsdf.csv and fieldsdf.rda
     pkgdown::build_home()
     ```
 
-   + Run code coverage locally on the whole package: ```devtools::test_coverage()``` or
+   + Run code coverage locally on the whole package: `devtools::test_coverage()` or
 ```devtools::test_coverage(function_exclusions = "\\.onLoad")``` or on an 
 individual file: ```devtools::test_coverage_active_file(file = "R/print.R")``` You'd need to have covr installed
 <br />
