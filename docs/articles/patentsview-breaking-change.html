@@ -246,10 +246,10 @@ vignette.</li>
 <li>A hex sticker was created using GuangchuangYu’s <a href="https://github.com/GuangchuangYu/hexSticker" class="external-link">hexSticker</a>
 </li>
 <li>The R package changed internally from using httr to httr2. This only
-affects users if they passed additional arguments (…) to search_pv().
-Previously if they passed config = httr::timeout(40) they’d now pass
-timeout = 40 (name-value pairs of valid curl options, as found in
-curl::curl_options() see <a href="https://httr2.r-lib.org/reference/req_options.html" class="external-link">req_options</a>)</li>
+affects users if they passed additional arguments (…) to
+<code><a href="../reference/search_pv.html">search_pv()</a></code>. Previously if they passed config =
+httr::timeout(40) they’d now pass timeout = 40 (name-value pairs of
+valid curl options, as found in curl::curl_options() see <a href="https://httr2.r-lib.org/reference/req_options.html" class="external-link">req_options</a>)</li>
 <li>Now that the R package is using httr2, users can make use of its
 last_request() method to see what was sent to the API. This could be
 useful when trying to fix an invalid request. Also fun would be seeing
@@ -259,10 +259,12 @@ the raw API response.</li>
 <span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_response</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_response</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/resp_body_raw.html" class="external-link">resp_body_json</a></span><span class="op">(</span><span class="op">)</span> </span></code></pre>
 <ol start="6" style="list-style-type: decimal">
-<li>Two new functions were added
+<li>Three new functions were added
 <ul>
-<li>retrieve_linked_data() to retrieve data from a HATEOAS link the API
-sent back, retrying if throttled</li>
+<li>
+<code><a href="../reference/retrieve_linked_data.html">retrieve_linked_data()</a></code> to retrieve data from a HATEOAS
+link the API sent back, retrying if throttled</li>
+<li><code><a href="../reference/pad_patent_id.html">pad_patent_id()</a></code></li>
 <li>qry_funs$in_range() to generate range queries for you.</li>
 </ul>
 </li>
