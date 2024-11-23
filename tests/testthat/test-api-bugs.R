@@ -8,17 +8,6 @@ add_base_url <- function(x) {
   paste0("https://search.patentsview.org/api/v1/", x)
 }
 
-# zero pad patent_id to 8 characters. Can be design, plant or reissue ex RE36479
-pad_patent_id <- function(patent_id) {
-  pad <- 8 - nchar(patent_id)
-  if (pad > 0) {
-    patent_id <- paste0(sprintf("%0*d", pad, 0), patent_id)
-    patent_id <- sub("(0+)([[:alpha:]]+)([[:digit:]]+)", "\\2\\1\\3", patent_id)
-  }
-
-  patent_id
-}
-
 test_that("there is case sensitivity on string equals", {
   skip_on_cran()
   skip_on_ci()
@@ -384,7 +373,7 @@ test_that("paging is still broken", {
   # a partial response
   expect_lt(nrow(subsequent$data$patents), 1000)
 
-  # API seems to want padded patent_ids, not sure if it's temporary or permanent
+  # The API seems to want padded patent_ids now
   subsequent <- search_pv(big_query,
     all_pages = FALSE, sort = sort, size = 1000,
     after = pad_patent_id(after)

@@ -30,28 +30,15 @@ shown in Example 2.
 
 ## Example 1
 
-**Note: A recent API release seems to have broken or at least 
-changed paging.**  This used to work,
-where we passed the last value we received as the after parameter to search_pv.
-Now we need to pad the patent_id to 8 characters, see [PVS-1435](state-of-the-api.html#big-trouble)
-It's unclear if this is a bug or intentional change (i.e. whether padding is temporary or
-permanent).
+**Note: A recent API release changed paging.**  We used to pass the unaltered last value we received.
+Now we need to pad the patent_id to 8 characters in order to page through the whole result set.
+This seems to be an intentional change, seeming only needed for patent_id, so ```pad_patent_id()```
+was added to the R package.
 
 Here we'll retrieve 5000 utility patents by paging.
 
 ```{r}
 library(patentsview)
-
-# zero pad patent_id to 8 characters. Can be design, plant or reissue ex RE36479 
-pad_patent_id <- function(patent_id) {
-  pad <- 8 - nchar(patent_id)
-  if(pad > 0)
-  {
-    patent_id <- paste0(sprintf("%0*d", pad, 0), patent_id)
-    patent_id <- sub("(0+)([[:alpha:]]+)([[:digit:]]+)", "\\2\\1\\3", patent_id)
-  }
-  patent_id
-}
 
 # Lets get 5000 utility patents, 1000 at a time (the API's maximum rows per request)
 requested_rows <- 1000
@@ -192,7 +179,6 @@ We'll use a small request size to to keep things simple
      after = list(
        result$data$patents[["patent_date"]][[last_row]],
 
-       # slight, hopefully temporary, hiccup as we pad as mentioned above
        pad_patent_id(
          result$data$patents[["patent_id"]][[last_row]]
        )

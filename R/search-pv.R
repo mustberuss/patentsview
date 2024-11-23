@@ -95,46 +95,35 @@ one_request <- function(method, query, base_url, arg_list, api_key, ...) {
   resp
 }
 
-#' @noRd
-wrap <- function(users_query, primary_key, after) {
-  # crib from Shakespeare, to quote or not to quote...
-  after <- if (is.character(after)) paste0('"', after, '"') else after
-
-  paste0('{"_and":[', users_query, ',{"_gt":{"', primary_key, '":', after, "}}]}")
+#' Pad patent_id
+#'
+#' This function strategically pads a patent_id with zeroes to 8 characters, 
+#' needed for custom paging and possibly when querying by patent_id.  
+#'
+#' @param patent_id The patent_id that needs to be padded.  It can
+#' be the patent_id for a utility, design, plant or reissue patent.
+#'
+#' @examples
+#' \dontrun{
+#'   padded <- pad_patent_id("RE36479")
+#'
+#'   padded2 <- pad_patent_id("3930306")
+#' }
+#'
+#' @export
+# zero pad patent_id to 8 characters.
+pad_patent_id <- function(patent_id) {
+  pad <- 8 - nchar(patent_id)
+  if(pad > 0)
+  {
+    patent_id <- paste0(sprintf("%0*d", pad, 0), patent_id)
+    patent_id <- sub("(0+)([[:alpha:]]+)([[:digit:]]+)", "\\2\\1\\3", patent_id)
+  }
+  patent_id
 }
 
-# Unbelievably, the latest API code push broke paging so we'll handle it ourselves
-# without using the after parameter!  (patent_id needs to be padded to 8 characters)
 #' @noRd
-request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, primary_key, ...) {
-  matched_records <- ex_res$query_results[[1]]
-  req_pages <- ceiling(matched_records / arg_list$opts$size)
-
-  after <- NULL
-
-  tmp <- lapply(seq_len(req_pages), function(i) {
-    # make an initial unwrapped query, then wrap the rest
-    query <- if (!is.null(after)) wrap(query, primary_key, after) else query
-
-    x <- one_request(method, query, base_url, arg_list, api_key, ...)
-    x <- process_resp(x)
-
-    # now to page we need to set the "after" attribute to where we left off
-    # we want the value of the primary sort field
-    s <- names(arg_list$sort[[1]])[[1]]
-    index <- nrow(x$data[[1]])
-    # arg_list$opts$after <<- x$data[[1]][[s]][[index]]
-    after <<- x$data[[1]][[s]][[index]]
-
-    x$data[[1]]
-  })
-
-  do.call("rbind", c(tmp, make.row.names = FALSE))
-}
-
-# This uses the now broken 'after' parameter- keeping until paging is fixed
-#' @noRd
-real_request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, ...) {
+request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, ...) {
   matched_records <- ex_res$query_results[[1]]
   req_pages <- ceiling(matched_records / arg_list$opts$size)
 
@@ -143,10 +132,16 @@ real_request_apply <- function(ex_res, method, query, base_url, arg_list, api_ke
     x <- process_resp(x)
 
     # now to page we need to set the "after" attribute to where we left off
-    # we want the value of the primary sort field
+    # we want the last value of the primary sort field
     s <- names(arg_list$sort[[1]])[[1]]
     index <- nrow(x$data[[1]])
-    arg_list$opts$after <<- x$data[[1]][[s]][[index]]
+    last_value <- x$data[[1]][[s]][[index]]
+
+    if(s == "patent_id") {
+      last_value <- pad_patent_id(last_value)
+    }
+
+    arg_list$opts$after <<- last_value
 
     x$data[[1]]
   })
@@ -364,7 +359,7 @@ search_pv <- function(query,
   }
 
   arg_list <- to_arglist(fields, size, primary_sort_key, after)
-  paged_data <- request_apply(result, method, query, base_url, arg_list, api_key, get_ok_pk(endpoint), ...)
+  paged_data <- request_apply(result, method, query, base_url, arg_list, api_key, ...)
 
   # apply the user's sort
   data.table::setorderv(paged_data, names(sort), ifelse(as.vector(sort) == "asc", 1, -1))

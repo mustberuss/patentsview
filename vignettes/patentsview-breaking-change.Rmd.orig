@@ -90,8 +90,9 @@ httr2::last_response()
 httr2::last_response() |> httr2::resp_body_json() 
 ```
 
-6. Two new functions were added
-   - retrieve_linked_data() to retrieve data from a HATEOAS link the API sent back, retrying if throttled
+6. Three new functions were added
+   - `retrieve_linked_data()` to retrieve data from a HATEOAS link the API sent back, retrying if throttled
+   - `pad_patent_id()`
    - qry_funs$in_range() to generate range queries for you.
 ```{r}
 library(patentsview)
