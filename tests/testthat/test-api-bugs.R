@@ -59,24 +59,6 @@ test_that("string vs text operators behave differently", {
   )
 })
 
-test_that("the otherreferences endpoint is still broken", {
-  skip_on_cran()
-  skip_on_ci()
-
-  query <- '{"_gte":{"patent_id":"1"}}'
-
-  # reported to the API team PVS-1109
-  # otherreferences is listed in the OpenAPI object.  It isn't in get_endpoints()
-  # as it only throws errors.
-  # This test will fail when the API does not throw an error
-
-  # Currently throws a 404
-  expect_error(
-    result <- retrieve_linked_data(add_base_url(paste0("patent/otherreference/?q=", query)))
-  )
-})
-
-
 # from test-api-returns.R
 test_that("API returns all requested groups", {
   skip_on_cran()
@@ -371,6 +353,8 @@ test_that("missing patents are still missing", {
 
 test_that("we can't request assignee_years.num_patents", {
   skip_on_cran()
+
+  # PVS-1437 Errors are thrown when requesting assignee_years or inventor_years
 
   expect_error(
     pv_out <- search_pv(
