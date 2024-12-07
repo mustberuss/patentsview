@@ -107,14 +107,14 @@ search_pv(query = qry_1, fields = NULL) # This will retrieve a default set of fi
 #> 
 #> List of 1
 #>  $ patents:'data.frame':	1000 obs. of  3 variables:
-#>   ..$ patent_id   : chr [1:1000] "10000000" ...
-#>   ..$ patent_title: chr [1:1000] "Coherent LADAR using intra-pixel quadrature"..
-#>   ..$ patent_date : chr [1:1000] "2018-06-19" ...
+#>   ..$ patent_id   : chr [1:1000] "8925112" ...
+#>   ..$ patent_title: chr [1:1000] "Aircrew ensembles" ...
+#>   ..$ patent_date : chr [1:1000] "2015-01-06" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 3,401,344, count = 1,000
+#> total_hits = 3,491,425, count = 1,000
 ```
 
 ...Or you can use the domain specific language (DSL) provided in the `patentsview` package to help you write the query:
@@ -131,14 +131,14 @@ search_pv(query = qry_2)
 #> 
 #> List of 1
 #>  $ patents:'data.frame':	1000 obs. of  3 variables:
-#>   ..$ patent_id   : chr [1:1000] "10000000" ...
-#>   ..$ patent_title: chr [1:1000] "Coherent LADAR using intra-pixel quadrature"..
-#>   ..$ patent_date : chr [1:1000] "2018-06-19" ...
+#>   ..$ patent_id   : chr [1:1000] "8925112" ...
+#>   ..$ patent_title: chr [1:1000] "Aircrew ensembles" ...
+#>   ..$ patent_date : chr [1:1000] "2015-01-06" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 3,401,344, count = 1,000
+#> total_hits = 3,491,425, count = 1,000
 ```
 
 `qry_1` and `qry_2` will result in the same HTTP call to the API. Both queries search for patents in USPTO that were published after 2014. There are three gotchas to look out for when writing a query:
@@ -166,29 +166,29 @@ search_pv(
 #> 
 #> List of 1
 #>  $ patents:'data.frame':	1000 obs. of  2 variables:
-#>   ..$ patent_abstract: chr [1:1000] "A frequency modulated (coherent) laser d"..
+#>   ..$ patent_abstract: chr [1:1000] "A method of countering the effects of G-"..
 #>   ..$ inventors      :List of 1000
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 3,401,344, count = 1,000
+#> total_hits = 3,491,425, count = 1,000
 ```
 
 The fields that you can retrieve depends on the endpoint that you are hitting. We've been using the "patent" endpoint thus far, so all of these are retrievable: `fieldsdf[fieldsdf$endpoint == "patent", "field"]`. You can also use `get_fields()` to list the retrievable fields for a given endpoint,
-optionally limited to specific groups of nested or top level (the "" in groups) fields
+optionally limited to specific groups of nested or top level fields
 
 
 ``` r
 search_pv(
   query = qry_funs$gt(patent_year = 2014),
-  fields = get_fields(endpoint = "patent", groups = c("", "inventors"))
+  fields = get_fields(endpoint = "patent", groups = c("patents", "inventors"))
 )
 #> $data
 #> #### A list with a single data frame (with list column(s) inside) on patents level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	1000 obs. of  19 variables:
+#>  $ patents:'data.frame':	1000 obs. of  20 variables:
 #>   ..$ patent_id                                                   : chr [1:10"..
 #>   ..$ patent_title                                                : chr [1:10"..
 #>   ..$ patent_type                                                 : chr [1:10"..
@@ -206,13 +206,14 @@ search_pv(
 #>   ..$ patent_processing_days                                      : int [1:100..
 #>   ..$ patent_term_extension                                       : int [1:100..
 #>   ..$ gov_interest_statement                                      : chr [1:100..
-#>   ..$ patent_uspc_current_mainclass_average_patent_processing_days: logi [1:10..
+#>   ..$ patent_uspc_current_mainclass_average_patent_processing_days: int [1:100..
 #>   ..$ inventors                                                   :List of 1000
+#>   ..$ wipo_kind                                                   : chr [1:10"..
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 3,401,344, count = 1,000
+#> total_hits = 3,491,425, count = 1,000
 ```
 
 ## Example

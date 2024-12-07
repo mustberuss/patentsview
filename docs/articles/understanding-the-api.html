@@ -225,6 +225,11 @@ requests are easier to read since they don’t need to be urlencoded):</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Method: POST</span></span>
 <span><span class="co">#&gt; URL: https://search.patentsview.org/api/v1/patent/</span></span></code></pre></div>
+<p><a name="all-fields"> Now, when requesting all fields,
+<code>get_fields()</code> uses the API’s shorthand notation rather than
+explicitly calling out every field. If it didn’t do that, it would be
+possible to get an error when doing a GET of every field at the patent
+endpoint. It currently has 20 groups and 129 fields overall.</a></p>
 </div>
 <div class="section level2">
 <h2 id="unexpected-results">Unexpected Results<a class="anchor" aria-label="anchor" href="#unexpected-results"></a>

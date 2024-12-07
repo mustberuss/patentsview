@@ -37,7 +37,7 @@ possible fields for each endpoint).
 }
 \examples{
 # Get all top level (non-nested) fields for the patent endpoint:
-fields <- get_fields(endpoint = "patent", groups = c(""))
+fields <- get_fields(endpoint = "patent", groups = c("patents"))
 
 # ...Then pass to search_pv:
 \dontrun{
@@ -48,7 +48,7 @@ search_pv(
 )
 }
 # Get all patent and assignee-level fields for the patent endpoint:
-fields <- get_fields(endpoint = "patent", groups = c("assignees", ""))
+fields <- get_fields(endpoint = "patent", groups = c("assignees", "patents"))
 
 \dontrun{
 # ...Then pass to search_pv:

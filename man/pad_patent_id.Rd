@@ -16,9 +16,9 @@ needed for custom paging and possibly when querying by patent_id.
 }
 \examples{
 \dontrun{
-  padded <- pad_patent_id("RE36479")
+padded <- pad_patent_id("RE36479")
 
-  padded2 <- pad_patent_id("3930306")
+padded2 <- pad_patent_id("3930306")
 }
 
 }

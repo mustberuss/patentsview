@@ -318,12 +318,18 @@ that match query criteria.</td>
 </tbody>
 </table>
 </li>
-<li><p>As another not-exactly-an-oddity, the API’s sort on patent_id, a
+<li>
+<p>As another not-exactly-an-oddity, the API’s sort on patent_id, a
 string field, gets funky when mixing patent ids above and below
 10,000,000 (the ones 10M and above come first). The same thing happens
 with other patent types, like reissue, when the ids have different
 string lengths. See the code block at the bottom of the <a href="understanding-the-api.html#unexpected-results">understanding the
-api</a> vignette.</p></li>
+api</a> vignette.</p>
+<p><em>Update</em>: the API now sorts as you’d expect but at a fairly
+high price. Now if you do your own paging using patent_id, you have to
+zero pad the after parameter to 8 characters. Surprizingly, the padded
+values are never visible in the returned data. See <a href="#paging-change">below</a></p>
+</li>
 <li><p>Along the same lines, this query currently returns 2,084,459 rows
 when that isn’t at all what I expected! (I checked and the original
 version of the API did this too.)
@@ -396,7 +402,7 @@ system.</p>
 <p>Weirdly, you can only view bugs you’ve submitted. Based on the digits
 in the reference number, I’m assuming there are other open bugs.</p>
 <p><del>PVS-1109</del> This is fixed <a name="otherreference"><br>
-The otherreference endpoint rejects the default </a><a href="https://search.patentsview.org/swagger-ui/" class="external-link">Swagger UI</a>
+The other_reference endpoint rejects the default </a><a href="https://search.patentsview.org/swagger-ui/" class="external-link">Swagger UI</a>
 parameters (throws a 400 Bad Request Error if either reference_sequence
 or reference_text is requested) and returns no data when only patent_id
 is requested. See test_that(“the otherreferences endpoint is still
@@ -466,7 +472,7 @@ This was mentioned as a bug in the <a href="https://patentsview.org/forum/7/topi
 forum</a>. It causes some awkardness in search_pv (we add a sort field
 and the primary key if not included in fields. Awkard if no fields were
 specified)</p>
-<p>PVS-1435 <a name="big-trouble"><br><strong>Paging seems to have been changed with a recent API
+<p><a name="paging-change">PVS-1435<br><strong>Paging seems to have been changed with a recent API
 release</strong><br>
 test_that(“the ‘after’ parameter works properly”) in test-search-pv.R
 broke, as did the </a><a href="result-set-paging.html">paging vignette</a>.
@@ -498,20 +504,46 @@ longitude are no longer available from the patent endpoint.</p></li>
 <p>A new vignette, inspired by the API team’s jupyter notebook, was
 created showing two of the things it mentions</p>
 <ol style="list-style-type: decimal">
-<li><p>The API and now the R package allow nested attributes to be <a href="understanding-the-api.html#fields-shorthand">wildcarded</a>, where
-the group’s name will retrieve all the group’s nested fields. An empty
-string can also be passed as a group name to <code><a href="../reference/get_fields.html">get_fields()</a></code>
-which then requests all the non-nested attributes from the endpoint. Ex.
-<code>get_fields("patent", group=c("", "inventors")</code></p></li>
-<li><p>On <a href="understanding-the-api.html#unexpected-results">applying multiple
-conditions to related-entity fields</a></p></li>
+<li>The API and now the R package allow nested attributes to be <a href="understanding-the-api.html#fields-shorthand">wildcarded</a>, where
+the group’s name will retrieve all the group’s nested fields. Oddly, the
+unnested attributes cannot be requested this way, e.g. the unnested
+attributes of the patent endpoint need to be called out, rather than
+requesting “patents” as a field.</li>
 </ol>
 </li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span>   <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span><span class="st">"patent"</span>, groups <span class="op">=</span> <span class="st">"patents"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##  [1] "gov_interest_statement"                                      </span></span>
+<span><span class="co">##  [2] "patent_abstract"                                             </span></span>
+<span><span class="co">##  [3] "patent_cpc_current_group_average_patent_processing_days"     </span></span>
+<span><span class="co">##  [4] "patent_date"                                                 </span></span>
+<span><span class="co">##  [5] "patent_detail_desc_length"                                   </span></span>
+<span><span class="co">##  [6] "patent_earliest_application_date"                            </span></span>
+<span><span class="co">##  [7] "patent_id"                                                   </span></span>
+<span><span class="co">##  [8] "patent_num_foreign_documents_cited"                          </span></span>
+<span><span class="co">##  [9] "patent_num_times_cited_by_us_patents"                        </span></span>
+<span><span class="co">## [10] "patent_num_total_documents_cited"                            </span></span>
+<span><span class="co">## [11] "patent_num_us_applications_cited"                            </span></span>
+<span><span class="co">## [12] "patent_num_us_patents_cited"                                 </span></span>
+<span><span class="co">## [13] "patent_processing_days"                                      </span></span>
+<span><span class="co">## [14] "patent_term_extension"                                       </span></span>
+<span><span class="co">## [15] "patent_title"                                                </span></span>
+<span><span class="co">## [16] "patent_type"                                                 </span></span>
+<span><span class="co">## [17] "patent_uspc_current_mainclass_average_patent_processing_days"</span></span>
+<span><span class="co">## [18] "patent_year"                                                 </span></span>
+<span><span class="co">## [19] "wipo_kind"</span></span></code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>On <a href="understanding-the-api.html#unexpected-results">applying
+multiple conditions to related-entity fields</a>
+</li>
+</ol>
+<ul>
 <li>
 <p>The endpoints are now singular, to match the API’s change. Some
 of the new endpoints are nested under patent/ and one is nested under
 publication/, also matching the API’s change</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">fieldsdf</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"/"</span>, <span class="va">fieldsdf</span><span class="op">$</span><span class="va">endpoint</span><span class="op">)</span>, <span class="st">"endpoint"</span><span class="op">]</span><span class="op">)</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "patent/attorney"                "patent/foreign_citation"       </span></span>
 <span><span class="co">## [3] "patent/other_reference"         "patent/rel_app_text"           </span></span>
@@ -522,7 +554,7 @@ publication/, also matching the API’s change</p>
 <p>There’s a new, optional, include_pk parameter on
 <code><a href="../reference/get_fields.html">get_fields()</a></code> that defaults to FALSE. It’s useful if you’re
 planning on unnesting the return from <code><a href="../reference/search_pv.html">search_pv()</a></code>.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"patent"</span>, groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"inventors"</span><span class="op">)</span>, include_pk <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span></span>
 <span>query <span class="op">=</span> <span class="st">'{"_gte":{"patent_date":"2007-01-04"}}'</span>,</span>
@@ -575,11 +607,6 @@ and the <a href="https://github.com/ropensci/patentsview/pull/29#discussion_r105
 discussion</a> on paging with more than a primary sort. <strong>This
 added a dependency to data.table.</strong> There is also a <a href="result-set-paging.html">new vignette</a> on the new implementation
 of paging</p></li>
-<li><p>The patent/otherreference endpoint isn’t currently working
-(reported as a <a href="#otherreference">bug</a> above). It isn’t
-included in the return of get_endpoints() and has only a negative test
-case that will fail when the API responds with something other than an
-error.</p></li>
 <li><p>The R package unit tests have some skips and other negative tests
 that API bugs still exist (they’ll fail when bugs are fixed). The tests
 were copied to <a href="https://github.com/mustberuss/patentsview/blob/api-redesign/tests/testthat/test-api-bugs.R" class="external-link">a
