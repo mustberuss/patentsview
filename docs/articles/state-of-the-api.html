@@ -206,7 +206,7 @@ Swagger UI</a></p></li>
 </h2>
 <ul>
 <li><p>The 2024-11-06 API release seems to have intentionally changed
-paging by patent_id, details <a href="#big-trouble">below</a></p></li>
+paging by patent_id, details <a href="#paging-change">below</a></p></li>
 <li><p>The original API’s sunset date is currently February 12, 2025
 though the new version still has <a href="api-changes.html#things-to-note">issues</a></p></li>
 <li><p>On a new <a href="api-changes.html#case-sensitivity-caveat">string case
@@ -401,7 +401,7 @@ system.</p>
 </h2>
 <p>Weirdly, you can only view bugs you’ve submitted. Based on the digits
 in the reference number, I’m assuming there are other open bugs.</p>
-<p><del>PVS-1109</del> This is fixed <a name="otherreference"><br>
+<p><del>PVS-1109</del> <a name="otherreference">This is fixed<br>
 The other_reference endpoint rejects the default </a><a href="https://search.patentsview.org/swagger-ui/" class="external-link">Swagger UI</a>
 parameters (throws a 400 Bad Request Error if either reference_sequence
 or reference_text is requested) and returns no data when only patent_id

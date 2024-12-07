@@ -11,7 +11,7 @@ vignette: >
 
   Paging changed in the new version of the Patentsview API.  This vignette tries to explain a
 subtle gotcha that the R package handles for you and to show how to do your own paging.  Or
-maybe it's trying to make the case for adding a max_rows parameter to search_pv()? :-)
+maybe it's trying to make the case for adding a max_rows parameter to search_pv()?  
 
   The R package lets you make a single request of up to 1000 rows or to retrieve all rows,
 with nothing in between, unless you do your own paging.  This might be important if you
@@ -23,10 +23,11 @@ shown in Example 2.
 
 ## Example 1
 
-**Note: A recent API release changed paging.**  We used to pass the unaltered last value we received.
-Now we need to pad the patent_id to 8 characters in order to page through the whole result set.
-This seems to be an intentional change, seeming only needed for patent_id, so ```pad_patent_id()```
-was added to the R package.
+**Note: A recent API release changed paging when sorting by patent_id.**  We used to pass the unaltered 
+last value we received.  Now we need to pad the patent_id to 8 characters in order to page through the whole result set.
+This seems to be an intentional change, seemingly only needed for patent_id, so ```pad_patent_id()```
+was added to the R package. *Good idea or not? Perhaps as an internal function instead since
+most users would not need it.*
 
 Here we'll retrieve 5000 utility patents by paging.
 
@@ -71,6 +72,37 @@ str(utility_patents)
 #>  $ patents.patent_title: chr  "Golf glove" "Crib leg lock" "Bed safety side rail arrangement" "Assembly for use in recreational activities" ...
 #>  $ patents.patent_date : chr  "1976-01-06" "1976-01-06" "1976-01-06" "1976-01-06" ...
 ```
+
+## Temporary Philosophical Discussion
+
+FWIW, here's what paging is doing in this branch, from a temporary comment in search-pv.R:
+
+```
+  # Here we ignore the user's sort and instead have the API sort by the primary
+  # key for the requested endpoint.  This simplifies the paging's after parameter.
+  # If we call the API with more than a primary sort, the after parameter would
+  # have to be an array of all the sort fields' last values.
+  # After we've retrieved all the data we'll sort in R using the sort the user requested
+
+  # Doing this also protects users from needing to know the peculiarities
+  # of the API's paging.  Example: if a user requests a sort of
+  # [{"patent_date":"asc"}], on paging the after parameter may skip
+  # to the next issue date before having retured all the data for the last
+  # patent_date in the previous request - depending on where the
+  # patent_dates change relative to the API's page breaks.
+  # (Say the last patent in a retrieved page is the first patent
+  # of a particular date, we wouldn't want the after parameter to
+  # to begin the next page of data after this date.)
+
+```
+
+**Note that this adds a depedency to data.table.**  It also gets ugly now that the
+API team "normalized" sorting by patent_id where patent_id 10,000,000 now comes after
+patent_id 4,000,000 (it didn't when the sort was a straight up string sort).  Our data.table
+sort by patent_id is a straight up string sort so the normalization change gets
+stepped on.  *All that to say should we do this or let the API handle sorting and 
+trust users to pick proper sort fields?*
+
 ## Example 2
 
 Here we will execute a query two different ways, the first having the R package do

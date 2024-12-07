@@ -157,7 +157,7 @@
 <p>Paging changed in the new version of the Patentsview API. This
 vignette tries to explain a subtle gotcha that the R package handles for
 you and to show how to do your own paging. Or maybe it’s trying to make
-the case for adding a max_rows parameter to search_pv()? :-)</p>
+the case for adding a max_rows parameter to search_pv()?</p>
 <p>The R package lets you make a single request of up to 1000 rows or to
 retrieve all rows, with nothing in between, unless you do your own
 paging. This might be important if you want to retrieve a few thousand
@@ -169,12 +169,14 @@ field, as shown in Example 2.</p>
 <div class="section level2">
 <h2 id="example-1">Example 1<a class="anchor" aria-label="anchor" href="#example-1"></a>
 </h2>
-<p><strong>Note: A recent API release changed paging.</strong> We used
-to pass the unaltered last value we received. Now we need to pad the
-patent_id to 8 characters in order to page through the whole result set.
-This seems to be an intentional change, seeming only needed for
-patent_id, so <code><a href="../reference/pad_patent_id.html">pad_patent_id()</a></code> was added to the R
-package.</p>
+<p><strong>Note: A recent API release changed paging when sorting by
+patent_id.</strong> We used to pass the unaltered last value we
+received. Now we need to pad the patent_id to 8 characters in order to
+page through the whole result set. This seems to be an intentional
+change, seemingly only needed for patent_id, so
+<code><a href="../reference/pad_patent_id.html">pad_patent_id()</a></code> was added to the R package. <em>Good idea
+or not? Perhaps as an internal function instead since most users would
+not need it.</em></p>
 <p>Here we’ll retrieve 5000 utility patents by paging.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mustberuss.github.io/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
@@ -217,6 +219,34 @@ package.</p>
 <span><span class="co">#&gt;  $ patents.patent_date : chr  "1976-01-06" "1976-01-06" "1976-01-06" "1976-01-06" ...</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="temporary-philosophical-discussion">Temporary Philosophical Discussion<a class="anchor" aria-label="anchor" href="#temporary-philosophical-discussion"></a>
+</h2>
+<p>FWIW, here’s what paging is doing in this branch, from a temporary
+comment in search-pv.R:</p>
+<pre><code><span>  <span class="co"># Here we ignore the user's sort and instead have the API sort by the primary</span></span>
+<span>  <span class="co"># key for the requested endpoint.  This simplifies the paging's after parameter.</span></span>
+<span>  <span class="co"># If we call the API with more than a primary sort, the after parameter would</span></span>
+<span>  <span class="co"># have to be an array of all the sort fields' last values.</span></span>
+<span>  <span class="co"># After we've retrieved all the data we'll sort in R using the sort the user requested</span></span>
+<span></span>
+<span>  <span class="co"># Doing this also protects users from needing to know the peculiarities</span></span>
+<span>  <span class="co"># of the API's paging.  Example: if a user requests a sort of</span></span>
+<span>  <span class="co"># [{"patent_date":"asc"}], on paging the after parameter may skip</span></span>
+<span>  <span class="co"># to the next issue date before having retured all the data for the last</span></span>
+<span>  <span class="co"># patent_date in the previous request - depending on where the</span></span>
+<span>  <span class="co"># patent_dates change relative to the API's page breaks.</span></span>
+<span>  <span class="co"># (Say the last patent in a retrieved page is the first patent</span></span>
+<span>  <span class="co"># of a particular date, we wouldn't want the after parameter to</span></span>
+<span>  <span class="co"># to begin the next page of data after this date.)</span></span></code></pre>
+<p><strong>Note that this adds a depedency to data.table.</strong> It
+also gets ugly now that the API team “normalized” sorting by patent_id
+where patent_id 10,000,000 now comes after patent_id 4,000,000 (it
+didn’t when the sort was a straight up string sort). Our data.table sort
+by patent_id is a straight up string sort so the normalization change
+gets stepped on. <em>All that to say should we do this or let the API
+handle sorting and trust users to pick proper sort fields?</em></p>
+</div>
+<div class="section level2">
 <h2 id="example-2">Example 2<a class="anchor" aria-label="anchor" href="#example-2"></a>
 </h2>
 <p>Here we will execute a query two different ways, the first having the
@@ -226,7 +256,7 @@ the paging ourselves.</p>
 5677 patents <a href="https://ppubs.uspto.gov/pubwebapp/external.html?q=@PD%3E=19760101%3C=19760131&amp;db=USPAT&amp;type=queryString" class="external-link">issued
 in January 1976</a> while the patentsview database says there are 5352.
 Open as bug or try to figure out why the numbers are so far off.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patent_id"</span>, <span class="st">"patent_date"</span>, <span class="st">"patent_title"</span><span class="op">)</span></span>
 <span><span class="va">sort</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patent_date"</span> <span class="op">=</span> <span class="st">"asc"</span><span class="op">)</span></span>
@@ -241,7 +271,7 @@ Open as bug or try to figure out why the numbers are so far off.</p>
 <span><span class="co">#&gt; [1] 5352</span></span></code></pre></div>
 <p>Now we’ll try to do our own paging but as you might notice, we’ll run
 into trouble.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">after</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
 <span><span class="va">combined_data</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
@@ -304,7 +334,7 @@ primary sort.</p>
 </h2>
 <p>For completeness, this examples shows custom paging with a secondary
 sort field. We’ll use a small request size to to keep things simple</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span>   <span class="va">query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span><span class="st">"patent_date"</span> <span class="op">=</span> <span class="st">"2007-01-02"</span><span class="op">)</span></span>
 <span></span>
@@ -382,7 +412,7 @@ sort field. We’ll use a small request size to to keep things simple</p>
 </h2>
 <p>Ok, I’ll get you started on the user exercise. Trivia: with a handful
 of exceptions, patents were issued on Tuesdays.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>   <span class="va">uspto_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1478</span>, <span class="fl">1312</span>, <span class="fl">1449</span>, <span class="fl">1438</span><span class="op">)</span></span>
 <span></span>
 <span>   <span class="va">issue_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"1976-01-06"</span><span class="op">)</span>  <span class="co"># first Tuesday of January 1976</span></span>
@@ -413,7 +443,7 @@ that shows the design patents issued in January 1976.</p>
 <p><a name="missing">As this shows, there aren’t design patents in the
 patentsview database until 1976-12-07 and plant patents don’t appear
 until 1976-12-14.</a></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patent_id"</span>,<span class="st">"patent_title"</span>,<span class="st">"patent_date"</span>,<span class="st">"patent_type"</span><span class="op">)</span></span>
 <span>  <span class="va">sort</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patent_date"</span> <span class="op">=</span> <span class="st">"asc"</span><span class="op">)</span></span>
 <span></span>
@@ -438,7 +468,7 @@ until 1976-12-14.</a></p>
 <span><span class="co">#&gt;   ..$ patent_title: chr "Strawberry plant"</span></span>
 <span><span class="co">#&gt;   ..$ patent_type : chr "plant"</span></span>
 <span><span class="co">#&gt;   ..$ patent_date : chr "1976-12-14"</span></span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>   <span class="va">uspto_design_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">88</span>, <span class="fl">54</span>, <span class="fl">63</span>, <span class="fl">103</span><span class="op">)</span></span>
 <span></span>
 <span>   <span class="va">issue_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"1976-01-06"</span><span class="op">)</span>  <span class="co"># first Tuesday of January 1976</span></span>
