@@ -66,8 +66,8 @@ validate_groups <- function(endpoint, groups) {
 
   asrt(
     all(groups %in% ok_grps),
-    "groups for the ", endpoint, " endpoint must be one or more of the following: ",
-    paste(error_groups(ok_grps), collapse = ", ")
+    "for the ", endpoint, " endpoint, group must be one of the following: ",
+    paste(ok_grps, collapse = ", ")
   )
 }
 
@@ -113,12 +113,4 @@ deprecate_warn_all <- function(error_browser, subent_cnts, mtchd_subent_only, pa
       details = "The new version of the API does not support the page parameter"
     )
   }
-}
-
-#' @noRd
-error_groups <- function(groups) {
-  # on an error explain the empty string is for top level attributes
-  # throw a different error if there aren't any nested groups?
-
-  error_grps <- replace(groups, groups == "", '"" (for top level attributes)')
 }

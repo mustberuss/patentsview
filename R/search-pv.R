@@ -247,7 +247,7 @@ get_default_sort <- function(endpoint) {
 #'
 #' search_pv(
 #'   query = qry_funs$gt(patent_year = 2010),
-#'   fields = get_fields("patent", c("", "assignees"))
+#'   fields = get_fields("patent", c("patents", "assignees"))
 #' )
 #'
 #' search_pv(
