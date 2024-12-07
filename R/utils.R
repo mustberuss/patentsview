@@ -33,15 +33,6 @@ validate_endpoint <- function(endpoint) {
 }
 
 #' @noRd
-validate_groups <- function(groups) {
-  ok_grps <- unique(fieldsdf$group)
-  asrt(
-    all(groups %in% ok_grps),
-    "group must be one of the following: ", paste(ok_grps, collapse = ", ")
-  )
-}
-
-#' @noRd
 validate_pv_data <- function(data) {
   asrt(
     "pv_data_result" %in% class(data),
