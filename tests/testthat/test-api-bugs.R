@@ -57,6 +57,9 @@ test_that("POSTs and GETs behave differently", {
   # PVS-1493 POST and GET behave differently when a sort and/or fields aren't specified
   # POSTs seems to want fields and a sort specified to behave properly, GETs behave
   # as expected
+
+  skip_on_cran()
+
   query <- '{"cpc_current.cpc_subclass_id":"A01D"}'
   post <- search_pv(query, size = 1000, method = "POST")
   get <- search_pv(query, size = 1000, method = "GET")
