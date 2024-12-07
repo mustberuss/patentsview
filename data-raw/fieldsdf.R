@@ -63,6 +63,10 @@ data_type_intuit <- function(field_definition) {
 
 extract_relevant_schema_info <- function(schema_elements) {
   lapply(schema_elements, function(schema_element) {
+
+    endpoint <- lookup[[schema_element]]
+    plural <- names(api$components$schemas[[schema_element]]$properties)
+
     middle <- lapply(
       names(api$components$schemas[[schema_element]]$properties[[1]]$items$properties),
       function(x, y) {
@@ -76,7 +80,7 @@ extract_relevant_schema_info <- function(schema_elements) {
             function(a, b) {
               # only nested one deep- wouldn't be an array here
               data.frame(
-                endpoint = lookup[[schema_element]],
+                endpoint = endpoint,
                 field = paste0(group, ".", a),
                 data_type = data_type_intuit(b[[a]]),
                 group = group,
@@ -89,10 +93,10 @@ extract_relevant_schema_info <- function(schema_elements) {
           do.call(rbind, inner)
         } else {
           data.frame(
-            endpoint = lookup[[schema_element]],
+            endpoint = endpoint,
             field = x,
             data_type = data_type,
-            group = "",
+            group = plural,
             common_name = x
           )
         }
