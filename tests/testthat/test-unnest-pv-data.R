@@ -21,7 +21,7 @@ test_that("we can unnest all entities", {
     pv_out <- search_pv(
       query = TEST_QUERIES[[x]],
       endpoint = x,
-      fields = get_fields(x, group = "") # requesting non-nested attributes
+      fields = get_fields(x, group = to_plural(x)) # requesting non-nested attributes
     )
 
     expect_gt(pv_out$query_results$total_hits, 0) # check that the query worked
@@ -37,7 +37,7 @@ test_that("we can unnest all entities", {
       pv_out <- search_pv(
         query = TEST_QUERIES[[x]],
         endpoint = x,
-        fields = get_fields(x, group = "") # requesting non-nested attributes
+        fields = get_fields(x, group = to_plural(x)) # requesting non-nested attributes
       )
     )
   })

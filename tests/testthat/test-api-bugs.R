@@ -8,6 +8,64 @@ add_base_url <- function(x) {
   paste0("https://search.patentsview.org/api/v1/", x)
 }
 
+test_that("there is trouble paging", {
+  skip_on_cran()
+  skip_on_ci()
+
+  # reprex inspired by https://patentsview.org/forum/7/topic/812
+  # Not all requested groups are coming back as we page, causing
+  # Error in rbind(deparse.level, ...) :
+  # numbers of columns of arguments do not match
+  # This query fails if any of these groups are specified
+  # "applicants", "cpc_at_issue", "gov_interest_contract_award_numbers",
+  # "uspc_at_issue")
+
+  query <- with_qfuns(
+    and(
+      gte(application.filing_date = "2000-01-01"),
+      eq(cpc_current.cpc_subclass_id = "A01D")
+    )
+  )
+
+  sort <- c("patent_id" = "asc")
+  fields <- c(
+    "patent_id", "applicants", "cpc_at_issue",
+    "gov_interest_contract_award_numbers", "uspc_at_issue"
+  )
+
+  result1 <- search_pv(query,
+    method = "GET", all_pages = FALSE,
+    fields = fields, sort = sort, size = 1000
+  )
+
+  result2 <- search_pv(query,
+    method = "GET", all_pages = FALSE,
+    fields = fields, sort = sort, size = 1000, after = "06901731"
+  )
+
+  # result1$data$patents$applicants is sparse, mostly NULL
+  # there isn't a result2$data$patents$applicants
+  names1 <- names(result1$data$patents)
+  names2 <- names(result2$data$patents)
+
+  expect_failure(
+    expect_setequal(names1, names2)
+  )
+})
+
+test_that("POSTs and GETs behave differently", {
+  # PVS-1493 POST and GET behave differently when a sort and/or fields aren't specified
+  # POSTs seems to want fields and a sort specified to behave properly, GETs behave
+  # as expected
+  query <- '{"cpc_current.cpc_subclass_id":"A01D"}'
+  post <- search_pv(query, size = 1000, method = "POST")
+  get <- search_pv(query, size = 1000, method = "GET")
+
+  expect_failure(
+    expect_equal(post$query_results$count, get$query_results$count)
+  )
+})
+
 test_that("there is case sensitivity on string equals", {
   skip_on_cran()
   skip_on_ci()
@@ -67,9 +125,9 @@ test_that("API returns all requested groups", {
     , "draw_desc_text" # Error: Invalid field: description_sequence
     , "cpc_subclass" # 404?  check the test query
     , "uspc_subclass" # 404
-    , "assignee" # Invalid field: assignee_years.num_patents. assignee_years is not a nested field
-    , "inventor" # Invalid field: inventor_years.num_patents.
     , "pg_claim" # Invalid field: claim_dependent
+    , "assignee" # Invalid field: assignee_years.num_patents
+    , "inventor" # Invalid field: inventor_years.num_patents
   )
 
   mismatched_returns <- c(
@@ -270,7 +328,7 @@ test_that("we can't sort by all fields", {
   # PVS-1377
 
   endpoint_bad_fields <- lapply(eps, function(endpoint) {
-    unnested_fields <- get_fields(endpoint, groups = "")
+    unnested_fields <- get_fields(endpoint, groups = to_plural(endpoint))
 
     result <- lapply(unnested_fields, function(field) {
       tryCatch(
@@ -340,19 +398,26 @@ test_that("missing patents are still missing", {
   expect_equal(results$query_results$total_hits, 0)
 })
 
-test_that("we can't request assignee_years.num_patents", {
+test_that("we can't explicitly request assignee_ or inventor_years.num_patents", {
   skip_on_cran()
 
-  # PVS-1437 Errors are thrown when requesting assignee_years or inventor_years
-
-  expect_error(
-    pv_out <- search_pv(
-      query = '{"_text_phrase":{"assignee_individual_name_last": "Clinton"}}',
-      endpoint = "assignee",
-      fields = get_fields("assignee")
-    ),
-    "Invalid field: assignee_years.num_patents"
+  bad_eps <- c(
+    "assignee", # Invalid field: assignee_years.num_patents. assignee_years is not a nested field
+    "inventor" # Invalid field: inventor_years.num_patents.
   )
+
+  # PVS-1437 Errors are thrown when requesting assignee_years or inventor_years
+  # (it works if the group name is used but fails on fully qualified nested fields)
+  tmp <- lapply(bad_eps, function(endpoint) {
+    expect_error(
+      pv_out <- search_pv(
+        query = TEST_QUERIES[[endpoint]],
+        endpoint = endpoint,
+        fields = fieldsdf[fieldsdf$endpoint == endpoint, "field"]
+      ),
+      "Invalid field: (assignee|inventor)_years.num_patents"
+    )
+  })
 })
 
 test_that("paging is still broken", {

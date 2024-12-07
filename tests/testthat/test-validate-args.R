@@ -54,7 +54,7 @@ test_that("validate_args throws errors for all bad args", {
   )
   expect_error(
     get_fields("assignee", groups = "cpc_current"), # valid group for a different endpoint
-    "groups"
+    "for the assignee endpoint"
   )
 })
 

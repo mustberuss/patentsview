@@ -30,7 +30,7 @@ test_that("cast_pv_data casts assignee fields as expected", {
   pv_out <- search_pv(
     query = '{"_text_phrase":{"assignee_individual_name_last": "Clinton"}}',
     endpoint = "assignee",
-    fields = get_fields("assignee", groups = "") # **
+    fields = get_fields("assignee", groups = "assignees") # **
   )
 
   dat <- cast_pv_data(data = pv_out$data)
@@ -71,7 +71,3 @@ test_that("we can cast a bool", {
 
   expect_true(is.logical(cast_results$publications$rule_47_flag))
 })
-
-# rats, the util method would have to be public - maybe special local run?
-# iterate through the helper queries, make the call and see
-# if the return of endpoint_from_entity matches the helper endpoint

@@ -83,9 +83,9 @@ test_that("search_pv can pull all fields for all endpoints", {
   troubled_endpoints <- c(
     "cpc_subclass", "location",
     "uspc_subclass", "uspc_mainclass", "wipo", "claim", "draw_desc_text",
-    "assignee", # Invalid field: assignee_years.num_patents
+    "pg_claim", # Invalid field: claim_dependent
     "inventor", # Invalid field: inventor_years.num_patents
-    "pg_claim" # Invalid field: claim_dependent
+    "assignee"  # Invalid field: assignee_years.num_patents
   )
 
   # these tests will fail when the API is fixed
@@ -117,7 +117,7 @@ test_that("Sort option works as expected", {
 
   out <- search_pv(
     qry_funs$neq(assignee_id = ""),
-    fields = get_fields("assignee", groups = c("")),
+    fields = get_fields("assignee", groups = c("assignees")),
     endpoint = "assignee",
     sort = c("assignee_lastknown_latitude" = "desc"),
     size = 100
@@ -244,9 +244,9 @@ test_that("posts and gets return the same data", {
   skip_on_cran()
 
   bad_eps <- c(
-    "cpc_subclasses"
+    "cpc_subclass"
     #  ,"location" # Error: Invalid field: location_latitude
-    , "uspc_subclasse" # Error: Internal Server Error
+    , "uspc_subclass" # Error: Internal Server Error
     , "uspc_mainclass" # Error: Internal Server Error
     , "wipo" # Error: Internal Server Error
     , "claim" # Error: Invalid field: claim_dependent
@@ -298,9 +298,10 @@ test_that("nested shorthand produces the same results as fully qualified ones", 
   # the API now allows a shorthand in the fields/f: parameter
   # just the group name will retrieve all that group's attributes
   # This is indirectly testing our parse of the OpenAPI object and actual API responses
+  fields <- fieldsdf[fieldsdf$endpoint == "patent" & fieldsdf$group == "application", "field"]
 
   shorthand_res <- search_pv(TEST_QUERIES[["patent"]], fields = c("application"))
-  qualified_res <- search_pv(TEST_QUERIES[["patent"]], fields = get_fields("patent", groups = c("application")))
+  qualified_res <- search_pv(TEST_QUERIES[["patent"]], fields = fields)
 
   # the request$urls will be different but the data should match
   expect_failure(expect_equal(shorthand_res$request$url, qualified_res$request$url))

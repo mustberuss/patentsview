@@ -9,7 +9,7 @@ test_that("get_fields works as expected", {
 
   expect_error(
     get_fields("patent", groups = "bogus"),
-    "groups for the patent endpoint",
+    "for the patent endpoint",
     fixed = TRUE
   )
 
