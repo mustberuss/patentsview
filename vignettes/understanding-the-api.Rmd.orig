@@ -62,6 +62,12 @@ pat_res$data$patent$application
 pat_res$request
 
 ```
+<a name="all-fields">
+Now, when requesting all fields, `get_fields()` uses the API's shorthand notation
+rather than explicitly calling out every field.  If it didn't do that, it would
+be possible to get an error when doing a GET of every field at the patent endpoint.
+It currently has 20 groups and 129 fields overall.
+
 ## Unexpected Results
 
 Then, as if that wasn't enough, some non-obvious behavior appears under the second bullet point
