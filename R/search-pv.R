@@ -97,25 +97,24 @@ one_request <- function(method, query, base_url, arg_list, api_key, ...) {
 
 #' Pad patent_id
 #'
-#' This function strategically pads a patent_id with zeroes to 8 characters, 
-#' needed for custom paging and possibly when querying by patent_id.  
+#' This function strategically pads a patent_id with zeroes to 8 characters,
+#' needed for custom paging and possibly when querying by patent_id.
 #'
 #' @param patent_id The patent_id that needs to be padded.  It can
 #' be the patent_id for a utility, design, plant or reissue patent.
 #'
 #' @examples
 #' \dontrun{
-#'   padded <- pad_patent_id("RE36479")
+#' padded <- pad_patent_id("RE36479")
 #'
-#'   padded2 <- pad_patent_id("3930306")
+#' padded2 <- pad_patent_id("3930306")
 #' }
 #'
 #' @export
 # zero pad patent_id to 8 characters.
 pad_patent_id <- function(patent_id) {
   pad <- 8 - nchar(patent_id)
-  if(pad > 0)
-  {
+  if (pad > 0) {
     patent_id <- paste0(sprintf("%0*d", pad, 0), patent_id)
     patent_id <- sub("(0+)([[:alpha:]]+)([[:digit:]]+)", "\\2\\1\\3", patent_id)
   }
@@ -137,7 +136,7 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, ..
     index <- nrow(x$data[[1]])
     last_value <- x$data[[1]][[s]][[index]]
 
-    if(s == "patent_id") {
+    if (s == "patent_id") {
       last_value <- pad_patent_id(last_value)
     }
 
