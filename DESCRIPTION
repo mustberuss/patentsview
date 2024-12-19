@@ -16,7 +16,6 @@ LazyData: TRUE
 Depends:
     R (>= 3.1)
 Imports:
-    data.table,
     httr2,
     lifecycle,
     jsonlite,

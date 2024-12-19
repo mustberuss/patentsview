@@ -440,8 +440,22 @@ test_that("Throttled requests are automatically retried", {
   # We'll do our own sort and check that it matches the API output
   # We want to make sure we sent in the sort parameter correctly, where
   # the API is doing the sort (since the we didn't need to page)
-  data.table::setorderv(output[[2]], names(sort), ifelse(as.vector(sort) == "asc", 1, -1))
-  expect_equal(output[[1]], output[[2]])
+  
+  second_output <- output[[2]]
+
+  # Sorting logic using order()
+  sort_order <- mapply(function(col, direction) {
+    if (direction == "asc") {
+      return(second_output[[col]])
+    } else {
+      return(-rank(second_output[[col]], ties.method = "min"))  # Invert for descending order
+    }
+  }, col = names(sort), direction = as.vector(sort), SIMPLIFY = FALSE)
+
+  # Final sorting
+  second_output <- second_output[do.call(order, sort_order), , drop = FALSE]
+
+  expect_equal(output[[1]], second_output)
 
   # TODO(any): fix this:
   # expect_equal says actual row.names are an integer vector and expected
@@ -496,7 +510,18 @@ test_that("sort works across page boundaries", {
   )
 
   double_check <- results$data$patents
-  data.table::setorderv(double_check, names(sort), ifelse(as.vector(sort) == "asc", 1, -1))
+
+  # Sorting logic using order()
+  sort_order <- mapply(function(col, direction) {
+    if (direction == "asc") {
+      return(double_check[[col]])
+    } else {
+      return(-rank(double_check[[col]], ties.method = "min"))  # Invert for descending order
+    }
+  }, col = names(sort), direction = as.vector(sort), SIMPLIFY = FALSE)
+
+  # Final sorting
+  double_check <- double_check[do.call(order, sort_order), , drop = FALSE]
 
   expect_equal(results$data$patents, double_check)
 })
