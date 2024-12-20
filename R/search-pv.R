@@ -269,8 +269,8 @@ get_unique_sort <- function(endpoint) {
 #' search_pv(
 #'   query = qry_funs$gt(patent_year = 2010),
 #'   method = "POST",
-#'   fields = "patent_number",
-#'   sort = c("patent_number" = "asc")
+#'   fields = "patent_id",
+#'   sort = c("patent_id" = "asc")
 #' )
 #'
 #' search_pv(
@@ -285,9 +285,14 @@ get_unique_sort <- function(endpoint) {
 #' )
 #'
 #' search_pv(
-#'   query = qry_funs$contains(inventors_at_grant.name_last = "Smith"),
+#'   query = qry_funs$contains(inventors.inventor_name_last = "Smith"),
 #'   endpoint = "patent",
-#'   config = httr::timeout(40)
+#'   timeout = 40
+#' )
+#'
+#' search_pv(
+#'   query = qry_funs$eq(patent_id = "11530080"),
+#'   fields = "application"
 #' )
 #' }
 #'
