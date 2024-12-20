@@ -48,44 +48,32 @@ get_post_body <- function(query, arg_list) {
 }
 
 #' @noRd
-one_request <- function(method, query, base_url, arg_list, api_key, ...) {
-  ua <- httr::user_agent("https://github.com/ropensci/patentsview")
+patentsview_error_body <- function(resp) {
+  if (httr2::resp_status(resp) == 400) c(httr2::resp_header(resp, "X-Status-Reason")) else NULL
+}
 
   if (method == "GET") {
     get_url <- get_get_url(query, base_url, arg_list)
-    resp <- httr::GET(
-      get_url,
-      httr::add_headers("X-Api-Key" = api_key),
-      ua, ...
-    )
+    req <- httr2::request(get_url) |>
+      httr2::req_method("GET")
   } else {
     body <- get_post_body(query, arg_list)
-    resp <- httr::POST(
-      base_url,
-      httr::add_headers(
-        "X-Api-Key" = api_key,
-        "Content-Type" = "application/json"
-      ),
-      body = body,
-      ua, ...
-    )
+    req <- httr2::request(base_url) |>
+      httr2::req_body_raw(body) |>
+      httr2::req_headers("Content-Type" = "application/json") |>
+      httr2::req_method("POST")
   }
 
-  # Sleep and retry on a 429 (too many requests). The Retry-After header is the
-  # seconds to sleep
-  if (httr::status_code(resp) == 429) {
-    num_seconds <- httr::headers(resp)[["Retry-After"]]
-    maybe_an_s <- if (num_seconds == "1") "" else "s"
-    message(paste0(
-      "The API's requests per minute limit has been reached. ",
-      "Pausing for ", num_seconds, " second", maybe_an_s,
-      " before continuing."
-    ))
-    Sys.sleep(num_seconds)
+  resp <- req |>
+    httr2::req_user_agent("https://github.com/ropensci/patentsview") |>
+    httr2::req_options(...) |>
+    httr2::req_retry(max_tries = 20) |> # automatic 429 Retry-After
+    httr2::req_headers("X-Api-Key" = api_key, .redact = "X-Api-Key") |>
+    httr2::req_error(body = patentsview_error_body) |>
+    httr2::req_perform()
 
-    one_request(method, query, base_url, arg_list, api_key, ...)
-  } else {
-    resp
+  resp
+}
   }
 }
 
