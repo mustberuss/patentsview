@@ -10,7 +10,6 @@ add_base_url <- function(x) {
 
 test_that("there is trouble paging", {
   skip_on_cran()
-  skip_on_ci()
 
   # reprex inspired by https://patentsview.org/forum/7/topic/812
   # Not all requested groups are coming back as we page, causing
@@ -55,7 +54,6 @@ test_that("there is trouble paging", {
 
 test_that("there is case sensitivity on string equals", {
   skip_on_cran()
-  skip_on_ci()
 
   # reported to the API team PVS-1147
   # not sure if this is a bug or feature - original API was case insensitive
@@ -95,7 +93,6 @@ test_that("string vs text operators behave differently", {
 
 test_that("API returns all requested groups", {
   skip_on_cran()
-  skip_on_ci()
 
   # can we traverse the return building a list of fields?
   # sort both requested fields and returned ones to see if they are equal
