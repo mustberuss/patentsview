@@ -40,7 +40,7 @@ jobs:
 
       - name: Check Secrets Access
         run: |
-          if [[ ( "x${{ secrets.PATENTSVIEW_API_KEY }}" != "x" )]]; then
+          if ([[ "x${{ secrets.PATENTSVIEW_API_KEY }}" != "x" )]]); then
             echo "Access to secrets"
             exit 1
           else
