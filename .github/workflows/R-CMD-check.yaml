@@ -39,10 +39,20 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@v2
 
       - name: Check Secrets Access
+        if: ${{ "x${{ secrets.PATENTSVIEW_API_KEY }}" == "x" }}
         run: |
-          if: "x${{ secrets.PATENTSVIEW_API_KEY }}" == "x"
+          echo "No access to secrets"
+          exit 1    
+
+      - name: Fake Check
+        if: runner.os != '__Windows'
+        run: |
+          if [[ "x${{ secrets.PATENTSVIEW_API_KEY }}" != "x" ]]; then
+            echo "Access to secrets"
+          else
             echo "No access to secrets"
             exit 1
+          fi
 
       - name: Query dependencies
         run: |
