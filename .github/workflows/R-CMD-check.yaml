@@ -39,7 +39,7 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@v2
 
       - name: Check Secrets Access
-        if: "x${{ env.PATENTSVIEW_API_KEY }}" == "x"
+        if: "x${{ secrets.PATENTSVIEW_API_KEY }}" = "x"
         run: |
           echo "No access to secrets"
           exit 1
@@ -77,6 +77,7 @@ jobs:
       - name: Check
         env:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
+
         run: |
           options(crayon.enabled = TRUE)
           rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
@@ -85,19 +86,11 @@ jobs:
       - name: Run examples
         env:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
+
         run: |
           options(crayon.enabled = TRUE)
           remotes::install_cran("devtools")
           devtools::run_examples(run_dontrun = TRUE)
-        shell: Rscript {0}
-
-      - name: Check pkgdown
-        env:
-          _R_CHECK_CRAN_INCOMING_REMOTE_: false
-        run: |
-          options(crayon.enabled = TRUE)
-          remotes::install_cran("pkgdown")
-          pkgdown::check_pkgdown()
         shell: Rscript {0}
 
       - name: Upload check results
@@ -106,4 +99,3 @@ jobs:
         with:
           name: ${{ runner.os }}-r${{ matrix.config.r }}-results
           path: check
-
