@@ -98,7 +98,7 @@ one_request <- function(method, query, base_url, arg_list, api_key, ...) {
 #' Pad patent_id
 #'
 #' This function strategically pads a patent_id with zeroes to 8 characters,
-#' needed for custom paging and possibly when querying by patent_id.
+#' needed only for custom paging that uses sorts by patent_id.
 #'
 #' @param patent_id The patent_id that needs to be padded.  It can
 #' be the patent_id for a utility, design, plant or reissue patent.
@@ -316,26 +316,13 @@ search_pv <- function(query,
 
   # return if we don't need to make additional API requests
   if (!all_pages ||
-    result$query_result$total_hits == result$query_result$count) {
+    result$query_result$total_hits == 0 ||
+    result$query_result$total_hits == nrow(result$data[[1]])) {
     return(result)
   }
 
   # Here we ignore the user's sort and instead have the API sort by the primary
-  # key for the requested endpoint.  This simplifies the paging's after parameter.
-  # If we call the API with more than a primary sort, the after parameter would
-  # have to be an array of all the sort fields' last values.
-  # After we've retrieved all the data we'll sort in R using the sort the user requested
-
-  # Doing this also protects users from needing to know the peculiarities
-  # of the API's paging.  Example: if a user requests a sort of
-  # {"patent_date":"asc"}, on paging the after parameter may skip
-  # to the next issue date before having retured all the data for the last
-  # patent_date in the previous request - depending on where the
-  # patent_dates change relative to the API's page breaks.
-  # (Say the last patent in a retrieved page is the first patent
-  # of a particular date, we wouldn't want the after parameter to
-  # to begin the next page of data after this date.)
-
+  # key for the requested endpoint.  
   primary_sort_key <- get_default_sort(endpoint)
 
   # We check what fields we got back from the first call. If the user didn't
@@ -378,10 +365,6 @@ search_pv <- function(query,
   paged_data <- paged_data[, !names(paged_data) %in% additional_fields]
 
   result$data[[1]] <- paged_data
-
-  # here we adjust 'count', otherwise it looks like something went wrong
-  # was returning total_hits = 3,003, count = 1,000
-  result$query_results$count <- nrow(paged_data)
   result
 }
 
