@@ -131,7 +131,8 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, ..
     x <- process_resp(x)
 
     # now to page we need to set the "after" attribute to where we left off
-    # we want the last value of the primary sort field
+    # we want the last value of the primary sort field and possibly a secondary
+    # sort field's value
     s <- names(arg_list$sort[[1]])[[1]]
     index <- nrow(x$data[[1]])
     last_value <- x$data[[1]][[s]][[index]]
@@ -140,8 +141,13 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, ..
       last_value <- pad_patent_id(last_value)
     }
 
-    arg_list$opts$after <<- last_value
+    if (length(arg_list$sort[[1]]) == 2) {
+       sfield <- names(arg_list$sort[[1]])[[2]]
+       secondary_value <- x$data[[1]][[sfield]][[index]]
+       last_value <- c(last_value, secondary_value)
+    }
 
+    arg_list$opts$after <<- last_value
     x$data[[1]]
   })
 
@@ -149,9 +155,20 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, ..
 }
 
 #' @noRd
-get_default_sort <- function(endpoint) {
-  default <- c("asc")
-  names(default) <- get_ok_pk(endpoint)
+get_unique_sort <- function(endpoint) {
+
+  pk <- get_ok_pk(endpoint)
+  # we add a secondary sort if there is a sequence field
+  sequence <- fieldsdf[fieldsdf$endpoint == endpoint & grepl("^[^.]*sequence",fieldsdf$field), "field"]
+
+  if (length(sequence) == 0) {
+    default <- c("asc")
+    names(default) <- pk
+  } else {
+    default <- c("asc", "asc")
+    names(default) <- c(pk, sequence)
+  }
+
   default
 }
 
@@ -179,7 +196,7 @@ get_default_sort <- function(endpoint) {
 #'  A value of \code{NULL} indicates to the API that it should return the default fields
 #'  for that endpoint. Acceptable fields for a given endpoint can be found at the API's
 #'  online documentation (e.g., check out the field list for the
-#'  \href{https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference#patent}{patents
+#'  \href{https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#patent}{patents
 #'  endpoint}) or by viewing the \code{fieldsdf} data frame
 #'  (\code{View(fieldsdf)}). You can also use \code{\link{get_fields}} to list
 #'  out the fields available for a given endpoint.
@@ -217,7 +234,7 @@ get_default_sort <- function(endpoint) {
 #'  your query is very long (say, over 2,000 characters in length).
 #' @param error_browser `r lifecycle::badge("deprecated")`
 #' @param api_key API key, it defaults to Sys.getenv("PATENTSVIEW_API_KEY"). Request a key
-#' \href{https://patentsview.org/apis/keyrequest}{here}.
+#' \href{https://patentsview-support.atlassian.net/servicedesk/customer/portals}{here}.
 #' @param ... Curl options passed along to httr2's \code{\link[httr2]{req_options}}
 #'  when we do GETs or POSTs.
 #'
@@ -321,47 +338,48 @@ search_pv <- function(query,
     return(result)
   }
 
-  # Here we ignore the user's sort and instead have the API sort by the primary
-  # key for the requested endpoint.  
-  primary_sort_key <- get_default_sort(endpoint)
+  # Here we ignore the user's sort and instead have the API sort by the key(s)
+  # needed for row uniqueness at the requested endpoint.  Otherwise paging breaks.
+  unique_sort_keys <- get_unique_sort(endpoint)
 
   # We check what fields we got back from the first call. If the user didn't
   # specify fields, we'd get back the API's defaults.  We may need to request
-  # additional fields from the API so we can apply the users sort and then remove
-  # the additional fields.
+  # additional fields from the API so we can apply the users sort and the keys
+  # that quarantee uniqueness, later we'll remove the additional fields.
   returned_fields <- names(result$data[[1]])
 
-  if (!is.null(sort)) {
-    sort_fields <- names(sort)
-    additional_fields <- sort_fields[!(sort_fields %in% returned_fields)]
-    if (is.null(fields)) {
-      fields <- returned_fields # the default fields
-    } else {
-      fields <- fields # user passed
-    }
-    fields <- append(fields, additional_fields)
+  if (is.null(sort)) {
+    sort_fields <- names(unique_sort_keys)
   } else {
-    additional_fields <- c()
+    sort_fields <- c(names(sort), names(unique_sort_keys))
   }
+  additional_fields <- sort_fields[!(sort_fields %in% returned_fields)]
+  if (is.null(fields)) {
+    fields <- returned_fields # the default fields
+  } else {
+    fields <- fields # user passed
+  }
+  fields <- append(fields, additional_fields)
 
-  arg_list <- to_arglist(fields, size, primary_sort_key, after)
+  arg_list <- to_arglist(fields, size, unique_sort_keys, after)
   paged_data <- request_apply(result, method, query, base_url, arg_list, api_key, ...)
 
-  # apply the user's sort using order()
+  # we apply the user's sort, if they supplied one, using order()
   # was data.table::setorderv(paged_data, names(sort), ifelse(as.vector(sort) == "asc", 1, -1))
+  if (!is.null(sort)) {
+    sort_order <- mapply(function(col, direction) {
+      if (direction == "asc") {
+        return(paged_data[[col]])
+      } else {
+        return(-rank(paged_data[[col]], ties.method = "min"))  # Invert for descending order
+      }
+    }, col = names(sort), direction = as.vector(sort), SIMPLIFY = FALSE)
 
-  sort_order <- mapply(function(col, direction) {
-    if (direction == "asc") {
-      return(paged_data[[col]])
-    } else {
-      return(-rank(paged_data[[col]], ties.method = "min"))  # Invert for descending order
-    }
-  }, col = names(sort), direction = as.vector(sort), SIMPLIFY = FALSE)
+    # Final sorting
+    paged_data <- paged_data[do.call(order, sort_order), , drop = FALSE]
+  }
 
-  # Final sorting
-  paged_data <- paged_data[do.call(order, sort_order), , drop = FALSE]
-
-  # remove the fields we added in order to do the user's sort ourselves
+  # remove the fields we added in order to do the user's and unique sorts
   paged_data <- paged_data[, !names(paged_data) %in% additional_fields]
 
   result$data[[1]] <- paged_data
@@ -426,7 +444,8 @@ search_pv <- function(query,
 retrieve_linked_data <- function(url,
                                  encoded_url = FALSE,
                                  api_key = Sys.getenv("PATENTSVIEW_API_KEY"),
-                                 ...) {
+                                 ...
+                                ) {
   if (encoded_url) {
     url <- utils::URLdecode(url)
   }
