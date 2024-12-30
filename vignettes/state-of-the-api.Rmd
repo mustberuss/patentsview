@@ -71,6 +71,8 @@ publication endpoint.  The former is returned as a boolean, the latter as a stri
       * Most document_number fields are integers but there are two that are returned as strings
 that cast-pv-data casts to integers.[^2] [Additional details](getting-started.html#casting-fields)
 
+      * g_claim returns `exemplary` with values of either "0" or "1".  Not sure if they should be cast as logicals.
+
    + Most endpoints' returns are the plural form of the singular endpoint with these two exceptions: 
 
      |endpoint|returned entity|
@@ -78,8 +80,9 @@ that cast-pv-data casts to integers.[^2] [Additional details](getting-started.ht
      |ipc|ipcr|
      |wipo|wipo|
 
-   +  Two endpoints, publication/rel_app_text and patent/|rel_app_text return the same
-entity, rel_app_texts.
+   +  Two endpoints, publication/rel_app_text and patent/rel_app_text both return an  
+entity named rel_app_texts though their fields are different.  (The former contains 
+document_number and the later contains patent_id.  In both the only other field is related_text.)
 
    + Not exactly an oddity, but with no better place for this, here's a comparison of the old and 
 new attributes that can be sent to the API in its o: (options) parameter via `search_pv()`
@@ -169,6 +172,7 @@ Improvement Suggestion
 There isn't a data dictionary for the API like there is for the bulk download files.
 A specific question would be what is the difference between patent_earliest_application_date and application.filing_date returned by the new patent endpoint. 
 Other questions would be what do the values of the assignees.assignee_type field represent, are they all integers and if so should the field be received as an integer rather than a string?
+Another question is what does g_claims' exemplary represent?  The values seem to be either "0" or "1".
 
 PVS-1218	
 openapi.json errors
@@ -216,10 +220,9 @@ Here's the new reality:  if the after: parameter is the value of a patent_id, it
 be padded to 8 characters.  E.g. "6010555" needs to be submitted as ```{"after": "06010555"}```,
 "RE36479" needs to become ```{"after": "RE036479"}```.  This seems to be an intentional change
 so that sorting by patent_id doesn't behave oddly above and below 10,000,000 (where the leading 1
-put anything above 10M before anything below 10M).  As a result, paging by patent_id now requires
-padding.  Not sure if querying by patent_id would also need to be padded, I feel a test case
-coming on.  Oh, and the R package has a new method, `pad_patent_id()` should you need to pad patent_ids.
-
+put anything above 10M before anything below 10M).  As a result, sorting/paging by patent_id now requires
+padding.  Oh, and the R package has a new method, `pad_patent_id()` should you need to pad patent_ids.
+See Example 1 in the Result Set Paging [vignette](result-set-paging.html#example-1)
 
 ## State of the R Package
 
@@ -284,14 +287,11 @@ version of the R package can be installed via
 
   + On the new [implementation of paging](api-changes.html#a-note-on-paging) and the
 [PR discussion](https://github.com/ropensci/patentsview/pull/29#discussion_r1059153136) on paging with more than a primary sort.
-**This added a dependency to data.table.**  There is also a [new vignette](result-set-paging.html) on the new implementation of paging
+There is also a [new vignette](result-set-paging.html) on the API's new mechanism to page
+through the result set (`per_page` and `page` parameters have been replaced by `size` and `after`).
 
   + The R package unit tests have some skips and other negative tests that API bugs still exist
-(they'll fail when bugs are fixed).  The tests were copied to
-[a single file](https://github.com/mustberuss/patentsview/blob/api-redesign/tests/testthat/test-api-bugs.R) that
-was then submitted to the API team as bugs.  Most of the tests exist
-in other test files but a few are unique (specific to API bugs that won't be needed
-once they're fixed).
+(they'll fail when bugs are fixed). 
 
   + A possible [tech note](patentsview-breaking-change.html) for when the new package is ready mentions
 
@@ -333,7 +333,7 @@ repo because of a push.   Errors did not occur when the retries were recursive, 
        + Can the throttled test detect output to stdout etc?  We used to expect_message "The API's requests
 per minute limit has been reached." Now "Waiting 45s for retry backoff" appears but doesn't satisfy
 expect_message().  Currently it's using system.time() to assert that 50 transactions took over 60 seconds,
-implying that throttlilng occurred.
+implying that throttling occurred.
 
 
 ## Worth Monitoring
