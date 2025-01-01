@@ -4,7 +4,7 @@ output: github_document
 
 
 
-# patentsview <img src="man/figures/logo.png" align="right" height="200" style="float:right; height:200px;" alt="Package Logo"/>
+# patentsview 
 > An R client to the PatentsView API, recently renamed the PatentSearch API
 
 [![](http://badges.ropensci.org/112_status.svg)](https://github.com/ropensci/software-review/issues/112)
@@ -69,19 +69,7 @@ The [PatentsView API](https://search.patentsview.org/docs/docs/Search%20API/Sear
 library(patentsview)
 
 search_pv(query = '{"_gte":{"patent_date":"2007-01-01"}}')
-#> $data
-#> #### A list with a single data frame on patents level:
-#> 
-#> List of 1
-#>  $ patents:'data.frame':	1000 obs. of  3 variables:
-#>   ..$ patent_id   : chr [1:1000] "10000000" ...
-#>   ..$ patent_title: chr [1:1000] "Coherent LADAR using intra-pixel quadrature"..
-#>   ..$ patent_date : chr [1:1000] "2018-06-19" ...
-#> 
-#> $query_results
-#> #### Distinct entity counts across all downloadable pages of output:
-#> 
-#> total_hits = 5,362,291
+#> Error: The new version of the API requires an API key
 ```
 
 ## Learning more
@@ -95,5 +83,5 @@ Head over to the package's [webpage](https://docs.ropensci.org/patentsview/index
 
 This package was first introduced in 2017 in an [rOpenSci blog post](https://ropensci.org/blog/2017/09/19/patentsview/) which
 used the original version of the API.  The same content, reworked to use the new version 
-of the API, is available [here](https://mustberuss.github.io/patentsview/articles/ropensci_blog_post.html).  A draft of a possible Tech Note 
+of the API, is available [here](https://mustberuss.github.io/patentsview/articles/ropensci-blog-post.html).  A draft of a possible Tech Note 
 about the new version of the API and R package is [here](https://mustberuss.github.io/patentsview/articles/patentsview-breaking-change.html).
