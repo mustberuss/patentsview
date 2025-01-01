@@ -4,7 +4,7 @@
 \alias{unnest_pv_data}
 \title{Unnest PatentsView data}
 \usage{
-unnest_pv_data(data, pk = get_ok_pk(names(data)))
+unnest_pv_data(data, pk = NULL)
 }
 \arguments{
 \item{data}{The data returned by \code{\link{search_pv}}. This is the first

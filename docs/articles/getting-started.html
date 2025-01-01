@@ -108,7 +108,7 @@
        
       Citation networks
     </a>
-    <a class="dropdown-item" href="../articles/ropensci_blog_post.html">
+    <a class="dropdown-item" href="../articles/ropensci-blog-post.html">
       <span class="fa fa-bullhorn"></span>
        
       ropensci announcement
@@ -155,9 +155,10 @@
     
     
 <p>The new version of the API requires an API key, or all of your
-requests will be rejected. Request an API key using this link: <a href="https://patentsview.org/apis/keyrequest" class="external-link uri">https://patentsview.org/apis/keyrequest</a> Once you have
-one, you’ll need to set an environmental variable PATENTSVIEW_API_KEY to
-the value of your API key for the R package to use.</p>
+requests will be rejected. Request an API key using this link: <a href="https://patentsview-support.atlassian.net/servicedesk/customer/portals" class="external-link uri">https://patentsview-support.atlassian.net/servicedesk/customer/portals</a>
+Once you have one, you’ll need to set an environmental variable
+PATENTSVIEW_API_KEY to the value of your API key for the R package to
+use.</p>
 <div class="section level2">
 <h2 id="a-basic-example">A basic example<a class="anchor" aria-label="anchor" href="#a-basic-example"></a>
 </h2>
@@ -182,7 +183,7 @@ function, <code><a href="../reference/search_pv.html">search_pv()</a></code>:</p
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 5,452,372, count = 1,000</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 5,452,372</span></span></code></pre></div>
 <p>This call to <code><a href="../reference/search_pv.html">search_pv()</a></code> sends our query to the patent
 endpoint (the default). The API has 27 endpoints, corresponding to 26
 different entity types. patent/rel_app_text and publication/rel_app_text
@@ -258,15 +259,18 @@ argument:</p>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 5,452,372, count = 1,000</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 5,452,372</span></span></code></pre></div>
 <p>To list all of the fields for a given endpoint, use
 <code><a href="../reference/get_fields.html">get_fields()</a></code>:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">retrvble_flds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"patent"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">retrvble_flds</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "applicants.applicant_designation"  "applicants.applicant_name_first"  </span></span>
-<span><span class="co">#&gt; [3] "applicants.applicant_name_last"    "applicants.applicant_organization"</span></span>
-<span><span class="co">#&gt; [5] "applicants.applicant_sequence"     "applicants.applicant_type"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "gov_interest_statement"                                 </span></span>
+<span><span class="co">#&gt; [2] "patent_abstract"                                        </span></span>
+<span><span class="co">#&gt; [3] "patent_cpc_current_group_average_patent_processing_days"</span></span>
+<span><span class="co">#&gt; [4] "patent_date"                                            </span></span>
+<span><span class="co">#&gt; [5] "patent_detail_desc_length"                              </span></span>
+<span><span class="co">#&gt; [6] "patent_earliest_application_date"</span></span></code></pre></div>
 <p>Nested fields can be fully qualified or a new API shorthand can be
 used, where group names can specified. When group names are used, all of
 the group’s nested fields will be returned by the API. E.g., the new
@@ -319,15 +323,15 @@ finalized, you can use the <code>size</code> argument to download up to
 <span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ patents:'data.frame': 1210 obs. of  3 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id   : chr [1:1210] "3931611" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_title: chr [1:1210] "Program event recorder and data processing "..</span></span>
-<span><span class="co">#&gt;   ..$ patent_date : chr [1:1210] "1976-01-06" ...</span></span>
+<span><span class="co">#&gt;  $ patents:'data.frame': 0 obs. of  3 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id   : chr(0) </span></span>
+<span><span class="co">#&gt;   ..$ patent_title: chr(0) </span></span>
+<span><span class="co">#&gt;   ..$ patent_date : chr(0) </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 2,487, count = 1,000</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 2,487</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="entity-counts">Entity counts<a class="anchor" aria-label="anchor" href="#entity-counts"></a>
@@ -351,10 +355,7 @@ patents.</p>
 <span><span class="co"># Here we'll request patent_id and the inventor fields from the patent endpoint</span></span>
 <span><span class="va">inv_fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"patent"</span>, groups <span class="op">=</span><span class="st">"inventors"</span><span class="op">)</span></span>
 <span><span class="va">inv_fields</span></span>
-<span><span class="co">#&gt; [1] "inventors.inventor_id"         "inventors.inventor_city"      </span></span>
-<span><span class="co">#&gt; [3] "inventors.inventor_country"    "inventors.inventor_name_first"</span></span>
-<span><span class="co">#&gt; [5] "inventors.inventor_name_last"  "inventors.inventor_sequence"  </span></span>
-<span><span class="co">#&gt; [7] "inventors.inventor_state"</span></span>
+<span><span class="co">#&gt; [1] "inventors"</span></span>
 <span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">inv_fields</span>, <span class="st">"patent_id"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query</span>, endpoint <span class="op">=</span> <span class="st">"patent"</span>, fields <span class="op">=</span> <span class="va">fields</span><span class="op">)</span></span>
@@ -370,7 +371,7 @@ patents.</p>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 2,487, count = 1,000</span></span>
+<span><span class="co">#&gt; total_hits = 2,487</span></span>
 <span></span>
 <span><span class="co"># Here's the first inventors</span></span>
 <span><span class="va">result</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span><span class="op">$</span><span class="va">inventors</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
@@ -390,9 +391,32 @@ patents.</p>
 <span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span>endpoint <span class="op">=</span> <span class="st">"inventor"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query</span>, endpoint <span class="op">=</span> <span class="st">"inventor"</span>, fields <span class="op">=</span> <span class="va">fields</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in `httr2::req_perform()`:</span></span>
-<span><span class="co">#&gt; ! HTTP 400 Bad Request.</span></span>
-<span><span class="co">#&gt; • Invalid field: inventor_years.num_patents. inventor_years is not a nested field</span></span></code></pre></div>
+<span><span class="co">#&gt; $data</span></span>
+<span><span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on inventors level:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; List of 1</span></span>
+<span><span class="co">#&gt;  $ inventors:'data.frame':   439 obs. of  16 variables:</span></span>
+<span><span class="co">#&gt;   ..$ inventor_id                 : chr [1:439] "1vk0dcohf8r1vofo538cfxl2g" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_name_first         : chr [1:439] "Gilbert V." ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_name_last          : chr [1:439] "Chambers" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_gender_code        : chr [1:439] "M" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_lastknown_city     : chr [1:439] "Baytown" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_lastknown_state    : chr [1:439] "TX" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_lastknown_country  : chr [1:439] "US" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_lastknown_latitude : num [1:439] 29.7 ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_lastknown_longitude: num [1:439] -95 ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_lastknown_location : chr [1:439] "https://search.patentsview.o"..</span></span>
+<span><span class="co">#&gt;   ..$ inventor_num_patents        : int [1:439] 1 1 ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_num_assignees      : int [1:439] 1 2 ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_first_seen_date    : chr [1:439] "1995-10-17" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_last_seen_date     : chr [1:439] "1995-10-17" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_years_active       : num [1:439] 1 1 ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_years              :List of 439</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $query_results</span></span>
+<span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; total_hits = 439</span></span></code></pre></div>
 <p>Your choice of endpoint determines two things:</p>
 <ol style="list-style-type: decimal">
 <li><p><strong>Which entity your query is applied to.</strong> The first
@@ -653,9 +677,9 @@ useful when trying to fix an invalid request.</p>
 If this limit is exceeded the API will return an http status of 429 with
 a response header Retry-After set to the number of seconds to wait
 before making subsequent requests. The R package should handle this for
-you. You will need to <a href="https://patentsview.org/apis/keyrequest" class="external-link">request an API key</a>
-and set the environmental variable PATENTSVIEW_API_KEY to the value of
-your key.</p>
+you. You will need to <a href="https://patentsview-support.atlassian.net/servicedesk/customer/portals" class="external-link">request
+an API key</a> and set the environmental variable PATENTSVIEW_API_KEY to
+the value of your key.</p>
 </div>
 <div class="section level4">
 <h4 id="how-do-i-access-the-data-frames-inside-the-list-columns-returned-by-search_pv">How do I access the data frames inside the list columns returned by
@@ -812,10 +836,11 @@ field that can act as a unique identifier for the primary entities:</li>
 <span><span class="co">#&gt;   ..$ patent_id  : chr [1:801] "3930365" ...</span></span>
 <span><span class="co">#&gt;   ..$ num_figures: int [1:801] 3 6 ...</span></span>
 <span><span class="co">#&gt;   ..$ num_sheets : int [1:801] 3 5 ...</span></span>
-<span><span class="co">#&gt;  $ granted_pregrant_crosswalk         :'data.frame': 1000 obs. of  3 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id         : chr [1:1000] "3930365" ...</span></span>
-<span><span class="co">#&gt;   ..$ document_number   : logi [1:1000] NA ...</span></span>
-<span><span class="co">#&gt;   ..$ application_number: chr [1:1000] "05489742" ...</span></span>
+<span><span class="co">#&gt;  $ granted_pregrant_crosswalk         :'data.frame': 1000 obs. of  4 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id             : chr [1:1000] "3930365" ...</span></span>
+<span><span class="co">#&gt;   ..$ document_number       : logi [1:1000] NA ...</span></span>
+<span><span class="co">#&gt;   ..$ pgpubs_document_number: logi [1:1000] NA ...</span></span>
+<span><span class="co">#&gt;   ..$ application_number    : chr [1:1000] "05489742" ...</span></span>
 <span><span class="co">#&gt;  $ inventors                          :'data.frame': 1877 obs. of  8 variables:</span></span>
 <span><span class="co">#&gt;   ..$ patent_id          : chr [1:1877] "3930365" ...</span></span>
 <span><span class="co">#&gt;   ..$ inventor           : chr [1:1877] "https://search.patentsview.org/api/v"..</span></span>

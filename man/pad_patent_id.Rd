@@ -12,7 +12,7 @@ be the patent_id for a utility, design, plant or reissue patent.}
 }
 \description{
 This function strategically pads a patent_id with zeroes to 8 characters,
-needed for custom paging and possibly when querying by patent_id.
+needed only for custom paging that uses sorts by patent_id.
 }
 \examples{
 \dontrun{

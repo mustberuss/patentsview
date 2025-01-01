@@ -108,7 +108,7 @@
        
       Citation networks
     </a>
-    <a class="dropdown-item" href="../articles/ropensci_blog_post.html">
+    <a class="dropdown-item" href="../articles/ropensci-blog-post.html">
       <span class="fa fa-bullhorn"></span>
        
       ropensci announcement
@@ -161,20 +161,20 @@ package and API.</p>
 <div class="section level2">
 <h2 id="required-api-key">Required API Key<a class="anchor" aria-label="anchor" href="#required-api-key"></a>
 </h2>
-<p>First off you’ll need to <a href="https://patentsview.org/apis/keyrequest" class="external-link">request an API key</a>
-and then set the environmental variable PATENTSVIEW_API_KEY to the value
-of your API key. Ex. set PATENTSVIEW_API_KEY=My_api_key Without a valid
-API key, all your calls will be rejected by the API. ## The New
-Throttling Limit Another new thing is a throttling limit. The new
-version of the API only allows an individual API key to make 45 calls
-per minute. The call that exceeds that limit is rejected but does return
-the number of seconds to wait before calls would be allowed again.
-Fortunately, the R package handles this for you! Your script will be
-chugging along and if the API should return a throttling response, the R
-package will sleep for the required number of seconds before
-automatically resending your query! The only thing you may notice,
-besides a warning message, it that the script will pause when throttled
-before it picks right back up again.</p>
+<p>First off you’ll need to <a href="https://patentsview-support.atlassian.net/servicedesk/customer/portals" class="external-link">request
+an API key</a> and then set the environmental variable
+PATENTSVIEW_API_KEY to the value of your API key. Ex. set
+PATENTSVIEW_API_KEY=My_api_key Without a valid API key, all your calls
+will be rejected by the API. ## The New Throttling Limit Another new
+thing is a throttling limit. The new version of the API only allows an
+individual API key to make 45 calls per minute. The call that exceeds
+that limit is rejected but does return the number of seconds to wait
+before calls would be allowed again. Fortunately, the R package handles
+this for you! Your script will be chugging along and if the API should
+return a throttling response, the R package will sleep for the required
+number of seconds before automatically resending your query! The only
+thing you may notice, besides a warning message, it that the script will
+pause when throttled before it picks right back up again.</p>
 </div>
 <div class="section level2">
 <h2 id="philosophical-change">Philosophical Change<a class="anchor" aria-label="anchor" href="#philosophical-change"></a>
@@ -231,17 +231,20 @@ read.</p>
 patents.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_endpoints.html">get_endpoints</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] "assignee"                       "brf_sum_text"                  </span></span>
-<span><span class="co">#&gt;  [3] "claim"                          "cpc_class"                     </span></span>
-<span><span class="co">#&gt;  [5] "cpc_group"                      "cpc_subclass"                  </span></span>
-<span><span class="co">#&gt;  [7] "detail_desc_text"               "draw_desc_text"                </span></span>
+<span><span class="co">#&gt;  [1] "assignee"                       "cpc_class"                     </span></span>
+<span><span class="co">#&gt;  [3] "cpc_group"                      "cpc_subclass"                  </span></span>
+<span><span class="co">#&gt;  [5] "g_brf_sum_text"                 "g_claim"                       </span></span>
+<span><span class="co">#&gt;  [7] "g_detail_desc_text"             "g_draw_desc_text"              </span></span>
 <span><span class="co">#&gt;  [9] "inventor"                       "ipc"                           </span></span>
 <span><span class="co">#&gt; [11] "location"                       "patent"                        </span></span>
 <span><span class="co">#&gt; [13] "patent/attorney"                "patent/foreign_citation"       </span></span>
-<span><span class="co">#&gt; [15] "patent/rel_app_text"            "patent/us_application_citation"</span></span>
-<span><span class="co">#&gt; [17] "patent/us_patent_citation"      "publication"                   </span></span>
-<span><span class="co">#&gt; [19] "publication/rel_app_text"       "uspc_mainclass"                </span></span>
-<span><span class="co">#&gt; [21] "uspc_subclass"                  "wipo"</span></span></code></pre></div>
+<span><span class="co">#&gt; [15] "patent/other_reference"         "patent/rel_app_text"           </span></span>
+<span><span class="co">#&gt; [17] "patent/us_application_citation" "patent/us_patent_citation"     </span></span>
+<span><span class="co">#&gt; [19] "pg_brf_sum_text"                "pg_claim"                      </span></span>
+<span><span class="co">#&gt; [21] "pg_detail_desc_text"            "pg_draw_desc_text"             </span></span>
+<span><span class="co">#&gt; [23] "publication"                    "publication/rel_app_text"      </span></span>
+<span><span class="co">#&gt; [25] "uspc_mainclass"                 "uspc_subclass"                 </span></span>
+<span><span class="co">#&gt; [27] "wipo"</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="additions-to-the-r-package">Additions to the R Package<a class="anchor" aria-label="anchor" href="#additions-to-the-r-package"></a>
@@ -267,10 +270,10 @@ There is a lot more about this <a href="api-changes.html#hateoas-links">here</a>
 <h2 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
 </h2>
 <p>So there you have it, our attempt at listing what’s changed and what
-to do about it. <a href="https://patentsview.org/apis/keyrequest" class="external-link">Request</a> an API key
-and get going with the new version of the R package! The two API
-versions will coexist for a while but the API team plans to shutdown the
-original version of the API in February 2025.</p>
+to do about it. <a href="https://patentsview-support.atlassian.net/servicedesk/customer/portals" class="external-link">Request</a>
+an API key and get going with the new version of the R package! The two
+API versions will coexist for a while but the API team plans to shutdown
+the original version of the API in February 2025.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

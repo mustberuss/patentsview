@@ -8,7 +8,7 @@ get_fields(endpoint, groups = NULL, include_pk = FALSE)
 }
 \arguments{
 \item{endpoint}{The API endpoint whose field list you want to get. See
-\code{\link{get_endpoints}} for a list of the 23 endpoints.}
+\code{\link{get_endpoints}} for a list of the 27 endpoints.}
 
 \item{groups}{A character vector giving the group(s) whose fields you want
 returned. A value of \code{NULL} indicates that you want all of the
@@ -47,7 +47,7 @@ search_pv(
   fields = fields
 )
 }
-# Get all patent and assignee-level fields for the patent endpoint:
+# Get unnested patent and assignee-level fields for the patent endpoint:
 fields <- get_fields(endpoint = "patent", groups = c("assignees", "patents"))
 
 \dontrun{
