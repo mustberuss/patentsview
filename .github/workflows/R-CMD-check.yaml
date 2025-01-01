@@ -19,28 +19,21 @@ on:
 
 jobs:
   pre-check:
+    if: github.repository == 'ropensci/patentsview'
     runs-on: ubuntu-latest
     steps:
-      - name: Get User Permission
-        id: checkAccess
-        uses: actions-cool/check-user-permission@v2
-        with:
-          require: write
-          username: ${{ github.triggering_actor }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Check User Permission
-        if: steps.checkAccess.outputs.require-result == 'false'
+      - name: Confirm crew102 triggered the build when on ropensci
         run: |
-          echo "${{ github.triggering_actor }} does not have permissions on this repo."
-          echo "Current permission level is ${{ steps.checkAccess.outputs.user-permission }}"
-          echo "Job originally triggered by ${{ github.actor }}"
-          exit 1
+          if [ "${{ github.event.repository.full_name }}" != "ropensci/patentsview" ] || [ "${{ github.event.sender.login }}" == "crew102" }} ]; then
+            echo "Actor ${{ github.actor }} is allowed on ${{ github.event.repository.full_name }}"
+          else
+            echo "Actor ${{ github.actor }} is not allowed on ${{ github.event.repository.full_name }}, failing build."
+            exit 1
+          fi
 
   R-CMD-check:
     needs: [pre-check]
     runs-on: ${{ matrix.config.os }}
-    timeout-minutes: 60
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
 
@@ -64,17 +57,16 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
           # Use the head SHA for pull requests
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - uses: r-lib/actions/setup-r@v2
+      - uses: r-lib/actions/setup-r@v1
         with:
           r-version: ${{ matrix.config.r }}
 
-
-      - uses: r-lib/actions/setup-pandoc@v2
+      - uses: r-lib/actions/setup-pandoc@v1
 
       - name: Query dependencies
         run: |
@@ -85,7 +77,7 @@ jobs:
 
       - name: Restore R package cache
         if: runner.os != 'Windows'
-        uses: actions/cache@v4
+        uses: actions/cache@v2
         with:
           path: ${{ env.R_LIBS_USER }}
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
