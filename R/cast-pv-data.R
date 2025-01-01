@@ -13,7 +13,7 @@ get_cast_fun <- function(data_type) {
     "number" = as_is,
     "integer" = as_is,
     "int" = as.integer,
-    "fulltext" = as_is, # nocov
+    "fulltext" = as_is,
     "boolean" = as_is,
     "bool" = as.logical
   )
@@ -91,17 +91,24 @@ cast_one <- function(one, name, typesdf) UseMethod("cast_one")
 cast_pv_data <- function(data) {
   validate_pv_data(data)
 
-  rel_app_text_eps <- c("patent/rel_app_text", "publication/rel_app_text")
+  entity_name <- names(data)
 
-  entity_name <- names(data) # preserve insanity, singular/plural/nonsensical name
-  endpoint <- endpoint_from_entity(entity_name)
-
-  if (endpoint %in% rel_app_text_eps) {
+  if (entity_name == "rel_app_texts") {
     # blend the fields from both rel_app_texts entities
-    typesdf <- fieldsdf[fieldsdf$endpoint %in% rel_app_text_eps, c("common_name", "data_type")]
-    typesdf <- unique(typesdf)
+    typesdf <- unique(fieldsdf[fieldsdf$group == entity_name, c("common_name", "data_type")])
   } else {
+    # need to get the endpoint from entity_name
+    endpoint_df <- fieldsdf[fieldsdf$group == entity_name, ]
+    endpoint <- unique(endpoint_df$endpoint)
+
+    # watch out here- several endpoints return entities that are groups returned
+    # by the patent and publication endpoints (attorneys, inventors, assignees)
+    if(length(endpoint) > 1) {
+      endpoint <- endpoint[!endpoint %in% c("patent", "publication")]
+    }
+
     typesdf <- fieldsdf[fieldsdf$endpoint == endpoint, c("common_name", "data_type")]
+
   }
 
   df <- data[[1]]
@@ -112,7 +119,7 @@ cast_pv_data <- function(data) {
 
   df[] <- list_out
   out_data <- list(x = df)
-  names(out_data) <- entity_name # preserve entity's name
+  names(out_data) <- entity_name
 
   structure(
     out_data,
