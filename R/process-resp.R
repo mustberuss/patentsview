@@ -22,10 +22,7 @@ get_data <- function(prsd_resp) {
 # Now all endpoints return a total_hits attribute
 get_query_results <- function(prsd_resp) {
   structure(
-    c(
-      prsd_resp["total_hits"],
-      prsd_resp["count"]
-    ),
+    prsd_resp["total_hits"],
     class = c("list", "pv_query_result")
   )
 }
