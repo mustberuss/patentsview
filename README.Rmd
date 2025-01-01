@@ -10,7 +10,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# patentsview <img src="man/figures/logo.png" align="right" height="200" style="float:right; height:200px;" alt="Package Logo"/>
+# patentsview 
 > An R client to the PatentsView API, recently renamed the PatentSearch API
 
 [![](http://badges.ropensci.org/112_status.svg)](https://github.com/ropensci/software-review/issues/112)
@@ -83,5 +83,5 @@ Head over to the package's [webpage](https://docs.ropensci.org/patentsview/index
 
 This package was first introduced in 2017 in an [rOpenSci blog post](https://ropensci.org/blog/2017/09/19/patentsview/) which
 used the original version of the API.  The same content, reworked to use the new version 
-of the API, is available [here](https://mustberuss.github.io/patentsview/articles/ropensci_blog_post.html).  A draft of a possible Tech Note 
+of the API, is available [here](https://mustberuss.github.io/patentsview/articles/ropensci-blog-post.html).  A draft of a possible Tech Note 
 about the new version of the API and R package is [here](https://mustberuss.github.io/patentsview/articles/patentsview-breaking-change.html).
