@@ -14,7 +14,20 @@ on:
       - 'bugfix/**'
 
 jobs:
+  pre-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm crew102 triggered the build when on ropensci
+        run: |
+          if [ ${{ github.event.repository.name }} != "ropensci/patentsview" || "${{ github.event.sender.login }}" == "crew102" ]; then
+            echo "Actor ${{ github.actor }} is allowed on ${{ github.event.repository.name }}"
+          else
+            echo "Actor ${{ github.actor }} is not allowed here, failing build."
+            exit 1
+          fi
+
   R-CMD-check:
+    needs: [pre-check]
     runs-on: ${{ matrix.config.os }}
     timeout-minutes: 60
 
