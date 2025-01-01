@@ -7,13 +7,13 @@ test_that("we can unnest all entities", {
   # API throws 500s if some nested fields are included
 
   # locations endpoint is back but it fails this test
-  bad_eps <- c(
+  bad_endpoints <- c(
     "location", "cpc_subclass",
     "uspc_subclass", "uspc_mainclass", "wipo",
     "claim", "draw_desc_text", "pg_claim"
   )
-
-  good_eps <- eps[!eps %in% bad_eps]
+  overloaded_entities <- c("patent/rel_app_text", "publication/rel_app_text")
+  good_eps <- eps[!eps %in% c(bad_endpoints, overloaded_entities)]
 
   z <- lapply(good_eps, function(x) {
     print(x)
@@ -31,7 +31,7 @@ test_that("we can unnest all entities", {
   expect_true(TRUE)
 
   # this will fail when the api is fixed
-  z <- lapply(bad_eps, function(x) {
+  z <- lapply(bad_endpoints, function(x) {
     print(x)
     expect_error(
       pv_out <- search_pv(
@@ -43,15 +43,15 @@ test_that("we can unnest all entities", {
   })
 
   # make it noticeable that all is not right with the API
-  skip("Skip for API bugs") # TODO: remove when the API is fixed/bad_eps removed
+  skip("Skip for API bugs") # TODO: remove when the API is fixed/bad_endpoints removed
 })
 
 test_that("endpoint's pks match their entity's pks", {
   skip_on_cran()
 
-  # these to endpoints return the same entity, rel_app_texts so can't
+  # the overloaded_entities endpoints return the same entity, rel_app_texts,
   # so we can't determine the endpoint from the entity like we can
-  # for the other endpoints
+  # for the rest of the entities
   overloaded_entities <- c("patent/rel_app_text", "publication/rel_app_text")
   bad_endpoints <- c("uspc_subclass", "cpc_subclass", "uspc_mainclass", "wipo")
   good_eps <- eps[!eps %in% c(bad_endpoints, overloaded_entities)]
@@ -68,8 +68,11 @@ test_that("endpoint's pks match their entity's pks", {
 
   expect_equal(endpoint_pks, entity_pks)
 
-  # test here that we can get the endpoints from the entities?
-  # or test for that in util's test of endpoint_from_entity?
-
-  # add expect errors for bad_endpoints
+  # this will fail when the api is fixed
+  z <- lapply(bad_endpoints, function(endpoint) {
+    print(endpoint)
+    expect_error(
+       result <- search_pv(TEST_QUERIES[[endpoint]], endpoint = endpoint)
+    )
+  })
 })

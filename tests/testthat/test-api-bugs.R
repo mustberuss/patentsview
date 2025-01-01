@@ -53,22 +53,6 @@ test_that("there is trouble paging", {
   )
 })
 
-test_that("POSTs and GETs behave differently", {
-  # PVS-1493 POST and GET behave differently when a sort and/or fields aren't specified
-  # POSTs seems to want fields and a sort specified to behave properly, GETs behave
-  # as expected
-
-  skip_on_cran()
-
-  query <- '{"cpc_current.cpc_subclass_id":"A01D"}'
-  post <- search_pv(query, size = 1000, method = "POST")
-  get <- search_pv(query, size = 1000, method = "GET")
-
-  expect_failure(
-    expect_equal(post$query_results$count, get$query_results$count)
-  )
-})
-
 test_that("there is case sensitivity on string equals", {
   skip_on_cran()
   skip_on_ci()
@@ -109,7 +93,6 @@ test_that("string vs text operators behave differently", {
   )
 })
 
-# from test-api-returns.R
 test_that("API returns all requested groups", {
   skip_on_cran()
   skip_on_ci()
@@ -140,26 +123,22 @@ test_that("API returns all requested groups", {
 
   good_eps <- eps[!eps %in% c(mismatched_returns, bad_eps)]
 
-  z <- lapply(good_eps, function(x) {
-    print(x)
+  z <- lapply(good_eps, function(endpoint) {
+    print(endpoint)
     res <- search_pv(
-      query = TEST_QUERIES[[x]],
-      endpoint = x,
-      fields = get_fields(x)
+      query = TEST_QUERIES[[endpoint]],
+      endpoint = endpoint,
+      fields = get_fields(endpoint)
     )
 
-    dl <- unnest_pv_data(res$data)
+    dl <- unnest_pv_data(res$data, pk = get_ok_pk(endpoint))
 
     actual_groups <- names(dl)
 
-    expected_groups <- unique(fieldsdf[fieldsdf$endpoint == x, "group"])
+    expected_groups <- unique(fieldsdf[fieldsdf$endpoint == endpoint, "group"])
 
     # we now need to unnest the endpoints for the comparison to work
-    expected_groups <- gsub("^(patent|publication)/", "", expected_groups)
-
-    # the expected group for unnested attributes would be "" in actuality they come back
-    # in an entity matching the plural form of the unnested endpoint
-    expected_groups <- replace(expected_groups, expected_groups == "", to_plural(x))
+    #expect ed_groups <- gsub("^(patent|publication)/", "", expected_groups)
 
     expect_setequal(actual_groups, expected_groups)
     show_failure(expect_setequal(actual_groups, expected_groups))
@@ -385,7 +364,7 @@ test_that("missing patents are still missing", {
   skip_on_cran()
 
   # PVS-1342 Underlying data issues
-  # There are around 300 patents tht aren't in the bulk xml files patentsiew is based on.
+  # There are around 300 patents that aren't in the bulk xml files patentsiew is based on.
   missing <- c(
     "4097517", "4424514", "4480077", "4487876", "4704648", "4704721",
     "4705017", "4705031", "4705032", "4705036", "4705037", "4705097", "4705107",
@@ -423,29 +402,25 @@ test_that("we can't explicitly request assignee_ or inventor_years.num_patents",
   })
 })
 
-test_that("paging is still broken", {
+test_that("uspcs aren't right", {
   skip_on_cran()
 
-  sort <- c("patent_id" = "asc")
-  big_query <- qry_funs$eq(patent_date = "2000-01-04") # 3003 total_hits
-  results <- search_pv(big_query, all_pages = FALSE, sort = sort, size = 1000)
-  expect_gt(results$query_results$total_hits, 1000)
+  # PVS-1615
 
-  after <- results$data$patents$patent_id[[nrow(results$data$patents)]]
-  subsequent <- search_pv(big_query,
-    all_pages = FALSE, after = after, sort = sort,
-    size = 1000
-  )
+    endpoint <- "patent"
+    res <- search_pv(
+      query = TEST_QUERIES[[endpoint]],
+      endpoint = endpoint,
+      fields = get_fields(endpoint, groups="uspc_at_issue")
+    )
 
-  # ** New API bug?  we should get three full requests before getting
-  # a partial response
-  expect_lt(nrow(subsequent$data$patents), 1000)
+  # id fields are correct, non id fields should be HATEOAS links
+  uspcs <- res$data$patents$uspc_at_issue
 
-  # The API seems to want padded patent_ids now
-  subsequent <- search_pv(big_query,
-    all_pages = FALSE, sort = sort, size = 1000,
-    after = pad_patent_id(after)
-  )
-
-  expect_equal(nrow(subsequent$data$patents), 1000)
+  # these should fail when the API is fixed
+  expect_equal(uspcs$uspc_mainclass, uspcs$uspc_mainclass_id)
+  expect_equal(uspcs$uspc_subclass, uspcs$uspc_subclass_id)
+  
 })
+
+

@@ -16,6 +16,9 @@ test_that("API returns expected df names for all endpoints", {
     "wipo"
   )
 
+  # these both return rel_app_texts
+  overloaded_entities <- c("patent/rel_app_text", "publication/rel_app_text")
+
   # this will fail when the api is fixed
   dev_null <- lapply(broken_endpoints, function(x) {
     print(x)
@@ -28,7 +31,7 @@ test_that("API returns expected df names for all endpoints", {
     )
   })
 
-  goodendpoints <- endpoints[!endpoints %in% broken_endpoints]
+  goodendpoints <- endpoints[!endpoints %in% c(broken_endpoints, overloaded_entities)]
 
   df_names <- vapply(goodendpoints, function(x) {
     print(x)
@@ -38,13 +41,10 @@ test_that("API returns expected df names for all endpoints", {
     to_singular(names(out[[1]]))
   }, FUN.VALUE = character(1), USE.NAMES = FALSE)
 
-  # remove nesting
-  plain_endpoints <- gsub("^(patent|publication)/", "", goodendpoints)
-
   # publication/rel_app_text's entity is rel_app_text_publications
   df_names <- gsub("rel_app_text_publication", "rel_app_text", df_names)
 
-  expect_equal(plain_endpoints, df_names)
+  expect_equal(goodendpoints, df_names)
 })
 
 test_that("DSL-based query returns expected results", {
@@ -258,19 +258,19 @@ test_that("posts and gets return the same data", {
 
   good_eps <- endpoints[!endpoints %in% bad_eps]
 
-  z <- lapply(good_eps, function(x) {
-    print(x)
+  z <- lapply(good_eps, function(endpoint) {
+    print(endpoint)
     get_res <- search_pv(
-      query = TEST_QUERIES[[x]],
-      endpoint = x,
+      query = TEST_QUERIES[[endpoint]],
+      endpoint = endpoint,
       method = "GET"
     )
 
-    g <- unnest_pv_data(get_res$data)
+    g <- unnest_pv_data(get_res$data, pk = get_ok_pk(endpoint))
 
     post_res <- search_pv(
-      query = TEST_QUERIES[[x]],
-      endpoint = x,
+      query = TEST_QUERIES[[endpoint]],
+      endpoint = endpoint,
       method = "POST"
     )
 
@@ -280,12 +280,12 @@ test_that("posts and gets return the same data", {
   })
 
   # make sure the bad_eps are still broken
-  z <- lapply(bad_eps, function(x) {
-    print(x)
+  z <- lapply(bad_eps, function(endpoint) {
+    print(endpoint)
     expect_error(
       get_res <- search_pv(
-        query = TEST_QUERIES[[x]],
-        endpoint = x,
+        query = TEST_QUERIES[[endpoint]],
+        endpoint = endpoint,
         method = "GET"
       )
     )

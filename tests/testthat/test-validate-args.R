@@ -68,3 +68,20 @@ test_that("per_page parameter warns but still works", {
 
   expect_equal(23, nrow(results$data$patents))
 })
+
+test_that("group names can be requested as fields via new API shorthand", {
+  skip_on_cran()
+
+  endpoint <- "patent"
+  shorthand <- get_fields("patent", groups=c("application"))
+  expect_equal(shorthand , "application")
+  shorthand_res <- search_pv(TEST_QUERIES[[endpoint]], fields=shorthand)
+
+  explicit <- fieldsdf[fieldsdf$endpoint == endpoint & fieldsdf$group == "application", "field"]
+  explicit_res <- search_pv(TEST_QUERIES[[endpoint]], fields=explicit)
+
+  # the requests are different but the results should be the same
+  expect_failure(expect_equal(shorthand_res$request, explicit_res$request))
+  expect_equal(shorthand_res$data, explicit_res$data)
+  
+})
