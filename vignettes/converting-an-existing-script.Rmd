@@ -12,7 +12,7 @@ vignette: >
 If you have a script that worked with the original R package and original version of the API, chances are it will need some possibly substantial changes before it will work with the new version of the R package and API.
 
 ## Required API Key
-First off you'll need to [request an API key](https://patentsview.org/apis/keyrequest) and then set the environmental variable PATENTSVIEW_API_KEY to the value of your API key.  Ex. set PATENTSVIEW_API_KEY=My_api_key  Without a valid API key, all your calls will be rejected by the API. 
+First off you'll need to [request an API key](https://patentsview-support.atlassian.net/servicedesk/customer/portals) and then set the environmental variable PATENTSVIEW_API_KEY to the value of your API key.  Ex. set PATENTSVIEW_API_KEY=My_api_key  Without a valid API key, all your calls will be rejected by the API. 
 ## The New Throttling Limit
 Another new thing is a throttling limit. The new version of the API only allows an individual API key to make 45 calls per minute.  The call that exceeds that limit is rejected but does return the number of seconds to wait before calls would be allowed again.  Fortunately, the R package handles this for you!  Your script will be chugging along and if the API should return a throttling response, the R package will sleep for the required number of seconds before automatically resending your query!  The only thing you may notice, besides a warning message, it that the script will pause when throttled before it picks right back up again.
 
@@ -51,17 +51,20 @@ The endpoints are now singular, ex: patent where previously it was patents.
 
 ``` r
 get_endpoints()
-#>  [1] "assignee"                       "brf_sum_text"                  
-#>  [3] "claim"                          "cpc_class"                     
-#>  [5] "cpc_group"                      "cpc_subclass"                  
-#>  [7] "detail_desc_text"               "draw_desc_text"                
+#>  [1] "assignee"                       "cpc_class"                     
+#>  [3] "cpc_group"                      "cpc_subclass"                  
+#>  [5] "g_brf_sum_text"                 "g_claim"                       
+#>  [7] "g_detail_desc_text"             "g_draw_desc_text"              
 #>  [9] "inventor"                       "ipc"                           
 #> [11] "location"                       "patent"                        
 #> [13] "patent/attorney"                "patent/foreign_citation"       
-#> [15] "patent/rel_app_text"            "patent/us_application_citation"
-#> [17] "patent/us_patent_citation"      "publication"                   
-#> [19] "publication/rel_app_text"       "uspc_mainclass"                
-#> [21] "uspc_subclass"                  "wipo"
+#> [15] "patent/other_reference"         "patent/rel_app_text"           
+#> [17] "patent/us_application_citation" "patent/us_patent_citation"     
+#> [19] "pg_brf_sum_text"                "pg_claim"                      
+#> [21] "pg_detail_desc_text"            "pg_draw_desc_text"             
+#> [23] "publication"                    "publication/rel_app_text"      
+#> [25] "uspc_mainclass"                 "uspc_subclass"                 
+#> [27] "wipo"
 ```
 
 
@@ -89,7 +92,7 @@ There is a lot more about this [here](api-changes.html#hateoas-links).
 
 ## Conclusion
 
-So there you have it, our attempt at listing what's changed and what to do about it.  [Request](https://patentsview.org/apis/keyrequest) an API key and get going with the new version of the R package! The two API versions will coexist for a while but the API team plans to shutdown the original version of the API in February 2025.
+So there you have it, our attempt at listing what's changed and what to do about it.  [Request](https://patentsview-support.atlassian.net/servicedesk/customer/portals) an API key and get going with the new version of the R package! The two API versions will coexist for a while but the API team plans to shutdown the original version of the API in February 2025.
 
 
 

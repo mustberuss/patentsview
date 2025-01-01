@@ -31,7 +31,7 @@ vignette: >
 
 
 The Patentsview API team has released a new version of their API, which is used by a
-correspondingly new version of the [patentsview][patentsview] R package.  The problem for users
+correspondingly new version of the [patentsview](https://docs.ropensci.org/patentsview/) R package.  The problem for users
 is that the API team has made **breaking changes**, existing programs will not run
 with the new version of the R package. Please don't shoot the messenger!
 

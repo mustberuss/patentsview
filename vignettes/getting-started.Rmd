@@ -10,7 +10,7 @@ vignette: >
 
 
 The new version of the API requires an API key, or all of your requests will be rejected. Request an 
-API key using this link: <https://patentsview.org/apis/keyrequest> Once you have one, you’ll need to set 
+API key using this link: <https://patentsview-support.atlassian.net/servicedesk/customer/portals> Once you have one, you’ll need to set 
 an environmental variable PATENTSVIEW_API_KEY to the value of your API key for the R package to use.
 
 
@@ -38,7 +38,7 @@ search_pv(
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 5,452,372, count = 1,000
+#> total_hits = 5,452,372
 ```
 
 This call to `search_pv()` sends our query to the patent endpoint (the default). The API has 27 endpoints, corresponding to 26 different entity types.
@@ -100,7 +100,7 @@ result
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 5,452,372, count = 1,000
+#> total_hits = 5,452,372
 ```
 
 To list all of the fields for a given endpoint, use `get_fields()`:
@@ -109,9 +109,12 @@ To list all of the fields for a given endpoint, use `get_fields()`:
 ``` r
 retrvble_flds <- get_fields(endpoint = "patent")
 head(retrvble_flds)
-#> [1] "applicants.applicant_designation"  "applicants.applicant_name_first"  
-#> [3] "applicants.applicant_name_last"    "applicants.applicant_organization"
-#> [5] "applicants.applicant_sequence"     "applicants.applicant_type"
+#> [1] "gov_interest_statement"                                 
+#> [2] "patent_abstract"                                        
+#> [3] "patent_cpc_current_group_average_patent_processing_days"
+#> [4] "patent_date"                                            
+#> [5] "patent_detail_desc_length"                              
+#> [6] "patent_earliest_application_date"
 ```
 Nested fields can be fully qualified or a new API shorthand can be used, where group names can specified. When group names are used, all of the group’s nested fields will be returned by the API. E.g., the new version of the API and R package will accept ```fields=c("applicants")```
 
@@ -139,15 +142,15 @@ search_pv(
 #> #### A list with a single data frame on patents level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	1210 obs. of  3 variables:
-#>   ..$ patent_id   : chr [1:1210] "3931611" ...
-#>   ..$ patent_title: chr [1:1210] "Program event recorder and data processing "..
-#>   ..$ patent_date : chr [1:1210] "1976-01-06" ...
+#>  $ patents:'data.frame':	0 obs. of  3 variables:
+#>   ..$ patent_id   : chr(0) 
+#>   ..$ patent_title: chr(0) 
+#>   ..$ patent_date : chr(0) 
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 2,487, count = 1,000
+#> total_hits = 2,487
 ```
 
 ## Entity counts
@@ -167,10 +170,7 @@ query <- qry_funs$eq(inventors.inventor_name_last = "Chambers")
 # Here we'll request patent_id and the inventor fields from the patent endpoint
 inv_fields <- get_fields(endpoint = "patent", groups ="inventors")
 inv_fields
-#> [1] "inventors.inventor_id"         "inventors.inventor_city"      
-#> [3] "inventors.inventor_country"    "inventors.inventor_name_first"
-#> [5] "inventors.inventor_name_last"  "inventors.inventor_sequence"  
-#> [7] "inventors.inventor_state"
+#> [1] "inventors"
 fields <- c(inv_fields, "patent_id")
 
 result <- search_pv(query, endpoint = "patent", fields = fields)
@@ -186,7 +186,7 @@ result
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 2,487, count = 1,000
+#> total_hits = 2,487
 
 # Here's the first inventors
 result$data$patents$inventors[[1]]
@@ -206,9 +206,32 @@ query <- qry_funs$eq(inventor_name_last = "Chambers")
 fields <- get_fields(endpoint = "inventor")
 
 search_pv(query, endpoint = "inventor", fields = fields)
-#> Error in `httr2::req_perform()`:
-#> ! HTTP 400 Bad Request.
-#> • Invalid field: inventor_years.num_patents. inventor_years is not a nested field
+#> $data
+#> #### A list with a single data frame (with list column(s) inside) on inventors level:
+#> 
+#> List of 1
+#>  $ inventors:'data.frame':	439 obs. of  16 variables:
+#>   ..$ inventor_id                 : chr [1:439] "1vk0dcohf8r1vofo538cfxl2g" ...
+#>   ..$ inventor_name_first         : chr [1:439] "Gilbert V." ...
+#>   ..$ inventor_name_last          : chr [1:439] "Chambers" ...
+#>   ..$ inventor_gender_code        : chr [1:439] "M" ...
+#>   ..$ inventor_lastknown_city     : chr [1:439] "Baytown" ...
+#>   ..$ inventor_lastknown_state    : chr [1:439] "TX" ...
+#>   ..$ inventor_lastknown_country  : chr [1:439] "US" ...
+#>   ..$ inventor_lastknown_latitude : num [1:439] 29.7 ...
+#>   ..$ inventor_lastknown_longitude: num [1:439] -95 ...
+#>   ..$ inventor_lastknown_location : chr [1:439] "https://search.patentsview.o"..
+#>   ..$ inventor_num_patents        : int [1:439] 1 1 ...
+#>   ..$ inventor_num_assignees      : int [1:439] 1 2 ...
+#>   ..$ inventor_first_seen_date    : chr [1:439] "1995-10-17" ...
+#>   ..$ inventor_last_seen_date     : chr [1:439] "1995-10-17" ...
+#>   ..$ inventor_years_active       : num [1:439] 1 1 ...
+#>   ..$ inventor_years              :List of 439
+#> 
+#> $query_results
+#> #### Distinct entity counts across all downloadable pages of output:
+#> 
+#> total_hits = 439
 ```
 
 Your choice of endpoint determines two things:
@@ -334,7 +357,7 @@ httr2::last_request()
 
 #### Does the API have any rate limiting/throttling controls?
 
-Yes, the API currently allows 45 calls per minute for each API key.  If this limit is exceeded the API will return an http status of 429 with a response header Retry-After set to the number of seconds to wait before making subsequent requests.  The R package should handle this for you.  You will need to [request an API key](https://patentsview.org/apis/keyrequest) and set the environmental variable PATENTSVIEW_API_KEY to the value of your key.
+Yes, the API currently allows 45 calls per minute for each API key.  If this limit is exceeded the API will return an http status of 429 with a response header Retry-After set to the number of seconds to wait before making subsequent requests.  The R package should handle this for you.  You will need to [request an API key](https://patentsview-support.atlassian.net/servicedesk/customer/portals) and set the environmental variable PATENTSVIEW_API_KEY to the value of your key.
 
 #### How do I access the data frames inside the list columns returned by `search_pv()`?
 
@@ -482,10 +505,11 @@ unnest_pv_data(data = res$data, pk = "patent_id")
 #>   ..$ patent_id  : chr [1:801] "3930365" ...
 #>   ..$ num_figures: int [1:801] 3 6 ...
 #>   ..$ num_sheets : int [1:801] 3 5 ...
-#>  $ granted_pregrant_crosswalk         :'data.frame':	1000 obs. of  3 variables:
-#>   ..$ patent_id         : chr [1:1000] "3930365" ...
-#>   ..$ document_number   : logi [1:1000] NA ...
-#>   ..$ application_number: chr [1:1000] "05489742" ...
+#>  $ granted_pregrant_crosswalk         :'data.frame':	1000 obs. of  4 variables:
+#>   ..$ patent_id             : chr [1:1000] "3930365" ...
+#>   ..$ document_number       : logi [1:1000] NA ...
+#>   ..$ pgpubs_document_number: logi [1:1000] NA ...
+#>   ..$ application_number    : chr [1:1000] "05489742" ...
 #>  $ inventors                          :'data.frame':	1877 obs. of  8 variables:
 #>   ..$ patent_id          : chr [1:1877] "3930365" ...
 #>   ..$ inventor           : chr [1:1877] "https://search.patentsview.org/api/v"..

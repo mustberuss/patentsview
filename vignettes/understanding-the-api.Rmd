@@ -10,7 +10,7 @@ vignette: >
 
 
 Oh, the interesting things you'll learn when you take the time to read the API documentation!
-Here are gems gleaned from a [jupyter notebook](https://github.com/PatentsView/PatentsView-Code-Snippets/blob/master/07_PatentSearch_API_demo/PV%20PatentSearch%20API%20tutorial.ipynb) in PatentsView's PatentsView-Code-Snippets
+Here are gems gleaned from a [jupyter notebook](https://github.com/PatentsView/PatentsView-Code-Examples/blob/main/PatentSearch/0-patentsearch-api-demo.ipynb) in PatentsView's PatentsView-Code-Snippets
 repo.
 
 ## Fields Shorthand
@@ -57,9 +57,7 @@ the requests are different but the results are the same (we used POSTs so the re
 ``` r
 app_fields <- get_fields("patent", groups=c("application"))
 app_fields
-#> [1] "application.application_id"   "application.application_type"
-#> [3] "application.filing_date"      "application.filing_type"     
-#> [5] "application.rule_47_flag"     "application.series_code"
+#> [1] "application"
 
 pat_res <- search_pv(qry_funs$eq(patent_id = "10568228"), fields=app_fields, method="POST")
 pat_res$data$patent$application
@@ -246,8 +244,9 @@ display_inventors
 ## Acknowledgment
 
 Again, credit goes to the Patentsview API team for creating the cited jupyter notebook.  This is just portions of it
-in R package form.  The repo didn't have a stated license but https://patentsview.org/contact says
+in R package form.  The repo doesn't have a stated license but when I checked, I was told:
 
-> Users are free to use, share, or adapt the material for any purpose, subject to the standards of the 
-> [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).  
+> For the repo license we are looking at the [GNU General Public License v3](https://www.gnu.org/licenses/quick-guide-gplv3.html) (GPL3).
 
+That is the same license as R itself so I don't think we've violated anything.  For extra fun check
+out [Russ' fork](https://github.com/mustberuss/PatentsView-Code-Snippets/blob/master/07_PatentSearch_API_demo/PV%20PatentSearch%20API%20tutorial.ipynb).  There was no reply when I asked if they'd be receptive to a PR.

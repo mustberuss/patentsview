@@ -53,7 +53,7 @@ search_pv('{"patent_type":"utility"}', all_pages = FALSE )
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 8,123,346, count = 1,000
+#> total_hits = 8,123,346
 ```
 
 * Endpoint Changes
@@ -112,7 +112,6 @@ range_query
 #> {"_and":[{"_gte":{"patent_year":2010}},{"_lte":{"patent_year":2021}}]}
 ```
 * The ropensci blog post that announced the original version of the R package was [reworked](ropensci-blog-post.html) to use the new version of the R package and API
-* A hex sticker was created using GuangchuangYu's [hexSticker](https://github.com/GuangchuangYu/hexSticker)
 
 ## Swagger UI Page <a name="swagger-ui-page"></a>
 The Patentsview API team has provided a Swagger UI page for the new version of the API 
@@ -175,7 +174,7 @@ by the R package.  The way total_hits comes back from the R package remains unch
 ## Details of the API changes
 
 ### An API Key is required <a name="api-key-required"></a>
-Perhaps the most important change, without an API key your queries will be rejected.  Request an API key using this link: https://patentsview.org/apis/keyrequest  Once you have one, you'll need to set an environmental variable PATENTSVIEW_API_KEY to the value of your API key for the R package to use.
+Perhaps the most important change, without an API key your queries will be rejected.  Request an API key using this link: https://patentsview-support.atlassian.net/servicedesk/customer/portals  Once you have one, you'll need to set an environmental variable PATENTSVIEW_API_KEY to the value of your API key for the R package to use.
 
 The user's API key needs to be sent on all requests
 ```
@@ -279,11 +278,7 @@ the returned fields, like the cpc_group, are HATEOAS links:
   query <- '{"patent_id": "11530080"}'
   fields <- get_fields('patent', groups = 'cpc_current', include_pk = TRUE)
   fields
-#>  [1] "patent_id"                   "cpc_current.cpc_class"      
-#>  [3] "cpc_current.cpc_class_id"    "cpc_current.cpc_group"      
-#>  [5] "cpc_current.cpc_group_id"    "cpc_current.cpc_section"    
-#>  [7] "cpc_current.cpc_sequence"    "cpc_current.cpc_subclass"   
-#>  [9] "cpc_current.cpc_subclass_id" "cpc_current.cpc_type"
+#> [1] "patent_id"   "cpc_current"
 
   result <- search_pv(query, fields=fields)
 
@@ -304,6 +299,8 @@ the returned fields, like the cpc_group, are HATEOAS links:
 #> [1] "cpc_group_id: B65D71/0033"
 ```
 Note that going to these links in a browser will result in a 403 Unauthorized, as no API key is sent.
+Also note the last two lines of output, ```"cpc_group_id: B65D71/0033"``` (normal/expected) and 
+```"cpc_group: https://search.patentsview.org/api/v1/cpc_group/B65D71:0033/"``` (slightly odd use of a colon).
 
 There is a new method in the R package to retrieve data from the HATEOAS links, just pass the returned
 link and the R package will retrieve the data for you.  You can also pass an arbitrary link that hits 
@@ -316,21 +313,14 @@ found in the [API's documentation](https://search.patentsview.org/docs/docs/Sear
 library(patentsview)
 
 pv_data <- retrieve_linked_data("https://search.patentsview.org/api/v1/cpc_group/G01S7:4865/")
-pv_data
-#> $data
-#> #### A list with a single data frame on cpc_groups level:
-#> 
+str(pv_data$data)
 #> List of 1
 #>  $ cpc_groups:'data.frame':	1 obs. of  4 variables:
-#>   ..$ cpc_class      : chr "https://search.patentsview.org/api/v1/cpc_class/G"..
-#>   ..$ cpc_subclass   : chr "https://search.patentsview.org/api/v1/cpc_subclas"..
+#>   ..$ cpc_class      : chr "https://search.patentsview.org/api/v1/cpc_class/G01/"
+#>   ..$ cpc_subclass   : chr "https://search.patentsview.org/api/v1/cpc_subclass/G01S/"
 #>   ..$ cpc_group_id   : chr "G01S7/4865"
-#>   ..$ cpc_group_title: chr "Details of systems according to groups G01S13/00,"..
-#> 
-#> $query_results
-#> #### Distinct entity counts across all downloadable pages of output:
-#> 
-#> total_hits = 1, count = 1
+#>   ..$ cpc_group_title: chr "Details of systems according to groups G01S13/00, G01S15/00, G01S17/00-of systems according to group G01S17/00-"| __truncated__
+#>  - attr(*, "class")= chr [1:2] "list" "pv_data_result"
 
 # Here we'll use an example URL from the documentation
 # Note that going to that link in a browser will result in a 403 Unauthorized, as no API key is sent.
@@ -347,7 +337,7 @@ retrieve_linked_data('https://search.patentsview.org/api/v1/patent/?q={"patent_i
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 1, count = 1
+#> total_hits = 1
 ```
 
 Note that when calling the cpc_group endpoint instead of using the HATEOAS link, you'd use a slash
@@ -356,21 +346,15 @@ instead of a colon.
 
 ``` r
 
-search_pv('{"cpc_group_id": "A01B1/00"}', endpoint = 'cpc_group')
-#> $data
-#> #### A list with a single data frame on cpc_groups level:
-#> 
+result <- search_pv('{"cpc_group_id": "A01B1/00"}', endpoint = 'cpc_group')
+str(result$data)
 #> List of 1
 #>  $ cpc_groups:'data.frame':	1 obs. of  4 variables:
-#>   ..$ cpc_class      : chr "https://search.patentsview.org/api/v1/cpc_class/A"..
-#>   ..$ cpc_subclass   : chr "https://search.patentsview.org/api/v1/cpc_subclas"..
+#>   ..$ cpc_class      : chr "https://search.patentsview.org/api/v1/cpc_class/A01/"
+#>   ..$ cpc_subclass   : chr "https://search.patentsview.org/api/v1/cpc_subclass/A01B/"
 #>   ..$ cpc_group_id   : chr "A01B1/00"
 #>   ..$ cpc_group_title: chr "Hand tools"
-#> 
-#> $query_results
-#> #### Distinct entity counts across all downloadable pages of output:
-#> 
-#> total_hits = 1, count = 1
+#>  - attr(*, "class")= chr [1:2] "list" "pv_data_result"
 ```
 
 <a name="slight-weirdness">Slight weirdness</a>/sleight of hand where the returned field name looses the _id of the requested field
@@ -396,11 +380,12 @@ The API will now allow 45 requests per minute, making more requests will anger t
 ### A Note on Paging <a name="a-note-on-paging">
 The API team changed [how paging works](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#pagination) and there is an 
 important subtlety that the R package handles for you.  This screams for a python library so python 
-users don't need to worry about this and throttling!  Here's a comment in search-pv.R that tries 
-to explain the danger.
+users don't need to worry about this and throttling!  Here's a comment that used to be in search-pv.R 
+that tries to explain the danger.
 ```
   # Here we ignore the user's sort and instead have the API sort by the primary
-  # key for the requested endpoint.  This simplifies the paging's after parameter.
+  # key and sometimes primary and secondary keys for the requested endpoint.  
+  # This simplifies the paging's after parameter.
   # If we call the API with more than a primary sort, the after parameter would
   # have to be an array of all the sort fields' last values.
   # After we've retrieved all the data we'll sort in R using the sort the user requested
@@ -413,7 +398,7 @@ to explain the danger.
   # patent_dates change relative to the API's page breaks.
   # (Say the last patent in a retrieved page is the first patent
   # of a particular date, we wouldn't want the after parameter to
-  # to begin the next page of data after this date.)
+  # to begin the next page of data 'after' this date.)
 
 ```
 
@@ -449,7 +434,7 @@ search_pv(query1)
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 3,706, count = 1,000
+#> total_hits = 3,706
 
 search_pv(query2)
 #> $data
@@ -464,7 +449,7 @@ search_pv(query2)
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 2,115, count = 1,000
+#> total_hits = 2,115
 ```
 
 hitting the g_brf_sum_text endpoint:
@@ -483,7 +468,7 @@ search_pv(query1, endpoint="g_brf_sum_text")
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 0, count = 0
+#> total_hits = 0
 
 search_pv(query2, endpoint="g_brf_sum_text")
 #> $data
@@ -495,7 +480,7 @@ search_pv(query2, endpoint="g_brf_sum_text")
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 0, count = 0
+#> total_hits = 0
 ```
 
 

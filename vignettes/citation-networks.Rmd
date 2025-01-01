@@ -29,8 +29,9 @@ library(webshot2)
 
 # Write a query to pull patents assigned to the CPC code of "Y10S707/933"
 query <- qry_funs$contains(cpc_current.cpc_group_id = "Y10S707/933")
-pv_out <- search_pv(query = query, fields = c("patent_id"))
+pv_out <- search_pv(query = query, fields = c("patent_id", "patent_title"))
 patent_ids <- pv_out$data$patents$patent_id
+pat_lst <- unnest_pv_data(pv_out$data, pk = "patent_id")
 
 # We have to go against the patent_citiation endpoint now, these fields
 # are no longer available from the patent endpoint
@@ -58,27 +59,24 @@ res2 <- search_pv(cited_query,
 res_lst <- unnest_pv_data(res$data, pk = "patent_id")
 res_lst
 #> List of 1
-#>  $ us_patent_citations:'data.frame':	1037 obs. of  2 variables:
-#>   ..$ patent_id         : chr [1:1037] "10095778" ...
-#>   ..$ citation_patent_id: chr [1:1037] "8818996" ...
+#>  $ us_patent_citations:'data.frame':	1066 obs. of  2 variables:
+#>   ..$ patent_id         : chr [1:1066] "6339767" ...
+#>   ..$ citation_patent_id: chr [1:1066] "4847604" ...
 
 res_lst2 <- unnest_pv_data(res2$data, pk = "patent_id")
 res_lst2
 #> List of 1
-#>  $ us_patent_citations:'data.frame':	1024 obs. of  2 variables:
-#>   ..$ patent_id         : chr [1:1024] "10007946" ...
-#>   ..$ citation_patent_id: chr [1:1024] "7716226" ...
+#>  $ us_patent_citations:'data.frame':	1028 obs. of  2 variables:
+#>   ..$ patent_id         : chr [1:1028] "6480854" ...
+#>   ..$ citation_patent_id: chr [1:1028] "6339767" ...
 ```
 
-# Count the distinct patent_id and cited_patent_id
+## Count the distinct patent_id and cited_patent_id
 
-There are only 11 PCA patents. These patents cite 1037 patents and are cited by 1024 patents. Let's visualize the citations among the PCA patents. We'll create our visualization using the `visNetwork` package, which requires us to create a data frame of nodes and a data frame of edges.
+There are only 11 PCA patents. These patents cite 1066 patents and are cited by 1028 patents. Let's visualize the citations among the PCA patents. We'll create our visualization using the `visNetwork` package, which requires us to create a data frame of nodes and a data frame of edges.
 
 
 ``` r
-
-# with the API change we wouldn't have titles unless we call the patent endpoint
-# we'll use the patent number as the title for now
 
 pat_title <- function(title, number) {
   temp_title <- str_wrap(title)
@@ -91,15 +89,12 @@ edges <-
   semi_join(x = ., y = ., by = c("citation_patent_id" = "patent_id")) %>%
   set_colnames(c("from", "to"))
 
-# We could call the patent endpoint to get the patent titles but we'll just set
-# the title to the patent number
 nodes <-
-  res_lst$us_patent_citations %>%
-  distinct(patent_id) %>%
+  pat_lst$patents %>%
   mutate(
     id = patent_id,
     label = patent_id,
-    title = pat_title(patent_id, patent_id)
+    title = pat_title(patent_title, patent_id)
   )
 
 visNetwork(
@@ -134,7 +129,7 @@ rel_pats <-
   filter(!is.na(patent_id))
 
 # Look up which patents the relevant patents cite.  We need to use the 
-# patent_citation endpoint now, though we can't get patent_title from it.
+# patent_citation endpoint now.
 
 rel_pats_res <- search_pv(
   query = list(patent_id = rel_pats$patent_id),
@@ -146,7 +141,7 @@ rel_pats_lst <- unnest_pv_data(rel_pats_res$data, "patent_id")
 
 ```
 
-Now we know which patents the 4772 relevant patents cite. This allows us to measure the similarity between the 4772 patents by seeing how many cited references they share in common (a method known as [bibliographic coupling](https://en.wikipedia.org/wiki/Bibliographic_coupling)).
+Now we know which patents the 4855 relevant patents cite. This allows us to measure the similarity between the 4855 patents by seeing how many cited references they share in common (a method known as [bibliographic coupling](https://en.wikipedia.org/wiki/Bibliographic_coupling)).
 
 
 ``` r
@@ -180,8 +175,8 @@ kable(head(full_network))
 |:-----------|:-----------|----------:|
 |4555775     |4533910     |  0.1443376|
 |4736308     |4555775     |  0.1543033|
-|4772882     |4736308     |  0.2182179|
 |4772882     |4555775     |  0.1178511|
+|4772882     |4736308     |  0.2182179|
 |4812834     |4533910     |  0.2236068|
 |4812834     |4772882     |  0.0912871|
 

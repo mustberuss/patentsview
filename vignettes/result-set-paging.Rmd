@@ -177,7 +177,7 @@ print(nrow(combined_data))
 #> [1] 4000
 ```
 
-We ran into trouble since we choose patent_date as the sort field which
+We ran into trouble since we chose patent_date as the sort field which
 isn't unique row-wise in our result set as patent_id was in Example 1.  In most cases
 when we set 'after' to the last patent_date of a page of results, we weren't done retrieving all 
 of that date's patents.  (The page breaks aren't guaranteed to align with the patent_date
@@ -332,8 +332,9 @@ need code like this if your use case requires custom paging.  The custom paging
 takeaways are:
 
 1. The original version of the API and R package used `per_page` and `page` to allow
-users to page through result sets.  Those attributes are replaced by `size` and `after`.
-2. Your sort field(s) need to create row-wise uniqueness (hint only patent_date probably won't be good)
+users to page through result sets.  Those attributes are replaced by `size` and `after` in the
+new version of the API and R package.
+2. Your sort field(s) need to create row-wise uniqueness (hint only patent_date probably won't be good enough)
 3. If patent_id is used as a sort field, its corresponding 'after' value needs padding, see how
 ```pad_patent_id()``` is used in Example 1
 4. If there is a single sort field, the after parameter's value is the sort field's last value in
