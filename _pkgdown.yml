@@ -70,7 +70,7 @@ navbar:
           href: articles/citation-networks.html
         - text: ropensci announcement
           icon: fa-bullhorn
-          href: articles/ropensci_blog_post.html
+          href: articles/ropensci-blog-post.html
   structure:
     left:  [intro, changes, starting, queries, examples, applications, news]
     right: [reference, search, github, lightswitch]
