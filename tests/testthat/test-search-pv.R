@@ -83,9 +83,7 @@ test_that("search_pv can pull all fields for all endpoints", {
   troubled_endpoints <- c(
     "cpc_subclass", "location",
     "uspc_subclass", "uspc_mainclass", "wipo", "claim", "draw_desc_text",
-    "pg_claim", # Invalid field: claim_dependent
-    "inventor", # Invalid field: inventor_years.num_patents
-    "assignee"  # Invalid field: assignee_years.num_patents
+    "pg_claim" # Invalid field: claim_dependent
   )
 
   # these tests will fail when the API is fixed
