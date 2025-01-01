@@ -102,7 +102,6 @@ range_query <- qry_funs$in_range(patent_year=c(2010, 2021))
 range_query
 ```
 * The ropensci blog post that announced the original version of the R package was [reworked](ropensci-blog-post.html) to use the new version of the R package and API
-* A hex sticker was created using GuangchuangYu's [hexSticker](https://github.com/GuangchuangYu/hexSticker)
 
 ## Swagger UI Page <a name="swagger-ui-page"></a>
 The Patentsview API team has provided a Swagger UI page for the new version of the API 
@@ -163,7 +162,7 @@ by the R package.  The way total_hits comes back from the R package remains unch
 ## Details of the API changes
 
 ### An API Key is required <a name="api-key-required"></a>
-Perhaps the most important change, without an API key your queries will be rejected.  Request an API key using this link: https://patentsview.org/apis/keyrequest  Once you have one, you'll need to set an environmental variable PATENTSVIEW_API_KEY to the value of your API key for the R package to use.
+Perhaps the most important change, without an API key your queries will be rejected.  Request an API key using this link: https://patentsview-support.atlassian.net/servicedesk/customer/portals  Once you have one, you'll need to set an environmental variable PATENTSVIEW_API_KEY to the value of your API key for the R package to use.
 
 The user's API key needs to be sent on all requests
 ```
@@ -264,6 +263,8 @@ the returned fields, like the cpc_group, are HATEOAS links:
 
 ```
 Note that going to these links in a browser will result in a 403 Unauthorized, as no API key is sent.
+Also note the last two lines of output, ```"cpc_group_id: B65D71/0033"``` (normal/expected) and 
+```"cpc_group: https://search.patentsview.org/api/v1/cpc_group/B65D71:0033/"``` (slightly odd use of a colon).
 
 There is a new method in the R package to retrieve data from the HATEOAS links, just pass the returned
 link and the R package will retrieve the data for you.  You can also pass an arbitrary link that hits 
@@ -275,7 +276,7 @@ found in the [API's documentation](https://search.patentsview.org/docs/docs/Sear
 library(patentsview)
 
 pv_data <- retrieve_linked_data("https://search.patentsview.org/api/v1/cpc_group/G01S7:4865/")
-pv_data
+str(pv_data$data)
 
 # Here we'll use an example URL from the documentation
 # Note that going to that link in a browser will result in a 403 Unauthorized, as no API key is sent.
@@ -288,7 +289,8 @@ instead of a colon.
 
 ```{r}
 
-search_pv('{"cpc_group_id": "A01B1/00"}', endpoint = 'cpc_group')
+result <- search_pv('{"cpc_group_id": "A01B1/00"}', endpoint = 'cpc_group')
+str(result$data)
 
 ```
 
@@ -313,11 +315,12 @@ The API will now allow 45 requests per minute, making more requests will anger t
 ### A Note on Paging <a name="a-note-on-paging">
 The API team changed [how paging works](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#pagination) and there is an 
 important subtlety that the R package handles for you.  This screams for a python library so python 
-users don't need to worry about this and throttling!  Here's a comment in search-pv.R that tries 
-to explain the danger.
+users don't need to worry about this and throttling!  Here's a comment that used to be in search-pv.R 
+that tries to explain the danger.
 ```
   # Here we ignore the user's sort and instead have the API sort by the primary
-  # key for the requested endpoint.  This simplifies the paging's after parameter.
+  # key and sometimes primary and secondary keys for the requested endpoint.  
+  # This simplifies the paging's after parameter.
   # If we call the API with more than a primary sort, the after parameter would
   # have to be an array of all the sort fields' last values.
   # After we've retrieved all the data we'll sort in R using the sort the user requested
@@ -330,7 +333,7 @@ to explain the danger.
   # patent_dates change relative to the API's page breaks.
   # (Say the last patent in a retrieved page is the first patent
   # of a particular date, we wouldn't want the after parameter to
-  # to begin the next page of data after this date.)
+  # to begin the next page of data 'after' this date.)
 
 ```
 

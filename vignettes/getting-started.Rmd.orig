@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 The new version of the API requires an API key, or all of your requests will be rejected. Request an 
-API key using this link: <https://patentsview.org/apis/keyrequest> Once you have one, you’ll need to set 
+API key using this link: <https://patentsview-support.atlassian.net/servicedesk/customer/portals> Once you have one, you’ll need to set 
 an environmental variable PATENTSVIEW_API_KEY to the value of your API key for the R package to use.
 
 
@@ -197,7 +197,7 @@ httr2::last_request()
 
 #### Does the API have any rate limiting/throttling controls?
 
-Yes, the API currently allows 45 calls per minute for each API key.  If this limit is exceeded the API will return an http status of 429 with a response header Retry-After set to the number of seconds to wait before making subsequent requests.  The R package should handle this for you.  You will need to [request an API key](https://patentsview.org/apis/keyrequest) and set the environmental variable PATENTSVIEW_API_KEY to the value of your key.
+Yes, the API currently allows 45 calls per minute for each API key.  If this limit is exceeded the API will return an http status of 429 with a response header Retry-After set to the number of seconds to wait before making subsequent requests.  The R package should handle this for you.  You will need to [request an API key](https://patentsview-support.atlassian.net/servicedesk/customer/portals) and set the environmental variable PATENTSVIEW_API_KEY to the value of your key.
 
 #### How do I access the data frames inside the list columns returned by `search_pv()`?
 

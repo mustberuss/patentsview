@@ -68,7 +68,7 @@ Combined, these two things make patents a prime target for data analysis. Howeve
 
 [PatentsView](https://datatool.patentsview.org/#viz/relationships) is one of USPTO's new initiatives intended to increase the usability and value of patent data. One feature of this project is a publicly accessible API that makes it easy to programmatically interact with the data. A few of the reasons why I like the API (and PatentsView more generally):
 
-* An API key is now required (request one [here](https://patentsview.org/apis/keyrequest)) and throttling is imposed (handled by the new version of the R package) at 45 requests per minute.
+* An API key is now required (request one [here](https://patentsview-support.atlassian.net/servicedesk/customer/portals)) and throttling is imposed (handled by the new version of the R package) at 45 requests per minute.
 * The project offers [bulk downloads of patent data](https://patentsview.org/download/data-download-tables) on their website (in a flat file format), for those who want to be closest to the data. 
 * Both the API and the bulk download data contain disambiguated entities such as inventors, assignees, organizations, etc. In other words, the API will tell you whether it thinks that John Smith on patent X is the same person as John Smith on patent Y.[^1]  
 
@@ -76,18 +76,24 @@ The `patentsview` R package is a wrapper around the PatentsView API. It contains
 
 ## Installation
 
-You can install the stable version of `patentsview` from r-universe:
+You can get the stable version from CRAN:
+
+```{r eval = FALSE}
+install.packages("patentsview")
+```
+
+Or the latest build on from r-universe:
 
 ```{r, eval = FALSE}
 options(repos = c(
-  patentsview = "https://mustberuss.r-universe.dev/",
+  patentsview = "https://ropensci.r-universe.dev/patentsview",
   CRAN = "https://cloud.r-project.org"
 ))
 
 install.packages("patentsview")
 ```
 
-Or  from GitHub:
+Or from GitHub:
 
 ```{r eval = FALSE}
 if (!require(devtools)) install.packages("devtools")
