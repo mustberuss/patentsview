@@ -1,6 +1,7 @@
 #' @noRd
 validate_endpoint <- function(endpoint) {
   ok_ends <- get_endpoints()
+
   asrt(
     all(endpoint %in% ok_ends, length(endpoint) == 1),
     "endpoint must be one of the following: ", paste(ok_ends, collapse = ", ")
@@ -17,12 +18,13 @@ validate_args <- function(api_key, fields, endpoint, method,
 
   flds_flt <- fieldsdf[fieldsdf$endpoint == endpoint, "field"]
 
-  # Now the API allows the group name to be requested to get all of its nested fields
-  # ex.: "assignees" on the patent endpoint gets you all of the assignee fields
-  # twist: in fieldsdef top level/unnested fields have an empty string as their group,
-  # which wouldn't be valid here
+  # Now the API allows the group name to be requested as in fields to get all of
+  # the group's nested fields.  ex.: "assignees" on the patent endpoint gets you all 
+  # of the assignee fields. Note that "patents" can't be requested 
   groups <- unique(fieldsdf[fieldsdf$endpoint == endpoint, c("group")])
-  flds_flt <- append(flds_flt, groups[!(groups %in% c(""))])
+  pk <- get_ok_pk(endpoint)
+  plural_entity <- fieldsdf[fieldsdf$endpoint == endpoint & fieldsdf$field == pk, "group"]
+  flds_flt <- append(flds_flt, groups[!groups == plural_entity])
 
   asrt(
     all(fields %in% flds_flt),
@@ -66,8 +68,10 @@ validate_groups <- function(endpoint, groups) {
 
   asrt(
     all(groups %in% ok_grps),
-    "for the ", endpoint, " endpoint, group must be one of the following: ",
-    paste(ok_grps, collapse = ", ")
+    "for the ", endpoint, " endpoint, ",
+    ifelse(length(ok_grps) == 0, "there are no nested groups",
+      paste("group must be one of the following: ", paste(ok_grps, collapse = ", "))
+    )
   )
 }
 

@@ -1,3 +1,9 @@
+#' @noRd
+get_top_level_attributes <- function(endpoint) {
+  fieldsdf[fieldsdf$endpoint == endpoint & !grepl("\\.", fieldsdf$field), "field"]
+}
+
+
 #' Get list of retrievable fields
 #'
 #' This function returns a vector of fields that you can retrieve from a given
@@ -7,7 +13,7 @@
 #' possible fields for each endpoint).
 #'
 #' @param endpoint The API endpoint whose field list you want to get. See
-#'   \code{\link{get_endpoints}} for a list of the 23 endpoints.
+#'   \code{\link{get_endpoints}} for a list of the 27 endpoints.
 #' @param groups A character vector giving the group(s) whose fields you want
 #'   returned. A value of \code{NULL} indicates that you want all of the
 #'   endpoint's fields (i.e., do not filter the field list based on group
@@ -36,7 +42,7 @@
 #'   fields = fields
 #' )
 #' }
-#' # Get all patent and assignee-level fields for the patent endpoint:
+#' # Get unnested patent and assignee-level fields for the patent endpoint:
 #' fields <- get_fields(endpoint = "patent", groups = c("assignees", "patents"))
 #'
 #' \dontrun{
@@ -63,16 +69,31 @@
 #' @export
 get_fields <- function(endpoint, groups = NULL, include_pk = FALSE) {
   validate_endpoint(endpoint)
+
+  # using API's shorthand notation, group names can be requested as fields instead of
+  # fully qualifying each nested field.  Fully qualified, all patent endpoint's attributes
+  # is over 4K, too big to be sent on a GET with a modest query
+
+  pk <- get_ok_pk(endpoint)
+  plural_entity <- fieldsdf[fieldsdf$endpoint == endpoint & fieldsdf$field == pk, "group"]
+  top_level_attributes <- fieldsdf[fieldsdf$endpoint == endpoint & fieldsdf$group == plural_entity, "field"]
+
   if (is.null(groups)) {
-    fieldsdf[fieldsdf$endpoint == endpoint, "field"]
+    c(
+      top_level_attributes,
+      unique(fieldsdf[fieldsdf$endpoint == endpoint & fieldsdf$group != plural_entity, "group"])
+    )
   } else {
     validate_groups(endpoint, groups = groups)
-    # don't include pk if unnested ("") groups are requested (pk would be an unnested field)
-    extra_field <- if (include_pk && !"" %in% groups) get_ok_pk(endpoint_or_entity = endpoint) else NULL
+
+    # don't include pk if plural_entity group is requested (pk would be a member)
+    extra_field <- if (include_pk && !plural_entity %in% groups) pk else NULL
+    extra_fields <- if (plural_entity %in% groups) top_level_attributes else NULL
 
     c(
       extra_field,
-      fieldsdf[fieldsdf$endpoint == endpoint & fieldsdf$group %in% groups, "field"]
+      extra_fields,
+      groups[!groups == plural_entity]
     )
   }
 }
