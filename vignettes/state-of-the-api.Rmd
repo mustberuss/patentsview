@@ -32,7 +32,7 @@ nrow(fieldsdf[grep("number|integer|boolean", fieldsdf$data_type), ])
 
 print(fieldsdf[grep("bool$|int$", fieldsdf$data_type), c("endpoint", "field", "data_type")], row.names = FALSE)
   ```
-* The API team created a [Swagger UI](patentsview-breaking-change.html#online-documentation) page for the new version of the API. 
+* The API team created a [Swagger UI](patentsview-breaking-release.html#online-documentation) page for the new version of the API. 
 It has a nice feature where it will show you what the Request URL was for a GET request.
 The Request URL can be passed to `retrieve_linked_data` to see its output from the R package, 
 as explained below. On a POST request, it will show you the Curl command that will make
@@ -238,9 +238,19 @@ where the group's name will retrieve all the group's nested fields. Oddly, the u
 cannot be requested this way, e.g. the unnested attributes of the patent endpoint need to be called out,
 rather than requesting "patents" as a field.
 ```{r}
+   # top level/unnested attributes at the patent endpoint
    get_fields("patent", groups = "patents")
 ```
-
+```{r}
+   # all attributes at the patent endpoint using the new group shorthand
+   # the first 19 are the unnested attributes, the remaining ones are group names
+   get_fields("patent")
+```
+```{r}
+   # all attributes at the patent endpoint, fully qualified.  With a modest query this can
+   # be too much to send via a GET request
+   fieldsdf[fieldsdf$endpoint == "patent", "field"]
+```
   2. On [applying multiple conditions to related-entity fields](understanding-the-api.html#unexpected-results)
 
 * The endpoints are now singular, to match the API's change.  Some of the new endpoints are nested under patent/ and one is nested under publication/,
@@ -293,7 +303,7 @@ through the result set (`per_page` and `page` parameters have been replaced by `
   + The R package unit tests have some skips and other negative tests that API bugs still exist
 (they'll fail when bugs are fixed). 
 
-  + A possible [tech note](patentsview-breaking-change.html) for when the new package is ready mentions
+  + A possible [tech note](patentsview-breaking-release.html) for when the new package is ready mentions
 
     > As shown in the updated [Top Assignees vignette](top-assignees.html), there will be occasions now where multiple API calls are needed to retrieve the same data as in a single API call in the original version of the API and R package.
 
@@ -321,10 +331,9 @@ specific code that may need modifying. A draft of a release would look something
     * Add an issue template that warns users not to share their API key
     * Add a contributing.md or something that explains how to build everything, something like
 [Findings/Contributor 101](#findingscontributor-101) below
-    * Navigation on the vignettes could be better, the possible [tech note](patentsview-breaking-change.html) and the reworked [ropensci blog post](ropensci-blog-post.html) aren't part of the navigation.
+    * Navigation on the vignettes could be better, should the possible [tech note](patentsview-breaking-release.html) be added to the nav?
     * Not sure if there should be a monster comment in search_pv.R trying to explain 
 the new way of paging.  Possibly just say to see the new [api paging vignette](result-set-paging.html)?
-    * [Sign up](https://coveralls.io/sign-up) for coveralls and add a code coverage badge?
     * httr2 improvements
        + Currently requests are set to be retried 19 times ```httr2::req_retry(max_tries = 20)```  Is this a reasonable
 number? 429 errors can occur if the user runs more than a single program at a time, like half
