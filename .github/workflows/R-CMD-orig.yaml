@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Confirm crew102 triggered the build when on ropensci
         run: |
-          if [ "${{ github.event.repository.full_name }} != "ropensci/patentsview" ] || [ github.event.sender.login == "crew102" }} ]; then
+          if [ "${{ github.event.repository.full_name }}" != "ropensci/patentsview" ] || [ "${{ github.event.sender.login }}" == "crew102" }} ]; then
             echo "Actor ${{ github.actor }} is allowed on ${{ github.event.repository.full_name }}"
           else
             echo "Actor ${{ github.actor }} is not allowed on ${{ github.event.repository.full_name }}, failing build."
