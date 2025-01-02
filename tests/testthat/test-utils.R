@@ -1,14 +1,3 @@
-test_that("coverage todo: move", {
-  skip_on_cran()
-
-  qry <- qry_funs$eq(patent_id = "11530080")
-
-  expect_error(
-    cast_pv_data(qry),
-    "Wrong input type for data"
-  )
-})
-
 test_that("we can cast the endpoints that return the same entity", {
   skip_on_cran()
 

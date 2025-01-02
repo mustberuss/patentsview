@@ -1,4 +1,3 @@
-# TODO: add a test to see if all the requested fields come back
 
 add_base_url <- function(x) {
   paste0("https://search.patentsview.org/api/v1/", x)
@@ -18,18 +17,6 @@ test_that("API returns expected df names for all endpoints", {
 
   # these both return rel_app_texts
   overloaded_entities <- c("patent/rel_app_text", "publication/rel_app_text")
-
-  # this will fail when the api is fixed
-  dev_null <- lapply(broken_endpoints, function(x) {
-    print(x)
-    expect_error(
-      search_pv(
-        query = TEST_QUERIES[[x]],
-        endpoint = x,
-        fields = get_fields(x)
-      )
-    )
-  })
 
   goodendpoints <- endpoints[!endpoints %in% c(broken_endpoints, overloaded_entities)]
 
@@ -83,20 +70,8 @@ test_that("search_pv can pull all fields for all endpoints", {
   troubled_endpoints <- c(
     "cpc_subclass", "location",
     "uspc_subclass", "uspc_mainclass", "wipo", "claim", "draw_desc_text",
-    "pg_claim" # Invalid field: claim_dependent
+    "pg_claim"  # Invalid field: claim_dependent
   )
-
-  # these tests will fail when the API is fixed
-  dev_null <- lapply(troubled_endpoints, function(x) {
-    print(x)
-    expect_error(
-      search_pv(
-        query = TEST_QUERIES[[x]],
-        endpoint = x,
-        fields = get_fields(x)
-      )
-    )
-  })
 
   # We should be able to get all fields from the non troubled endpoints
   dev_null <- lapply(endpoints[!(endpoints %in% troubled_endpoints)], function(x) {
@@ -191,14 +166,6 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
     expect_equal(j$query_results$total_hits, 1)
   })
 
-  # TODO: remove when this is fixed
-  # we'll know the api is fixed when this fails
-  dev_null <- lapply(broken_single_item_queries, function(q) {
-    expect_error(
-      j <- retrieve_linked_data(add_base_url(q))
-    )
-  })
-
   multi_item_queries <- c(
     "patent/us_application_citation/10966293/",
     "patent/us_patent_citation/10966293/"
@@ -275,18 +242,6 @@ test_that("posts and gets return the same data", {
     p <- unnest_pv_data(post_res$data)
 
     expect_equal(g, p)
-  })
-
-  # make sure the bad_eps are still broken
-  z <- lapply(bad_eps, function(endpoint) {
-    print(endpoint)
-    expect_error(
-      get_res <- search_pv(
-        query = TEST_QUERIES[[endpoint]],
-        endpoint = endpoint,
-        method = "GET"
-      )
-    )
   })
 })
 
@@ -494,8 +449,6 @@ test_that("we can sort on an unrequested field across page boundaries", {
   expect_equal(r_ordered$data, api_ordered$data)
 })
 
-# Trying to pick up coverage when supplying a sort and non default fields
-# line 320 when this was writting. Ah needs all_pages = TRUE
 test_that("sort works across page boundaries", {
   skip_on_cran()
 

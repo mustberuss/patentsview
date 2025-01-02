@@ -24,7 +24,6 @@ test_that("cast_pv_data casts patent fields as expected", {
 
 test_that("cast_pv_data casts assignee fields as expected", {
   skip_on_cran()
-  skip_on_ci()
 
   # **  Invalid field: assignee_years.num_patents. assignee_years is not a nested field
   pv_out <- search_pv(

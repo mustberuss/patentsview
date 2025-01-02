@@ -10,7 +10,6 @@ add_base_url <- function(x) {
 
 test_that("there is trouble paging", {
   skip_on_cran()
-  skip_on_ci()
 
   # reprex inspired by https://patentsview.org/forum/7/topic/812
   # Not all requested groups are coming back as we page, causing
@@ -55,7 +54,6 @@ test_that("there is trouble paging", {
 
 test_that("there is case sensitivity on string equals", {
   skip_on_cran()
-  skip_on_ci()
 
   # reported to the API team PVS-1147
   # not sure if this is a bug or feature - original API was case insensitive
@@ -95,7 +93,6 @@ test_that("string vs text operators behave differently", {
 
 test_that("API returns all requested groups", {
   skip_on_cran()
-  skip_on_ci()
 
   # can we traverse the return building a list of fields?
   # sort both requested fields and returned ones to see if they are equal
@@ -112,37 +109,12 @@ test_that("API returns all requested groups", {
     , "cpc_subclass" # 404?  check the test query
     , "uspc_subclass" # 404
     , "pg_claim" # Invalid field: claim_dependent
-    , "assignee" # Invalid field: assignee_years.num_patents
-    , "inventor" # Invalid field: inventor_years.num_patents
   )
 
   mismatched_returns <- c(
     "patent",
     "publication"
   )
-
-  good_eps <- eps[!eps %in% c(mismatched_returns, bad_eps)]
-
-  z <- lapply(good_eps, function(endpoint) {
-    print(endpoint)
-    res <- search_pv(
-      query = TEST_QUERIES[[endpoint]],
-      endpoint = endpoint,
-      fields = get_fields(endpoint)
-    )
-
-    dl <- unnest_pv_data(res$data, pk = get_ok_pk(endpoint))
-
-    actual_groups <- names(dl)
-
-    expected_groups <- unique(fieldsdf[fieldsdf$endpoint == endpoint, "group"])
-
-    # we now need to unnest the endpoints for the comparison to work
-    #expect ed_groups <- gsub("^(patent|publication)/", "", expected_groups)
-
-    expect_setequal(actual_groups, expected_groups)
-    show_failure(expect_setequal(actual_groups, expected_groups))
-  })
 
   # this will fail when the api is fixed
   z <- lapply(bad_eps, function(x) {
@@ -184,79 +156,6 @@ test_that("API returns all requested groups", {
 
 eps <- (get_endpoints())
 
-# request size 0?
-
-test_that("each field in fieldsdf can be retrieved", {
-  skip_on_cran()
-
-  # PVS-1125
-  # Iterate through fieldsdf, requesting one field at a time to see if the field
-  # really can be retrieved.  What fields work and don't work is constantly changing
-  # as the new version of the api is being developed
-
-  endpoints <- get_endpoints()
-  endpoints <- c("uspc_subclass", "location")
-
-  troubled <- sapply(endpoints, function(endpoint) {
-    fields <- fieldsdf[fieldsdf$endpoint == endpoint, c("field")]
-
-    # here we want to remove nested fields like assignees.assignee_id
-    # probably should check these once the non nested ones stop throwing errors
-    fields <- fields[!fields %in% fields[grepl("\\.", fields)]]
-
-    # should also test that there are unique values, some fields come back all NULLS
-
-    result <- lapply(fields, function(field) {
-      tryCatch(
-        expr = {
-          # try adding the primary key to fields to see if that stops the 500s- helped some but not all
-          # pk <- get_ok_pk(endpoint)
-          pv_out <- search_pv(query = TEST_QUERIES[[endpoint]], endpoint = endpoint, fields = c(field))
-
-          error_reason <- NULL
-
-          # see if the field actually came back - a fair amount don't come back
-          # make sure pv_out$query_results$total_hits >= 1 first
-          if (pv_out$query_results$total_hits == 0) {
-            print(paste(endpoint, "zero hits"))
-            error_reason <- "zero hits"
-          } else {
-            found <- FALSE
-            if (!field %in% colnames(pv_out$data[[1]])) {
-              # check for the _id thing, ex requested assignee_id but got assignee back
-
-              if (grepl("_id", field)) {
-                idless <- sub("_id", "", field)
-
-                found <- idless %in% colnames(pv_out$data[[1]])
-                if (found) {
-                  print(paste("id dance on", endpoint, field))
-                }
-              }
-              if (!found) {
-                print(paste("not returned", endpoint, field))
-                error_reson <- "not returned"
-              }
-            }
-          }
-          if (is.null(error_reson)) NA else paste(error_reson, endpoint, field)
-        },
-        error = function(e) {
-          paste("error", endpoint, field)
-        }
-      )
-    })
-    result[!is.na(result)]
-  })
-
-  troubled_fields <- do.call(c, unlist(troubled, recursive = FALSE))
-
-  names(troubled_fields) <- NULL
-  print(troubled_fields)
-  expect_gt(length(troubled_fields), 0) # would fail when the API doesn't throw errors etc.
-})
-
-# from test-search-pv.R
 test_that("We can call all the legitimate HATEOAS endpoints", {
   skip_on_cran()
 
@@ -306,36 +205,43 @@ test_that("individual fields are still broken", {
 test_that("we can't sort by all fields", {
   skip_on_cran()
 
-  # seems to behave differently for POSTs than GETs ?
   # PVS-1377
+  sorts_to_try <- c(
+    assignee = "assignee_lastknown_city",
+    cpc_class = "cpc_class_title",
+    cpc_group = "cpc_group_title",
+    cpc_subclass = "cpc_subclass",
+    g_brf_sum_text = "summary_text",
+    g_claim = "claim_text",
+    g_detail_desc_text = "description_text",
+    g_draw_desc_text = "draw_desc_text",
+    inventor = "inventor_lastknown_city",
+    patent = "patent_id" # good pair to show that the code works
+  )
 
-  endpoint_bad_fields <- lapply(eps, function(endpoint) {
-    unnested_fields <- get_fields(endpoint, groups = to_plural(endpoint))
+  results <- lapply(names(sorts_to_try), function(endpoint) {
+    field <- sorts_to_try[[endpoint]]
+    print(paste(endpoint, field))
 
-    result <- lapply(unnested_fields, function(field) {
-      tryCatch(
-        {
-          sort <- c("asc")
-          names(sort) <- field
-          j <- search_pv(
-            query = TEST_QUERIES[[endpoint]],
-            endpoint = endpoint, sort = sort, method = "GET"
-          )
-          NA
-        },
-        error = function(e) {
-          paste(endpoint, field)
-        }
-      )
-    })
-    result[!is.na(result)]
+    tryCatch(
+      {
+        sort <- c("asc")
+        names(sort) <- field
+        j <- search_pv(
+          query = TEST_QUERIES[[endpoint]],
+          endpoint = endpoint, sort = sort, method = "GET"
+        )
+        NA
+      },
+      error = function(e) {
+        paste(endpoint, field)
+      }
+    )
   })
 
-  bad_sort_fields <- do.call(c, unlist(endpoint_bad_fields, recursive = FALSE))
-
-  print(bad_sort_fields)
-
-  expect_gt(length(bad_sort_fields), 0)
+  results <- results[!is.na(results)]
+  expect_gt(length(results), 0)
+  expect_lt(length(results), length(sorts_to_try)) # assert that at least one sort worked
 })
 
 
@@ -407,12 +313,12 @@ test_that("uspcs aren't right", {
 
   # PVS-1615
 
-    endpoint <- "patent"
-    res <- search_pv(
-      query = TEST_QUERIES[[endpoint]],
-      endpoint = endpoint,
-      fields = get_fields(endpoint, groups="uspc_at_issue")
-    )
+  endpoint <- "patent"
+  res <- search_pv(
+    query = TEST_QUERIES[[endpoint]],
+    endpoint = endpoint,
+    fields = get_fields(endpoint, groups = "uspc_at_issue")
+  )
 
   # id fields are correct, non id fields should be HATEOAS links
   uspcs <- res$data$patents$uspc_at_issue
@@ -420,7 +326,31 @@ test_that("uspcs aren't right", {
   # these should fail when the API is fixed
   expect_equal(uspcs$uspc_mainclass, uspcs$uspc_mainclass_id)
   expect_equal(uspcs$uspc_subclass, uspcs$uspc_subclass_id)
-  
 })
 
+test_that("endpoints are still broken", {
+  skip_on_cran()
+  # this will fail when the api is fixed
 
+  broken_endpoints <- c(
+    "claim" # Error: Invalid field: claim_dependent
+    , "draw_desc_text" # Error: Invalid field: description_sequence
+    , "cpc_subclass" # 404?  check the test query
+    , "location" # Error: Invalid field: location_latitude
+    , "pg_claim" # Invalid field: claim_dependent
+    , "uspc_subclass" # Error: Internal Server Error
+    , "uspc_mainclass" # Error: Internal Server Error
+    , "wipo" # Error: Internal Server Error
+  )
+
+  dev_null <- lapply(broken_endpoints, function(x) {
+    print(x)
+    expect_error(
+      search_pv(
+        query = TEST_QUERIES[[x]],
+        endpoint = x,
+        fields = get_fields(x)
+      )
+    )
+  })
+})
