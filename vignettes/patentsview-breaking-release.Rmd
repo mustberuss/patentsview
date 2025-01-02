@@ -54,12 +54,12 @@ available from the original endpoints (now some endpoint's returns are lighter, 
    - Now some of the endpoints return HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more data
 (URLs for additional calls back to the API)
 3. Some fields are now nested and need to be fully qualified when used in a query,
-e.g., ```search_pv('{"cpc_current.cpc_group_id":"A01B1/00"}')``` when using the patent endpoint.
+for instance, ```search_pv('{"cpc_current.cpc_group_id":"A01B1/00"}')``` when using the patent endpoint.
 
-   In the fields parameter, nested fields can be fully qualified or a new API shorthand can be used, where group names can specified. When group names are used, all of the group's nested fields will be returned by the API. Ex. the new version of the API and R package will accept fields=c("assignees") when using the patent endpoint and all nested assignees fields will be returned by the API.
+   In the fields parameter, nested fields can be fully qualified or a new API shorthand can be used, where group names can specified. When group names are used, all of the group's nested fields will be returned by the API. For example, the new version of the API and R package will accept fields=c("assignees") when using the patent endpoint and all nested assignees fields will be returned by the API.
 
 4. Some field's names have changed, most significantly, patent_number is now patent_id,
- and some fields were removed entirely, e.g., rawinventor_first_name and rawinventor_last_name.
+ and some fields were removed entirely, for instance, rawinventor_first_name and rawinventor_last_name.
 5. The original version of the API had queryable fields and additional fields which could be 
 retrieved but couldn't be part of a conditional query.  That notion does not apply to the 
 new version of the API as all fields are now queryable.  You may be able
@@ -69,7 +69,7 @@ because a field you were interested in was not queryable.
 operators used on full text fields, as there was in the original
 version of the API.  See the tip below the [Syntax section](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#syntax).
 Note that the result sizes aren't matching currently though, see
-[testthat/test-api-bugs.R](https://github.com/mustberuss/patentsview/blob/api-redesign/tests/testthat/test-api-bugs.R)
+testthat/test-api-bugs.R in the testthat folder.
 7. Result set paging has changed significantly.  This would matter only if users implemented their own
 paging, the R package continues to handle result set paging when search_pv's all_pages = TRUE. 
 There is a new result set paging vignette to explain the way the API now pages, 
