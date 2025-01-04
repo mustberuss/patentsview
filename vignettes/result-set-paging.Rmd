@@ -233,7 +233,7 @@ at these endpoints can lead to trouble, like sorting by patent_date did in the s
 ```
 
 Ok, so here we'll do a minimalist custom paging with a secondary sort using the patent/us_patent_citation
-endpoint.  The code is similar to what's in the [citiation network vignette](citation-networks.html),
+endpoint.  The code is similar to what's in the [citation network vignette](citation-networks.html),
 where we first learned that a primary sort is not always sufficient (requiring changes to the R package).
 
 
