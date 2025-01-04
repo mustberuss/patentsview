@@ -7,12 +7,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="patentsview">
 <title>Result Set Paging • patentsview</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
-<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
@@ -175,7 +169,7 @@ change, seemingly only needed for patent_id when paging, so
 <code><a href="../reference/pad_patent_id.html">pad_patent_id()</a></code> was added to the R package.</p>
 <p>Here we’ll retrieve 5000 utility patents using custom paging.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/patentsview/index.html" class="external-link">patentsview</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Lets get 5000 utility patents, 1000 at a time (the API's maximum rows per request)</span></span>
@@ -370,7 +364,7 @@ second half of Example 2.</p>
 <span><span class="co">#&gt; 8              pg_draw_desc_text document_number draw_desc_sequence</span></span></code></pre></div>
 <p>Ok, so here we’ll do a minimalist custom paging with a secondary sort
 using the patent/us_patent_citation endpoint. The code is similar to
-what’s in the <a href="citation-networks.html">citiation network
+what’s in the <a href="citation-networks.html">citation network
 vignette</a>, where we first learned that a primary sort is not always
 sufficient (requiring changes to the R package).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -485,7 +479,7 @@ their last values (as in Example 3). `</li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Christopher Baker.</p>
+  <p>Developed by Christopher Baker, Russ Allen.</p>
 </div>
 
 <div class="pkgdown-footer-right">
