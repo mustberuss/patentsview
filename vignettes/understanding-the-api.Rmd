@@ -9,8 +9,8 @@ vignette: >
 
 
 
-Oh, the interesting things you'll learn when you take the time to read the API documentation!
-Here are gems gleaned from a [jupyter notebook](https://github.com/PatentsView/PatentsView-Code-Examples/blob/main/PatentSearch/0-patentsearch-api-demo.ipynb) in PatentsView's PatentsView-Code-Snippets
+Oh, the interesting things you'll learn when you take the time to read the API's documentation!
+Here are two gems gleaned from a [jupyter notebook](https://github.com/PatentsView/PatentsView-Code-Examples/blob/main/PatentSearch/0-patentsearch-api-demo.ipynb) in PatentsView's PatentsView-Code-Snippets
 repo.
 
 ## Fields Shorthand
@@ -81,7 +81,7 @@ explicit_results$data$patent$application
 The difference in the requests is that in the former case, it's the API deciding what fields to return
 while in the latter case, we used fieldsdf.
 fieldsdf is created from the [API's OpenAPI object](https://search.patentsview.org/static/openapi.json)
-when building the R package and determines what fields can be requested from each endpoint.  The results 
+when building the R package and specifies what fields can be requested from each endpoint.  The results 
 could be different if the API's actual return is not in sync with the API's OpenAPI object.  Here we see 
 that the requests are different but the results are the same (we used POSTs so the requests are easier 
 to read since they don't need to be urlencoded).
@@ -173,7 +173,8 @@ display_inventors
 ```
 Some rows act as you'd expect, like patent 4078607's Thomas Jefferson.  In others, two inventors
 combine to meet the search cititeria, like 6905071's
- **Thomas** Amundsen and Matthew **Jefferson**.
+ **Thomas** Amundsen and Matthew **Jefferson**.  This might be a match we didn't intend.
+
 Now we'll hit the inventor endpoint with a similar query, as the jupyter notebook suggests.
 
 
@@ -252,5 +253,5 @@ in R package form.  The repo doesn't have a stated license but when I checked, I
 
 That is the same license as R itself so I don't think we've violated anything.  For extra fun check
 out [Russ' fork](https://github.com/mustberuss/PatentsView-Code-Snippets/blob/master/07_PatentSearch_API_demo/PV%20PatentSearch%20API%20tutorial.ipynb)
-where there's python code for retrieving Mr. Jefferson's patents etc.  There was no reply when he asked if 
+where there's python code for retrieving Mr. Jefferson's patents etc.  There was no reply when we asked if 
 they'd be receptive to a PR.

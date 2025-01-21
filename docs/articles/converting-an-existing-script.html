@@ -158,16 +158,21 @@ package and API.</p>
 an API key</a> and then set the environmental variable
 PATENTSVIEW_API_KEY to the value of your API key. Ex. set
 PATENTSVIEW_API_KEY=My_api_key Without a valid API key, all your calls
-will be rejected by the API. ## The New Throttling Limit Another new
-thing is a throttling limit. The new version of the API only allows an
-individual API key to make 45 calls per minute. The call that exceeds
-that limit is rejected but does return the number of seconds to wait
-before calls would be allowed again. Fortunately, the R package handles
-this for you! Your script will be chugging along and if the API should
-return a throttling response, the R package will sleep for the required
-number of seconds before automatically resending your query! The only
-thing you may notice, besides a warning message, it that the script will
-pause when throttled before it picks right back up again.</p>
+will be rejected by the API.</p>
+</div>
+<div class="section level2">
+<h2 id="the-new-throttling-limit">The New Throttling Limit<a class="anchor" aria-label="anchor" href="#the-new-throttling-limit"></a>
+</h2>
+<p>Another new thing is a throttling limit. The new version of the API
+only allows an individual API key to make 45 calls per minute. The call
+that exceeds that limit is rejected but does return the number of
+seconds to wait before calls would be allowed again. Fortunately, the R
+package handles this for you! Your script will be chugging along and if
+the API should return a throttling response, the R package will sleep
+for the required number of seconds before automatically resending your
+query! The only thing you may notice, besides a warning message, it that
+the script will pause when throttled before it picks right back up
+again.</p>
 </div>
 <div class="section level2">
 <h2 id="philosophical-change">Philosophical Change<a class="anchor" aria-label="anchor" href="#philosophical-change"></a>
@@ -196,7 +201,7 @@ inventor object returned by the patent endpoint. Now in the fields
 parameter it would be specified as “inventor.name_last” where formerly
 it was “inventor_last_name” when using the patent endpoint. This also
 demonstrates how nested fields need to be fully qualified in the query
-or fields parameters.</p>
+parameter.</p>
 <p>Also note that some field’s types have changed, meaning you’ll need
 to use different operators within your query. Ex. assignee.organization
 is now a full text field, formerly it was a string.</p>
@@ -220,8 +225,8 @@ read.</p>
 <div class="section level2">
 <h2 id="singular-endpoints">Singular Endpoints<a class="anchor" aria-label="anchor" href="#singular-endpoints"></a>
 </h2>
-<p>The endpoints are now singular, ex: patent where previously it was
-patents.</p>
+<p>The endpoints are now singular, ex: “patent” where previously it was
+“patents”.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_endpoints.html">get_endpoints</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "assignee"                       "cpc_class"                     </span></span>

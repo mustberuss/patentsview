@@ -155,7 +155,7 @@ retrieve all rows, with nothing in between, unless you do your own
 paging. This might be important if you want to retrieve a few thousand
 utility patents without retrieving all 8 million of them. Or maybe you
 want to iterate through search results page by page rather than
-retrieving the entire data set and then iterating. If you do your own
+retrieving the entire result set and then iterating. If you do your own
 paging, you’ll need to be careful when choosing your sort parameter(s),
 as shown in Example 2 and Example 3.</p>
 <div class="section level2">
@@ -164,8 +164,8 @@ as shown in Example 2 and Example 3.</p>
 <p><strong>Note: A recent API release changed paging when sorting by
 patent_id.</strong> We used to pass the unaltered last value we
 received. Now we need to pad the patent_id to 8 characters in order to
-page through the whole result set. This seems to be an intentional
-change, seemingly only needed for patent_id when paging, so
+page through the result set. This seems to be an intentional change,
+seemingly only needed for patent_id when paging, so
 <code><a href="../reference/pad_patent_id.html">pad_patent_id()</a></code> was added to the R package.</p>
 <p>Here we’ll retrieve 5000 utility patents using custom paging.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -251,7 +251,7 @@ r_pkg$query_results$total_hits just displayed)</p>
 <span>   <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 5352</span></span></code></pre></div>
 <p>Now we’ll try to do our own paging but, as you might notice, we’ll
-run into trouble using patent_date as the sort field (and thus the
+run into trouble using patent_date as the sort field ( and thus the
 ‘after’ parameter we’ll send to the API).</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
@@ -332,7 +332,7 @@ shows when a secondary sort is required.</p>
 <p>Here we’ll demonstrate that sometimes, in order to do custom paging,
 a secondary sort is required. Normally the R package handles this for
 its users when all_pages = TRUE. It all has to do with the way the API
-now handles paging, where the sort key(s) is/are used to determine the
+now handles paging, where the sort key(s) is(are) used to determine the
 ‘after’ parameter’s value(s), instructing the API where the next page of
 results begins.</p>
 <p>Some of the new endpoints can return more than one row of data for
@@ -421,8 +421,8 @@ sufficient (requiring changes to the R package).</p>
 <span><span class="co">#&gt;   ..$ citation_patent_id: chr [1:1066] "4847604" "4622545" "4555775" "5283894" ...</span></span></code></pre></div>
 <p>Here’s a quick look at the data around the page boundary to try to
 show why we needed a secondary sort. It’s not that we necessarily wanted
-a secondary sort, but it gives us the ability to use a second column in
-the ‘after’ parameter.</p>
+a secondary sort, but it gives us the ability to use a second column’s
+value in the ‘after’ parameter.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># ending of the first page of results</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">us_patent_citations</span>, n<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span>
@@ -467,9 +467,10 @@ patent_date probably won’t be good enough)</li>
 value needs padding, see how <code><a href="../reference/pad_patent_id.html">pad_patent_id()</a></code> is used in
 Example 1</li>
 <li>If there is a single sort field, the after parameter’s value is the
-sort field’s last value in the result set (as in Example 1). If there
-are multiple sort fields, the after parameter’s value is a vector of
-their last values (as in Example 3). `</li>
+sort field’s last value in the most recently retrieved page of data (as
+in Example 1). If there are multiple sort fields, the after parameter’s
+value is a vector of the sort fields’ last values (as in Example
+3).</li>
 </ol>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

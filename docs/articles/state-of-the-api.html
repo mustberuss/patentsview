@@ -213,6 +213,40 @@ fieldsdf is generated if we need to track what operators can be used,
 possibly parsing the <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints" class="external-link">API’s
 endpoints page</a></p></li>
 <li>
+<p>On needing to centralize information, there are fairly important
+things scattered across multiple pages:</p>
+<ol style="list-style-type: decimal">
+<li>
+<p>On <a href="https://patentsview.org/classification" class="external-link uri">https://patentsview.org/classification</a> there’s this
+about the wipo endpoint’s data that I don’t think can be found anywhere
+else:</p>
+<table class="table">
+<colgroup>
+<col width="36%">
+<col width="31%">
+<col width="31%">
+</colgroup>
+<thead><tr class="header">
+<th>PATENT CLASSIFICATION</th>
+<th>PATENT GRANT YEARS AVAILABLE</th>
+<th>ADDITIONAL INFORMATION</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td>WIPO</td>
+<td>1976–2020</td>
+<td>Limited to the top three WIPO categories</td>
+</tr></tbody>
+</table>
+</li>
+<li><p>There is a similar <a href="api-changes.html#text_endpoints">data
+cavaet</a> about the Patent Text and Publication Text endpoints which
+may not be updated any longer.</p></li>
+<li><p>Similarily, a field shorthand notation and a little non-obvious
+behavior is only mentioned in the API team’s jupyter notebook as
+mentioned <a href="#new-vignette">below</a>.</p></li>
+</ol>
+</li>
+<li>
 <p>API Oddities</p>
 <ul>
 <li><p>Some <a href="api-changes.html#slight-weirdness">requested
@@ -358,7 +392,7 @@ that are not in the patentsview database. See test_that(“missing patents
 are still missing”) in test-api-bugs.R</p></li>
 <li><p>Also, not sure why, but there aren’t any design patents before
 1976-12-07 or plant patents before 1976-12-14 while there are utility
-and reissue patents starting 1976-01-06. See <a href="result-set-paging.html#missing">this page</a></p></li>
+and reissue patents starting 1976-01-06<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>6</sup></a>. See <a href="result-set-paging.html#missing">this page</a></p></li>
 <li>
 <p>Plant patents and reissued patents do not have current CPC
 assignments where appropriate. The problem is that the bulk Cooperative
@@ -406,15 +440,13 @@ or reference_text is requested) and returns no data when only patent_id
 is requested. See test_that(“the otherreferences endpoint is still
 broken”) in test-api-bugs.R Also, the OpenAPI object says the returned
 object is other_references which is another exception to the singular
-endpoint/plural return pattern<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;To be fixed by the API team&lt;/p&gt;"><sup>6</sup></a>.</p>
-<p>PVS-1125<br>
-Not all the fields in the OpenAPI object can be requested See
-test_that(“each field in fieldsdf can be retrieved”) in
+endpoint/plural return pattern<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;To be fixed by the API team&lt;/p&gt;"><sup>7</sup></a>.</p>
+<p>PVS-1125 Not all the fields in the OpenAPI object can be requested
+See test_that(“each field in fieldsdf can be retrieved”) in
 test-api-bugs.R</p>
-<p>PVS-1147 <a name="case-dependent"><br>
-Results are case dependent now when using an implied or explicit equals
-See test_that(“there is case sensitivity on string equals”) in
-test-api-bugs.R</a></p>
+<p>PVS-1147 <a name="case-dependent"> Results are case dependent now
+when using an implied or explicit equals See test_that(“there is case
+sensitivity on string equals”) in test-api-bugs.R</a></p>
 <p><del>PVS-1155</del> This is fixed<br>
 Documentation inconsistencies<br>
 The endpoint is listed as /api/v1/attorney/, it should be
@@ -431,9 +463,9 @@ returned by the new patent endpoint. Other questions would be what do
 the values of the assignees.assignee_type field represent, are they all
 integers and if so should the field be received as an integer rather
 than a string? Another question is what does g_claims’ exemplary
-represent? The values seem to be either “0” or “1”.</p>
-<p>PVS-1218<br>
-openapi.json errors</p>
+represent? The values seem to be either “0” or “1”.<br>
+At a minimum, I’d like to see the glossary updated <a href="https://patentsview.org/glossary" class="external-link uri">https://patentsview.org/glossary</a></p>
+<p>PVS-1218 openapi.json errors</p>
 <ul>
 <li><p>Fixed: <del>“publication”,“us_parties.applicant_authority” has a
 type of “keyword” when it should be “string”</del></p></li>
@@ -499,8 +531,9 @@ methods</a> were added to the R package</p></li>
 explains what changes had to be made since assignee latitude and
 longitude are no longer available from the patent endpoint.</p></li>
 <li>
-<p>A new vignette, inspired by the API team’s jupyter notebook, was
-created showing two of the things it mentions</p>
+<p><a name="new-vignette">A new vignette</a>, inspired by the API
+team’s jupyter notebook, was created showing two of the things it
+mentions</p>
 <ol style="list-style-type: decimal">
 <li>The API and now the R package allow nested attributes to be <a href="understanding-the-api.html#fields-shorthand">wildcarded</a>, where
 the group’s name will retrieve all the group’s nested fields. Oddly, the

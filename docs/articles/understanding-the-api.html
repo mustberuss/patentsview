@@ -148,7 +148,7 @@
     
     
 <p>Oh, the interesting things you’ll learn when you take the time to
-read the API documentation! Here are gems gleaned from a <a href="https://github.com/PatentsView/PatentsView-Code-Examples/blob/main/PatentSearch/0-patentsearch-api-demo.ipynb" class="external-link">jupyter
+read the API’s documentation! Here are two gems gleaned from a <a href="https://github.com/PatentsView/PatentsView-Code-Examples/blob/main/PatentSearch/0-patentsearch-api-demo.ipynb" class="external-link">jupyter
 notebook</a> in PatentsView’s PatentsView-Code-Snippets repo.</p>
 <div class="section level2">
 <h2 id="fields-shorthand">Fields Shorthand<a class="anchor" aria-label="anchor" href="#fields-shorthand"></a>
@@ -219,7 +219,7 @@ in the fields parameter.</a></p>
 <p>The difference in the requests is that in the former case, it’s the
 API deciding what fields to return while in the latter case, we used
 fieldsdf. fieldsdf is created from the <a href="https://search.patentsview.org/static/openapi.json" class="external-link">API’s OpenAPI
-object</a> when building the R package and determines what fields can be
+object</a> when building the R package and specifies what fields can be
 requested from each endpoint. The results could be different if the
 API’s actual return is not in sync with the API’s OpenAPI object. Here
 we see that the requests are different but the results are the same (we
@@ -256,12 +256,12 @@ or two dollar bills in the US.</p>
 <span></span>
 <span><span class="va">patents_query</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">or</a></span><span class="op">(</span></span>
-<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
+<span>    <span class="fu">or</span><span class="op">(</span></span>
+<span>      <span class="fu">and</span><span class="op">(</span></span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_first <span class="op">=</span> <span class="st">"George"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_last <span class="op">=</span> <span class="st">"Washington"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span>,</span>
-<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
+<span>      <span class="fu">and</span><span class="op">(</span></span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_first <span class="op">=</span> <span class="st">"Thomas"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_last <span class="op">=</span> <span class="st">"Jefferson"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span></span>
@@ -316,18 +316,19 @@ or two dollar bills in the US.</p>
 <p>Some rows act as you’d expect, like patent 4078607’s Thomas
 Jefferson. In others, two inventors combine to meet the search
 cititeria, like 6905071’s <strong>Thomas</strong> Amundsen and Matthew
-<strong>Jefferson</strong>. Now we’ll hit the inventor endpoint with a
-similar query, as the jupyter notebook suggests.</p>
+<strong>Jefferson</strong>. This might be a match we didn’t intend.</p>
+<p>Now we’ll hit the inventor endpoint with a similar query, as the
+jupyter notebook suggests.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">inventors_query</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">or</a></span><span class="op">(</span></span>
-<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
+<span>    <span class="fu">or</span><span class="op">(</span></span>
+<span>      <span class="fu">and</span><span class="op">(</span></span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventor_name_first <span class="op">=</span> <span class="st">"George"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventor_name_last <span class="op">=</span> <span class="st">"Washington"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span>,</span>
-<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
+<span>      <span class="fu">and</span><span class="op">(</span></span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventor_name_first <span class="op">=</span> <span class="st">"Thomas"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventor_name_last <span class="op">=</span> <span class="st">"Jefferson"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span></span>
@@ -394,7 +395,7 @@ Public License v3</a> (GPL3).</p>
 <p>That is the same license as R itself so I don’t think we’ve violated
 anything. For extra fun check out <a href="https://github.com/mustberuss/PatentsView-Code-Snippets/blob/master/07_PatentSearch_API_demo/PV%20PatentSearch%20API%20tutorial.ipynb" class="external-link">Russ’
 fork</a> where there’s python code for retrieving Mr. Jefferson’s
-patents etc. There was no reply when he asked if they’d be receptive to
+patents etc. There was no reply when we asked if they’d be receptive to
 a PR.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

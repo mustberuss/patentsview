@@ -69,7 +69,19 @@ The [PatentsView API](https://search.patentsview.org/docs/docs/Search%20API/Sear
 library(patentsview)
 
 search_pv(query = '{"_gte":{"patent_date":"2007-01-01"}}')
-#> Error: The new version of the API requires an API key
+#> $data
+#> #### A list with a single data frame on patents level:
+#> 
+#> List of 1
+#>  $ patents:'data.frame':	1000 obs. of  3 variables:
+#>   ..$ patent_id   : chr [1:1000] "7155746" ...
+#>   ..$ patent_title: chr [1:1000] "Anti-wicking protective workwear and method"..
+#>   ..$ patent_date : chr [1:1000] "2007-01-02" ...
+#> 
+#> $query_results
+#> #### Distinct entity counts across all downloadable pages of output:
+#> 
+#> total_hits = 5,452,372
 ```
 
 ## Learning more
@@ -84,4 +96,4 @@ Head over to the package's [webpage](https://docs.ropensci.org/patentsview/index
 This package was first introduced in 2017 in an [rOpenSci blog post](https://ropensci.org/blog/2017/09/19/patentsview/) which
 used the original version of the API.  The same content, reworked to use the new version 
 of the API, is available [here](https://mustberuss.github.io/patentsview/articles/ropensci-blog-post.html).  A draft of a possible Tech Note 
-about the new version of the API and R package is [here](https://mustberuss.github.io/patentsview/articles/patentsview-breaking-change.html).
+about the new version of the API and R package is [here](https://mustberuss.github.io/patentsview/articles/patentsview-breaking-release.html).

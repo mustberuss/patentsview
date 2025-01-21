@@ -50,6 +50,21 @@ Note that there isn't a way to distinguish strings and full text fields in the O
 (limitation of the OpenAPI spec).  We may need to change the way fieldsdf is generated
 if we need to track what operators can be used, possibly parsing the [API's endpoints page](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#endpoints)
 
+* On needing to centralize information, there are fairly important things scattered across multiple pages:
+  1. On https://patentsview.org/classification there's this about the wipo endpoint's data 
+that I don't think can be found anywhere else:
+
+     |PATENT CLASSIFICATION | PATENT GRANT YEARS AVAILABLE | ADDITIONAL INFORMATION |
+     | -------- | ------- | ------- |
+     | WIPO | 1976–2020 | Limited to the top three WIPO categories|
+
+
+   2. There is a similar [data cavaet](api-changes.html#text_endpoints) about the Patent Text and 
+Publication Text endpoints which may not be updated any longer.
+
+   3. Similarily, a field shorthand notation and a little non-obvious behavior is only mentioned
+in the API team's jupyter notebook as mentioned [below](#new-vignette).
+
 * API Oddities
    + Some [requested fields](api-changes.html#slight-weirdness) ending with _id come back without the _id[^4] 
 Ex patent endpoint requested inventors.inventor_id and
@@ -121,7 +136,7 @@ test_that("withdrawn patents are still present in the database") in test-api-bug
      * An equally strange situation is the approximately 300 non-withdrawn patents that, for whatever reason, did not appear in the bulk xml file for the week they were issued.  They are granted patents that are not in the patentsview database.  See test_that("missing patents are still missing") in test-api-bugs.R
 
      *  Also, not sure why, but there aren't any design patents before 1976-12-07 or plant patents
-before 1976-12-14 while there are utility and reissue patents starting 1976-01-06.  See [this page](result-set-paging.html#missing)
+before 1976-12-14 while there are utility and reissue patents starting 1976-01-06[^5].  See [this page](result-set-paging.html#missing)
 
       * Plant patents and reissued patents do not have current CPC assignments where appropriate.  The problem is that the bulk Cooperative Patent Classification file for granted patents, produced the USPTO quarterly, only contains assignments for utility patents.  I didn't
 check but am assuming the USPTO's bulk CPC file for applications only contains current
@@ -154,11 +169,11 @@ patent_id is requested. See test_that("the otherreferences endpoint is still bro
 Also, the OpenAPI object says the returned object is other_references which 
 is another exception to the singular endpoint/plural return pattern[^6].
 
-PVS-1125	
+PVS-1125
 Not all the fields in the OpenAPI object can be requested
 See test_that("each field in fieldsdf can be retrieved") in test-api-bugs.R
 
-PVS-1147 <a name="case-dependent">	
+PVS-1147 <a name="case-dependent">
 Results are case dependent now when using an implied or explicit equals
 See test_that("there is case sensitivity on string equals") in test-api-bugs.R
 
@@ -172,9 +187,10 @@ Improvement Suggestion
 There isn't a data dictionary for the API like there is for the bulk download files.
 A specific question would be what is the difference between patent_earliest_application_date and application.filing_date returned by the new patent endpoint. 
 Other questions would be what do the values of the assignees.assignee_type field represent, are they all integers and if so should the field be received as an integer rather than a string?
-Another question is what does g_claims' exemplary represent?  The values seem to be either "0" or "1".
+Another question is what does g_claims' exemplary represent?  The values seem to be either "0" or "1".   
+At a minimum, I’d like to see the glossary updated https://patentsview.org/glossary 
 
-PVS-1218	
+PVS-1218
 openapi.json errors
   
 * Fixed: ~~"publication","us_parties.applicant_authority" has a type of "keyword" when it should be "string"~~
@@ -231,7 +247,7 @@ See Example 1 in the Result Set Paging [vignette](result-set-paging.html#example
 * The reworked [ropensci post](ropensci-blog-post.html) explains what changes had to be made since assignee 
 latitude and longitude are no longer available from the patent endpoint.
 
-* A new vignette, inspired by the API team's jupyter notebook, was created showing two of the things it mentions
+* <a name="new-vignette">A new vignette</a>, inspired by the API team's jupyter notebook, was created showing two of the things it mentions
 
   1. The API and now the R package allow nested attributes to be [wildcarded](understanding-the-api.html#fields-shorthand),
 where the group's name will retrieve all the group's nested fields. Oddly, the unnested attributes
@@ -503,5 +519,6 @@ in search_pv() so users could do their own paging. See the new [paging vignette]
 [^2]: Observation sent to the API team.
 [^3]: There isn't a data dictionary for the API so I suggested they create one.
 [^4]: Observation sent to the API team but they might not see it as a bug.
+[^5]: Observation sent to the API team.
 [^6]: To be fixed by the API team
 [^7]: Observation sent to the API team.

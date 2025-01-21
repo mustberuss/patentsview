@@ -156,8 +156,8 @@ As noted below, the new version of the R package handles some of the
 changes for users.</p>
 <p>One change to note, the API team changed the name of the API.
 PatentsView’s Search API is now the PatentSearch API, as announced <a href="https://search.patentsview.org/docs/#naming-update" class="external-link">here</a>. The
-R package will retain its name, continue to use library(patentsview) as
-before.</p>
+R package will retain its name, continue to use
+<code><a href="https://docs.ropensci.org/patentsview/index.html">library(patentsview)</a></code> as before.</p>
 <div class="section level2">
 <h2 id="summary-of-pertinent-api-changes">Summary of Pertinent API Changes<a class="anchor" aria-label="anchor" href="#summary-of-pertinent-api-changes"></a>
 </h2>
@@ -294,23 +294,20 @@ more about this <a href="result-set-paging.html">here</a>.</p></li>
 <ul>
 <li>HATEOAS and sample links can be retrieved using <a href="#HATEOAS">retrieve_linked_data()</a>
 </li>
-<li>In some cases the patent_id value needs to be padded with zeroes,
-see <code><a href="../reference/pad_patent_id.html">pad_patent_id()</a></code>
+<li>In custom paging involving patent_id, its value needs to be padded
+with zeroes, see <code><a href="../reference/pad_patent_id.html">pad_patent_id()</a></code>
 </li>
-<li>qry_funs$in_range()</li>
+<li>qry_funs$in_range() will generate range based queries for you:</li>
 </ul>
 </li>
 </ul>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">range_query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span>patent_date<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1970-01-01"</span>,<span class="st">"1983-02-28"</span><span class="op">)</span><span class="op">)</span> </span>
-<span></span>
-<span><span class="co"># which will generate this, so you don't have to do it by hand</span></span>
 <span><span class="va">range_query</span> </span>
 <span><span class="co">#&gt; {"_and":[{"_gte":{"patent_date":"1970-01-01"}},{"_lte":{"patent_date":"1983-02-28"}}]}</span></span>
 <span></span>
 <span><span class="co"># or this</span></span>
 <span><span class="va">range_query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span>patent_year<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2010</span>, <span class="fl">2021</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
 <span><span class="va">range_query</span></span>
 <span><span class="co">#&gt; {"_and":[{"_gte":{"patent_year":2010}},{"_lte":{"patent_year":2021}}]}</span></span></code></pre></div>
 <ul>
@@ -470,7 +467,9 @@ endpoints
 in the API’s OpenAPI object. Some throw 500 errors when requested<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>1</sup></a> (see
 test-api-bugs.R)</p></li>
 <li><p>There are two rel_app_text endpoints, one under patent/ and one
-under publication/ They both return rel_app_texts entities</p></li>
+under publication/ They both return entities named rel_app_texts but
+they are slightly different, patent_id in the former and document_number
+in the latter. The only other field in both is related_text.</p></li>
 <li><p>Some endpoints now return <a href="#HATEOAS">HATEOAS
 links</a></p></li>
 <li><p>Some fields went away, like rawinventor_first_name and
@@ -479,7 +478,7 @@ patent_number is now patent_id. Requesting patent_number will result in
 an error being thrown. Note also that the CPC related fields have new
 names, see the next section.</p></li>
 <li>
-<p>On the <a href="https://search.patentsview.org/swagger-ui/" class="external-link">Swagger UI page</a>
+<p><a name="text_endpoints">On</a> the <a href="https://search.patentsview.org/swagger-ui/" class="external-link">Swagger UI page</a>
 before the 2024-10-06 API release, there were four endpoints listed
 under “Patent Text” with a link that showed how far back the data went
 <a href="https://search.patentsview.org/docs/docs/Search%20API/TextEndpointStatus" class="external-link uri">https://search.patentsview.org/docs/docs/Search%20API/TextEndpointStatus</a>
@@ -567,10 +566,7 @@ output, <code>"cpc_group_id: B65D71/0033"</code> (normal/expected) and
 (slightly odd use of a colon).</p>
 <p>There is a new method in the R package to retrieve data from the
 HATEOAS links, just pass the returned link and the R package will
-retrieve the data for you. You can also pass an arbitrary link that hits
-the API. This can be particularly useful if you want to see what the
-response would be from a link found in the <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/" class="external-link">API’s
-documentation</a>.</p>
+retrieve the data for you.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
@@ -583,24 +579,7 @@ documentation</a>.</p>
 <span><span class="co">#&gt;   ..$ cpc_subclass   : chr "https://search.patentsview.org/api/v1/cpc_subclass/G01S/"</span></span>
 <span><span class="co">#&gt;   ..$ cpc_group_id   : chr "G01S7/4865"</span></span>
 <span><span class="co">#&gt;   ..$ cpc_group_title: chr "Details of systems according to groups G01S13/00, G01S15/00, G01S17/00-of systems according to group G01S17/00-"| __truncated__</span></span>
-<span><span class="co">#&gt;  - attr(*, "class")= chr [1:2] "list" "pv_data_result"</span></span>
-<span></span>
-<span><span class="co"># Here we'll use an example URL from the documentation</span></span>
-<span><span class="co"># Note that going to that link in a browser will result in a 403 Unauthorized, as no API key is sent.</span></span>
-<span><span class="fu"><a href="../reference/retrieve_linked_data.html">retrieve_linked_data</a></span><span class="op">(</span><span class="st">'https://search.patentsview.org/api/v1/patent/?q={"patent_id":"7861317"}'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; $data</span></span>
-<span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ patents:'data.frame': 1 obs. of  3 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id   : chr "7861317"</span></span>
-<span><span class="co">#&gt;   ..$ patent_title: chr "Nose cover"</span></span>
-<span><span class="co">#&gt;   ..$ patent_date : chr "2011-01-04"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $query_results</span></span>
-<span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 1</span></span></code></pre></div>
+<span><span class="co">#&gt;  - attr(*, "class")= chr [1:2] "list" "pv_data_result"</span></span></code></pre></div>
 <p>Note that when calling the cpc_group endpoint instead of using the
 HATEOAS link, you’d use a slash instead of a colon.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -678,9 +657,10 @@ operators treat these fields as full text data and hence are more
 performant. The “full text” fields are identified in the API Endpoint
 specification with the value “text” for the data type.</p>
 </blockquote>
-<p>Not sure if that only applies to the beta endpoints or not. Also not
-sure what to make of the result set size differences<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>2</sup></a>, total_hits, noting
-that no errors were thrown by the API:</p>
+<p>Not sure if that only applies to the Patent Text and Publication Text
+endpoints (listed at the top of the <a href="https://search.patentsview.org/swagger-ui/" class="external-link">Swagger UI page</a>)
+or not. Also not sure what to make of the result set size differences<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>2</sup></a>,
+total_hits, noting that no errors were thrown by the API:</p>
 <p>hitting the patent endpoint:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">query1</span> <span class="op">&lt;-</span> <span class="st">'{"_contains":{"patent_title":"dog"}}'</span></span>

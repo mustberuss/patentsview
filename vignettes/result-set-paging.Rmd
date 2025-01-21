@@ -16,14 +16,14 @@ explain the subtleties that the R package handles for you and to show how to do 
 with nothing in between, unless you do your own paging.  This might be important if you
 want to retrieve a few thousand utility patents without retrieving all 8 million of them.
 Or maybe you want to iterate through search results page by page rather than retrieving
-the entire data set and then iterating.
+the entire result set and then iterating.
 If you do your own paging, you'll need to be careful when choosing your sort parameter(s), as
 shown in Example 2 and Example 3.
 
 ## Example 1
 
 **Note: A recent API release changed paging when sorting by patent_id.**  We used to pass the unaltered 
-last value we received.  Now we need to pad the patent_id to 8 characters in order to page through the whole result set.
+last value we received.  Now we need to pad the patent_id to 8 characters in order to page through the result set.
 This seems to be an intentional change, seemingly only needed for patent_id when paging, so 
 ```pad_patent_id()``` was added to the R package.
 
@@ -119,7 +119,7 @@ just displayed)
 ```
 
 Now we'll try to do our own paging but, as you might notice, we'll run into trouble using patent_date
-as the sort field (and thus the 'after' parameter we'll send to the API).
+as the sort field ( and thus the 'after' parameter we'll send to the API).
 
 
 ``` r
@@ -200,7 +200,7 @@ The next example shows when a secondary sort is required.
 
 Here we'll demonstrate that sometimes, in order to do custom paging, a secondary sort is
 required.  Normally the R package handles this for its users when all_pages = TRUE.  It all has
-to do with the way the API now handles paging, where the sort key(s) is/are used to determine the 'after'
+to do with the way the API now handles paging, where the sort key(s) is(are) used to determine the 'after'
 parameter's value(s), instructing the API where the next page of results begins.  
 
 Some of the new endpoints can return more than one row of data for their primary key.  They are
@@ -294,7 +294,7 @@ str(blended)
 
 Here's a quick look at the data around the page boundary to try to show
 why we needed a secondary sort. It's not that we necessarily wanted a 
-secondary sort, but it gives us the ability to use a second column
+secondary sort, but it gives us the ability to use a second column's value
 in the 'after' parameter.
 
 
@@ -338,7 +338,6 @@ new version of the API and R package.
 3. If patent_id is used as a sort field, its corresponding 'after' value needs padding, see how
 ```pad_patent_id()``` is used in Example 1
 4. If there is a single sort field, the after parameter's value is the sort field's last value in
-the result set (as in Example 1).
-If there are multiple sort fields, the after parameter's value is a vector of their last values 
-(as in Example 3).
-	`
+the most recently retrieved page of data (as in Example 1).
+If there are multiple sort fields, the after parameter's value is a vector of the sort fields'
+last values (as in Example 3).
