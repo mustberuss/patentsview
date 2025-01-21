@@ -21,7 +21,7 @@ R package.  Note that these are **breaking changes**, existing scripts will no l
 As noted below, the new version of the R package handles some of the changes for users.
 
 One change to note, the API team changed the name of the API.  PatentsView's Search API is now the PatentSearch API, as announced [here](https://search.patentsview.org/docs/#naming-update). 
-The R package will retain its name, continue to use library(patentsview) as before.
+The R package will retain its name, continue to use `library(patentsview)` as before.
 
 ## Summary of Pertinent API Changes
 
@@ -88,17 +88,14 @@ httr2::last_response() |> httr2::resp_body_json()
 
 * Three methods were added
    + HATEOAS and sample links can be retrieved using [retrieve_linked_data()](#HATEOAS)
-   + In some cases the patent_id value needs to be padded with zeroes, see `pad_patent_id()`
-   + qry_funs$in_range()
+   + In custom paging involving patent_id, its value needs to be padded with zeroes, see `pad_patent_id()`
+   + qry_funs$in_range() will generate range based queries for you:
 ```{r}
 range_query <- qry_funs$in_range(patent_date=c("1970-01-01","1983-02-28")) 
-
-# which will generate this, so you don't have to do it by hand
 range_query 
 
 # or this
 range_query <- qry_funs$in_range(patent_year=c(2010, 2021))
-
 range_query
 ```
 * The ropensci blog post that announced the original version of the R package was [reworked](ropensci-blog-post.html) to use the new version of the R package and API
@@ -120,7 +117,8 @@ a global variable PVIEW_KEY and set the authorization's value to {{PVIEW_KEY}} t
 These API changes would only matter if you want to call the API directly or want to write a python library for the API etc.
 Or maybe you're on the receiving end of a PR and need to know about all of the API's changes.
 
-* These options parameters went away: matched_subentities_only, subent_cnts and page (paging now uses 'after' instead of 'page')
+* These options parameters went away: matched_subentities_only, subent_cnts, per_page and page
+(paging now uses `after` instead of `page` and `size` instead of `per_page`)
 * Now the API's response is always JSON.  The original version of the API
 had a 'format' parameter that defaulted to json but could be set to xml.  The original R package
 did not expose this parameter so your script won't know the difference (unless you were calling the
@@ -208,10 +206,12 @@ httr::add_headers("X-Api-Key" = api_key)
 #### Things to note <a name="things-to-note">
 
 1. Currently some endpoints do not return all the attributes listed in the API’s OpenAPI object. Some throw 500 errors when requested[^1] (see test-api-bugs.R)
-1. There are two rel_app_text endpoints, one under patent/ and one under publication/ They both return rel_app_texts entities
+1. There are two rel_app_text endpoints, one under patent/ and one under publication/ They both return entities named rel_app_texts 
+but they are slightly different, patent_id in the former and document_number in the latter.  The only other
+field in both is related_text. 
 1. Some endpoints now return [HATEOAS links](#HATEOAS)
 1. Some fields went away, like rawinventor_first_name and rawinventor_last_name, and some have new names, most significantly, patent_number is now patent_id. Requesting patent_number will result in an error being thrown. Note also that the CPC related fields have new names, see the next section.
-1. On the [Swagger UI page](https://search.patentsview.org/swagger-ui/) before the 
+1. <a name="text_endpoints">On</a> the [Swagger UI page](https://search.patentsview.org/swagger-ui/) before the 
 2024-10-06 API release, there were four
 endpoints listed under "Patent Text" with a link that showed how far back the data went
 https://search.patentsview.org/docs/docs/Search%20API/TextEndpointStatus
@@ -347,8 +347,10 @@ The Tip below "Syntax" in the API's [documentation](https://search.patentsview.o
 > are more performant. The "full text" fields are identified in the API Endpoint specification 
 > with the value "text" for the data type.
 
-Not sure if that only applies to the beta endpoints or not.  Also not sure what to make of the
-result set size differences[^2], total_hits, noting that no errors were thrown by the API:
+Not sure if that only applies to the Patent Text and Publication Text endpoints (listed at the top of the
+[Swagger UI page](https://search.patentsview.org/swagger-ui/)) or not.  Also not sure
+what to make of the result set size differences[^2], total_hits, noting that no errors
+were thrown by the API:
 
 hitting the patent endpoint:
 ```{r}

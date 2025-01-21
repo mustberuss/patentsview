@@ -20,6 +20,7 @@ If you have a script that worked with the original R package and original versio
 
 ## Required API Key
 First off you'll need to [request an API key](https://patentsview-support.atlassian.net/servicedesk/customer/portals) and then set the environmental variable PATENTSVIEW_API_KEY to the value of your API key.  Ex. set PATENTSVIEW_API_KEY=My_api_key  Without a valid API key, all your calls will be rejected by the API. 
+
 ## The New Throttling Limit
 Another new thing is a throttling limit. The new version of the API only allows an individual API key to make 45 calls per minute.  The call that exceeds that limit is rejected but does return the number of seconds to wait before calls would be allowed again.  Fortunately, the R package handles this for you!  Your script will be chugging along and if the API should return a throttling response, the R package will sleep for the required number of seconds before automatically resending your query!  The only thing you may notice, besides a warning message, it that the script will pause when throttled before it picks right back up again.
 
@@ -31,7 +32,7 @@ Take a look at the [top assignees application](top-assignees.html). It has to bl
 ## Changed Field Names and Types
 The fields requested by the original script or used in its query may not be available from the new version's endpoints. The nber attributes  are no longer available as the 
 nber_subcategories endpoint was removed. Also, some attributes have new names, like name_last in the nested inventor object returned by the patent endpoint.  Now in the fields parameter it would be specified as "inventor.name_last" where formerly it was "inventor_last_name" when using the patent endpoint.  This also demonstrates how nested fields need to be fully
-qualified in the query or fields parameters.
+qualified in the query parameter.
 
 Also note that some field's types have changed, meaning you'll need to use different operators within your query.  Ex. assignee.organization is now a full text field, formerly it was a string.  
 
@@ -52,7 +53,7 @@ harder to read.
 
 ## Singular Endpoints
 
-The endpoints are now singular, ex: patent where previously it was patents.
+The endpoints are now singular, ex: "patent" where previously it was "patents".
 ```{r}
 get_endpoints()
 ```

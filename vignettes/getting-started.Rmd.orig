@@ -32,7 +32,7 @@ search_pv(
 )
 ```
 
-This call to `search_pv()` sends our query to the patent endpoint (the default). The API has 27 endpoints, corresponding to 26 different entity types.
+This call to `search_pv()` sends our query to the patent endpoint (the default). The API has 27 endpoints, corresponding to 27 different entity types.
 patent/rel_app_text and publication/rel_app_text both both return a rel_app_text entity, though
 they are slightly different.   Here is the list of entities the API returns:
 assignees, attorneys, cpc_classes, cpc_groups, cpc_subclasses,  foreign_citations, 
@@ -107,24 +107,25 @@ search_pv(
   all_pages = TRUE, size = 1000
 )
 ```
+See the [result set paging vignette](result-set-paging.html) for information on custom paging.
 
 ## Entity counts
 
 Our last two calls to `search_pv()` gave the same value for `total_hits`, even though we got a lot more data from the second call. This is because the entity counts returned by the API refer to the number of distinct entities across all *downloadable pages of output*, not just the page that was returned.
 
 
-## 27 endpoints for 26 entities
+## 27 endpoints for 27 entities
 
 With the recent API change, the patent endpoint supplies the basic patent data and the other endpoints return more specific data for those patents.
 
 ```{r}
+get_endpoints()
 
 query <- qry_funs$eq(inventors.inventor_name_last = "Chambers")
 
 # Here we'll request patent_id and the inventor fields from the patent endpoint
-inv_fields <- get_fields(endpoint = "patent", groups ="inventors")
-inv_fields
-fields <- c(inv_fields, "patent_id")
+fields <- get_fields(endpoint = "patent", groups ="inventors", include_pk = TRUE)
+fields
 
 result <- search_pv(query, endpoint = "patent", fields = fields)
 result
@@ -237,7 +238,7 @@ res$data$patents %>%
 unnest_pv_data(data = res$data, pk = "patent_id")
 ```
 
-Now we are left with a series of flat data frames instead of having a single data frame with other data frames nested inside of it. These flat data frames can be joined together as needed via the primary key (`patent_id`).
+Now we are left with a series of flat data frames instead of having a single data frame with other data frames nested inside of it. These flat data frames can be joined together as needed via the primary key (`patent_id`) for this endpoint.
 
 [^1]: You can use `get_endpoints()` to list the endpoint names the R package uses.
 [^2]: This webpage includes some details that are not relevant to the `query` argument in `search_pv`, such as the field list and sort parameter.
