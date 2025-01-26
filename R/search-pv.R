@@ -1,4 +1,29 @@
 #' @noRd
+sub_grp_names_for_fields <- function(endpoint, fields) {
+  ep_fields <- fieldsdf[fieldsdf$endpoint == endpoint, ]
+  grps <- unique(ep_fields$group)
+  pk <- get_ok_pk(endpoint)
+  primary_grp <- fieldsdf[
+    fieldsdf$endpoint == endpoint & fieldsdf$field %in% pk,
+    "group"
+  ][1]
+
+  abbreviated_fields <- lapply(grps, function(grp) {
+    is_this_grp <- ep_fields$group == grp
+    all_grp_fields <- ep_fields[is_this_grp, "field"]
+    all_chosen_fields <- all_grp_fields %in% fields
+    grp_in_fields <- grp %in% fields
+    abbreviation_is_possible <- all(all_chosen_fields) && !(grp ==  primary_grp)
+    if (abbreviation_is_possible || grp_in_fields) {
+      grp
+    } else {
+      all_grp_fields[all_grp_fields %in% fields]
+    }
+  })
+  unlist(abbreviated_fields)
+}
+
+#' @noRd
 get_base <- function(endpoint) {
   sprintf("https://search.patentsview.org/api/v1/%s/", endpoint)
 }
@@ -153,23 +178,6 @@ request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, ..
 }
 
 #' @noRd
-get_unique_sort <- function(endpoint) {
-
-  pk <- get_ok_pk(endpoint)
-  # we add a secondary sort if there is a sequence field
-  sequence <- fieldsdf[fieldsdf$endpoint == endpoint & grepl("^[^.]*sequence",fieldsdf$field), "field"]
-
-  if (length(sequence) == 0) {
-    default <- c("asc")
-    names(default) <- pk
-  } else {
-    default <- c("asc", "asc")
-    names(default) <- c(pk, sequence)
-  }
-
-  default
-}
-
 #' Search PatentsView
 #'
 #' This function makes an HTTP request to the PatentsView API for data matching
@@ -328,6 +336,11 @@ search_pv <- function(query,
   if (all_pages && result$query_result$total_hits == 0) {
     stop2("No records matched your query...Can't download multiple pages")
   }
+  pk <- get_ok_pk(endpoint)
+  # We need pk to be in the result for all_pages to work with ease, hence adding
+  # it below
+  fields <- unique(c(pk, fields))
+  abbreviated_fields <- sub_grp_names_for_fields(endpoint, fields)
 
   # return if we don't need to make additional API requests
   if (!all_pages ||
@@ -336,49 +349,19 @@ search_pv <- function(query,
     return(result)
   }
 
-  # Here we ignore the user's sort and instead have the API sort by the key(s)
-  # needed for row uniqueness at the requested endpoint.  Otherwise paging breaks.
-  unique_sort_keys <- get_unique_sort(endpoint)
 
-  # We check what fields we got back from the first call. If the user didn't
-  # specify fields, we'd get back the API's defaults.  We may need to request
-  # additional fields from the API so we can apply the users sort and the keys
-  # that quarantee uniqueness, later we'll remove the additional fields.
-  returned_fields <- names(result$data[[1]])
+  first_req <- one_request(method, query, base_url, arg_list, api_key, ...)
+  first_res <- process_resp(first_req)
 
-  if (is.null(sort)) {
-    sort_fields <- names(unique_sort_keys)
-  } else {
-    sort_fields <- c(names(sort), names(unique_sort_keys))
-  }
-  additional_fields <- sort_fields[!(sort_fields %in% returned_fields)]
-  if (is.null(fields)) {
-    fields <- returned_fields # the default fields
-  } else {
-    fields <- fields # user passed
-  }
-  fields <- append(fields, additional_fields)
-
-  arg_list <- to_arglist(fields, size, unique_sort_keys, after)
-  paged_data <- request_apply(result, method, query, base_url, arg_list, api_key, ...)
-
-  # we apply the user's sort, if they supplied one, using order()
-  # was data.table::setorderv(paged_data, names(sort), ifelse(as.vector(sort) == "asc", 1, -1))
-  if (!is.null(sort)) {
-    sort_order <- mapply(function(col, direction) {
-      if (direction == "asc") {
-        return(paged_data[[col]])
-      } else {
-        return(-rank(paged_data[[col]], ties.method = "min"))  # Invert for descending order
-      }
-    }, col = names(sort), direction = as.vector(sort), SIMPLIFY = FALSE)
-
-    # Final sorting
-    paged_data <- paged_data[do.call(order, sort_order), , drop = FALSE]
+  zero_hits <- first_res$query_result$total_hits == 0
+  hits_equal_rows <- first_res$query_result$total_hits == nrow(first_res$data[[1]])
+  if (!all_pages || zero_hits || hits_equal_rows) {
+    return(first_res) # else we iterate through pages below
   }
 
-  # remove the fields we added in order to do the user's and unique sorts
-  paged_data <- paged_data[, !names(paged_data) %in% additional_fields]
+  unique_sort_keys <- rep("asc", length(pk))
+  names(unique_sort_keys) <- pk
+  arg_list$sort <- unique_sort_keys
 
   result$data[[1]] <- paged_data
   result
