@@ -144,32 +144,26 @@ pad_patent_id <- function(patent_id) {
 }
 
 #' @noRd
-request_apply <- function(ex_res, method, query, base_url, arg_list, api_key, ...) {
-  matched_records <- ex_res$query_results[[1]]
+request_apply <- function(result, method, query, base_url, arg_list, api_key, ...) {
+  matched_records <- result$query_results[[1]]
   req_pages <- ceiling(matched_records / arg_list$opts$size)
 
   tmp <- lapply(seq_len(req_pages), function(i) {
     x <- one_request(method, query, base_url, arg_list, api_key, ...)
     x <- process_resp(x)
 
-    # now to page we need to set the "after" attribute to where we left off
-    # we want the last value of the primary sort field and possibly a secondary
-    # sort field's value
-    s <- names(arg_list$sort[[1]])[[1]]
-    index <- nrow(x$data[[1]])
-    last_value <- x$data[[1]][[s]][[index]]
+    sort_cols <- names(arg_list$sort)
+    last_row <- nrow(x$data[[1]])
+    if (is.null(last_row)) return(NULL)
 
-    if (s == "patent_id") {
-      last_value <- pad_patent_id(last_value)
+    last_values <- x$data[[1]][last_row, sort_cols, drop = FALSE]
+
+    if ("patent_id" %in% colnames(last_values)) {
+      last_values$patent_id <- pad_patent_id(last_values$patent_id)
     }
+    last_values <- unlist(last_values[1, ], use.names = FALSE)
 
-    if (length(arg_list$sort[[1]]) == 2) {
-       sfield <- names(arg_list$sort[[1]])[[2]]
-       secondary_value <- x$data[[1]][[sfield]][[index]]
-       last_value <- c(last_value, secondary_value)
-    }
-
-    arg_list$opts$after <<- last_value
+    arg_list$opts$after <<- last_values
     x$data[[1]]
   })
 
