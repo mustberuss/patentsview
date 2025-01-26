@@ -325,24 +325,15 @@ search_pv <- function(query,
     query <- jsonlite::toJSON(query, auto_unbox = TRUE)
   }
 
-  arg_list <- to_arglist(fields, size, sort, after)
-  base_url <- get_base(endpoint)
-
-  result <- one_request(method, query, base_url, arg_list, api_key, ...)
-  result <- process_resp(result)
   pk <- get_ok_pk(endpoint)
   # We need pk to be in the result for all_pages to work with ease, hence adding
   # it below
   fields <- unique(c(pk, fields))
   abbreviated_fields <- sub_grp_names_for_fields(endpoint, fields)
 
-  # return if we don't need to make additional API requests
-  if (!all_pages ||
-    result$query_result$total_hits == 0 ||
-    result$query_result$total_hits == nrow(result$data[[1]])) {
-    return(result)
-  }
+  arg_list <- to_arglist(abbreviated_fields, size, sort, after)
 
+  base_url <- get_base(endpoint)
 
   first_req <- one_request(method, query, base_url, arg_list, api_key, ...)
   first_res <- process_resp(first_req)
@@ -357,8 +348,12 @@ search_pv <- function(query,
   names(unique_sort_keys) <- pk
   arg_list$sort <- unique_sort_keys
 
-  result$data[[1]] <- paged_data
-  result
+  paged_data <- request_apply(
+    first_res, method, query, base_url, arg_list, api_key, ...
+  )
+
+  first_res$data[[1]] <- paged_data
+  first_res
 }
 
 #' Retrieve Linked Data
