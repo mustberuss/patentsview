@@ -8,7 +8,7 @@ search_pv(
   query,
   fields = NULL,
   endpoint = "patent",
-  subent_cnts = FALSE,
+  subent_cnts = lifecycle::deprecated(),
   mtchd_subent_only = lifecycle::deprecated(),
   page = lifecycle::deprecated(),
   per_page = lifecycle::deprecated(),
@@ -17,7 +17,7 @@ search_pv(
   all_pages = FALSE,
   sort = NULL,
   method = "GET",
-  error_browser = NULL,
+  error_browser = lifecycle::deprecated(),
   api_key = Sys.getenv("PATENTSVIEW_API_KEY"),
   ...
 )
@@ -41,17 +41,22 @@ E.g., \code{qry_funs$gte(patent_date = "2007-01-04")}
 
 \item{fields}{A character vector of the fields that you want returned to you.
 A value of \code{NULL} indicates to the API that it should return the default fields
-for that endpoint. Acceptable fields for a given endpoint can be found at the API's
-online documentation (e.g., check out the field list for the
-\href{https://search.patentsview.org/docs/docs/Search\%20API/SearchAPIReference/#patent}{patents
-endpoint}) or by viewing the \code{fieldsdf} data frame
-(\code{View(fieldsdf)}). You can also use \code{\link{get_fields}} to list
-out the fields available for a given endpoint.
+for that endpoint. Acceptable fields for a given endpoint can be found in
+the \code{fieldsdf} data frame (\code{View(fieldsdf)}) or by using
+\code{\link{get_fields}}. Nested fields can be fully qualified, e.g.,
+"application.filing_date" or you can use the group name that the field
+belongs to if you want all of the nested fields for that group.
 
-Nested fields can be fully qualified, e.g., "application.filing_date" or the
-group name can be used to retrieve all of its nested fields, E.g. "application".
-The latter would be similar to passing \code{get_fields("patent", group = "application")}
-except it's the API that decides what fields to return.}
+Note: The primary key columns for a given endpoint will be appended to your
+list of fields within \code{search_pv}. You can see the \code{\link{get_ok_pk}}
+to determine what those columns will be for a given endpoint.
+
+Note: If you specify all fields in a given group using their full qualified
+names, the group name will be substituted in the HTTTP request. This helps
+make HTTP requests shorter. This substitution will not happen when you specify
+all of the primary-entity fields (e.g., passing
+\code{get_fields("patent", "patents")} into \code{search_pv} would not
+substitute use the group name "patents" in place of all of the fields).}
 
 \item{endpoint}{The web service resource you wish to search. Use
 \code{get_endpoints()} to list the available endpoints.}
@@ -83,7 +88,8 @@ for users automatically. See \href{../articles/result-set-paging.html}{result se
 sort by and the value indicates the direction of sorting (direction should
 be either "asc" or "desc"). For example, \code{sort = c("patent_id" =
  "asc")} or \cr\code{sort = c("patent_id" = "asc", "patent_date" =
- "desc")}. \code{sort = NULL} (the default) means do not sort the results.
+ "desc")}. \code{sort = NULL} (the default) means the API will use the default
+sort column for your given endpoint.
 You must include any fields that you wish to sort by in \code{fields}.}
 
 \item{method}{The HTTP method that you want to use to send the request.
@@ -103,9 +109,10 @@ A list with the following three elements:
 \describe{
 \item{data}{A list with one element - a named data frame containing the
 data returned by the server. Each row in the data frame corresponds to a
-single value for the primary entity. For example, if you search the
-assignee endpoint, then the data frame will be on the assignee-level,
-where each row corresponds to a single assignee. Fields that are not on
+single value for the primary entity, as defined by the endpoint's primary key.
+For example, if you search the assignee endpoint, then the data frame
+will be on the assignee-level, where each row corresponds to a single
+assignee (primary key would be \code{assignee_id}). Fields that are not on
 the assignee-level would be returned in list columns.}
 
 \item{query_results}{Entity counts across all pages of output (not just
@@ -118,8 +125,8 @@ calls that were made to the server (one for each page of results).}
 }
 }
 \description{
-This function makes an HTTP request to the PatentsView API for data matching
-the user's query.
+This makes an HTTP request to the PatentsView API for data matching the
+user's query.
 }
 \examples{
 \dontrun{

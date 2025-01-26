@@ -9,24 +9,22 @@ reference:
   - title: The API client
     contents:
     - search_pv
+    - retrieve_linked_data
   - title: Convenience objects for search_pv
     contents:
     - get_endpoints
     - get_fields
     - fieldsdf
+    - pad_patent_id
   - title: Writing queries with the DSL
     contents:
     - qry_funs
     - with_qfuns
-  - title: Manipulating patentsview data
+  - title: Manipulating PatentsView data
     contents:
     - unnest_pv_data
     - get_ok_pk
     - cast_pv_data
-    - retrieve_linked_data
-  - title: Utility
-    contents:
-    - pad_patent_id
 
 navbar:
   components:

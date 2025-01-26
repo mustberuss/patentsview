@@ -23,6 +23,7 @@ try assigning the \code{\link{qry_funs}} list into your global environment
 with: \code{list2env(qry_funs, envir = globalenv())}.
 }
 \examples{
+# Without with_qfuns, we have to do:
 qry_funs$and(
   qry_funs$gte(patent_date = "2007-01-01"),
   qry_funs$text_phrase(patent_abstract = c("computer program")),

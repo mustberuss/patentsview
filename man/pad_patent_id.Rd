@@ -7,12 +7,11 @@
 pad_patent_id(patent_id)
 }
 \arguments{
-\item{patent_id}{The patent_id that needs to be padded.  It can
-be the patent_id for a utility, design, plant or reissue patent.}
+\item{patent_id}{The patent_id to be padded.}
 }
 \description{
-This function strategically pads a patent_id with zeroes to 8 characters,
-needed only for custom paging that uses sorts by patent_id.
+Pad a patent_id with zeroes to 8 characters. This is needed only for custom
+paging that uses sorts by patent_id.
 }
 \examples{
 \dontrun{
