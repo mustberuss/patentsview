@@ -1,39 +1,3 @@
-#' Get OK primary key
-#'
-#' This function suggests a value that you could use for the \code{pk} argument
-#' in \code{\link{unnest_pv_data}}, based on the endpoint you searched.
-#' It will return a potential unique identifier for a given entity (i.e., a
-#' given endpoint). For example, it will return "patent_id" when
-#' \code{endpoint_or_entity = "patent"}.  It would return the same value if
-#' the entity name "patents" was passed via \code{get_ok_pk(names(pv_return$data))}
-#' where pv_return was returned from \code{\link{search_pv}}.
-#'
-#' @param endpoint_or_entity The endpoint or entity name for which you
-#' would like to know a potential primary key for.
-#'
-#' @return The name of a primary key (\code{pk}) that you could pass to
-#'   \code{\link{unnest_pv_data}}.
-#'
-#' @examples
-#' get_ok_pk(endpoint_or_entity = "inventor") # Returns "inventor_id"
-#' get_ok_pk(endpoint_or_entity = "cpc_group") # Returns "cpc_group_id"
-#'
-#' @export
-get_ok_pk <- function(endpoint_or_entity) {
-  endpoint_df <- fieldsdf[fieldsdf$endpoint == endpoint_or_entity, ]
-  if (nrow(endpoint_df) > 0) {
-    endpoint <- endpoint_or_entity
-  } else {
-    endpoint_df <- fieldsdf[fieldsdf$group == endpoint_or_entity, ]
-    endpoint <- unique(endpoint_df$endpoint)
-
-    # watch out here- several endpoints return entities that are groups returned
-    # by the patent and publication endpoints (attourneys, inventors, assignees)
-    if(length(endpoint) > 1) {
-      endpoint <- endpoint[!endpoint %in% c("patent", "publication")]
-      endpoint_df <- fieldsdf[fieldsdf$endpoint == endpoint, ]
-    }
-  }
 
   unnested_endpoint <- sub("^(patent|publication)/", "", endpoint)
   possible_pks <- c("patent_id", "document_number", paste0(unnested_endpoint, "_id"))
