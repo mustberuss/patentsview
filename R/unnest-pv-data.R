@@ -1,17 +1,26 @@
+#' @noRd
+infer_endpoint <- function(data) {
+  potential_eps <- unique(fieldsdf[fieldsdf$group == names(data), "endpoint"])
+  returned_fields <- colnames(data[[1]])
 
-  unnested_endpoint <- sub("^(patent|publication)/", "", endpoint)
-  possible_pks <- c("patent_id", "document_number", paste0(unnested_endpoint, "_id"))
-  pk <- endpoint_df[endpoint_df$field %in% possible_pks, "field"]
+  all_matches <- lapply(potential_eps, function(ep) {
+    this_ep_fields <- fieldsdf[fieldsdf$endpoint == ep, "field"]
+    this_ep_grps <- unique(fieldsdf[fieldsdf$endpoint == ep, "group"])
+    this_ep_pk <- get_ok_pk(ep)
+    # Column names match retrievable col names for endpoint:
+    all_good_cols <- all(returned_fields %in% c(this_ep_fields, this_ep_grps))
+    # And we have the PKs in the data. Pretty sure this check isn't needed
+    # if we have all_good_cols, but including it anyway.
+    pks_in_cols <-  all(this_ep_pk %in% returned_fields)
+    potential_match <- all_good_cols && pks_in_cols
+    if (potential_match) ep else NULL
+  })
 
-  # we're unable to determine the pk if an entity name of rel_app_texts was passed
-  asrt(
-    length(pk) == 1,
-    "The primary key cannot be determined for ", endpoint_or_entity,
-    ". Try using the endpoint's name instead ",
-    paste(unique(fieldsdf[fieldsdf$group == endpoint_or_entity, "endpoint"]), collapse = ", ")
-  )
-
-  pk
+  matching_eps <- unlist(all_matches)
+  if (length(matching_eps) > 1) {
+    warning("Infer endpoint issue")
+  }
+  matching_eps[1]
 }
 
 #' Unnest PatentsView data
@@ -27,7 +36,7 @@
 #'   element of the three-element result object you got back from
 #'   \code{search_pv}. It should be a list of length 1, with one data frame
 #'   inside it. See examples.
-#' @param pk The column/field name that will link the data frames together. This
+#' @param pk `r lifecycle::badge("deprecated")`.
 #'   should be the unique identifier for the primary entity. For example, if you
 #'   used the patent endpoint in your call to \code{search_pv}, you could
 #'   specify \code{pk = "patent_id"}. \strong{This identifier has to have
@@ -42,44 +51,28 @@
 #' @examples
 #' \dontrun{
 #'
-#' fields <- c("patent_id", "patent_title", "inventors.inventor_city", "inventors.inventor_country")
+#' fields <- c(
+#'   "patent_id", "patent_title",
+#'   "inventors.inventor_city", "inventors.inventor_country"
+#' )
 #' res <- search_pv(query = '{"_gte":{"patent_year":2015}}', fields = fields)
-#' unnest_pv_data(data = res$data, pk = "patent_id")
+#' unnest_pv_data(data = res$data)
 #' }
 #'
 #' @export
-unnest_pv_data <- function(data, pk = NULL) {
+unnest_pv_data <- function(data, pk = lifecycle::deprecated()) {
   validate_pv_data(data)
 
+  endpoint <- infer_endpoint(data)
   df <- data[[1]]
-
-  if (is.null(pk)) {
-    # now there are two endpoints that return rel_app_texts entities with different pks
-    if (names(data) == "rel_app_texts") {
-      pk <- if ("document_number" %in% names(df)) "document_number" else "patent_id"
-    } else {
-      pk = get_ok_pk(names(data))
-    }
-  }
-
-  asrt(
-    pk %in% colnames(df),
-    pk, " not in primary entity data frame...Did you include it in your ",
-    "fields list?"
-  )
-
   prim_ent_var <- !vapply(df, is.list, logical(1))
 
   sub_ent_df <- df[, !prim_ent_var, drop = FALSE]
   sub_ents <- colnames(sub_ent_df)
 
+  pk <- get_ok_pk(endpoint)
   out_sub_ent <- lapply2(sub_ents, function(x) {
     temp <- sub_ent_df[[x]]
-    asrt(
-      length(unique(df[, pk])) == length(temp), pk,
-      " cannot act as a primary key because it is not a unique identifier.\n\n",
-      "Try using ", pk, " instead."
-    )
     names(temp) <- df[, pk]
     xn <- do.call("rbind", temp)
     xn[, pk] <- gsub("\\.[0-9]*$", "", rownames(xn))
@@ -92,7 +85,7 @@ unnest_pv_data <- function(data, pk = NULL) {
 
   out_sub_ent_reord <- lapply(out_sub_ent, function(x) {
     coln <- colnames(x)
-    x[, c(pk, coln[!(pk == coln)]), drop = FALSE]
+    x[, unique(c(pk, colnames(x))), drop = FALSE]
   })
 
   structure(
