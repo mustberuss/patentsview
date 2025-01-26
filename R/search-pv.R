@@ -319,7 +319,6 @@ search_pv <- function(query,
                       ...) {
   validate_args(api_key, fields, endpoint, method, sort, after, size, all_pages)
   deprecate_warn_all(error_browser, subent_cnts, mtchd_subent_only, page, per_page)
-  if (lifecycle::is_present(per_page)) size <- per_page
 
   if (is.list(query)) {
     check_query(query, endpoint)
@@ -331,10 +330,6 @@ search_pv <- function(query,
 
   result <- one_request(method, query, base_url, arg_list, api_key, ...)
   result <- process_resp(result)
-
-  if (all_pages && result$query_result$total_hits == 0) {
-    stop2("No records matched your query...Can't download multiple pages")
-  }
   pk <- get_ok_pk(endpoint)
   # We need pk to be in the result for all_pages to work with ease, hence adding
   # it below
