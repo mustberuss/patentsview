@@ -59,19 +59,24 @@ get_post_body <- function(query, arg_list) {
     '"o":', tojson_2(arg_list$opts, auto_unbox = TRUE),
     "}"
   )
-  # The API can now act weirdly if we pass f:{},s:{} as we did in the past.
-  # (Weirdly in that the post results may not equal the get results or posts error out)
-  # Now we'd remove "f":, and "s":,  We're guaranteed to have q: and at least "size":1000 as o:
+  # TODO(0): check this out
+  # The API can now act weirdly if we pass f:{},s:{} as we did in the past
+  # (weirdly in that the POST results may not equal the GET results, or POSTs
+  # error out)
   gsub('("[fs]":,)', "", body)
 }
 
 #' @noRd
 patentsview_error_body <- function(resp) {
-  if (httr2::resp_status(resp) == 400) c(httr2::resp_header(resp, "X-Status-Reason")) else NULL
+  if (httr2::resp_status(resp) == 400)
+    httr2::resp_header(resp, "X-Status-Reason")
+  else
+    NULL
 }
 
 #' @noRd
 one_request <- function(method, query, base_url, arg_list, api_key, ...) {
+
   if (method == "GET") {
     get_url <- get_get_url(query, base_url, arg_list)
     req <- httr2::request(get_url) |>
@@ -97,11 +102,10 @@ one_request <- function(method, query, base_url, arg_list, api_key, ...) {
 
 #' Pad patent_id
 #'
-#' This function strategically pads a patent_id with zeroes to 8 characters,
-#' needed only for custom paging that uses sorts by patent_id.
+#' Pad a patent_id with zeroes to 8 characters. This is needed only for custom
+#' paging that uses sorts by patent_id.
 #'
-#' @param patent_id The patent_id that needs to be padded.  It can
-#' be the patent_id for a utility, design, plant or reissue patent.
+#' @param patent_id The patent_id to be padded.
 #'
 #' @examples
 #' \dontrun{
@@ -111,14 +115,8 @@ one_request <- function(method, query, base_url, arg_list, api_key, ...) {
 #' }
 #'
 #' @export
-# zero pad patent_id to 8 characters.
 pad_patent_id <- function(patent_id) {
-  pad <- 8 - nchar(patent_id)
-  if (pad > 0) {
-    patent_id <- paste0(sprintf("%0*d", pad, 0), patent_id)
-    patent_id <- sub("(0+)([[:alpha:]]+)([[:digit:]]+)", "\\2\\1\\3", patent_id)
-  }
-  patent_id
+  sprintf("%08s", patent_id)
 }
 
 #' @noRd

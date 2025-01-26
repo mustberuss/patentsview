@@ -1,11 +1,18 @@
 #' @noRd
+parse_resp <- function(resp) {
+  j <- httr2::resp_body_string(resp, encoding = "UTF-8")
+  jsonlite::fromJSON(
+    j,
+    simplifyVector = TRUE, simplifyDataFrame = TRUE, simplifyMatrix = TRUE
+  )
+}
+
+#' @noRd
 get_request <- function(resp) {
-  gp <- structure(
+  structure(
     list(method = resp$request$method, url = resp$request$url),
     class = c("list", "pv_request")
   )
-
-  gp
 }
 
 #' @noRd
@@ -18,8 +25,6 @@ get_data <- function(prsd_resp) {
 }
 
 #' @noRd
-# There used to be an endpoint specific _count ex total_assignee_count
-# Now all endpoints return a total_hits attribute
 get_query_results <- function(prsd_resp) {
   structure(
     prsd_resp["total_hits"],

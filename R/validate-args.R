@@ -81,43 +81,42 @@ validate_pv_data <- function(data) {
 }
 
 #' @noRd
-deprecate_warn_all <- function(error_browser, subent_cnts, mtchd_subent_only, page, per_page) {
-  if (!is.null(error_browser)) {
-    lifecycle::deprecate_warn(when = "0.2.0", what = "search_pv(error_browser)")
-  }
-  # Was previously defaulting to FALSE and we're still defaulting to FALSE to
-  # mirror the fact that the API doesn't support subent_cnts. Warn only if user
-  # tries to set subent_cnts to anything other than FALSE (test cases try NULL and 7)
-  if (!(is.logical(subent_cnts) && isFALSE(subent_cnts))) {
+deprecate_warn_all <- function(error_browser, subent_cnts, mtchd_subent_only,
+                               page, per_page) {
+  if (lifecycle::is_present(error_browser)) {
     lifecycle::deprecate_warn(
-      when = "1.0.0",
+      when = "0.3.0",
+      what = "search_pv(error_browser)",
+      details = "The error_browser is no longer supported"
+    )
+  }
+  if (lifecycle::is_present(subent_cnts)) {
+    lifecycle::deprecate_warn(
+      when = "0.3.0",
       what = "search_pv(subent_cnts)",
       details = "The new version of the API does not support subentity counts."
     )
   }
-  # Was previously defaulting to TRUE and now we're defaulting to FALSE, hence
-  # we're being more chatty here than with subent_cnts.
   if (lifecycle::is_present(mtchd_subent_only)) {
     lifecycle::deprecate_warn(
-      when = "1.0.0",
+      when = "0.3.0",
       what = "search_pv(mtchd_subent_only)",
+      # TODO(0): is this true?
       details = "Non-matched subentities will always be returned under the new
       version of the API"
     )
   }
-
   if (lifecycle::is_present(per_page)) {
     lifecycle::deprecate_warn(
-      when = "0.3.0",
+      when = "1.0.0",
       what = "search_pv(per_page)",
       details = "The new version of the API uses 'size' instead of 'per_page'",
       with = "search_pv(size)"
     )
   }
-
   if (lifecycle::is_present(page)) {
     lifecycle::deprecate_warn(
-      when = "0.3.0",
+      when = "1.0.0",
       what = "search_pv(page)",
       details = "The new version of the API does not support the page parameter"
     )
