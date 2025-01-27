@@ -215,7 +215,7 @@ query <- qry_funs$contains(cpc_current.cpc_group_id = "Y10S707/933")
 pv_out <- search_pv(query = query, fields = c("patent_id"))
 patent_ids <- pv_out$data$patents$patent_id
 
-# We have to go against the patent_citiation endpoint now, these fields
+# We have to go against the patent citiation endpoint now, these fields
 # are no longer available from the patent endpoint
 
 citing_query <- qry_funs$eq(patent_id = patent_ids)

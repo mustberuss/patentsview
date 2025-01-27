@@ -43,7 +43,7 @@ fields will be returned by the API.  This would be similar to `get_fields("paten
   
 * <a name="unbounded"> A result set's size seems unbounded now, you can now retrieve more than 100,000 rows. You'd need to be careful when setting all_pages = TRUE
 as the R package will page until the entire result set is retrieved which could be a million or more rows. 
-Note total_hits, in the previous version of the API this was capped at 100,000 rows.
+Note that in the previous version of the API total_hits was capped at 100,000 rows.
 ```{r}
 library(patentsview)
 search_pv('{"patent_type":"utility"}', all_pages = FALSE )
@@ -294,7 +294,7 @@ str(result$data)
 
 ```
 
-<a name="slight-weirdness">Slight weirdness</a>/sleight of hand where the returned field name looses the _id of the requested field
+<a name="slight-weirdness">Slight weirdness</a>/sleight of hand where the returned field name loses the _id of the requested field
 
 ```{r}
   # We'll make a call to the patent endpoint to get inventor and assignee HATEOAS links
@@ -322,7 +322,7 @@ that tries to explain the danger.
   # key and sometimes primary and secondary keys for the requested endpoint.  
   # This simplifies the paging's after parameter.
   # If we call the API with more than a primary sort, the after parameter would
-  # have to be an array of all the sort fields' last values.
+  # have to be a vector of all the sort fields' last values.
   # After we've retrieved all the data we'll sort in R using the sort the user requested
 
   # Doing this also protects users from needing to know the peculiarities

@@ -202,12 +202,13 @@ Yes, the API currently allows 45 calls per minute for each API key.  If this lim
 
 #### How do I access the data frames inside the list columns returned by `search_pv()`?
 
-Let’s consider the following data, in which assignees are the primary entity while applications and “government interest statements” are the secondary entities (also referred to as subentities):
-Government interests fields are no longer present
+Let’s consider the following data, in which patents are the primary entity while “application”, 
+“assignees”, and “gov_interest_organizations” are the secondary entities (also referred to as subentities):
 
 ```{r}
 # Create field list -
-fields <- get_fields("patent")
+fields <- c("patent_id", "patent_date", "patent_title",
+  "assignees", "application",  "gov_interest_organizations" )
 
 # Pull data
 res <- search_pv(
@@ -218,7 +219,7 @@ res <- search_pv(
 res$data
 ```
 
-`res$data` has vector columns for those fields that belong to the primary entity (e.g., `res$data$patent_year`) and list columns for those fields that belong to any secondary entity (e.g., `res$data$assignees$assignee_organization`). You have two good ways to pull out the data frames that are nested inside these list columns: 
+`res$data` has vector columns for those fields that belong to the primary entity (e.g., `res$data$patents$patent_id`) and list columns for those fields that belong to any secondary entity (e.g., `res$data$patents$gov_interest_organizations`). You have two good ways to pull out the data frames that are nested inside these list columns: 
 
 1. **Use tidyr::unnest.** (This is probably the easier choice of the two). 
 
