@@ -71,21 +71,6 @@ get_endpoints()
 
 ## Additions to the R Package
 
-
-``` r
-# There is a new in_range query function
-
-range_query <- qry_funs$in_range(patent_date=c("1970-01-01","1983-02-28")) 
-
-# which will generate this, so you don't have to do it by hand
-range_query
-#> {"_and":[{"_gte":{"patent_date":"1970-01-01"}},{"_lte":{"patent_date":"1983-02-28"}}]}
-
-range_query <- qry_funs$in_range(patent_year=c(2010, 2021))
-range_query
-#> {"_and":[{"_gte":{"patent_year":2010}},{"_lte":{"patent_year":2021}}]}
-```
-
 Some of the endpoints now return HATEOAS links, where you make a call back to the API
 to retrieve additional data.  The new method retrieve_linked_data() does just that.  
 There is a lot more about this [here](api-changes.html#hateoas-links).

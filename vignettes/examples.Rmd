@@ -25,10 +25,8 @@ search_pv(query = qry_funs$gt(patent_num_times_cited_by_us_patents = 500))
 #> #### A list with a single data frame on patents level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	1000 obs. of  3 variables:
-#>   ..$ patent_id   : chr [1:1000] "3939350" ...
-#>   ..$ patent_title: chr [1:1000] "Fluorescent immunoassay employing total ref"..
-#>   ..$ patent_date : chr [1:1000] "1976-02-17" ...
+#>  $ patents:'data.frame':	1000 obs. of  1 variable:
+#>   ..$ patent_id: chr [1:1000] "10631857" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
@@ -45,18 +43,7 @@ search_pv(
   query = qry_funs$gt(patent_num_times_cited_by_us_patents = 500),
   fields = c("patent_id", "inventors.inventor_id")
 )
-#> $data
-#> #### A list with a single data frame (with list column(s) inside) on patents level:
-#> 
-#> List of 1
-#>  $ patents:'data.frame':	1000 obs. of  2 variables:
-#>   ..$ patent_id: chr [1:1000] "3939350" ...
-#>   ..$ inventors:List of 1000
-#> 
-#> $query_results
-#> #### Distinct entity counts across all downloadable pages of output:
-#> 
-#> total_hits = 13,575
+#> Error: Bad field(s): inventors.inventor_id
 ```
 What assignee's organizations start Microsoft?
 
@@ -66,21 +53,7 @@ query <- qry_funs$begins(assignee_organization = "Microsoft")
 
 pv_out <- search_pv(query, endpoint = "assignee")
 pv_out$data$assignees$assignee_organization
-#>  [1] "Microsoft Mobile Internet AB"                    
-#>  [2] "Microsoft Corporation"                           
-#>  [3] "Microsoft Orthopedics Holdings Inc."             
-#>  [4] "MICROSOFT INTERNATIONAL HOLDINGS B.V."           
-#>  [5] "Microsoft Systems Inc."                          
-#>  [6] "Microsoft Technology Licensing, LLC"             
-#>  [7] "Microsoft Mobile Oy"                             
-#>  [8] "Microsoft Technology, LLC."                      
-#>  [9] "Microsoft Technology Beaming, LLC"               
-#> [10] "Microsoft Technology Learning, LLC"              
-#> [11] "Microsoft Israel Research and Development (2002)"
-#> [12] "Microsoft Licensing Technology, LLC"             
-#> [13] "Microsoft Patent Licensing, LLC"                 
-#> [14] "Microsoft Licencing Corporation, LLC"            
-#> [15] "Microsoft Corporation—One Microsoft Way"
+#> NULL
 ```
 
 Where geographically have Microsoft inventors been coming from over the past few years?
@@ -97,7 +70,13 @@ query <- with_qfuns(
 
 # Create a field list by getting the inventors fields- the primary key is needed
 # for unnest_pv_data()
-inv_fields <- get_fields(endpoint = "patent", groups="inventors", include_pk = TRUE)
+inv_fields <- get_fields(endpoint = "patent", groups="inventors")
+inv_fields <- c("patent_id", inv_fields)
+inv_fields
+#> [1] "patent_id"                     "inventors.inventor"           
+#> [3] "inventors.inventor_city"       "inventors.inventor_country"   
+#> [5] "inventors.inventor_name_first" "inventors.inventor_name_last" 
+#> [7] "inventors.inventor_sequence"   "inventors.inventor_state"
 
 # Pull the data
 pv_out <- search_pv(query, fields = inv_fields, all_pages = TRUE, size = 1000)
@@ -135,10 +114,8 @@ pv_out
 #> #### A list with a single data frame on inventors level:
 #> 
 #> List of 1
-#>  $ inventors:'data.frame':	1000 obs. of  3 variables:
-#>   ..$ inventor_id        : chr [1:1000] "001sh51t5ft5hbegqhzo1y4or" ...
-#>   ..$ inventor_name_first: chr [1:1000] "Michael M." ...
-#>   ..$ inventor_name_last : chr [1:1000] "Stamler" ...
+#>  $ inventors:'data.frame':	1000 obs. of  1 variable:
+#>   ..$ inventor_id: chr [1:1000] "fl:cr_ln:goren-1" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
@@ -154,26 +131,19 @@ Chicago, IL as their location when applying for a patent.
 
 
 ``` r
-fields <- get_fields('patent', groups="inventors", include_pk = TRUE)
+fields <- get_fields('patent', groups="inventors")
+fields <- c("inventor_id", fields)
 fields
-#> [1] "patent_id" "inventors"
+#> [1] "inventor_id"                   "inventors.inventor"           
+#> [3] "inventors.inventor_city"       "inventors.inventor_country"   
+#> [5] "inventors.inventor_name_first" "inventors.inventor_name_last" 
+#> [7] "inventors.inventor_sequence"   "inventors.inventor_state"
 
 query <- '{"_and":[{"_text_phrase": {"inventors.inventor_city":"Chicago"}},
                    {"_text_phrase": {"inventors.inventor_state":"IL"}}]}'
 
 search_pv(query, fields=fields, endpoint="patent")
-#> $data
-#> #### A list with a single data frame (with list column(s) inside) on patents level:
-#> 
-#> List of 1
-#>  $ patents:'data.frame':	1000 obs. of  2 variables:
-#>   ..$ patent_id: chr [1:1000] "3930318" ...
-#>   ..$ inventors:List of 1000
-#> 
-#> $query_results
-#> #### Distinct entity counts across all downloadable pages of output:
-#> 
-#> total_hits = 47,033
+#> Error: Bad field(s): inventor_id
 ```
 
 Note that here all the inventors on a particular patent will be returned, not just the ones whose
@@ -194,10 +164,8 @@ search_pv(
 #> #### A list with a single data frame on patents level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	600 obs. of  3 variables:
-#>   ..$ patent_id   : chr [1:600] "3930592" ...
-#>   ..$ patent_title: chr [1:600] "Beer can structure" ...
-#>   ..$ patent_date : chr [1:600] "1976-01-06" ...
+#>  $ patents:'data.frame':	600 obs. of  1 variable:
+#>   ..$ patent_id: chr [1:600] "10633239" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:

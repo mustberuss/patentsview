@@ -45,10 +45,8 @@ search_pv('{"patent_type":"utility"}', all_pages = FALSE )
 #> #### A list with a single data frame on patents level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	1000 obs. of  3 variables:
-#>   ..$ patent_id   : chr [1:1000] "3930271" ...
-#>   ..$ patent_title: chr [1:1000] "Golf glove" ...
-#>   ..$ patent_date : chr [1:1000] "1976-01-06" ...
+#>  $ patents:'data.frame':	1000 obs. of  1 variable:
+#>   ..$ patent_id: chr [1:1000] "10631087" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
@@ -93,21 +91,10 @@ httr2::last_response() |> httr2::resp_body_json()
 ```
 
 
-* Three methods were added
+* Two methods were added
    + HATEOAS and sample links can be retrieved using [retrieve_linked_data()](#HATEOAS)
    + In custom paging involving patent_id, its value needs to be padded with zeroes, see `pad_patent_id()`
-   + qry_funs$in_range() will generate range based queries for you:
 
-``` r
-range_query <- qry_funs$in_range(patent_date=c("1970-01-01","1983-02-28")) 
-range_query 
-#> {"_and":[{"_gte":{"patent_date":"1970-01-01"}},{"_lte":{"patent_date":"1983-02-28"}}]}
-
-# or this
-range_query <- qry_funs$in_range(patent_year=c(2010, 2021))
-range_query
-#> {"_and":[{"_gte":{"patent_year":2010}},{"_lte":{"patent_year":2021}}]}
-```
 * The ropensci blog post that announced the original version of the R package was [reworked](ropensci-blog-post.html) to use the new version of the R package and API
 
 ## Swagger UI Page <a name="swagger-ui-page"></a>
@@ -245,10 +232,8 @@ ask the patent endpoint for it once we have the smallest patent_id from g_brf_su
     #> #### A list with a single data frame on patents level:
     #> 
     #> List of 1
-    #>  $ patents:'data.frame':	1 obs. of  3 variables:
-    #>   ..$ patent_id   : chr "11540434"
-    #>   ..$ patent_title: chr "Curved cultivating disc with a straight cutting edge"..
-    #>   ..$ patent_date : chr "2023-01-03"
+    #>  $ patents:'data.frame':	1 obs. of  1 variable:
+    #>   ..$ patent_id: chr "11540434"
     ```
 
     
@@ -260,9 +245,8 @@ ask the patent endpoint for it once we have the smallest patent_id from g_brf_su
     #> #### A list with a single data frame on pg_brf_sum_texts level:
     #> 
     #> List of 1
-    #>  $ pg_brf_sum_texts:'data.frame':	1 obs. of  2 variables:
+    #>  $ pg_brf_sum_texts:'data.frame':	1 obs. of  1 variable:
     #>   ..$ document_number: num 20230000001
-    #>   ..$ summary_text   : chr "TECHNICAL FIELD\n\nThe present disclosure relates"..
     ```
     So, at this moment, both endpoints appear to have data going back to 2023.
 
@@ -276,9 +260,14 @@ the returned fields, like the cpc_group, are HATEOAS links:
 ``` r
 
   query <- '{"patent_id": "11530080"}'
-  fields <- get_fields('patent', groups = 'cpc_current', include_pk = TRUE)
+  fields <- get_fields('patent', groups = 'cpc_current')
+  fields <- c("patent_id", fields)
   fields
-#> [1] "patent_id"   "cpc_current"
+#>  [1] "patent_id"                   "cpc_current.cpc_class"      
+#>  [3] "cpc_current.cpc_class_id"    "cpc_current.cpc_group"      
+#>  [5] "cpc_current.cpc_group_id"    "cpc_current.cpc_section"    
+#>  [7] "cpc_current.cpc_sequence"    "cpc_current.cpc_subclass"   
+#>  [9] "cpc_current.cpc_subclass_id" "cpc_current.cpc_type"
 
   result <- search_pv(query, fields=fields)
 
@@ -339,11 +328,8 @@ instead of a colon.
 result <- search_pv('{"cpc_group_id": "A01B1/00"}', endpoint = 'cpc_group')
 str(result$data)
 #> List of 1
-#>  $ cpc_groups:'data.frame':	1 obs. of  4 variables:
-#>   ..$ cpc_class      : chr "https://search.patentsview.org/api/v1/cpc_class/A01/"
-#>   ..$ cpc_subclass   : chr "https://search.patentsview.org/api/v1/cpc_subclass/A01B/"
-#>   ..$ cpc_group_id   : chr "A01B1/00"
-#>   ..$ cpc_group_title: chr "Hand tools"
+#>  $ cpc_groups:'data.frame':	1 obs. of  1 variable:
+#>   ..$ cpc_group_id: chr "A01B1/00"
 #>  - attr(*, "class")= chr [1:2] "list" "pv_data_result"
 ```
 
@@ -355,13 +341,14 @@ str(result$data)
   res <- search_pv('{"patent_id":"10000000"}',
     fields = c("inventors.inventor_id", "assignees.assignee_id")
   )
+#> Error: Bad field(s): inventors.inventor_id, assignees.assignee_id
 
   # but note that the fields came back without the _id
   print(res$data$patents$assignees[[1]]$assignee) # not $assignee_id as requested
-#> [1] "https://search.patentsview.org/api/v1/assignee/b06175c5-768b-43af-bb65-1978370e6ce2/"
+#> NULL
 
   print(res$data$patents$inventors[[1]]$inventor) # not $inventor_id as requested
-#> [1] "https://search.patentsview.org/api/v1/inventor/fl:jo_ln:marron-5/"
+#> NULL
 ```
 
 ### API Throttling <a name="throttling"></a>
@@ -418,10 +405,8 @@ search_pv(query1)
 #> #### A list with a single data frame on patents level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	1000 obs. of  3 variables:
-#>   ..$ patent_id   : chr [1:1000] "3937418" ...
-#>   ..$ patent_title: chr [1:1000] "Retractable dog leash" ...
-#>   ..$ patent_date : chr [1:1000] "1976-02-10" ...
+#>  $ patents:'data.frame':	1000 obs. of  1 variable:
+#>   ..$ patent_id: chr [1:1000] "10632101" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
@@ -433,10 +418,8 @@ search_pv(query2)
 #> #### A list with a single data frame on patents level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	1000 obs. of  3 variables:
-#>   ..$ patent_id   : chr [1:1000] "3937418" ...
-#>   ..$ patent_title: chr [1:1000] "Retractable dog leash" ...
-#>   ..$ patent_date : chr [1:1000] "1976-02-10" ...
+#>  $ patents:'data.frame':	1000 obs. of  1 variable:
+#>   ..$ patent_id: chr [1:1000] "D792527" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:

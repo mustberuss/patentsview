@@ -275,17 +275,6 @@ also matching the API's change
 print(unique(fieldsdf[grep("/", fieldsdf$endpoint), "endpoint"]), row.names = FALSE)
   ```
 
-* There's a new, optional, include_pk parameter on `get_fields()` that defaults to FALSE.
-It's useful if you're planning on unnesting the return from `search_pv()`.
-  ```{r}
-fields <- get_fields(endpoint = "patent", groups = c("inventors"), include_pk = TRUE)
-results <- search_pv(
-  query = '{"_gte":{"patent_date":"2007-01-04"}}',
-  fields = fields
-)
-unnest_pv_data(results$data)
-  ```
-
 * Under the covers, httr was changed to httr2 (see several mentions below).  This only matters to users if 
 they passed additional arguments (...) to `search_pv()`.  Previously if they passed config = httr::timeout(40)
 they'd now pass timeout = 40 (name-value pairs of valid curl options, as found in `curl::curl_options()`)

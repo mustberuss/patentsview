@@ -65,24 +65,9 @@ fields <- c(
 
 # Send an HTTP request to the PatentsView API to get the data
 pv_out <- search_pv(query, fields = fields, all_pages = TRUE, size = 1000)
+#> Error: Bad field(s): assignees.assignee_id
 pv_out
-#> $data
-#> #### A list with a single data frame (with list column(s) inside) on patents level:
-#> 
-#> List of 1
-#>  $ patents:'data.frame':	9057 obs. of  7 variables:
-#>   ..$ patent_id                       : chr [1:9057] "4653043" ...
-#>   ..$ patent_date                     : chr [1:9057] "1987-03-24" ...
-#>   ..$ patent_year                     : int [1:9057] 1987 1988 ...
-#>   ..$ patent_earliest_application_date: chr [1:9057] "1985-07-01" ...
-#>   ..$ patent_num_us_patents_cited     : int [1:9057] 12 3 ...
-#>   ..$ application                     :List of 9057
-#>   ..$ assignees                       :List of 9057
-#> 
-#> $query_results
-#> #### Distinct entity counts across all downloadable pages of output:
-#> 
-#> total_hits = 9,057
+#> Error: object 'pv_out' not found
 ```
 
 2. Now let's identify who the top assignees are based on how many patents they have in our data set. We'll also calculate how many total patents these assignees have and what fraction of their total patents relate to databases.
@@ -92,21 +77,9 @@ pv_out
 
 # Unnest the data frames that are stored in the assignee list column
 dl <- unnest_pv_data(pv_out$data, "patent_id")
+#> Error in "pv_data_result" %in% class(data): object 'pv_out' not found
 dl
-#> List of 3
-#>  $ application:'data.frame':	9057 obs. of  2 variables:
-#>   ..$ patent_id  : chr [1:9057] "4653043" ...
-#>   ..$ filing_date: chr [1:9057] "1985-07-01" ...
-#>  $ assignees  :'data.frame':	8558 obs. of  3 variables:
-#>   ..$ patent_id            : chr [1:8558] "4653043" ...
-#>   ..$ assignee             : chr [1:8558] "https://search.patentsview.org/api"..
-#>   ..$ assignee_organization: chr [1:8558] "AT&T Bell Laboratories" ...
-#>  $ patents    :'data.frame':	9057 obs. of  5 variables:
-#>   ..$ patent_id                       : chr [1:9057] "4653043" ...
-#>   ..$ patent_date                     : chr [1:9057] "1987-03-24" ...
-#>   ..$ patent_year                     : int [1:9057] 1987 1988 ...
-#>   ..$ patent_earliest_application_date: chr [1:9057] "1985-07-01" ...
-#>   ..$ patent_num_us_patents_cited     : int [1:9057] 12 3 ...
+#> Error: object 'dl' not found
 
 # We don't get the assignee_total_num_patents back from the patent endpoint any longer.
 # We'll have to make a call to the assignee endpoint once we know who the top 75
@@ -127,12 +100,14 @@ top_asgns <-
     ungroup() %>%
     arrange(desc(db_pats)) %>%
     slice(1:75)
+#> Error in mutate(., assignee_id = sub(".*/([0-9a-f-]+)/$", "\\1", assignee)): object 'dl' not found
 
 # Now that we have the assignee_id's,  we can make a single call to the assignee
 # endpoint to get the total number of patents for each of our top_asgns. (One
 # call rather than 75 calls using the unparsed "assignee" URLs)
 
 assignee_query =  qry_funs$eq(assignee_id = top_asgns$assignee_id)
+#> Error in qry_funs$eq(assignee_id = top_asgns$assignee_id): object 'top_asgns' not found
 
 assignee_fields <- c(
   "assignee_id", "assignee_organization", "assignee_num_patents"
@@ -141,14 +116,12 @@ assignee_fields <- c(
 # We'll post to the API, the query is a pretty large string (an "or" of 75 assignee_ids)
 assignee_out <- search_pv(assignee_query , fields = assignee_fields, all_pages = TRUE, 
    size = 1000, endpoint = "assignee", method = "POST")
+#> Error in search_pv(assignee_query, fields = assignee_fields, all_pages = TRUE, : object 'assignee_query' not found
 
 assignee_counts <- unnest_pv_data(assignee_out$data, "assignee_id")
+#> Error in "pv_data_result" %in% class(data): object 'assignee_out' not found
 assignee_counts
-#> List of 1
-#>  $ assignees:'data.frame':	75 obs. of  3 variables:
-#>   ..$ assignee_id          : chr [1:75] "04c06aad-bd6a-4925-9991-863802752c56"..
-#>   ..$ assignee_organization: chr [1:75] "International Business Machines Corp"..
-#>   ..$ assignee_num_patents : int [1:75] 161317 2701 ...
+#> Error: object 'assignee_counts' not found
 
 # Here we redo top_asgns now that we have all the fields we need.
 # We join in the total counts and mutate in the percentages 
@@ -160,6 +133,7 @@ top_asgns <- dl$assignees %>%
    mutate(frac_db_pats = round(db_pats / ttl_pats, 3)) %>%
    select(c(1, 3, 2, 4))  %>%
    arrange(desc(db_pats))
+#> Error in inner_join(., assignee_counts$assignees): object 'dl' not found
 
 # trying to avoid Error: Chromote: timed out waiting for event Page.loadEventFired
 knitr::opts_chunk$set(
@@ -178,9 +152,8 @@ datatable(
   ),
   options = list(pageLength = 10)
 )
+#> Error in crosstalk::is.SharedData(data): object 'top_asgns' not found
 ```
-
-![](figure/topdatatable-1.png)
 
 <br>
 
@@ -213,6 +186,7 @@ IBM is far and away the biggest player in the field. However, we can see that Or
 # Get the top 5 organizations since slice wasn't working out in the full_join below.
 # We want data to just be the top 5 assignees, not all 75 assignees
 top_five <- head(top_asgns, n = 5)
+#> Error in head(top_asgns, n = 5): object 'top_asgns' not found
 
 data <- 
    full_join(dl$assignees, dl$patents) %>%
@@ -221,6 +195,7 @@ data <-
    summarise(n = n()) %>%
    inner_join(top_five) %>%
    select(assignee_organization, app_yr, n)
+#> Error in full_join(dl$assignees, dl$patents): object 'dl' not found
 
 # Plot the data using highcharter:
 hchart(
@@ -232,9 +207,8 @@ hchart(
   hc_yAxis(title = list(text = "Patents")) %>%
   hc_title(text = "Top five assignees in 'databases'") %>%
   hc_subtitle(text = "Yearly patent applications over time")
+#> Error: Objects of class/type function are not supported by hchart (yet).
 ```
-
-![](figure/topchart-1.png)
 
 It's hard to see any clear trends in this graph. What is clear is that the top assignees have all been patenting in the field for many years.
 
@@ -260,22 +234,11 @@ asng_p_dat <-
     slice(1:20) %>%
     mutate(color = "#f1c40f") %>%
     as.data.frame()
+#> Error in group_by(., patent_year): object 'dl' not found
 
 kable(head(asng_p_dat), row.names = FALSE)
+#> Error in head(asng_p_dat): object 'asng_p_dat' not found
 ```
-
-
-
-|assignee_organization                       | mean_perc| db_pats| ttl_pats| frac_db_pats|color   |
-|:-------------------------------------------|---------:|-------:|--------:|------------:|:-------|
-|International Business Machines Corporation | 0.4668579|     808|   161317|        0.005|#f1c40f |
-|SONY GROUP CORPORATION                      | 0.3713147|      27|    61292|        0.000|#f1c40f |
-|Fujitsu Limited                             | 0.4037503|      45|    56102|        0.001|#f1c40f |
-|General Electric Company                    | 0.4488619|      24|    51234|        0.000|#f1c40f |
-|Intel Corporation                           | 0.3463383|      20|    50627|        0.000|#f1c40f |
-|HITACHI, LTD.                               | 0.3608380|      50|    45755|        0.001|#f1c40f |
-
-
 
 Now let's visualize the data. Each assignee will be represented by a point/bubble. The x-value of the point will represent the total number of patents the assignee has published in the field of databases (on a log scale), while the y-value will represent its average normalized citation rate. The size of the bubble will be proportional to the percent of the assignee's patents that relate to databases.
 
@@ -300,9 +263,8 @@ hchart(
     y = c("{point.db_pats:.0f}","{point.mean_perc:.2f}", "{point.frac_db_pats:.3f}")
   )) %>%
   hc_legend(enabled = FALSE)
+#> Error in hchart(asng_p_dat, "scatter", hcaes(x = db_pats, y = mean_perc, : object 'asng_p_dat' not found
 ```
-
-![](figure/tophchart-1.png)
 
 <br>
 

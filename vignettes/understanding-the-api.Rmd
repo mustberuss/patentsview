@@ -35,19 +35,12 @@ group names to be specified in the fields parameter.
 library(patentsview)
 
 query <- qry_funs$eq(patent_id = "10568228")
-
-# get_fields() now uses the new API shorthand rather than returning all of the 
-# group's nested field names
-shorthand <- get_fields("patent", groups=c("application"))
-shorthand
-#> [1] "application"
-
-shorthand_results <- search_pv(query, fields=shorthand, method="POST")
+shorthand_results <- search_pv(query, fields = c("application"), method = "POST")
 
 # Now that the R package uses httr2, we can use its last_request()
 # to see what was POSTed to the API
 cat(httr2::last_request()$body$data)
-#> {"q":{"_eq":{"patent_id":"10568228"}},"f":["application"],"o":{"size":1000}}
+#> {"q":{"_eq":{"patent_id":"10568228"}},"f":["application","patent_id"],"s":[],"o":{"size":1000}}
 
 # Here we view the results
 shorthand_results$data$patent$application
@@ -57,13 +50,18 @@ shorthand_results$data$patent$application
 #>   filing_type
 #> 1          15
 
-# Now we'll explicitly request all the application fields and make a POST to the API
-explicit_fields <- fieldsdf[fieldsdf$endpoint == "patent" & fieldsdf$group == "application", "field"]
-explicit_results <- search_pv(query, fields=explicit_fields, method="POST")
+# Now we'll try to explicitly request all the application fields and make a POST to the API
+explicit_fields <- get_fields("patent", groups = "application")
+explicit_fields
+#> [1] "application.application_id"   "application.application_type"
+#> [3] "application.filing_date"      "application.filing_type"     
+#> [5] "application.rule_47_flag"     "application.series_code"
+explicit_results <- search_pv(query, fields = explicit_fields, method = "POST")
 
-# what was POSTed is different
+# but the R package figured out that the shorthand could be used instead
+# so what was POSTed to the API is the same!
 cat(httr2::last_request()$body$data)
-#> {"q":{"_eq":{"patent_id":"10568228"}},"f":["application.application_id","application.application_type","application.filing_date","application.filing_type","application.rule_47_flag","application.series_code"],"o":{"size":1000}}
+#> {"q":{"_eq":{"patent_id":"10568228"}},"f":["application","patent_id"],"s":[],"o":{"size":1000}}
 
 # but the results from the API are the same
 explicit_results$data$patent$application
@@ -77,17 +75,9 @@ explicit_results$data$patent$application
 # all seem to have the same values and not just in this one example.)
 
 ```
-
-The difference in the requests is that in the former case, it's the API deciding what fields to return
-while in the latter case, we used fieldsdf.
-fieldsdf is created from the [API's OpenAPI object](https://search.patentsview.org/static/openapi.json)
-when building the R package and specifies what fields can be requested from each endpoint.  The results 
-could be different if the API's actual return is not in sync with the API's OpenAPI object.  Here we see 
-that the requests are different but the results are the same (we used POSTs so the requests are easier 
-to read since they don't need to be urlencoded).
-
 The motivation to adopt the API's shorthand is that, with a modest query, explicitly requesting all of the
 patent endpoint's fields can be too much to send via a GET request (the resulting URL can exceed 4K). 
+
 
 ## Unexpected Results
 
@@ -139,37 +129,37 @@ display_inventors <-
 
 display_inventors
 #>    patent_id inventor_name_first inventor_name_last
-#> 1    4078607              Thomas          Jefferson
-#> 2    4104193              Thomas          Jefferson
-#> 3    5643452              George         Washington
-#> 4    5645778              George         Washington
-#> 5    5736046              George         Washington
-#> 6    5897817              George         Washington
-#> 7    5914971           George E.         Burke, Jr.
-#> 8    5914971           Rodney B.         Washington
-#> 9    6218441              George         Washington
-#> 10   6881337              George         Washington
-#> 11   6905071              Thomas           Amundsen
-#> 12   6905071              George              Kolis
-#> 13   6905071             Matthew          Jefferson
-#> 14   7144505              George         Washington
-#> 15   7598629           George E.         Burke, Jr.
-#> 16   7598629           Rodney B.         Washington
-#> 17   7971908              Thomas              Tilly
-#> 18   7971908           Thomas M.           DiMambro
-#> 19   7971908           Alfred A.          Jefferson
-#> 20   8347213           Thomas M.            Clifton
-#> 21   8347213          Bradley C.          Jefferson
-#> 22   8717367           Thomas M.            Clifton
-#> 23   8717367          Bradley C.          Jefferson
-#> 24  10180440          Stanley T.          Jefferson
-#> 25  10180440              Thomas                FAY
-#> 26  10374815           Thomas J.             Bonola
-#> 27  10374815             Lorri L          Jefferson
-#> 28  10568228      George Elliott         Washington
-#> 29  10664808                Joel         Washington
-#> 30  11032709           Thomas J.             Bonola
-#> 31  11032709             Lorri L          Jefferson
+#> 1   10568228      George Elliott         Washington
+#> 2   10664808                Joel         Washington
+#> 3   11032709           Thomas J.             Bonola
+#> 4   11032709             Lorri L          Jefferson
+#> 5   10180440          Stanley T.          Jefferson
+#> 6   10180440              Thomas                FAY
+#> 7    4104193              Thomas          Jefferson
+#> 8    4078607              Thomas          Jefferson
+#> 9   10374815           Thomas J.             Bonola
+#> 10  10374815             Lorri L          Jefferson
+#> 11   5736046              George         Washington
+#> 12   5914971           George E.         Burke, Jr.
+#> 13   5914971           Rodney B.         Washington
+#> 14   5897817              George         Washington
+#> 15   5643452              George         Washington
+#> 16   5645778              George         Washington
+#> 17   6218441              George         Washington
+#> 18   7971908              Thomas              Tilly
+#> 19   7971908           Thomas M.           DiMambro
+#> 20   7971908           Alfred A.          Jefferson
+#> 21   7598629           George E.         Burke, Jr.
+#> 22   7598629           Rodney B.         Washington
+#> 23   8347213           Thomas M.            Clifton
+#> 24   8347213          Bradley C.          Jefferson
+#> 25   8717367           Thomas M.            Clifton
+#> 26   8717367          Bradley C.          Jefferson
+#> 27   7144505              George         Washington
+#> 28   6881337              George         Washington
+#> 29   6905071              Thomas           Amundsen
+#> 30   6905071              George              Kolis
+#> 31   6905071             Matthew          Jefferson
 ```
 Some rows act as you'd expect, like patent 4078607's Thomas Jefferson.  In others, two inventors
 combine to meet the search cititeria, like 6905071's
@@ -217,6 +207,7 @@ id_query <- qry_funs$eq(inventors.inventor_id=actual_inventors$inventors$invento
 patent_fields <-c("patent_id", "inventors.inventor_name_first", "inventors.inventor_name_last",
   "inventors.inventor_id")
 pat_res <- search_pv(id_query, fields=patent_fields, sort=c(patent_id = "asc"))
+#> Error: Bad field(s): inventors.inventor_id
 
 dl <- unnest_pv_data(pat_res$data)
 
@@ -225,23 +216,49 @@ display_inventors <-
    dl$inventors %>%
    filter(grepl("^(George|Thomas)", inventor_name_first ) | grepl("^(Washington|Jefferson)", inventor_name_last)) %>%
    mutate(inventor = sub(".*/([^/]+)/$", "\\1", inventor)) # extract id from HATEOAS link
+#> Error in `mutate()`:
+#> ! Problem while computing `inventor = sub(".*/([^/]+)/$", "\\1",
+#>   inventor)`.
+#> Caused by error in `is.factor()`:
+#> ! object 'inventor' not found
 
 # sample pre-mutate value, note that we requested inventor_id but the API sent back `inventor`
 dl$inventors$inventor[[1]]
-#> [1] "https://search.patentsview.org/api/v1/inventor/fl:wa_ln:carter-1/"
+#> NULL
 
 display_inventors
-#>    patent_id              inventor inventor_name_first inventor_name_last
-#> 1    4078607  fl:th_ln:jefferson-1              Thomas          Jefferson
-#> 2    4104193  fl:th_ln:jefferson-1              Thomas          Jefferson
-#> 3    5643452 fl:ge_ln:washington-4              George         Washington
-#> 4    5645778 fl:ge_ln:washington-4              George         Washington
-#> 5    5736046 fl:ge_ln:washington-4              George         Washington
-#> 6    5897817 fl:ge_ln:washington-4              George         Washington
-#> 7    6218441 fl:ge_ln:washington-4              George         Washington
-#> 8    6881337 fl:ge_ln:washington-4              George         Washington
-#> 9    7144505 fl:ge_ln:washington-4              George         Washington
-#> 10  10568228 fl:ge_ln:washington-5      George Elliott         Washington
+#>    patent_id inventor_name_first inventor_name_last
+#> 1   10568228      George Elliott         Washington
+#> 2   10664808                Joel         Washington
+#> 3   11032709           Thomas J.             Bonola
+#> 4   11032709             Lorri L          Jefferson
+#> 5   10180440          Stanley T.          Jefferson
+#> 6   10180440              Thomas                FAY
+#> 7    4104193              Thomas          Jefferson
+#> 8    4078607              Thomas          Jefferson
+#> 9   10374815           Thomas J.             Bonola
+#> 10  10374815             Lorri L          Jefferson
+#> 11   5736046              George         Washington
+#> 12   5914971           George E.         Burke, Jr.
+#> 13   5914971           Rodney B.         Washington
+#> 14   5897817              George         Washington
+#> 15   5643452              George         Washington
+#> 16   5645778              George         Washington
+#> 17   6218441              George         Washington
+#> 18   7971908              Thomas              Tilly
+#> 19   7971908           Thomas M.           DiMambro
+#> 20   7971908           Alfred A.          Jefferson
+#> 21   7598629           George E.         Burke, Jr.
+#> 22   7598629           Rodney B.         Washington
+#> 23   8347213           Thomas M.            Clifton
+#> 24   8347213          Bradley C.          Jefferson
+#> 25   8717367           Thomas M.            Clifton
+#> 26   8717367          Bradley C.          Jefferson
+#> 27   7144505              George         Washington
+#> 28   6881337              George         Washington
+#> 29   6905071              Thomas           Amundsen
+#> 30   6905071              George              Kolis
+#> 31   6905071             Matthew          Jefferson
 ```
 
 ## Acknowledgment
