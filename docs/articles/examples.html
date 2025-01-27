@@ -164,14 +164,14 @@ required.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
 <span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  3 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id   : chr [1:1000] "10004497" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_title: chr [1:1000] "Interface systems for use with surgical ins"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_date : chr [1:1000] "2018-06-26" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_id   : chr [1:1000] "3939350" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_title: chr [1:1000] "Fluorescent immunoassay employing total ref"..</span></span>
+<span><span class="co">#&gt;   ..$ patent_date : chr [1:1000] "1976-02-17" ...</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 13,199, count = 1,000</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 13,575</span></span></code></pre></div>
 <p>How many distinct inventors are represented by these highly-cited
 patents?</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -185,40 +185,40 @@ patents?</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
 <span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  2 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id: chr [1:1000] "10004497" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_id: chr [1:1000] "3939350" ...</span></span>
 <span><span class="co">#&gt;   ..$ inventors:List of 1000</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 13,199, count = 1,000</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 13,575</span></span></code></pre></div>
 <p>What assignee’s organizations start Microsoft?</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">begins</span><span class="op">(</span>assignee_organization <span class="op">=</span> <span class="st">"Microsoft"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">pv_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query</span>, endpoint <span class="op">=</span> <span class="st">"assignee"</span><span class="op">)</span></span>
 <span><span class="va">pv_out</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">assignees</span><span class="op">$</span><span class="va">assignee_organization</span></span>
-<span><span class="co">#&gt;  [1] "Microsoft Technology Beaming, LLC"               </span></span>
-<span><span class="co">#&gt;  [2] "MICROSOFT INTERNATIONAL HOLDINGS B.V."           </span></span>
-<span><span class="co">#&gt;  [3] "Microsoft Mobile Oy"                             </span></span>
-<span><span class="co">#&gt;  [4] "Microsoft Technology, LLC."                      </span></span>
+<span><span class="co">#&gt;  [1] "Microsoft Mobile Internet AB"                    </span></span>
+<span><span class="co">#&gt;  [2] "Microsoft Corporation"                           </span></span>
+<span><span class="co">#&gt;  [3] "Microsoft Orthopedics Holdings Inc."             </span></span>
+<span><span class="co">#&gt;  [4] "MICROSOFT INTERNATIONAL HOLDINGS B.V."           </span></span>
 <span><span class="co">#&gt;  [5] "Microsoft Systems Inc."                          </span></span>
 <span><span class="co">#&gt;  [6] "Microsoft Technology Licensing, LLC"             </span></span>
-<span><span class="co">#&gt;  [7] "Microsoft Corporation"                           </span></span>
-<span><span class="co">#&gt;  [8] "Microsoft Patent Licensing, LLC"                 </span></span>
-<span><span class="co">#&gt;  [9] "Microsoft Corporation—One Microsoft Way"         </span></span>
-<span><span class="co">#&gt; [10] "Microsoft Licencing Corporation, LLC"            </span></span>
-<span><span class="co">#&gt; [11] "Microsoft Mobile Internet AB"                    </span></span>
+<span><span class="co">#&gt;  [7] "Microsoft Mobile Oy"                             </span></span>
+<span><span class="co">#&gt;  [8] "Microsoft Technology, LLC."                      </span></span>
+<span><span class="co">#&gt;  [9] "Microsoft Technology Beaming, LLC"               </span></span>
+<span><span class="co">#&gt; [10] "Microsoft Technology Learning, LLC"              </span></span>
+<span><span class="co">#&gt; [11] "Microsoft Israel Research and Development (2002)"</span></span>
 <span><span class="co">#&gt; [12] "Microsoft Licensing Technology, LLC"             </span></span>
-<span><span class="co">#&gt; [13] "Microsoft Technology Learning, LLC"              </span></span>
-<span><span class="co">#&gt; [14] "Microsoft Israel Research and Development (2002)"</span></span>
-<span><span class="co">#&gt; [15] "Microsoft Orthopedics Holdings Inc."</span></span></code></pre></div>
+<span><span class="co">#&gt; [13] "Microsoft Patent Licensing, LLC"                 </span></span>
+<span><span class="co">#&gt; [14] "Microsoft Licencing Corporation, LLC"            </span></span>
+<span><span class="co">#&gt; [15] "Microsoft Corporation—One Microsoft Way"</span></span></code></pre></div>
 <p>Where geographically have Microsoft inventors been coming from over
 the past few years?</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Write the query</span></span>
 <span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
+<span>  <span class="fu">and</span><span class="op">(</span></span>
 <span>    <span class="fu">gte</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2022-07-26"</span><span class="op">)</span>, <span class="co"># Dates are in yyyy-mm-dd format</span></span>
 <span>    <span class="fu">begins</span><span class="op">(</span>assignees.assignee_organization <span class="op">=</span> <span class="st">"Microsoft"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
@@ -234,17 +234,17 @@ the past few years?</p>
 <span><span class="co"># Unnest the inventor list column</span></span>
 <span><span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">pv_out</span><span class="op">$</span><span class="va">data</span>, <span class="st">"patent_id"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; List of 2</span></span>
-<span><span class="co">#&gt;  $ inventors:'data.frame':   14533 obs. of  8 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id          : chr [1:14533] "11397055" ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor           : chr [1:14533] "https://search.patentsview.org/api/"..</span></span>
-<span><span class="co">#&gt;   ..$ inventor_name_first: chr [1:14533] "Tzu-Yuan" ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor_name_last : chr [1:14533] "Lin" ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor_city      : chr [1:14533] "San Jose" ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor_state     : chr [1:14533] "CA" ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor_country   : chr [1:14533] "US" ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor_sequence  : int [1:14533] 1 2 ...</span></span>
-<span><span class="co">#&gt;  $ patents  :'data.frame':   3600 obs. of  1 variable:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id: chr [1:3600] "11397055" ...</span></span></code></pre></div>
+<span><span class="co">#&gt;  $ inventors:'data.frame':   16351 obs. of  8 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id          : chr [1:16351] "11397055" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor           : chr [1:16351] "https://search.patentsview.org/api/"..</span></span>
+<span><span class="co">#&gt;   ..$ inventor_name_first: chr [1:16351] "Tzu-Yuan" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_name_last : chr [1:16351] "Lin" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_city      : chr [1:16351] "San Jose" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_state     : chr [1:16351] "CA" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_country   : chr [1:16351] "US" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_sequence  : int [1:16351] 1 2 ...</span></span>
+<span><span class="co">#&gt;  $ patents  :'data.frame':   4065 obs. of  1 variable:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id: chr [1:4065] "11397055" ...</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="inventor-endpoint">Inventor Endpoint<a class="anchor" aria-label="anchor" href="#inventor-endpoint"></a>
@@ -271,7 +271,7 @@ location.</p>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 13,447, count = 1,000</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 13,567</span></span></code></pre></div>
 <p>In the new version of the API, the behavior of this endpoint has
 changed. See the similar example on the <a href="https://patentsview.org/apis/api-endpoints/inventors" class="external-link">legacy
 inventors endpoint</a> page for its original behavior.</p>
@@ -281,10 +281,7 @@ patent.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span><span class="st">'patent'</span>, groups<span class="op">=</span><span class="st">"inventors"</span>, include_pk <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">fields</span></span>
-<span><span class="co">#&gt; [1] "patent_id"                     "inventors.inventor_id"        </span></span>
-<span><span class="co">#&gt; [3] "inventors.inventor_city"       "inventors.inventor_country"   </span></span>
-<span><span class="co">#&gt; [5] "inventors.inventor_name_first" "inventors.inventor_name_last" </span></span>
-<span><span class="co">#&gt; [7] "inventors.inventor_sequence"   "inventors.inventor_state"</span></span>
+<span><span class="co">#&gt; [1] "patent_id" "inventors"</span></span>
 <span></span>
 <span><span class="va">query</span> <span class="op">&lt;-</span> <span class="st">'{"_and":[{"_text_phrase": {"inventors.inventor_city":"Chicago"}},</span></span>
 <span><span class="st">                   {"_text_phrase": {"inventors.inventor_state":"IL"}}]}'</span></span>
@@ -295,13 +292,13 @@ patent.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
 <span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  2 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id: chr [1:1000] "10000578" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_id: chr [1:1000] "3930318" ...</span></span>
 <span><span class="co">#&gt;   ..$ inventors:List of 1000</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 46,544, count = 1,000</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 47,033</span></span></code></pre></div>
 <p>Note that here all the inventors on a particular patent will be
 returned, not just the ones whose location was Chicago, IL. Also see the
 <a href="writing-queries.html">Writing Queries Vignette</a> for more
@@ -320,15 +317,15 @@ readable ways to write queries.</p>
 <span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ patents:'data.frame': 592 obs. of  3 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id   : chr [1:592] "10000326" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_title: chr [1:592] "Plastic beer keg" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_date : chr [1:592] "2018-06-19" ...</span></span>
+<span><span class="co">#&gt;  $ patents:'data.frame': 600 obs. of  3 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id   : chr [1:600] "3930592" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_title: chr [1:600] "Beer can structure" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_date : chr [1:600] "1976-01-06" ...</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 592, count = 592</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 600</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

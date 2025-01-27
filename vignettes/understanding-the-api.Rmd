@@ -99,7 +99,7 @@ under the "Queries using related entity fields" header:
 
 In their example, they use George Washington as an inventor.  Humorously, there are modern
 inventors with that name!  Abraham Lincoln is also used as an inventor.  Good ol' Abe is the only
-US president to receive a [patent](https://ppubs.uspto.gov/pubwebapp/external.html?db=USPAT&type=ids&q=(0006469).pn.) but
+US president so far to receive a [patent](https://ppubs.uspto.gov/pubwebapp/external.html?db=USPAT&type=ids&q=(0006469).pn.) but
 it's too early to be in the patentsview database and there are no modern Abraham Lincolns to be found
 as inventors.
 

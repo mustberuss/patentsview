@@ -373,7 +373,7 @@ sufficient (requiring changes to the R package).</p>
 <span><span class="va">pv_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span>query <span class="op">=</span> <span class="va">query</span>, fields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patent_id"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">patent_ids</span> <span class="op">&lt;-</span> <span class="va">pv_out</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span><span class="op">$</span><span class="va">patent_id</span></span>
 <span></span>
-<span><span class="co"># We have to go against the patent_citiation endpoint now, these fields</span></span>
+<span><span class="co"># We have to go against the patent citiation endpoint now, these fields</span></span>
 <span><span class="co"># are no longer available from the patent endpoint</span></span>
 <span></span>
 <span><span class="va">citing_query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span>patent_id <span class="op">=</span> <span class="va">patent_ids</span><span class="op">)</span></span>

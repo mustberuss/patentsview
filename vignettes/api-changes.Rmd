@@ -36,7 +36,7 @@ fields will be returned by the API.  This would be similar to `get_fields("paten
   
 * <a name="unbounded"> A result set's size seems unbounded now, you can now retrieve more than 100,000 rows. You'd need to be careful when setting all_pages = TRUE
 as the R package will page until the entire result set is retrieved which could be a million or more rows. 
-Note total_hits, in the previous version of the API this was capped at 100,000 rows.
+Note that in the previous version of the API total_hits was capped at 100,000 rows.
 
 ``` r
 library(patentsview)
@@ -127,7 +127,8 @@ a global variable PVIEW_KEY and set the authorization's value to {{PVIEW_KEY}} t
 These API changes would only matter if you want to call the API directly or want to write a python library for the API etc.
 Or maybe you're on the receiving end of a PR and need to know about all of the API's changes.
 
-* These options parameters went away: matched_subentities_only, subent_cnts and page (paging now uses 'after' instead of 'page')
+* These options parameters went away: matched_subentities_only, subent_cnts, per_page and page
+(paging now uses `after` instead of `page` and `size` instead of `per_page`)
 * Now the API's response is always JSON.  The original version of the API
 had a 'format' parameter that defaulted to json but could be set to xml.  The original R package
 did not expose this parameter so your script won't know the difference (unless you were calling the
@@ -302,7 +303,9 @@ Also note the last two lines of output, ```"cpc_group_id: B65D71/0033"``` (norma
 ```"cpc_group: https://search.patentsview.org/api/v1/cpc_group/B65D71:0033/"``` (slightly odd use of a colon).
 
 There is a new method in the R package to retrieve data from the HATEOAS links, just pass the returned
-link and the R package will retrieve the data for you.  
+link and the R package will retrieve the data for you.  You can also pass an arbitrary link that hits 
+the API.  This can be particularly useful if you want to see what the response would be from a link
+found in the [API's documentation](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/). 
 
 
 ``` r
@@ -318,6 +321,13 @@ str(pv_data$data)
 #>   ..$ cpc_group_id   : chr "G01S7/4865"
 #>   ..$ cpc_group_title: chr "Details of systems according to groups G01S13/00, G01S15/00, G01S17/00-of systems according to group G01S17/00-"| __truncated__
 #>  - attr(*, "class")= chr [1:2] "list" "pv_data_result"
+
+# Here we'll use an example URL from the documentation
+# Note that going to that link in a browser will result in a 403 Unauthorized, as no API key is sent.
+retrieve_linked_data('https://search.patentsview.org/api/v1/patent/?q={"patent_id":"7861317"}')
+#> Error in `httr2::req_perform()`:
+#> ! HTTP 400 Bad Request.
+#> • Invalid JSON in 'q' parameter
 ```
 
 Note that when calling the cpc_group endpoint instead of using the HATEOAS link, you'd use a slash
@@ -337,7 +347,7 @@ str(result$data)
 #>  - attr(*, "class")= chr [1:2] "list" "pv_data_result"
 ```
 
-<a name="slight-weirdness">Slight weirdness</a>/sleight of hand where the returned field name looses the _id of the requested field
+<a name="slight-weirdness">Slight weirdness</a>/sleight of hand where the returned field name loses the _id of the requested field
 
 
 ``` r
@@ -367,7 +377,7 @@ that tries to explain the danger.
   # key and sometimes primary and secondary keys for the requested endpoint.  
   # This simplifies the paging's after parameter.
   # If we call the API with more than a primary sort, the after parameter would
-  # have to be an array of all the sort fields' last values.
+  # have to be a vector of all the sort fields' last values.
   # After we've retrieved all the data we'll sort in R using the sort the user requested
 
   # Doing this also protects users from needing to know the peculiarities

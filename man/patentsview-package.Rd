@@ -6,20 +6,23 @@
 \alias{patentsview-package}
 \title{patentsview: An R Client to the 'PatentsView' API}
 \description{
-\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
-
 Provides functions to simplify the 'PatentsView' API (\url{https://patentsview.org/apis/purpose}) query language, send GET and POST requests to the API's twelve endpoints, and parse the data that comes back.
 }
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://mustberuss.github.io/patentsview/index.html}
+  \item \url{https://docs.ropensci.org/patentsview/index.html}
   \item Report bugs at \url{https://github.com/ropensci/patentsview/issues}
 }
 
 }
 \author{
 \strong{Maintainer}: Christopher Baker \email{chriscrewbaker@gmail.com}
+
+Authors:
+\itemize{
+  \item Russ Allen \email{rrjallen@yahoo.com}
+}
 
 }
 \keyword{internal}

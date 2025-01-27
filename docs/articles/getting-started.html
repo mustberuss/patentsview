@@ -217,7 +217,7 @@ using one of the functions in the DSL, <code>qry_funs$gte()</code>:</p>
 <p>More complex queries are also possible:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
+<span>  <span class="fu">and</span><span class="op">(</span></span>
 <span>    <span class="fu">gte</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2007-01-01"</span><span class="op">)</span>,</span>
 <span>    <span class="fu">text_phrase</span><span class="op">(</span>patent_abstract <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"computer program"</span>, <span class="st">"dog leash"</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
@@ -694,13 +694,14 @@ the value of your key.</p>
 <h4 id="how-do-i-access-the-data-frames-inside-the-list-columns-returned-by-search_pv">How do I access the data frames inside the list columns returned by
 <code>search_pv()</code>?<a class="anchor" aria-label="anchor" href="#how-do-i-access-the-data-frames-inside-the-list-columns-returned-by-search_pv"></a>
 </h4>
-<p>Let’s consider the following data, in which assignees are the primary
-entity while applications and “government interest statements” are the
-secondary entities (also referred to as subentities): Government
-interests fields are no longer present</p>
+<p>Let’s consider the following data, in which patents are the primary
+entity while “application”, “assignees”, and
+“gov_interest_organizations” are the secondary entities (also referred
+to as subentities):</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create field list -</span></span>
-<span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span><span class="st">"patent"</span><span class="op">)</span></span>
+<span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patent_id"</span>, <span class="st">"patent_date"</span>, <span class="st">"patent_title"</span>,</span>
+<span>  <span class="st">"assignees"</span>, <span class="st">"application"</span>,  <span class="st">"gov_interest_organizations"</span> <span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Pull data</span></span>
 <span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span></span>
@@ -712,47 +713,19 @@ interests fields are no longer present</p>
 <span><span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  34 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id                                                   : chr [1:10"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_title                                                : chr [1:10"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_type                                                 : chr [1:10"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_date                                                 : chr [1:10"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_year                                                 : int [1:100..</span></span>
-<span><span class="co">#&gt;   ..$ patent_abstract                                             : chr [1:10"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_cpc_current_group_average_patent_processing_days     : int [1:100..</span></span>
-<span><span class="co">#&gt;   ..$ patent_detail_desc_length                                   : int [1:100..</span></span>
-<span><span class="co">#&gt;   ..$ patent_earliest_application_date                            : chr [1:10"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_num_foreign_documents_cited                          : int [1:100..</span></span>
-<span><span class="co">#&gt;   ..$ patent_num_times_cited_by_us_patents                        : int [1:100..</span></span>
-<span><span class="co">#&gt;   ..$ patent_num_total_documents_cited                            : int [1:100..</span></span>
-<span><span class="co">#&gt;   ..$ patent_num_us_applications_cited                            : int [1:100..</span></span>
-<span><span class="co">#&gt;   ..$ patent_num_us_patents_cited                                 : int [1:100..</span></span>
-<span><span class="co">#&gt;   ..$ patent_processing_days                                      : int [1:100..</span></span>
-<span><span class="co">#&gt;   ..$ patent_term_extension                                       : logi [1:10..</span></span>
-<span><span class="co">#&gt;   ..$ gov_interest_statement                                      : chr [1:100..</span></span>
-<span><span class="co">#&gt;   ..$ patent_uspc_current_mainclass_average_patent_processing_days: int [1:100..</span></span>
-<span><span class="co">#&gt;   ..$ application                                                 :List of 1000</span></span>
-<span><span class="co">#&gt;   ..$ assignees                                                   :List of 1000</span></span>
-<span><span class="co">#&gt;   ..$ attorneys                                                   :List of 1000</span></span>
-<span><span class="co">#&gt;   ..$ cpc_current                                                 :List of 1000</span></span>
-<span><span class="co">#&gt;   ..$ examiners                                                   :List of 1000</span></span>
-<span><span class="co">#&gt;   ..$ foreign_priority                                            :List of 1000</span></span>
-<span><span class="co">#&gt;   ..$ figures                                                     :List of 1000</span></span>
-<span><span class="co">#&gt;   ..$ granted_pregrant_crosswalk                                  :List of 1000</span></span>
-<span><span class="co">#&gt;   ..$ inventors                                                   :List of 1000</span></span>
-<span><span class="co">#&gt;   ..$ ipcr                                                        :List of 1000</span></span>
-<span><span class="co">#&gt;   ..$ uspc_at_issue                                               :List of 1000</span></span>
-<span><span class="co">#&gt;   ..$ wipo                                                        :List of 1000</span></span>
-<span><span class="co">#&gt;   ..$ wipo_kind                                                   : chr [1:10"..</span></span>
-<span><span class="co">#&gt;   ..$ us_term_of_grant                                            :List of 1000</span></span>
-<span><span class="co">#&gt;   ..$ gov_interest_organizations                                  :List of 1000</span></span>
-<span><span class="co">#&gt;   ..$ gov_interest_contract_award_numbers                         :List of 1000</span></span></code></pre></div>
+<span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  6 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id                 : chr [1:1000] "3930365" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_title              : chr [1:1000] "Fuel control system for gas t"..</span></span>
+<span><span class="co">#&gt;   ..$ patent_date               : chr [1:1000] "1976-01-06" ...</span></span>
+<span><span class="co">#&gt;   ..$ application               :List of 1000</span></span>
+<span><span class="co">#&gt;   ..$ assignees                 :List of 1000</span></span>
+<span><span class="co">#&gt;   ..$ gov_interest_organizations:List of 1000</span></span></code></pre></div>
 <p><code>res$data</code> has vector columns for those fields that belong
-to the primary entity (e.g., <code>res$data$patent_year</code>) and list
-columns for those fields that belong to any secondary entity (e.g.,
-<code>res$data$assignees$assignee_organization</code>). You have two
-good ways to pull out the data frames that are nested inside these list
-columns:</p>
+to the primary entity (e.g., <code>res$data$patents$patent_id</code>)
+and list columns for those fields that belong to any secondary entity
+(e.g., <code>res$data$patents$gov_interest_organizations</code>). You
+have two good ways to pull out the data frames that are nested inside
+these list columns:</p>
 <ol style="list-style-type: decimal">
 <li>
 <strong>Use tidyr::unnest.</strong> (This is probably the easier
@@ -765,22 +738,21 @@ choice of the two).</li>
 <span><span class="va">res</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html" class="external-link">unnest</a></span><span class="op">(</span><span class="va">assignees</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 6 × 42</span></span>
-<span><span class="co">#&gt;   patent_id patent_title paten…¹ paten…² paten…³ paten…⁴ paten…⁵ paten…⁶ paten…⁷</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;     &lt;chr&gt;        &lt;chr&gt;   &lt;chr&gt;     &lt;int&gt; &lt;chr&gt;     &lt;int&gt;   &lt;int&gt; &lt;chr&gt;  </span></span>
-<span><span class="co">#&gt; 1 3930365   Fuel contro… utility 1976-0…    1976 A fuel…     746   11965 1974-0…</span></span>
-<span><span class="co">#&gt; 2 3930518   Valves       utility 1976-0…    1976 In a f…     715    6493 1974-0…</span></span>
-<span><span class="co">#&gt; 3 3930607   Container a… utility 1976-0…    1976 A tubu…     544   36340 1975-0…</span></span>
-<span><span class="co">#&gt; 4 3930635   Leak-proof … utility 1976-0…    1976 Extern…     715   11698 1974-0…</span></span>
-<span><span class="co">#&gt; 5 3930874   Bonded fuse… utility 1976-0…    1976 Basic …     836    6680 1974-0…</span></span>
-<span><span class="co">#&gt; 6 3930915   Method of m… utility 1976-0…    1976 A bind…     717   20419 1974-0…</span></span>
-<span><span class="co">#&gt; # … with 33 more variables: patent_num_foreign_documents_cited &lt;int&gt;,</span></span>
-<span><span class="co">#&gt; #   patent_num_times_cited_by_us_patents &lt;int&gt;,</span></span>
-<span><span class="co">#&gt; #   patent_num_total_documents_cited &lt;int&gt;,</span></span>
-<span><span class="co">#&gt; #   patent_num_us_applications_cited &lt;int&gt;, patent_num_us_patents_cited &lt;int&gt;,</span></span>
-<span><span class="co">#&gt; #   patent_processing_days &lt;int&gt;, patent_term_extension &lt;lgl&gt;,</span></span>
-<span><span class="co">#&gt; #   gov_interest_statement &lt;chr&gt;,</span></span>
-<span><span class="co">#&gt; #   patent_uspc_current_mainclass_average_patent_processing_days &lt;int&gt;, …</span></span></code></pre></div>
+<span><span class="co">#&gt; # A tibble: 6 × 14</span></span>
+<span><span class="co">#&gt;   patent_id patent_title paten…¹ appli…² assig…³ assig…⁴ assig…⁵ assig…⁶ assig…⁷</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;     &lt;chr&gt;        &lt;chr&gt;   &lt;list&gt;  &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;  </span></span>
+<span><span class="co">#&gt; 1 3930365   Fuel contro… 1976-0… &lt;df&gt;    https:… 3       &lt;NA&gt;    &lt;NA&gt;    Joseph…</span></span>
+<span><span class="co">#&gt; 2 3930518   Valves       1976-0… &lt;df&gt;    https:… 3       &lt;NA&gt;    &lt;NA&gt;    Hopkin…</span></span>
+<span><span class="co">#&gt; 3 3930607   Container a… 1976-0… &lt;df&gt;    https:… 2       &lt;NA&gt;    &lt;NA&gt;    Philli…</span></span>
+<span><span class="co">#&gt; 4 3930635   Leak-proof … 1976-0… &lt;df&gt;    https:… 2       &lt;NA&gt;    &lt;NA&gt;    Xomox …</span></span>
+<span><span class="co">#&gt; 5 3930874   Bonded fuse… 1976-0… &lt;df&gt;    https:… 2       &lt;NA&gt;    &lt;NA&gt;    Cornin…</span></span>
+<span><span class="co">#&gt; 6 3930915   Method of m… 1976-0… &lt;df&gt;    https:… 2       &lt;NA&gt;    &lt;NA&gt;    Westin…</span></span>
+<span><span class="co">#&gt; # … with 5 more variables: assignee_city &lt;chr&gt;, assignee_state &lt;chr&gt;,</span></span>
+<span><span class="co">#&gt; #   assignee_country &lt;chr&gt;, assignee_sequence &lt;int&gt;,</span></span>
+<span><span class="co">#&gt; #   gov_interest_organizations &lt;list&gt;, and abbreviated variable names</span></span>
+<span><span class="co">#&gt; #   ¹​patent_date, ²​application, ³​assignee, ⁴​assignee_type,</span></span>
+<span><span class="co">#&gt; #   ⁵​assignee_individual_name_first, ⁶​assignee_individual_name_last,</span></span>
+<span><span class="co">#&gt; #   ⁷​assignee_organization</span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>
 <strong>Use patentsview::unnest_pv_data.</strong>
@@ -791,8 +763,8 @@ field that can act as a unique identifier for the primary entities:</li>
 </ol>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">res</span><span class="op">$</span><span class="va">data</span>, pk <span class="op">=</span> <span class="st">"patent_id"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; List of 16</span></span>
-<span><span class="co">#&gt;  $ application                        :'data.frame': 1000 obs. of  7 variables:</span></span>
+<span><span class="co">#&gt; List of 4</span></span>
+<span><span class="co">#&gt;  $ application               :'data.frame':  1000 obs. of  7 variables:</span></span>
 <span><span class="co">#&gt;   ..$ patent_id       : chr [1:1000] "3930365" ...</span></span>
 <span><span class="co">#&gt;   ..$ application_id  : chr [1:1000] "05/489742" ...</span></span>
 <span><span class="co">#&gt;   ..$ application_type: chr [1:1000] "05" ...</span></span>
@@ -800,7 +772,7 @@ field that can act as a unique identifier for the primary entities:</li>
 <span><span class="co">#&gt;   ..$ series_code     : chr [1:1000] "05" ...</span></span>
 <span><span class="co">#&gt;   ..$ rule_47_flag    : logi [1:1000] FALSE ...</span></span>
 <span><span class="co">#&gt;   ..$ filing_type     : chr [1:1000] "05" ...</span></span>
-<span><span class="co">#&gt;  $ assignees                          :'data.frame': 841 obs. of  10 variables:</span></span>
+<span><span class="co">#&gt;  $ assignees                 :'data.frame':  841 obs. of  10 variables:</span></span>
 <span><span class="co">#&gt;   ..$ patent_id                     : chr [1:841] "3930365" ...</span></span>
 <span><span class="co">#&gt;   ..$ assignee                      : chr [1:841] "https://search.patentsview"..</span></span>
 <span><span class="co">#&gt;   ..$ assignee_type                 : chr [1:841] "3" ...</span></span>
@@ -811,112 +783,16 @@ field that can act as a unique identifier for the primary entities:</li>
 <span><span class="co">#&gt;   ..$ assignee_state                : chr [1:841] NA ...</span></span>
 <span><span class="co">#&gt;   ..$ assignee_country              : chr [1:841] NA ...</span></span>
 <span><span class="co">#&gt;   ..$ assignee_sequence             : int [1:841] 0 0 ...</span></span>
-<span><span class="co">#&gt;  $ attorneys                          :'data.frame': 1274 obs. of  6 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id            : chr [1:1274] "3930365" ...</span></span>
-<span><span class="co">#&gt;   ..$ attorney_id          : chr [1:1274] "9d09de38cd429c759bb62d889befa5c6" ...</span></span>
-<span><span class="co">#&gt;   ..$ attorney_sequence    : int [1:1274] 0 0 ...</span></span>
-<span><span class="co">#&gt;   ..$ attorney_name_first  : chr [1:1274] NA ...</span></span>
-<span><span class="co">#&gt;   ..$ attorney_name_last   : chr [1:1274] NA ...</span></span>
-<span><span class="co">#&gt;   ..$ attorney_organization: chr [1:1274] "Holman &amp; Stern" ...</span></span>
-<span><span class="co">#&gt;  $ cpc_current                        :'data.frame': 3473 obs. of  8 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id      : chr [1:3473] "3930365" ...</span></span>
-<span><span class="co">#&gt;   ..$ cpc_sequence   : int [1:3473] 0 0 ...</span></span>
-<span><span class="co">#&gt;   ..$ cpc_class      : chr [1:3473] "https://search.patentsview.org/api/v1/cp"..</span></span>
-<span><span class="co">#&gt;   ..$ cpc_class_id   : chr [1:3473] "F02" ...</span></span>
-<span><span class="co">#&gt;   ..$ cpc_subclass   : chr [1:3473] "https://search.patentsview.org/api/v1/cp"..</span></span>
-<span><span class="co">#&gt;   ..$ cpc_subclass_id: chr [1:3473] "F02C" ...</span></span>
-<span><span class="co">#&gt;   ..$ cpc_group      : chr [1:3473] "https://search.patentsview.org/api/v1/cp"..</span></span>
-<span><span class="co">#&gt;   ..$ cpc_group_id   : chr [1:3473] "F02C7/26" ...</span></span>
-<span><span class="co">#&gt;  $ examiners                          :'data.frame': 1374 obs. of  6 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id          : chr [1:1374] "3930365" ...</span></span>
-<span><span class="co">#&gt;   ..$ examiner_id        : chr [1:1374] "g8yy414r0f845vv5jw60ra2bb" ...</span></span>
-<span><span class="co">#&gt;   ..$ examiner_first_name: chr [1:1374] "Clarence R." ...</span></span>
-<span><span class="co">#&gt;   ..$ examiner_last_name : chr [1:1374] "Gordon" ...</span></span>
-<span><span class="co">#&gt;   ..$ examiner_role      : chr [1:1374] "primary" ...</span></span>
-<span><span class="co">#&gt;   ..$ art_group          : logi [1:1374] NA ...</span></span>
-<span><span class="co">#&gt;  $ foreign_priority                   :'data.frame': 173 obs. of  6 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id              : chr [1:173] "3930365" ...</span></span>
-<span><span class="co">#&gt;   ..$ priority_claim_sequence: int [1:173] 0 0 ...</span></span>
-<span><span class="co">#&gt;   ..$ priority_claim_kind    : logi [1:173] NA ...</span></span>
-<span><span class="co">#&gt;   ..$ foreign_application_id : chr [1:173] "34135/74" ...</span></span>
-<span><span class="co">#&gt;   ..$ filing_date            : chr [1:173] "1974-07-18" ...</span></span>
-<span><span class="co">#&gt;   ..$ foreign_country_filed  : chr [1:173] "UK" ...</span></span>
-<span><span class="co">#&gt;  $ figures                            :'data.frame': 801 obs. of  3 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id  : chr [1:801] "3930365" ...</span></span>
-<span><span class="co">#&gt;   ..$ num_figures: int [1:801] 3 6 ...</span></span>
-<span><span class="co">#&gt;   ..$ num_sheets : int [1:801] 3 5 ...</span></span>
-<span><span class="co">#&gt;  $ granted_pregrant_crosswalk         :'data.frame': 1000 obs. of  4 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id             : chr [1:1000] "3930365" ...</span></span>
-<span><span class="co">#&gt;   ..$ document_number       : logi [1:1000] NA ...</span></span>
-<span><span class="co">#&gt;   ..$ pgpubs_document_number: logi [1:1000] NA ...</span></span>
-<span><span class="co">#&gt;   ..$ application_number    : chr [1:1000] "05489742" ...</span></span>
-<span><span class="co">#&gt;  $ inventors                          :'data.frame': 1877 obs. of  8 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id          : chr [1:1877] "3930365" ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor           : chr [1:1877] "https://search.patentsview.org/api/v"..</span></span>
-<span><span class="co">#&gt;   ..$ inventor_name_first: chr [1:1877] "Trevor S." ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor_name_last : chr [1:1877] "Smith" ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor_city      : chr [1:1877] NA ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor_state     : chr [1:1877] NA ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor_country   : chr [1:1877] NA ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor_sequence  : int [1:1877] 0 1 ...</span></span>
-<span><span class="co">#&gt;  $ ipcr                               :'data.frame': 1365 obs. of  11 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id                     : chr [1:1365] "3930365" ...</span></span>
-<span><span class="co">#&gt;   ..$ ipc_sequence                  : int [1:1365] 0 0 ...</span></span>
-<span><span class="co">#&gt;   ..$ ipc_action_date               : logi [1:1365] NA ...</span></span>
-<span><span class="co">#&gt;   ..$ ipc_section                   : chr [1:1365] "F" ...</span></span>
-<span><span class="co">#&gt;   ..$ ipc_class                     : chr [1:1365] "02" ...</span></span>
-<span><span class="co">#&gt;   ..$ ipc_subclass                  : chr [1:1365] "C" ...</span></span>
-<span><span class="co">#&gt;   ..$ ipc_main_group                : chr [1:1365] "7" ...</span></span>
-<span><span class="co">#&gt;   ..$ ipc_subgroup                  : chr [1:1365] "26" ...</span></span>
-<span><span class="co">#&gt;   ..$ ipc_symbol_position           : logi [1:1365] NA ...</span></span>
-<span><span class="co">#&gt;   ..$ ipc_classification_data_source: logi [1:1365] NA ...</span></span>
-<span><span class="co">#&gt;   ..$ ipc_classification_value      : logi [1:1365] NA ...</span></span>
-<span><span class="co">#&gt;  $ uspc_at_issue                      :'data.frame': 3806 obs. of  6 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id        : chr [1:3806] "3930365" ...</span></span>
-<span><span class="co">#&gt;   ..$ uspc_mainclass   : chr [1:3806] "60" ...</span></span>
-<span><span class="co">#&gt;   ..$ uspc_mainclass_id: chr [1:3806] "60" ...</span></span>
-<span><span class="co">#&gt;   ..$ uspc_subclass    : chr [1:3806] "60/391.4" ...</span></span>
-<span><span class="co">#&gt;   ..$ uspc_subclass_id : chr [1:3806] "60/391.4" ...</span></span>
-<span><span class="co">#&gt;   ..$ uspc_sequence    : int [1:3806] 0 1 ...</span></span>
-<span><span class="co">#&gt;  $ wipo                               :'data.frame': 1305 obs. of  3 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id    : chr [1:1305] "3930365" ...</span></span>
-<span><span class="co">#&gt;   ..$ wipo_field_id: chr [1:1305] "27" ...</span></span>
-<span><span class="co">#&gt;   ..$ wipo_sequence: int [1:1305] 0 0 ...</span></span>
-<span><span class="co">#&gt;  $ us_term_of_grant                   :'data.frame': 21 obs. of  5 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id      : chr [1:21] "3936555" ...</span></span>
-<span><span class="co">#&gt;   ..$ term_grant     : logi [1:21] NA ...</span></span>
-<span><span class="co">#&gt;   ..$ term_extension : logi [1:21] NA ...</span></span>
-<span><span class="co">#&gt;   ..$ term_disclaimer: logi [1:21] NA ...</span></span>
-<span><span class="co">#&gt;   ..$ disclaimer_date: chr [1:21] "1991-06-18" ...</span></span>
-<span><span class="co">#&gt;  $ gov_interest_organizations         :'data.frame': 23 obs. of  5 variables:</span></span>
+<span><span class="co">#&gt;  $ gov_interest_organizations:'data.frame':  23 obs. of  5 variables:</span></span>
 <span><span class="co">#&gt;   ..$ patent_id     : chr [1:23] "3936656" ...</span></span>
 <span><span class="co">#&gt;   ..$ fedagency_name: chr [1:23] "Air Force" ...</span></span>
 <span><span class="co">#&gt;   ..$ level_one     : chr [1:23] "Department of Defense" ...</span></span>
 <span><span class="co">#&gt;   ..$ level_two     : chr [1:23] "Air Force" ...</span></span>
 <span><span class="co">#&gt;   ..$ level_three   : chr [1:23] NA ...</span></span>
-<span><span class="co">#&gt;  $ gov_interest_contract_award_numbers:'data.frame': 1 obs. of  2 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id   : chr "3984680"</span></span>
-<span><span class="co">#&gt;   ..$ award_number: chr "F19628-73-C-002"</span></span>
-<span><span class="co">#&gt;  $ patents                            :'data.frame': 1000 obs. of  19 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id                                                   : chr [1:10"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_title                                                : chr [1:10"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_type                                                 : chr [1:10"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_date                                                 : chr [1:10"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_year                                                 : int [1:100..</span></span>
-<span><span class="co">#&gt;   ..$ patent_abstract                                             : chr [1:10"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_cpc_current_group_average_patent_processing_days     : int [1:100..</span></span>
-<span><span class="co">#&gt;   ..$ patent_detail_desc_length                                   : int [1:100..</span></span>
-<span><span class="co">#&gt;   ..$ patent_earliest_application_date                            : chr [1:10"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_num_foreign_documents_cited                          : int [1:100..</span></span>
-<span><span class="co">#&gt;   ..$ patent_num_times_cited_by_us_patents                        : int [1:100..</span></span>
-<span><span class="co">#&gt;   ..$ patent_num_total_documents_cited                            : int [1:100..</span></span>
-<span><span class="co">#&gt;   ..$ patent_num_us_applications_cited                            : int [1:100..</span></span>
-<span><span class="co">#&gt;   ..$ patent_num_us_patents_cited                                 : int [1:100..</span></span>
-<span><span class="co">#&gt;   ..$ patent_processing_days                                      : int [1:100..</span></span>
-<span><span class="co">#&gt;   ..$ patent_term_extension                                       : logi [1:10..</span></span>
-<span><span class="co">#&gt;   ..$ gov_interest_statement                                      : chr [1:100..</span></span>
-<span><span class="co">#&gt;   ..$ patent_uspc_current_mainclass_average_patent_processing_days: int [1:100..</span></span>
-<span><span class="co">#&gt;   ..$ wipo_kind                                                   : chr [1:10"..</span></span></code></pre></div>
+<span><span class="co">#&gt;  $ patents                   :'data.frame':  1000 obs. of  3 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id   : chr [1:1000] "3930365" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_title: chr [1:1000] "Fuel control system for gas turbine engine" ..</span></span>
+<span><span class="co">#&gt;   ..$ patent_date : chr [1:1000] "1976-01-06" ...</span></span></code></pre></div>
 <p>Now we are left with a series of flat data frames instead of having a
 single data frame with other data frames nested inside of it. These flat
 data frames can be joined together as needed via the primary key

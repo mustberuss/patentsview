@@ -192,9 +192,9 @@ assignees fields).</p>
 <li><p><a name="unbounded"> A result set’s size seems unbounded now, you
 can now retrieve more than 100,000 rows. You’d need to be careful when
 setting all_pages = TRUE as the R package will page until the entire
-result set is retrieved which could be a million or more rows. Note
-total_hits, in the previous version of the API this was capped at
-100,000 rows.</a></p></li>
+result set is retrieved which could be a million or more rows. Note that
+in the previous version of the API total_hits was capped at 100,000
+rows.</a></p></li>
 </ul>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
@@ -341,8 +341,9 @@ you’re on the receiving end of a PR and need to know about all of the
 API’s changes.</p>
 <ul>
 <li><p>These options parameters went away: matched_subentities_only,
-subent_cnts and page (paging now uses ‘after’ instead of
-‘page’)</p></li>
+subent_cnts, per_page and page (paging now uses <code>after</code>
+instead of <code>page</code> and <code>size</code> instead of
+<code>per_page</code>)</p></li>
 <li><p>Now the API’s response is always JSON. The original version of
 the API had a ‘format’ parameter that defaulted to json but could be set
 to xml. The original R package did not expose this parameter so your
@@ -566,7 +567,10 @@ output, <code>"cpc_group_id: B65D71/0033"</code> (normal/expected) and
 (slightly odd use of a colon).</p>
 <p>There is a new method in the R package to retrieve data from the
 HATEOAS links, just pass the returned link and the R package will
-retrieve the data for you.</p>
+retrieve the data for you. You can also pass an arbitrary link that hits
+the API. This can be particularly useful if you want to see what the
+response would be from a link found in the <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/" class="external-link">API’s
+documentation</a>.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
@@ -579,7 +583,14 @@ retrieve the data for you.</p>
 <span><span class="co">#&gt;   ..$ cpc_subclass   : chr "https://search.patentsview.org/api/v1/cpc_subclass/G01S/"</span></span>
 <span><span class="co">#&gt;   ..$ cpc_group_id   : chr "G01S7/4865"</span></span>
 <span><span class="co">#&gt;   ..$ cpc_group_title: chr "Details of systems according to groups G01S13/00, G01S15/00, G01S17/00-of systems according to group G01S17/00-"| __truncated__</span></span>
-<span><span class="co">#&gt;  - attr(*, "class")= chr [1:2] "list" "pv_data_result"</span></span></code></pre></div>
+<span><span class="co">#&gt;  - attr(*, "class")= chr [1:2] "list" "pv_data_result"</span></span>
+<span></span>
+<span><span class="co"># Here we'll use an example URL from the documentation</span></span>
+<span><span class="co"># Note that going to that link in a browser will result in a 403 Unauthorized, as no API key is sent.</span></span>
+<span><span class="fu"><a href="../reference/retrieve_linked_data.html">retrieve_linked_data</a></span><span class="op">(</span><span class="st">'https://search.patentsview.org/api/v1/patent/?q={"patent_id":"7861317"}'</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in `httr2::req_perform()`:</span></span>
+<span><span class="co">#&gt; ! HTTP 400 Bad Request.</span></span>
+<span><span class="co">#&gt; • Invalid JSON in 'q' parameter</span></span></code></pre></div>
 <p>Note that when calling the cpc_group endpoint instead of using the
 HATEOAS link, you’d use a slash instead of a colon.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -594,7 +605,7 @@ HATEOAS link, you’d use a slash instead of a colon.</p>
 <span><span class="co">#&gt;   ..$ cpc_group_title: chr "Hand tools"</span></span>
 <span><span class="co">#&gt;  - attr(*, "class")= chr [1:2] "list" "pv_data_result"</span></span></code></pre></div>
 <p><a name="slight-weirdness">Slight weirdness</a>/sleight of hand where
-the returned field name looses the _id of the requested field</p>
+the returned field name loses the _id of the requested field</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>  <span class="co"># We'll make a call to the patent endpoint to get inventor and assignee HATEOAS links</span></span>
 <span>  <span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"patent_id":"10000000"}'</span>,</span>
@@ -630,7 +641,7 @@ be in search-pv.R that tries to explain the danger.</p>
 <span>  <span class="co"># key and sometimes primary and secondary keys for the requested endpoint.  </span></span>
 <span>  <span class="co"># This simplifies the paging's after parameter.</span></span>
 <span>  <span class="co"># If we call the API with more than a primary sort, the after parameter would</span></span>
-<span>  <span class="co"># have to be an array of all the sort fields' last values.</span></span>
+<span>  <span class="co"># have to be a vector of all the sort fields' last values.</span></span>
 <span>  <span class="co"># After we've retrieved all the data we'll sort in R using the sort the user requested</span></span>
 <span></span>
 <span>  <span class="co"># Doing this also protects users from needing to know the peculiarities</span></span>
