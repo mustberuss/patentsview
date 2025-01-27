@@ -354,3 +354,29 @@ test_that("endpoints are still broken", {
     )
   })
 })
+
+test_that("POSTs misbehave without all parameters", {
+
+  # as reported in the forum https://patentsview.org/forum/7/topic/815
+  # see also https://patentsview.org/forum/7/topic/804#comment-13411
+
+  # a GET works
+  query <- qry_funs$eq(patent_date = "2000-01-04")
+  get_results <- search_pv(query, size = 30)
+  expect_equal(nrow(get_results$data$patents), 30)
+
+  #  the size parameter is honored on a POST when all parameters are specified
+  fields <- get_fields("patent", group = "patents")
+  sort <- c("patent_id" = "asc")
+  post_results <- search_pv(query, size = 30, method = "POST", 
+    fields = fields, sort = sort)
+  expect_equal(nrow(post_results$data$patents), 30)
+
+  # the size parameter is not honored on a POST without all parameters
+  post_results <- search_pv(query, size = 30, method = "POST", fields = fields)
+  expect_equal(nrow(post_results$data$patents), 100)
+
+  post_results <- search_pv(query, size = 30, method = "POST", sort = sort)
+  expect_equal(nrow(post_results$data$patents), 100)
+
+})

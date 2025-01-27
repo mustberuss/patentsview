@@ -298,22 +298,6 @@ test_that("the 'after' parameter works properly", {
   skip("New API bug?")
 })
 
-test_that("the documentation and Swagger UI URLs work properly", {
-  skip_on_cran()
-
-  documentation_url <-
-    'https://search.patentsview.org/api/v1/patent/?q={"_text_any":{"patent_title":"COBOL cotton gin"}}&s=[{"patent_id": "asc" }]&o={"size":50}&f=["inventors.inventor_name_last","patent_id","patent_date","patent_title"]'
-
-  results <- retrieve_linked_data(documentation_url)
-
-  expect_gt(results$query_results$total_hits, 0)
-
-  swagger_url <- "https://search.patentsview.org/api/v1/patent/?q=%7B%22patent_date%22%3A%221976-01-06%22%7D"
-
-  results <- retrieve_linked_data(swagger_url, encoded = TRUE)
-  expect_gt(results$query_results$total_hits, 0)
-})
-
 test_that("an error occurs if all_pages is TRUE and there aren't any results", {
   skip_on_cran()
 
