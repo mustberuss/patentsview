@@ -392,11 +392,7 @@ search_pv <- function(query,
 #' the patent endpoint may return a link such as:
 #' "https://search.patentsview.org/api/v1/inventor/fl:th_ln:jefferson-1/"
 #'
-#' @param url A link that was returned by the API on a previous call, an example
-#'  in the documentation or a Request URL from the \href{https://search.patentsview.org/swagger-ui/}{API's Swagger UI page}.
-#'
-#' @param encoded_url boolean to indicate whether the url has been URL encoded, defaults to FALSE.
-#'  Set to TRUE for Request URLs from Swagger UI.
+#' @param url A link that was returned by the API on a previous call
 #'
 #' @param ... Curl options passed along to httr2's \code{\link[httr2]{req_options}} function.
 #'
@@ -423,66 +419,21 @@ search_pv <- function(query,
 #' retrieve_linked_data(
 #'   "https://search.patentsview.org/api/v1/cpc_group/G01S7:4811/"
 #' )
-#'
-#' endpoint_url <- "https://search.patentsview.org/api/v1/patent/"
-#' q_param <- '?q={"_text_any":{"patent_title":"COBOL cotton gin"}}'
-#' s_and_o_params <- '&s=[{"patent_id": "asc" }]&o={"size":50}'
-#' f_param <- '&f=["inventors.inventor_name_last","patent_id","patent_date","patent_title"]'
-#' # (URL broken up to avoid a long line warning in this Rd)
-#'
-#' retrieve_linked_data(
-#'   paste0(endpoint_url, q_param, s_and_o_params, f_param)
-#' )
-#'
-#' retrieve_linked_data(
-#'   "https://search.patentsview.org/api/v1/patent/?q=%7B%22patent_date%22%3A%221976-01-06%22%7D",
-#'   encoded_url = TRUE
-#' )
 #' }
 #'
 #' @export
 retrieve_linked_data <- function(url,
-                                 encoded_url = FALSE,
                                  api_key = Sys.getenv("PATENTSVIEW_API_KEY"),
                                  ...
                                 ) {
-  if (encoded_url) {
-    url <- utils::URLdecode(url)
-  }
 
-  # There wouldn't be url parameters on a HATEOAS link but we'll also accept
-  # example urls from the documentation, where there could be parameters
-  url_peices <- httr2::url_parse(url)
-
-  # Only send the API key to subdomains of patentsview.org
-  if (!grepl("^.*\\.patentsview.org$", url_peices$hostname)) {
+  # Don't sent the API key to any domain other than patentsview.org
+  if (!grepl("^https://[^/]*\\.patentsview.org/", url)) {
     stop2("retrieve_linked_data is only for patentsview.org urls")
-  }
-
-  params <- list()
-  query <- ""
-
-  if (!is.null(url_peices$query)) {
-    # Need to change f to fields vector, s to sort vector and o to opts
-    # There is probably a whizbangy better way to do this in R
-    if (!is.null(url_peices$query$f)) {
-      params$fields <- unlist(strsplit(gsub("[\\[\\]]", "", url_peices$query$f, perl = TRUE), ",\\s*"))
-    }
-
-    if (!is.null(url_peices$query$s)) {
-      params$sort <- jsonlite::fromJSON(sub(".*s=([^&]*).*", "\\1", url))
-    }
-
-    if (!is.null(url_peices$query$o)) {
-      params$opts <- jsonlite::fromJSON(sub(".*o=([^&]*).*", "\\1", url))
-    }
-
-    query <- if (!is.null(url_peices$query$q)) sub(".*q=([^&]*).*", "\\1", url) else ""
-    url <- paste0(url_peices$scheme, "://", url_peices$hostname, url_peices$path)
   }
 
   # Go through one_request, which handles resend on throttle errors
   # The API doesn't seem to mind ?q=&f=&o=&s= appended to HATEOAS URLs
-  res <- one_request("GET", query, url, params, api_key, ...)
+  res <- one_request("GET", "", url, list(), api_key, ...)
   process_resp(res)
 }
