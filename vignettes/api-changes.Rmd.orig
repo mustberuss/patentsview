@@ -86,18 +86,10 @@ httr2::last_response() |> httr2::resp_body_json()
 ```
 
 
-* Three methods were added
+* Two methods were added
    + HATEOAS and sample links can be retrieved using [retrieve_linked_data()](#HATEOAS)
    + In custom paging involving patent_id, its value needs to be padded with zeroes, see `pad_patent_id()`
-   + qry_funs$in_range() will generate range based queries for you:
-```{r}
-range_query <- qry_funs$in_range(patent_date=c("1970-01-01","1983-02-28")) 
-range_query 
 
-# or this
-range_query <- qry_funs$in_range(patent_year=c(2010, 2021))
-range_query
-```
 * The ropensci blog post that announced the original version of the R package was [reworked](ropensci-blog-post.html) to use the new version of the R package and API
 
 ## Swagger UI Page <a name="swagger-ui-page"></a>
@@ -248,7 +240,8 @@ the returned fields, like the cpc_group, are HATEOAS links:
 ```{r}
 
   query <- '{"patent_id": "11530080"}'
-  fields <- get_fields('patent', groups = 'cpc_current', include_pk = TRUE)
+  fields <- get_fields('patent', groups = 'cpc_current')
+  fields <- c("patent_id", fields)
   fields
 
   result <- search_pv(query, fields=fields)

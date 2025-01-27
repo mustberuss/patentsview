@@ -124,7 +124,8 @@ get_endpoints()
 query <- qry_funs$eq(inventors.inventor_name_last = "Chambers")
 
 # Here we'll request patent_id and the inventor fields from the patent endpoint
-fields <- get_fields(endpoint = "patent", groups ="inventors", include_pk = TRUE)
+fields <- get_fields(endpoint = "patent", groups ="inventors")
+fields <- c("patent_id", fields)
 fields
 
 result <- search_pv(query, endpoint = "patent", fields = fields)
