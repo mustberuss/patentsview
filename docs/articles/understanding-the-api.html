@@ -245,12 +245,12 @@ or two dollar bills in the US.</p>
 <span></span>
 <span><span class="va">patents_query</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>    <span class="fu">or</span><span class="op">(</span></span>
-<span>      <span class="fu">and</span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">or</a></span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_first <span class="op">=</span> <span class="st">"George"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_last <span class="op">=</span> <span class="st">"Washington"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span>,</span>
-<span>      <span class="fu">and</span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_first <span class="op">=</span> <span class="st">"Thomas"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_last <span class="op">=</span> <span class="st">"Jefferson"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span></span>
@@ -312,12 +312,12 @@ jupyter notebook suggests.</p>
 <code class="sourceCode R"><span></span>
 <span><span class="va">inventors_query</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>    <span class="fu">or</span><span class="op">(</span></span>
-<span>      <span class="fu">and</span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">or</a></span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventor_name_first <span class="op">=</span> <span class="st">"George"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventor_name_last <span class="op">=</span> <span class="st">"Washington"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span>,</span>
-<span>      <span class="fu">and</span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventor_name_first <span class="op">=</span> <span class="st">"Thomas"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventor_name_last <span class="op">=</span> <span class="st">"Jefferson"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span></span>
@@ -345,7 +345,6 @@ not necessarily both occur on the same inventor.)</p>
 <span><span class="va">patent_fields</span> <span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patent_id"</span>, <span class="st">"inventors.inventor_name_first"</span>, <span class="st">"inventors.inventor_name_last"</span>,</span>
 <span>  <span class="st">"inventors.inventor_id"</span><span class="op">)</span></span>
 <span><span class="va">pat_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">id_query</span>, fields<span class="op">=</span><span class="va">patent_fields</span>, sort<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>patent_id <span class="op">=</span> <span class="st">"asc"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: Bad field(s): inventors.inventor_id</span></span>
 <span></span>
 <span><span class="va">dl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">pat_res</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span>
 <span></span>
@@ -354,49 +353,23 @@ not necessarily both occur on the same inventor.)</p>
 <span>   <span class="va">dl</span><span class="op">$</span><span class="va">inventors</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"^(George|Thomas)"</span>, <span class="va">inventor_name_first</span> <span class="op">)</span> <span class="op">|</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"^(Washington|Jefferson)"</span>, <span class="va">inventor_name_last</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>inventor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">".*/([^/]+)/$"</span>, <span class="st">"\\1"</span>, <span class="va">inventor</span><span class="op">)</span><span class="op">)</span> <span class="co"># extract id from HATEOAS link</span></span>
-<span><span class="co">#&gt; Error in `mutate()`:</span></span>
-<span><span class="co">#&gt; ! Problem while computing `inventor = sub(".*/([^/]+)/$", "\\1",</span></span>
-<span><span class="co">#&gt;   inventor)`.</span></span>
-<span><span class="co">#&gt; Caused by error in `is.factor()`:</span></span>
-<span><span class="co">#&gt; ! object 'inventor' not found</span></span>
 <span></span>
 <span><span class="co"># sample pre-mutate value, note that we requested inventor_id but the API sent back `inventor`</span></span>
 <span><span class="va">dl</span><span class="op">$</span><span class="va">inventors</span><span class="op">$</span><span class="va">inventor</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="co">#&gt; NULL</span></span>
+<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/inventor/fl:wa_ln:carter-1/"</span></span>
 <span></span>
 <span><span class="va">display_inventors</span></span>
-<span><span class="co">#&gt;    patent_id inventor_name_first inventor_name_last</span></span>
-<span><span class="co">#&gt; 1   10568228      George Elliott         Washington</span></span>
-<span><span class="co">#&gt; 2   10664808                Joel         Washington</span></span>
-<span><span class="co">#&gt; 3   11032709           Thomas J.             Bonola</span></span>
-<span><span class="co">#&gt; 4   11032709             Lorri L          Jefferson</span></span>
-<span><span class="co">#&gt; 5   10180440          Stanley T.          Jefferson</span></span>
-<span><span class="co">#&gt; 6   10180440              Thomas                FAY</span></span>
-<span><span class="co">#&gt; 7    4104193              Thomas          Jefferson</span></span>
-<span><span class="co">#&gt; 8    4078607              Thomas          Jefferson</span></span>
-<span><span class="co">#&gt; 9   10374815           Thomas J.             Bonola</span></span>
-<span><span class="co">#&gt; 10  10374815             Lorri L          Jefferson</span></span>
-<span><span class="co">#&gt; 11   5736046              George         Washington</span></span>
-<span><span class="co">#&gt; 12   5914971           George E.         Burke, Jr.</span></span>
-<span><span class="co">#&gt; 13   5914971           Rodney B.         Washington</span></span>
-<span><span class="co">#&gt; 14   5897817              George         Washington</span></span>
-<span><span class="co">#&gt; 15   5643452              George         Washington</span></span>
-<span><span class="co">#&gt; 16   5645778              George         Washington</span></span>
-<span><span class="co">#&gt; 17   6218441              George         Washington</span></span>
-<span><span class="co">#&gt; 18   7971908              Thomas              Tilly</span></span>
-<span><span class="co">#&gt; 19   7971908           Thomas M.           DiMambro</span></span>
-<span><span class="co">#&gt; 20   7971908           Alfred A.          Jefferson</span></span>
-<span><span class="co">#&gt; 21   7598629           George E.         Burke, Jr.</span></span>
-<span><span class="co">#&gt; 22   7598629           Rodney B.         Washington</span></span>
-<span><span class="co">#&gt; 23   8347213           Thomas M.            Clifton</span></span>
-<span><span class="co">#&gt; 24   8347213          Bradley C.          Jefferson</span></span>
-<span><span class="co">#&gt; 25   8717367           Thomas M.            Clifton</span></span>
-<span><span class="co">#&gt; 26   8717367          Bradley C.          Jefferson</span></span>
-<span><span class="co">#&gt; 27   7144505              George         Washington</span></span>
-<span><span class="co">#&gt; 28   6881337              George         Washington</span></span>
-<span><span class="co">#&gt; 29   6905071              Thomas           Amundsen</span></span>
-<span><span class="co">#&gt; 30   6905071              George              Kolis</span></span>
-<span><span class="co">#&gt; 31   6905071             Matthew          Jefferson</span></span></code></pre></div>
+<span><span class="co">#&gt;    patent_id              inventor inventor_name_first inventor_name_last</span></span>
+<span><span class="co">#&gt; 1    4078607  fl:th_ln:jefferson-1              Thomas          Jefferson</span></span>
+<span><span class="co">#&gt; 2    4104193  fl:th_ln:jefferson-1              Thomas          Jefferson</span></span>
+<span><span class="co">#&gt; 3    5643452 fl:ge_ln:washington-4              George         Washington</span></span>
+<span><span class="co">#&gt; 4    5645778 fl:ge_ln:washington-4              George         Washington</span></span>
+<span><span class="co">#&gt; 5    5736046 fl:ge_ln:washington-4              George         Washington</span></span>
+<span><span class="co">#&gt; 6    5897817 fl:ge_ln:washington-4              George         Washington</span></span>
+<span><span class="co">#&gt; 7    6218441 fl:ge_ln:washington-4              George         Washington</span></span>
+<span><span class="co">#&gt; 8    6881337 fl:ge_ln:washington-4              George         Washington</span></span>
+<span><span class="co">#&gt; 9    7144505 fl:ge_ln:washington-4              George         Washington</span></span>
+<span><span class="co">#&gt; 10  10568228 fl:ge_ln:washington-5      George Elliott         Washington</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="acknowledgment">Acknowledgment<a class="anchor" aria-label="anchor" href="#acknowledgment"></a>

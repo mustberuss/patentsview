@@ -261,7 +261,7 @@ the raw API response.</li>
 <span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_response</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_response</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/resp_body_raw.html" class="external-link">resp_body_json</a></span><span class="op">(</span><span class="op">)</span> </span></code></pre>
 <ol start="6" style="list-style-type: decimal">
-<li>Three new functions were added
+<li>Two new functions were added
 <ul>
 <li>
 <code><a href="../reference/retrieve_linked_data.html">retrieve_linked_data()</a></code> to retrieve data from a HATEOAS
@@ -269,17 +269,9 @@ link the API sent back, retrying if throttled</li>
 <li>
 <code><a href="../reference/pad_patent_id.html">pad_patent_id()</a></code>, needed in custom paging using
 <code>patent_id</code>, see the new Result Set Paging vignette</li>
-<li>qry_funs$in_range() to generate range queries for you.</li>
 </ul>
 </li>
 </ol>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
-<span><span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1976-01-01"</span>, <span class="st">"1983-02-28"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; {"_and":[{"_gte":{"patent_date":"1976-01-01"}},{"_lte":{"patent_date":"1983-02-28"}}]}</span></span>
-<span></span>
-<span><span class="va">qry_funs</span><span class="op">$</span><span class="fu">in_range</span><span class="op">(</span>patent_year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2010</span>, <span class="fl">2021</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; {"_and":[{"_gte":{"patent_year":2010}},{"_lte":{"patent_year":2021}}]}</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="online-documentation">Online Documentation<a class="anchor" aria-label="anchor" href="#online-documentation"></a>

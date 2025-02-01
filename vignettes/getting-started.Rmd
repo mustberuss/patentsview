@@ -133,12 +133,53 @@ search_pv(
   query = qry_funs$eq(inventors.inventor_name_last = "Chambers"),
   all_pages = TRUE, size = 1000
 )
+#> Waiting 13s for retry backoff ■■■ Waiting 13s for retry backoff ■■■■ Waiting
+#> 13s for retry backoff ■■■■ Waiting 13s for retry backoff ■■■■■ Waiting 13s for
+#> retry backoff ■■■■■ Waiting 13s for retry backoff ■■■■■■ Waiting 13s for retry
+#> backoff ■■■■■■ Waiting 13s for retry backoff ■■■■■■■ Waiting 13s for retry
+#> backoff ■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■ Waiting 13s for retry
+#> backoff ■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■ Waiting 13s for retry
+#> backoff ■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■ Waiting 13s for retry
+#> backoff ■■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■■ Waiting 13s for
+#> retry backoff ■■■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■■■■ Waiting
+#> 13s for retry backoff ■■■■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■■■■
+#> Waiting 13s for retry backoff ■■■■■■■■■■■■■ Waiting 13s for retry backoff
+#> ■■■■■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■■■■■■ Waiting 13s for
+#> retry backoff ■■■■■■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■■■■■■■
+#> Waiting 13s for retry backoff ■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
+#> ■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■ Waiting 13s for
+#> retry backoff ■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■
+#> Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■ Waiting
+#> 13s for retry backoff ■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■ Waiting
+#> 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■
+#> Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry
+#> backoff ■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■
+#> Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry
+#> backoff ■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
+#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 #> $data
 #> #### A list with a single data frame on patents level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	2487 obs. of  1 variable:
-#>   ..$ patent_id: chr [1:2487] "3931611" ...
+#>  $ patents:'data.frame':	1210 obs. of  1 variable:
+#>   ..$ patent_id: chr [1:1210] "3931611" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
@@ -180,7 +221,7 @@ query <- qry_funs$eq(inventors.inventor_name_last = "Chambers")
 fields <- get_fields(endpoint = "patent", groups ="inventors")
 fields <- c("patent_id", fields)
 fields
-#> [1] "patent_id"                     "inventors.inventor"           
+#> [1] "patent_id"                     "inventors.inventor_id"        
 #> [3] "inventors.inventor_city"       "inventors.inventor_country"   
 #> [5] "inventors.inventor_name_first" "inventors.inventor_name_last" 
 #> [7] "inventors.inventor_sequence"   "inventors.inventor_state"
@@ -257,7 +298,7 @@ Most of the time you will want to use the patent endpoint. Note that you can sti
 ## Casting fields
 
 The API now returns most data fields as an appropriate data type (e.g., numeric). There are, however,
-a few fields that are returned as strings rather than integers and there are a lot of date fields now.
+a few fields that are returned as strings rather than integers and there are 33 date fields now.
 There are also two rule_47_flags, one returned by the patent endpoint, the other by the publication endpoint.
 The former is a boolean while the latter is a string that can be cast to a boolean.  Lastly, most
 of the document numbers are numeric though there are two instances where they are strings that can
@@ -271,8 +312,11 @@ library(knitr)
 ints <- fieldsdf[fieldsdf$data_type == "int", c("endpoint","field")]
 ints <- ints[order(ints$field),]
 print(ints,  row.names = FALSE)
-#> [1] endpoint field   
-#> <0 rows> (or 0-length row.names)
+#>                        endpoint                    field
+#>                        assignee            assignee_type
+#>                          patent  assignees.assignee_type
+#>                     publication  assignees.assignee_type
+#>  patent/us_application_citation citation_document_number
 
 # These fields are received as strings and would be cast to dates
 date_fields <- fieldsdf[fieldsdf$data_type == "date", c("endpoint","field")]
@@ -398,6 +442,11 @@ res$data
 
 ``` r
 library(tidyr)
+#> 
+#> Attaching package: 'tidyr'
+#> The following object is masked from 'package:magrittr':
+#> 
+#>     extract
 
 # Get assignee data:
 res$data$patents %>% 

@@ -142,7 +142,7 @@ rel_pats_lst <- unnest_pv_data(rel_pats_res$data, "patent_id")
 
 ```
 
-Now we know which patents the 4855 relevant patents cite. This allows us to measure the similarity between the 4855 patents by seeing how many cited references they share in common (a method known as [bibliographic coupling](https://en.wikipedia.org/wiki/Bibliographic_coupling)).
+Now we know which patents the 1007 relevant patents cite. This allows us to measure the similarity between the 1007 patents by seeing how many cited references they share in common (a method known as [bibliographic coupling](https://en.wikipedia.org/wiki/Bibliographic_coupling)).
 
 
 ``` r

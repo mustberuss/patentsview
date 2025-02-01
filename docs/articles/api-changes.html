@@ -210,6 +210,9 @@ rows.</a></p></li>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; total_hits = 8,123,346</span></span></code></pre></div>
+<p>Also note that we did not specify the fields parameter. In the past
+the API returned patent_id, patent_title and patent_date while now it
+only returned patent_id.</p>
 <ul>
 <li>
 <p>Endpoint Changes</p>
@@ -481,23 +484,35 @@ smallest patent_id from g_brf_sum_text.</p>
 <code class="sourceCode R"><span><span class="va">qry</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">ne</span><span class="op">(</span>patent_id <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
 <span><span class="va">sort</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patent_id"</span> <span class="op">=</span> <span class="st">"asc"</span><span class="op">)</span></span>
 <span><span class="va">grant</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">qry</span>, sort <span class="op">=</span> <span class="va">sort</span>, endpoint <span class="op">=</span> <span class="st">"g_brf_sum_text"</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span>patent_id <span class="op">=</span> <span class="va">grant</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">g_brf_sum_texts</span><span class="op">$</span><span class="va">patent_id</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># former default fields, as mentioned above</span></span>
+<span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patent_id"</span>, <span class="st">"patent_date"</span>, <span class="st">"patent_title"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span>patent_id <span class="op">=</span> <span class="va">grant</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">g_brf_sum_texts</span><span class="op">$</span><span class="va">patent_id</span><span class="op">)</span>, </span>
+<span>  size <span class="op">=</span> <span class="fl">1</span>, fields <span class="op">=</span> <span class="va">fields</span><span class="op">)</span></span>
+<span></span>
 <span><span class="va">res</span><span class="op">$</span><span class="va">data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ patents:'data.frame': 1 obs. of  1 variable:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id: chr "11540434"</span></span></code></pre></div>
+<span><span class="co">#&gt;  $ patents:'data.frame': 1 obs. of  3 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id   : chr "11540434"</span></span>
+<span><span class="co">#&gt;   ..$ patent_title: chr "Curved cultivating disc with a straight cutting edge"..</span></span>
+<span><span class="co">#&gt;   ..$ patent_date : chr "2023-01-03"</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">qry</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">gt</span><span class="op">(</span>document_number <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="va">sort</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"document_number"</span> <span class="op">=</span> <span class="st">"asc"</span><span class="op">)</span></span>
-<span><span class="va">pre_grant</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">qry</span>, sort <span class="op">=</span> <span class="va">sort</span>, endpoint <span class="op">=</span> <span class="st">"pg_brf_sum_text"</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"document_number"</span>, <span class="st">"summary_text"</span><span class="op">)</span></span>
+<span><span class="va">pre_grant</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">qry</span>, sort <span class="op">=</span> <span class="va">sort</span>, endpoint <span class="op">=</span> <span class="st">"pg_brf_sum_text"</span>, </span>
+<span>  size <span class="op">=</span> <span class="fl">1</span>, fields <span class="op">=</span> <span class="va">fields</span><span class="op">)</span></span>
+<span></span>
 <span><span class="va">pre_grant</span><span class="op">$</span><span class="va">data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame on pg_brf_sum_texts level:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ pg_brf_sum_texts:'data.frame':    1 obs. of  1 variable:</span></span>
-<span><span class="co">#&gt;   ..$ document_number: num 20230000001</span></span></code></pre></div>
+<span><span class="co">#&gt;  $ pg_brf_sum_texts:'data.frame':    1 obs. of  2 variables:</span></span>
+<span><span class="co">#&gt;   ..$ document_number: num 20230000001</span></span>
+<span><span class="co">#&gt;   ..$ summary_text   : chr "TECHNICAL FIELD\n\nThe present disclosure relates"..</span></span></code></pre></div>
 <p>So, at this moment, both endpoints appear to have data going back to
 2023.</p>
 </li>
@@ -555,10 +570,7 @@ output, <code>"cpc_group_id: B65D71/0033"</code> (normal/expected) and
 (slightly odd use of a colon).</p>
 <p>There is a new method in the R package to retrieve data from the
 HATEOAS links, just pass the returned link and the R package will
-retrieve the data for you. You can also pass an arbitrary link that hits
-the API. This can be particularly useful if you want to see what the
-response would be from a link found in the <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/" class="external-link">API’s
-documentation</a>.</p>
+retrieve the data for you.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
@@ -571,14 +583,7 @@ documentation</a>.</p>
 <span><span class="co">#&gt;   ..$ cpc_subclass   : chr "https://search.patentsview.org/api/v1/cpc_subclass/G01S/"</span></span>
 <span><span class="co">#&gt;   ..$ cpc_group_id   : chr "G01S7/4865"</span></span>
 <span><span class="co">#&gt;   ..$ cpc_group_title: chr "Details of systems according to groups G01S13/00, G01S15/00, G01S17/00-of systems according to group G01S17/00-"| __truncated__</span></span>
-<span><span class="co">#&gt;  - attr(*, "class")= chr [1:2] "list" "pv_data_result"</span></span>
-<span></span>
-<span><span class="co"># Here we'll use an example URL from the documentation</span></span>
-<span><span class="co"># Note that going to that link in a browser will result in a 403 Unauthorized, as no API key is sent.</span></span>
-<span><span class="fu"><a href="../reference/retrieve_linked_data.html">retrieve_linked_data</a></span><span class="op">(</span><span class="st">'https://search.patentsview.org/api/v1/patent/?q={"patent_id":"7861317"}'</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in `httr2::req_perform()`:</span></span>
-<span><span class="co">#&gt; ! HTTP 400 Bad Request.</span></span>
-<span><span class="co">#&gt; • Invalid JSON in 'q' parameter</span></span></code></pre></div>
+<span><span class="co">#&gt;  - attr(*, "class")= chr [1:2] "list" "pv_data_result"</span></span></code></pre></div>
 <p>Note that when calling the cpc_group endpoint instead of using the
 HATEOAS link, you’d use a slash instead of a colon.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
@@ -596,14 +601,13 @@ the returned field name loses the _id of the requested field</p>
 <span>  <span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"patent_id":"10000000"}'</span>,</span>
 <span>    fields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"inventors.inventor_id"</span>, <span class="st">"assignees.assignee_id"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; Error: Bad field(s): inventors.inventor_id, assignees.assignee_id</span></span>
 <span></span>
 <span>  <span class="co"># but note that the fields came back without the _id</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span><span class="op">$</span><span class="va">assignees</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">assignee</span><span class="op">)</span> <span class="co"># not $assignee_id as requested</span></span>
-<span><span class="co">#&gt; NULL</span></span>
+<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/assignee/b06175c5-768b-43af-bb65-1978370e6ce2/"</span></span>
 <span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span><span class="op">$</span><span class="va">inventors</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">inventor</span><span class="op">)</span> <span class="co"># not $inventor_id as requested</span></span>
-<span><span class="co">#&gt; NULL</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/inventor/fl:jo_ln:marron-5/"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="api-throttling">API Throttling <a name="throttling"></a><a class="anchor" aria-label="anchor" href="#api-throttling"></a>
@@ -690,8 +694,8 @@ total_hits, noting that no errors were thrown by the API:</p>
 <span><span class="co">#&gt; total_hits = 2,115</span></span></code></pre></div>
 <p>hitting the g_brf_sum_text endpoint:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">query1</span> <span class="op">&lt;-</span> <span class="st">'{"_contains":{"summary_text":"paper cup holder"}}'</span></span>
-<span><span class="va">query2</span> <span class="op">&lt;-</span> <span class="st">'{"_text_phrase":{"summary_text":"paper cup holder"}}'</span></span>
+<code class="sourceCode R"><span><span class="va">query1</span> <span class="op">&lt;-</span> <span class="st">'{"_contains":{"summary_text":"particular depth"}}'</span></span>
+<span><span class="va">query2</span> <span class="op">&lt;-</span> <span class="st">'{"_text_phrase":{"summary_text":"particular depth"}}'</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query1</span>, endpoint<span class="op">=</span><span class="st">"g_brf_sum_text"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $data</span></span>
@@ -710,12 +714,13 @@ total_hits, noting that no errors were thrown by the API:</p>
 <span><span class="co">#&gt; #### A list with a single data frame on g_brf_sum_texts level:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ g_brf_sum_texts: list()</span></span>
+<span><span class="co">#&gt;  $ g_brf_sum_texts:'data.frame': 68 obs. of  1 variable:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id: chr [1:68] "12020165" ...</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 0</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 68</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="case-sensitivity-caveat">Case Sensitivity Caveat <a name="case-sensitivity-caveat"></a><a class="anchor" aria-label="anchor" href="#case-sensitivity-caveat"></a>

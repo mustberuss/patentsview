@@ -220,9 +220,24 @@ PatentsView API:</li>
 <span></span>
 <span><span class="co"># Send an HTTP request to the PatentsView API to get the data</span></span>
 <span><span class="va">pv_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query</span>, fields <span class="op">=</span> <span class="va">fields</span>, all_pages <span class="op">=</span> <span class="cn">TRUE</span>, size <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: Bad field(s): assignees.assignee_id</span></span>
 <span><span class="va">pv_out</span></span>
-<span><span class="co">#&gt; Error: object 'pv_out' not found</span></span></code></pre></div>
+<span><span class="co">#&gt; $data</span></span>
+<span><span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on patents level:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; List of 1</span></span>
+<span><span class="co">#&gt;  $ patents:'data.frame': 1013 obs. of  7 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id                       : chr [1:1013] "4653043" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_date                     : chr [1:1013] "1987-03-24" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_year                     : int [1:1013] 1987 1988 ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_earliest_application_date: chr [1:1013] "1985-07-01" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_num_us_patents_cited     : int [1:1013] 12 3 ...</span></span>
+<span><span class="co">#&gt;   ..$ application                     :List of 1013</span></span>
+<span><span class="co">#&gt;   ..$ assignees                       :List of 1013</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $query_results</span></span>
+<span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; total_hits = 9,057</span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Now let’s identify who the top assignees are based on how many
 patents they have in our data set. We’ll also calculate how many total
@@ -233,9 +248,21 @@ relate to databases.</li>
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Unnest the data frames that are stored in the assignee list column</span></span>
 <span><span class="va">dl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">pv_out</span><span class="op">$</span><span class="va">data</span>, <span class="st">"patent_id"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in "pv_data_result" %in% class(data): object 'pv_out' not found</span></span>
 <span><span class="va">dl</span></span>
-<span><span class="co">#&gt; Error: object 'dl' not found</span></span>
+<span><span class="co">#&gt; List of 3</span></span>
+<span><span class="co">#&gt;  $ application:'data.frame': 1013 obs. of  2 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id  : chr [1:1013] "4653043" ...</span></span>
+<span><span class="co">#&gt;   ..$ filing_date: chr [1:1013] "1985-07-01" ...</span></span>
+<span><span class="co">#&gt;  $ assignees  :'data.frame': 929 obs. of  3 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id            : chr [1:929] "4653043" ...</span></span>
+<span><span class="co">#&gt;   ..$ assignee             : chr [1:929] "https://search.patentsview.org/api/"..</span></span>
+<span><span class="co">#&gt;   ..$ assignee_organization: chr [1:929] "AT&amp;T Bell Laboratories" ...</span></span>
+<span><span class="co">#&gt;  $ patents    :'data.frame': 1013 obs. of  5 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id                       : chr [1:1013] "4653043" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_date                     : chr [1:1013] "1987-03-24" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_year                     : int [1:1013] 1987 1988 ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_earliest_application_date: chr [1:1013] "1985-07-01" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_num_us_patents_cited     : int [1:1013] 12 3 ...</span></span>
 <span></span>
 <span><span class="co"># We don't get the assignee_total_num_patents back from the patent endpoint any longer.</span></span>
 <span><span class="co"># We'll have to make a call to the assignee endpoint once we know who the top 75</span></span>
@@ -256,14 +283,12 @@ relate to databases.</li>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">db_pats</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">75</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in mutate(., assignee_id = sub(".*/([0-9a-f-]+)/$", "\\1", assignee)): object 'dl' not found</span></span>
 <span></span>
 <span><span class="co"># Now that we have the assignee_id's,  we can make a single call to the assignee</span></span>
 <span><span class="co"># endpoint to get the total number of patents for each of our top_asgns. (One</span></span>
 <span><span class="co"># call rather than 75 calls using the unparsed "assignee" URLs)</span></span>
 <span></span>
 <span><span class="va">assignee_query</span> <span class="op">=</span>  <span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span>assignee_id <span class="op">=</span> <span class="va">top_asgns</span><span class="op">$</span><span class="va">assignee_id</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in qry_funs$eq(assignee_id = top_asgns$assignee_id): object 'top_asgns' not found</span></span>
 <span></span>
 <span><span class="va">assignee_fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="st">"assignee_id"</span>, <span class="st">"assignee_organization"</span>, <span class="st">"assignee_num_patents"</span></span>
@@ -272,12 +297,14 @@ relate to databases.</li>
 <span><span class="co"># We'll post to the API, the query is a pretty large string (an "or" of 75 assignee_ids)</span></span>
 <span><span class="va">assignee_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">assignee_query</span> , fields <span class="op">=</span> <span class="va">assignee_fields</span>, all_pages <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>   size <span class="op">=</span> <span class="fl">1000</span>, endpoint <span class="op">=</span> <span class="st">"assignee"</span>, method <span class="op">=</span> <span class="st">"POST"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in search_pv(assignee_query, fields = assignee_fields, all_pages = TRUE, : object 'assignee_query' not found</span></span>
 <span></span>
 <span><span class="va">assignee_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">assignee_out</span><span class="op">$</span><span class="va">data</span>, <span class="st">"assignee_id"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in "pv_data_result" %in% class(data): object 'assignee_out' not found</span></span>
 <span><span class="va">assignee_counts</span></span>
-<span><span class="co">#&gt; Error: object 'assignee_counts' not found</span></span>
+<span><span class="co">#&gt; List of 1</span></span>
+<span><span class="co">#&gt;  $ assignees:'data.frame':   75 obs. of  3 variables:</span></span>
+<span><span class="co">#&gt;   ..$ assignee_id          : chr [1:75] "34dbb232-405f-4c13-985f-da2d62f47c7c"..</span></span>
+<span><span class="co">#&gt;   ..$ assignee_organization: chr [1:75] "Xerox Corporation" ...</span></span>
+<span><span class="co">#&gt;   ..$ assignee_num_patents : int [1:75] 24081 30584 ...</span></span>
 <span></span>
 <span><span class="co"># Here we redo top_asgns now that we have all the fields we need.</span></span>
 <span><span class="co"># We join in the total counts and mutate in the percentages </span></span>
@@ -289,7 +316,6 @@ relate to databases.</li>
 <span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>frac_db_pats <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">db_pats</span> <span class="op">/</span> <span class="va">ttl_pats</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">db_pats</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in inner_join(., assignee_counts$assignees): object 'dl' not found</span></span>
 <span></span>
 <span><span class="co"># trying to avoid Error: Chromote: timed out waiting for event Page.loadEventFired</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/knitr/man/opts_chunk.html" class="external-link">opts_chunk</a></span><span class="op">$</span><span class="fu">set</span><span class="op">(</span></span>
@@ -307,8 +333,8 @@ relate to databases.</li>
 <span>    <span class="st">"Table 1: Top assignees in 'databases'"</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pageLength <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in crosstalk::is.SharedData(data): object 'top_asgns' not found</span></span></code></pre></div>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="figure/topdatatable-1.png"></p>
 <p><br></p>
 <p>IBM is far and away the biggest player in the field. However, we can
 see that Oracle and Salesforce.com are relatively more interested in
@@ -342,7 +368,6 @@ changed over time.</li>
 <span><span class="co"># Get the top 5 organizations since slice wasn't working out in the full_join below.</span></span>
 <span><span class="co"># We want data to just be the top 5 assignees, not all 75 assignees</span></span>
 <span><span class="va">top_five</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">top_asgns</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in head(top_asgns, n = 5): object 'top_asgns' not found</span></span>
 <span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> </span>
 <span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">full_join</a></span><span class="op">(</span><span class="va">dl</span><span class="op">$</span><span class="va">assignees</span>, <span class="va">dl</span><span class="op">$</span><span class="va">patents</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -351,7 +376,6 @@ changed over time.</li>
 <span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">inner_join</a></span><span class="op">(</span><span class="va">top_five</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">assignee_organization</span>, <span class="va">app_yr</span>, <span class="va">n</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in full_join(dl$assignees, dl$patents): object 'dl' not found</span></span>
 <span></span>
 <span><span class="co"># Plot the data using highcharter:</span></span>
 <span><span class="fu"><a href="https://jkunst.com/highcharter/reference/hchart.html" class="external-link">hchart</a></span><span class="op">(</span></span>
@@ -362,8 +386,8 @@ changed over time.</li>
 <span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_xAxis.html" class="external-link">hc_xAxis</a></span><span class="op">(</span>title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Grant year"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_yAxis.html" class="external-link">hc_yAxis</a></span><span class="op">(</span>title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Patents"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_title.html" class="external-link">hc_title</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Top five assignees in 'databases'"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_subtitle.html" class="external-link">hc_subtitle</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Yearly patent applications over time"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error: Objects of class/type function are not supported by hchart (yet).</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_subtitle.html" class="external-link">hc_subtitle</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Yearly patent applications over time"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="figure/topchart-1.png"></p>
 <p>It’s hard to see any clear trends in this graph. What is clear is
 that the top assignees have all been patenting in the field for many
 years.</p>
@@ -393,10 +417,76 @@ time to accumulate citations).</li>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#f1c40f"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in group_by(., patent_year): object 'dl' not found</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">asng_p_dat</span><span class="op">)</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in head(asng_p_dat): object 'asng_p_dat' not found</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">asng_p_dat</span><span class="op">)</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="47%">
+<col width="10%">
+<col width="8%">
+<col width="9%">
+<col width="14%">
+<col width="8%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">assignee_organization</th>
+<th align="right">mean_perc</th>
+<th align="right">db_pats</th>
+<th align="right">ttl_pats</th>
+<th align="right">frac_db_pats</th>
+<th align="left">color</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">International Business Machines Corporation</td>
+<td align="right">0.4857272</td>
+<td align="right">109</td>
+<td align="right">161317</td>
+<td align="right">0.001</td>
+<td align="left">#f1c40f</td>
+</tr>
+<tr class="even">
+<td align="left">SONY GROUP CORPORATION</td>
+<td align="right">0.3944270</td>
+<td align="right">6</td>
+<td align="right">61292</td>
+<td align="right">0.000</td>
+<td align="left">#f1c40f</td>
+</tr>
+<tr class="odd">
+<td align="left">Fujitsu Limited</td>
+<td align="right">0.5211083</td>
+<td align="right">15</td>
+<td align="right">56102</td>
+<td align="right">0.000</td>
+<td align="left">#f1c40f</td>
+</tr>
+<tr class="even">
+<td align="left">Intel Corporation</td>
+<td align="right">0.3860855</td>
+<td align="right">3</td>
+<td align="right">50627</td>
+<td align="right">0.000</td>
+<td align="left">#f1c40f</td>
+</tr>
+<tr class="odd">
+<td align="left">HITACHI, LTD.</td>
+<td align="right">0.2960192</td>
+<td align="right">8</td>
+<td align="right">45755</td>
+<td align="right">0.000</td>
+<td align="left">#f1c40f</td>
+</tr>
+<tr class="even">
+<td align="left">MITSUBISHI ELECTRIC CORPORATION</td>
+<td align="right">0.3914600</td>
+<td align="right">5</td>
+<td align="right">44168</td>
+<td align="right">0.000</td>
+<td align="left">#f1c40f</td>
+</tr>
+</tbody>
+</table>
 <p>Now let’s visualize the data. Each assignee will be represented by a
 point/bubble. The x-value of the point will represent the total number
 of patents the assignee has published in the field of databases (on a
@@ -422,8 +512,8 @@ percent of the assignee’s patents that relate to databases.</p>
 <span>    x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DB patents"</span>, <span class="st">"Mean cite percentile"</span>, <span class="st">"Fraction DB patents"</span><span class="op">)</span>,</span>
 <span>    y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"{point.db_pats:.0f}"</span>,<span class="st">"{point.mean_perc:.2f}"</span>, <span class="st">"{point.frac_db_pats:.3f}"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_legend.html" class="external-link">hc_legend</a></span><span class="op">(</span>enabled <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in hchart(asng_p_dat, "scatter", hcaes(x = db_pats, y = mean_perc, : object 'asng_p_dat' not found</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_legend.html" class="external-link">hc_legend</a></span><span class="op">(</span>enabled <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="figure/tophchart-1.png"></p>
 <p><br></p>
 <p>It looks like Microsoft has relatively high values across all three
 three metrics (average citation percentile, number of database patents,

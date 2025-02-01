@@ -196,15 +196,15 @@ seemingly only needed for patent_id when paging, so
 <span>   <span class="va">results</span><span class="op">[[</span><span class="va">n</span><span class="op">]</span><span class="op">]</span> <span class="op">=</span> <span class="va">page_n</span><span class="op">$</span><span class="va">data</span></span>
 <span><span class="op">}</span></span>
 <span><span class="co">#&gt; [1] "page 1 after is NULL"</span></span>
-<span><span class="co">#&gt; [1] "page 2 after is 03931271"</span></span>
-<span><span class="co">#&gt; [1] "page 3 after is 03932272"</span></span>
-<span><span class="co">#&gt; [1] "page 4 after is 03933272"</span></span>
-<span><span class="co">#&gt; [1] "page 5 after is 03934274"</span></span>
+<span><span class="co">#&gt; [1] "page 2 after is 3931271"</span></span>
+<span><span class="co">#&gt; [1] "page 3 after is NULL"</span></span>
+<span><span class="co">#&gt; [1] "page 4 after is 3931271"</span></span>
+<span><span class="co">#&gt; [1] "page 5 after is NULL"</span></span>
 <span></span>
 <span><span class="va">utility_sample</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">results</span>, <span class="va">as.data.frame</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">utility_sample</span><span class="op">)</span></span>
-<span><span class="co">#&gt; 'data.frame':    5000 obs. of  3 variables:</span></span>
+<span><span class="co">#&gt; 'data.frame':    3000 obs. of  3 variables:</span></span>
 <span><span class="co">#&gt;  $ patents.patent_id   : chr  "3930271" "3930272" "3930273" "3930274" ...</span></span>
 <span><span class="co">#&gt;  $ patents.patent_title: chr  "Golf glove" "Crib leg lock" "Bed safety side rail arrangement" "Assembly for use in recreational activities" ...</span></span>
 <span><span class="co">#&gt;  $ patents.patent_date : chr  "1976-01-06" "1976-01-06" "1976-01-06" "1976-01-06" ...</span></span></code></pre></div>
@@ -244,9 +244,8 @@ r_pkg$query_results$total_hits just displayed)</p>
 <span><span class="co">#&gt; [1] "1257 1976-01-13 Tuesday"</span></span>
 <span><span class="co">#&gt; [1] "1383 1976-01-20 Tuesday"</span></span>
 <span><span class="co">#&gt; [1] "1332 1976-01-27 Tuesday"</span></span>
-<span><span class="co">#&gt; [1] "1 1976-01-25 Sunday"</span></span>
 <span>   <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 5352</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 5351</span></span></code></pre></div>
 <p>Now we’ll try to do our own paging but, as you might notice, we’ll
 run into trouble using patent_date as the sort field ( and thus the
 ‘after’ parameter we’ll send to the API).</p>
