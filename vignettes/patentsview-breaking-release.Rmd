@@ -100,19 +100,9 @@ httr2::last_response()
 httr2::last_response() |> httr2::resp_body_json() 
 ```
 
-6. Three new functions were added
+6. Two new functions were added
    - `retrieve_linked_data()` to retrieve data from a HATEOAS link the API sent back, retrying if throttled
    - `pad_patent_id()`, needed in custom paging using `patent_id`, see the new Result Set Paging vignette
-   - qry_funs$in_range() to generate range queries for you.
-
-``` r
-library(patentsview)
-qry_funs$in_range(patent_date = c("1976-01-01", "1983-02-28"))
-#> {"_and":[{"_gte":{"patent_date":"1976-01-01"}},{"_lte":{"patent_date":"1983-02-28"}}]}
-
-qry_funs$in_range(patent_year = c(2010, 2021))
-#> {"_and":[{"_gte":{"patent_year":2010}},{"_lte":{"patent_year":2021}}]}
-```
 
 ## Online Documentation
 

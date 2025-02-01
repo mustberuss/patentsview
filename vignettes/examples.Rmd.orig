@@ -36,14 +36,6 @@ search_pv(
   fields = c("patent_id", "inventors.inventor_id")
 )
 ```
-What assignee's organizations start Microsoft?
-
-```{r}
-query <- qry_funs$begins(assignee_organization = "Microsoft")
-
-pv_out <- search_pv(query, endpoint = "assignee")
-pv_out$data$assignees$assignee_organization
-```
 
 Where geographically have Microsoft inventors been coming from over the past few years?
 
@@ -67,6 +59,21 @@ pv_out <- search_pv(query, fields = inv_fields, all_pages = TRUE, size = 1000)
 
 # Unnest the inventor list column
 unnest_pv_data(pv_out$data, "patent_id")
+```
+Which assignees have an interest in beer?
+
+```{r}
+query <- with_qfuns(
+  and(
+    contains(patent_title = "beer"),
+    eq(assignees.assignee_sequence = 0)
+  )
+)
+
+fields <- c("patent_id", "patent_title", "assignees.assignee_organization")
+res <- search_pv(query = query, fields = fields, endpoint = "patent", size = 1)
+str(res$data)
+
 ```
 
 ## Inventor Endpoint
@@ -92,7 +99,7 @@ Chicago, IL as their location when applying for a patent.
 
 ```{r}
 fields <- get_fields('patent', groups="inventors")
-fields <- c("inventor_id", fields)
+fields <- c("patent_id", fields)
 fields
 
 query <- '{"_and":[{"_text_phrase": {"inventors.inventor_city":"Chicago"}},
@@ -108,11 +115,11 @@ to write queries.
 
 ## Assignee Endpoint
 
-Which assignees have an interest in beer?
+What assignee's organizations start Microsoft?
 
 ```{r}
-search_pv(
-  query = qry_funs$contains(patent_title = "beer"),
-  endpoint = "patent"
-)
+query <- qry_funs$begins(assignee_organization = "Microsoft")
+fields <- c("assignee_id", "assignee_organization")
+pv_out <- search_pv(query, fields = fields, endpoint = "assignee")
+pv_out$data$assignees$assignee_organization
 ```

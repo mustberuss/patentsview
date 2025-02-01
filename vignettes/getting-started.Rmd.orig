@@ -154,7 +154,7 @@ Most of the time you will want to use the patent endpoint. Note that you can sti
 ## Casting fields
 
 The API now returns most data fields as an appropriate data type (e.g., numeric). There are, however,
-a few fields that are returned as strings rather than integers and there are a lot of date fields now.
+a few fields that are returned as strings rather than integers and there are 33 date fields now.
 There are also two rule_47_flags, one returned by the patent endpoint, the other by the publication endpoint.
 The former is a boolean while the latter is a string that can be cast to a boolean.  Lastly, most
 of the document numbers are numeric though there are two instances where they are strings that can
