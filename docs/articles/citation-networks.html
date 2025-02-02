@@ -180,8 +180,10 @@ to identify the patents that relate to PCA.</p>
 <span><span class="va">citing_query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span>patent_id <span class="op">=</span> <span class="va">patent_ids</span><span class="op">)</span></span>
 <span><span class="va">cited_query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span>citation_patent_id <span class="op">=</span> <span class="va">patent_ids</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Create a list of fields to pull from the API.  Note that, with a recent API chanage,</span></span>
-<span><span class="co"># these aren't the only fields we receive back from the API</span></span>
+<span><span class="co"># Create a list of fields to pull from the API.  Note that, with a recent chanage</span></span>
+<span><span class="co"># to the R package, these aren't the only fields we'll receive back from the API.</span></span>
+<span><span class="co"># This is due to the way that the API's paging works now.  There is more about this</span></span>
+<span><span class="co"># in the [Result Set Paging](result-set-paging.html) vignette.</span></span>
 <span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="st">"patent_id"</span>,</span>
 <span>  <span class="st">"citation_patent_id"</span></span>
@@ -197,7 +199,7 @@ to identify the patents that relate to PCA.</p>
 <span>  endpoint <span class="op">=</span> <span class="st">"patent/us_patent_citation"</span>, method <span class="op">=</span> <span class="st">"POST"</span>, size <span class="op">=</span> <span class="fl">1000</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Unnest the data found in the two lists of columns</span></span>
+<span><span class="co"># Unnest the data found in the three lists of columns</span></span>
 <span><span class="co"># (citation_sequence being a field we didn't request)</span></span>
 <span><span class="va">res_lst</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">data</span>, pk <span class="op">=</span> <span class="st">"patent_id"</span><span class="op">)</span></span>
 <span><span class="va">res_lst</span></span>
@@ -233,7 +235,7 @@ frame of nodes and a data frame of edges.</p>
 <span><span class="va">edges</span> <span class="op">&lt;-</span></span>
 <span>  <span class="va">res_lst</span><span class="op">$</span><span class="va">us_patent_citations</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter-joins.html" class="external-link">semi_join</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, y <span class="op">=</span> <span class="va">.</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"citation_patent_id"</span> <span class="op">=</span> <span class="st">"patent_id"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">patent_id</span>, <span class="va">citation_patent_id</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>  <span class="co"># discard citation_sequence we didn't ask for</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">citation_sequence</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>  <span class="co"># discard citation_sequence that we don't need here</span></span>
 <span>  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">set_colnames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"from"</span>, <span class="st">"to"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">nodes</span> <span class="op">&lt;-</span></span>
@@ -299,8 +301,8 @@ patents are to one another.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">rel_pats_lst</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">rel_pats_res</span><span class="op">$</span><span class="va">data</span>, <span class="st">"patent_id"</span><span class="op">)</span></span></code></pre></div>
-<p>Now we know which patents the 1007 relevant patents cite. This allows
-us to measure the similarity between the 1007 patents by seeing how many
+<p>Now we know which patents the 4855 relevant patents cite. This allows
+us to measure the similarity between the 4855 patents by seeing how many
 cited references they share in common (a method known as <a href="https://en.wikipedia.org/wiki/Bibliographic_coupling" class="external-link">bibliographic
 coupling</a>).</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">

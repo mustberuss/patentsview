@@ -22,16 +22,20 @@ Let's start with a basic example of how to use the package's primary function, `
 ``` r
 library(patentsview)
 
+fields <- c("patent_id", "patent_date", "patent_title")
+
 search_pv(
   query = '{"_gte":{"patent_date":"2007-01-01"}}',
-  endpoint = "patent"
+  endpoint = "patent", fields = fields
 )
 #> $data
 #> #### A list with a single data frame on patents level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	1000 obs. of  1 variable:
-#>   ..$ patent_id: chr [1:1000] "10631087" ...
+#>  $ patents:'data.frame':	1000 obs. of  3 variables:
+#>   ..$ patent_id   : chr [1:1000] "10631087" ...
+#>   ..$ patent_title: chr [1:1000] "Method and device for voice operated contro"..
+#>   ..$ patent_date : chr [1:1000] "2020-04-21" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
@@ -129,57 +133,18 @@ You can download all pages of output in one call by setting `all_pages = TRUE`. 
 
 
 ``` r
+fields <- c("patent_id", "inventors.inventor_name_last", "inventors.inventor_name_first")
 search_pv(
   query = qry_funs$eq(inventors.inventor_name_last = "Chambers"),
-  all_pages = TRUE, size = 1000
+  all_pages = TRUE, size = 1000, fields = fields
 )
-#> Waiting 13s for retry backoff ■■■ Waiting 13s for retry backoff ■■■■ Waiting
-#> 13s for retry backoff ■■■■ Waiting 13s for retry backoff ■■■■■ Waiting 13s for
-#> retry backoff ■■■■■ Waiting 13s for retry backoff ■■■■■■ Waiting 13s for retry
-#> backoff ■■■■■■ Waiting 13s for retry backoff ■■■■■■■ Waiting 13s for retry
-#> backoff ■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■ Waiting 13s for retry
-#> backoff ■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■ Waiting 13s for retry
-#> backoff ■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■ Waiting 13s for retry
-#> backoff ■■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■■ Waiting 13s for
-#> retry backoff ■■■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■■■■ Waiting
-#> 13s for retry backoff ■■■■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■■■■
-#> Waiting 13s for retry backoff ■■■■■■■■■■■■■ Waiting 13s for retry backoff
-#> ■■■■■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■■■■■■ Waiting 13s for
-#> retry backoff ■■■■■■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■■■■■■■
-#> Waiting 13s for retry backoff ■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
-#> ■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■ Waiting 13s for
-#> retry backoff ■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■
-#> Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
-#> ■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■ Waiting
-#> 13s for retry backoff ■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
-#> ■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■ Waiting
-#> 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
-#> ■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■
-#> Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry
-#> backoff ■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
-#> ■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■
-#> Waiting 13s for retry backoff ■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry
-#> backoff ■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
-#> ■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
-#> ■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
-#> ■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
-#> ■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
-#> ■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
-#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
-#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
-#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
-#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
-#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
-#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
-#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
-#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ Waiting 13s for retry backoff
-#> ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
 #> $data
-#> #### A list with a single data frame on patents level:
+#> #### A list with a single data frame (with list column(s) inside) on patents level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	1210 obs. of  1 variable:
-#>   ..$ patent_id: chr [1:1210] "3931611" ...
+#>  $ patents:'data.frame':	2487 obs. of  2 variables:
+#>   ..$ patent_id: chr [1:2487] "3931611" ...
+#>   ..$ inventors:List of 2487
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
@@ -442,11 +407,6 @@ res$data
 
 ``` r
 library(tidyr)
-#> 
-#> Attaching package: 'tidyr'
-#> The following object is masked from 'package:magrittr':
-#> 
-#>     extract
 
 # Get assignee data:
 res$data$patents %>% 

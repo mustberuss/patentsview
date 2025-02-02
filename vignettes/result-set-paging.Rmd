@@ -58,15 +58,15 @@ for (n in seq_len(5)) {
    results[[n]] = page_n$data
 }
 #> [1] "page 1 after is NULL"
-#> [1] "page 2 after is 3931271"
-#> [1] "page 3 after is NULL"
-#> [1] "page 4 after is 3931271"
-#> [1] "page 5 after is NULL"
+#> [1] "page 2 after is 03931271"
+#> [1] "page 3 after is 03932272"
+#> [1] "page 4 after is 03933272"
+#> [1] "page 5 after is 03934274"
 
 utility_sample <- as.data.frame(do.call(rbind, lapply(results, as.data.frame)))
 
 str(utility_sample)
-#> 'data.frame':	3000 obs. of  3 variables:
+#> 'data.frame':	5000 obs. of  3 variables:
 #>  $ patents.patent_id   : chr  "3930271" "3930272" "3930273" "3930274" ...
 #>  $ patents.patent_title: chr  "Golf glove" "Crib leg lock" "Bed safety side rail arrangement" "Assembly for use in recreational activities" ...
 #>  $ patents.patent_date : chr  "1976-01-06" "1976-01-06" "1976-01-06" "1976-01-06" ...
@@ -110,8 +110,9 @@ just displayed)
 #> [1] "1257 1976-01-13 Tuesday"
 #> [1] "1383 1976-01-20 Tuesday"
 #> [1] "1332 1976-01-27 Tuesday"
+#> [1] "1 1976-01-25 Sunday"
    sum(unlist(counts))
-#> [1] 5351
+#> [1] 5352
 ```
 
 Now we'll try to do our own paging but, as you might notice, we'll run into trouble using patent_date

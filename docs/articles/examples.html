@@ -217,17 +217,17 @@ the past few years?</p>
 <span><span class="co"># Unnest the inventor list column</span></span>
 <span><span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">pv_out</span><span class="op">$</span><span class="va">data</span>, <span class="st">"patent_id"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; List of 2</span></span>
-<span><span class="co">#&gt;  $ inventors:'data.frame':   16124 obs. of  8 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id          : chr [1:16124] "11397055" ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor           : chr [1:16124] "https://search.patentsview.org/api/"..</span></span>
-<span><span class="co">#&gt;   ..$ inventor_name_first: chr [1:16124] "Tzu-Yuan" ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor_name_last : chr [1:16124] "Lin" ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor_city      : chr [1:16124] "San Jose" ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor_state     : chr [1:16124] "CA" ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor_country   : chr [1:16124] "US" ...</span></span>
-<span><span class="co">#&gt;   ..$ inventor_sequence  : int [1:16124] 1 2 ...</span></span>
-<span><span class="co">#&gt;  $ patents  :'data.frame':   4003 obs. of  1 variable:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id: chr [1:4003] "11397055" ...</span></span></code></pre></div>
+<span><span class="co">#&gt;  $ inventors:'data.frame':   16351 obs. of  8 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id          : chr [1:16351] "11397055" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor           : chr [1:16351] "https://search.patentsview.org/api/"..</span></span>
+<span><span class="co">#&gt;   ..$ inventor_name_first: chr [1:16351] "Tzu-Yuan" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_name_last : chr [1:16351] "Lin" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_city      : chr [1:16351] "San Jose" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_state     : chr [1:16351] "CA" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_country   : chr [1:16351] "US" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_sequence  : int [1:16351] 1 2 ...</span></span>
+<span><span class="co">#&gt;  $ patents  :'data.frame':   4065 obs. of  1 variable:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id: chr [1:4065] "11397055" ...</span></span></code></pre></div>
 <p>Which assignees have an interest in beer?</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>

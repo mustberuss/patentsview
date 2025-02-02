@@ -225,14 +225,14 @@ PatentsView API:</li>
 <span><span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ patents:'data.frame': 1013 obs. of  7 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id                       : chr [1:1013] "4653043" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_date                     : chr [1:1013] "1987-03-24" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_year                     : int [1:1013] 1987 1988 ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_earliest_application_date: chr [1:1013] "1985-07-01" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_num_us_patents_cited     : int [1:1013] 12 3 ...</span></span>
-<span><span class="co">#&gt;   ..$ application                     :List of 1013</span></span>
-<span><span class="co">#&gt;   ..$ assignees                       :List of 1013</span></span>
+<span><span class="co">#&gt;  $ patents:'data.frame': 9057 obs. of  7 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id                       : chr [1:9057] "4653043" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_date                     : chr [1:9057] "1987-03-24" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_year                     : int [1:9057] 1987 1988 ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_earliest_application_date: chr [1:9057] "1985-07-01" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_num_us_patents_cited     : int [1:9057] 12 3 ...</span></span>
+<span><span class="co">#&gt;   ..$ application                     :List of 9057</span></span>
+<span><span class="co">#&gt;   ..$ assignees                       :List of 9057</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
@@ -250,19 +250,19 @@ relate to databases.</li>
 <span><span class="va">dl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">pv_out</span><span class="op">$</span><span class="va">data</span>, <span class="st">"patent_id"</span><span class="op">)</span></span>
 <span><span class="va">dl</span></span>
 <span><span class="co">#&gt; List of 3</span></span>
-<span><span class="co">#&gt;  $ application:'data.frame': 1013 obs. of  2 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id  : chr [1:1013] "4653043" ...</span></span>
-<span><span class="co">#&gt;   ..$ filing_date: chr [1:1013] "1985-07-01" ...</span></span>
-<span><span class="co">#&gt;  $ assignees  :'data.frame': 929 obs. of  3 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id            : chr [1:929] "4653043" ...</span></span>
-<span><span class="co">#&gt;   ..$ assignee             : chr [1:929] "https://search.patentsview.org/api/"..</span></span>
-<span><span class="co">#&gt;   ..$ assignee_organization: chr [1:929] "AT&amp;T Bell Laboratories" ...</span></span>
-<span><span class="co">#&gt;  $ patents    :'data.frame': 1013 obs. of  5 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id                       : chr [1:1013] "4653043" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_date                     : chr [1:1013] "1987-03-24" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_year                     : int [1:1013] 1987 1988 ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_earliest_application_date: chr [1:1013] "1985-07-01" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_num_us_patents_cited     : int [1:1013] 12 3 ...</span></span>
+<span><span class="co">#&gt;  $ application:'data.frame': 9057 obs. of  2 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id  : chr [1:9057] "4653043" ...</span></span>
+<span><span class="co">#&gt;   ..$ filing_date: chr [1:9057] "1985-07-01" ...</span></span>
+<span><span class="co">#&gt;  $ assignees  :'data.frame': 8558 obs. of  3 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id            : chr [1:8558] "4653043" ...</span></span>
+<span><span class="co">#&gt;   ..$ assignee             : chr [1:8558] "https://search.patentsview.org/api"..</span></span>
+<span><span class="co">#&gt;   ..$ assignee_organization: chr [1:8558] "AT&amp;T Bell Laboratories" ...</span></span>
+<span><span class="co">#&gt;  $ patents    :'data.frame': 9057 obs. of  5 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id                       : chr [1:9057] "4653043" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_date                     : chr [1:9057] "1987-03-24" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_year                     : int [1:9057] 1987 1988 ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_earliest_application_date: chr [1:9057] "1985-07-01" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_num_us_patents_cited     : int [1:9057] 12 3 ...</span></span>
 <span></span>
 <span><span class="co"># We don't get the assignee_total_num_patents back from the patent endpoint any longer.</span></span>
 <span><span class="co"># We'll have to make a call to the assignee endpoint once we know who the top 75</span></span>
@@ -304,7 +304,7 @@ relate to databases.</li>
 <span><span class="co">#&gt;  $ assignees:'data.frame':   75 obs. of  3 variables:</span></span>
 <span><span class="co">#&gt;   ..$ assignee_id          : chr [1:75] "34dbb232-405f-4c13-985f-da2d62f47c7c"..</span></span>
 <span><span class="co">#&gt;   ..$ assignee_organization: chr [1:75] "Xerox Corporation" ...</span></span>
-<span><span class="co">#&gt;   ..$ assignee_num_patents : int [1:75] 24081 30584 ...</span></span>
+<span><span class="co">#&gt;   ..$ assignee_num_patents : int [1:75] 24081 16006 ...</span></span>
 <span></span>
 <span><span class="co"># Here we redo top_asgns now that we have all the fields we need.</span></span>
 <span><span class="co"># We join in the total counts and mutate in the percentages </span></span>
@@ -439,50 +439,50 @@ time to accumulate citations).</li>
 <tbody>
 <tr class="odd">
 <td align="left">International Business Machines Corporation</td>
-<td align="right">0.4857272</td>
-<td align="right">109</td>
+<td align="right">0.4668579</td>
+<td align="right">808</td>
 <td align="right">161317</td>
-<td align="right">0.001</td>
+<td align="right">0.005</td>
 <td align="left">#f1c40f</td>
 </tr>
 <tr class="even">
 <td align="left">SONY GROUP CORPORATION</td>
-<td align="right">0.3944270</td>
-<td align="right">6</td>
+<td align="right">0.3713147</td>
+<td align="right">27</td>
 <td align="right">61292</td>
 <td align="right">0.000</td>
 <td align="left">#f1c40f</td>
 </tr>
 <tr class="odd">
 <td align="left">Fujitsu Limited</td>
-<td align="right">0.5211083</td>
-<td align="right">15</td>
+<td align="right">0.4037503</td>
+<td align="right">45</td>
 <td align="right">56102</td>
-<td align="right">0.000</td>
+<td align="right">0.001</td>
 <td align="left">#f1c40f</td>
 </tr>
 <tr class="even">
-<td align="left">Intel Corporation</td>
-<td align="right">0.3860855</td>
-<td align="right">3</td>
-<td align="right">50627</td>
+<td align="left">General Electric Company</td>
+<td align="right">0.4488619</td>
+<td align="right">24</td>
+<td align="right">51234</td>
 <td align="right">0.000</td>
 <td align="left">#f1c40f</td>
 </tr>
 <tr class="odd">
-<td align="left">HITACHI, LTD.</td>
-<td align="right">0.2960192</td>
-<td align="right">8</td>
-<td align="right">45755</td>
+<td align="left">Intel Corporation</td>
+<td align="right">0.3463383</td>
+<td align="right">20</td>
+<td align="right">50627</td>
 <td align="right">0.000</td>
 <td align="left">#f1c40f</td>
 </tr>
 <tr class="even">
-<td align="left">MITSUBISHI ELECTRIC CORPORATION</td>
-<td align="right">0.3914600</td>
-<td align="right">5</td>
-<td align="right">44168</td>
-<td align="right">0.000</td>
+<td align="left">HITACHI, LTD.</td>
+<td align="right">0.3608380</td>
+<td align="right">50</td>
+<td align="right">45755</td>
+<td align="right">0.001</td>
 <td align="left">#f1c40f</td>
 </tr>
 </tbody>

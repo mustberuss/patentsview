@@ -175,8 +175,12 @@ fieldsdf$data_type is set to int or bool for these fields.</p>
 <pre><code><span><span class="co">## [1] 90</span></span></code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fieldsdf</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"bool$|int$"</span>, <span class="va">fieldsdf</span><span class="op">$</span><span class="va">data_type</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"endpoint"</span>, <span class="st">"field"</span>, <span class="st">"data_type"</span><span class="op">)</span><span class="op">]</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] endpoint  field     data_type</span></span>
-<span><span class="co">## &lt;0 rows&gt; (or 0-length row.names)</span></span></code></pre>
+<pre><code><span><span class="co">##                        endpoint                    field data_type</span></span>
+<span><span class="co">##                        assignee            assignee_type       int</span></span>
+<span><span class="co">##                          patent  assignees.assignee_type       int</span></span>
+<span><span class="co">##  patent/us_application_citation citation_document_number       int</span></span>
+<span><span class="co">##                     publication  assignees.assignee_type       int</span></span>
+<span><span class="co">##                     publication             rule_47_flag      bool</span></span></code></pre>
 </li>
 <li><p>The API team created a <a href="patentsview-breaking-release.html#online-documentation">Swagger
 UI</a> page for the new version of the API. It has a nice feature where
@@ -578,7 +582,7 @@ requesting “patents” as a field.</li>
 <span><span class="co">##  [11] "application.filing_type"                                     </span></span>
 <span><span class="co">##  [12] "application.rule_47_flag"                                    </span></span>
 <span><span class="co">##  [13] "application.series_code"                                     </span></span>
-<span><span class="co">##  [14] "assignees.assignee"                                          </span></span>
+<span><span class="co">##  [14] "assignees.assignee_id"                                       </span></span>
 <span><span class="co">##  [15] "assignees.assignee_city"                                     </span></span>
 <span><span class="co">##  [16] "assignees.assignee_country"                                  </span></span>
 <span><span class="co">##  [17] "assignees.assignee_individual_name_first"                    </span></span>
@@ -629,27 +633,27 @@ requesting “patents” as a field.</li>
 <span><span class="co">##  [62] "gov_interest_organizations.level_one"                        </span></span>
 <span><span class="co">##  [63] "gov_interest_organizations.level_three"                      </span></span>
 <span><span class="co">##  [64] "gov_interest_organizations.level_two"                        </span></span>
-<span><span class="co">##  [65] "granted_pregrant_crosswalk.application_number"               </span></span>
-<span><span class="co">##  [66] "granted_pregrant_crosswalk.document_number"                  </span></span>
-<span><span class="co">##  [67] "inventors.inventor"                                          </span></span>
-<span><span class="co">##  [68] "inventors.inventor_city"                                     </span></span>
-<span><span class="co">##  [69] "inventors.inventor_country"                                  </span></span>
-<span><span class="co">##  [70] "inventors.inventor_name_first"                               </span></span>
-<span><span class="co">##  [71] "inventors.inventor_name_last"                                </span></span>
-<span><span class="co">##  [72] "inventors.inventor_sequence"                                 </span></span>
-<span><span class="co">##  [73] "inventors.inventor_state"                                    </span></span>
-<span><span class="co">##  [74] "ipcr.ipc_action_date"                                        </span></span>
-<span><span class="co">##  [75] "ipcr.ipc_class"                                              </span></span>
-<span><span class="co">##  [76] "ipcr.ipc_classification_data_source"                         </span></span>
-<span><span class="co">##  [77] "ipcr.ipc_classification_value"                               </span></span>
-<span><span class="co">##  [78] "ipcr.ipc_id"                                                 </span></span>
-<span><span class="co">##  [79] "ipcr.ipc_main_group"                                         </span></span>
-<span><span class="co">##  [80] "ipcr.ipc_section"                                            </span></span>
-<span><span class="co">##  [81] "ipcr.ipc_sequence"                                           </span></span>
-<span><span class="co">##  [82] "ipcr.ipc_subclass"                                           </span></span>
-<span><span class="co">##  [83] "ipcr.ipc_subgroup"                                           </span></span>
-<span><span class="co">##  [84] "ipcr.ipc_symbol_position"                                    </span></span>
-<span><span class="co">##  [85] "gov_interest_statement"                                      </span></span>
+<span><span class="co">##  [65] "gov_interest_statement"                                      </span></span>
+<span><span class="co">##  [66] "granted_pregrant_crosswalk.application_number"               </span></span>
+<span><span class="co">##  [67] "granted_pregrant_crosswalk.document_number"                  </span></span>
+<span><span class="co">##  [68] "inventors.inventor_id"                                       </span></span>
+<span><span class="co">##  [69] "inventors.inventor_city"                                     </span></span>
+<span><span class="co">##  [70] "inventors.inventor_country"                                  </span></span>
+<span><span class="co">##  [71] "inventors.inventor_name_first"                               </span></span>
+<span><span class="co">##  [72] "inventors.inventor_name_last"                                </span></span>
+<span><span class="co">##  [73] "inventors.inventor_sequence"                                 </span></span>
+<span><span class="co">##  [74] "inventors.inventor_state"                                    </span></span>
+<span><span class="co">##  [75] "ipcr.ipc_action_date"                                        </span></span>
+<span><span class="co">##  [76] "ipcr.ipc_class"                                              </span></span>
+<span><span class="co">##  [77] "ipcr.ipc_classification_data_source"                         </span></span>
+<span><span class="co">##  [78] "ipcr.ipc_classification_value"                               </span></span>
+<span><span class="co">##  [79] "ipcr.ipc_id"                                                 </span></span>
+<span><span class="co">##  [80] "ipcr.ipc_main_group"                                         </span></span>
+<span><span class="co">##  [81] "ipcr.ipc_section"                                            </span></span>
+<span><span class="co">##  [82] "ipcr.ipc_sequence"                                           </span></span>
+<span><span class="co">##  [83] "ipcr.ipc_subclass"                                           </span></span>
+<span><span class="co">##  [84] "ipcr.ipc_subgroup"                                           </span></span>
+<span><span class="co">##  [85] "ipcr.ipc_symbol_position"                                    </span></span>
 <span><span class="co">##  [86] "patent_abstract"                                             </span></span>
 <span><span class="co">##  [87] "patent_cpc_current_group_average_patent_processing_days"     </span></span>
 <span><span class="co">##  [88] "patent_date"                                                 </span></span>
@@ -667,33 +671,33 @@ requesting “patents” as a field.</li>
 <span><span class="co">## [100] "patent_type"                                                 </span></span>
 <span><span class="co">## [101] "patent_uspc_current_mainclass_average_patent_processing_days"</span></span>
 <span><span class="co">## [102] "patent_year"                                                 </span></span>
-<span><span class="co">## [103] "wipo_kind"                                                   </span></span>
-<span><span class="co">## [104] "pct_data.application_kind"                                   </span></span>
-<span><span class="co">## [105] "pct_data.pct_102_date"                                       </span></span>
-<span><span class="co">## [106] "pct_data.pct_371_date"                                       </span></span>
-<span><span class="co">## [107] "pct_data.pct_doc_number"                                     </span></span>
-<span><span class="co">## [108] "pct_data.pct_doc_type"                                       </span></span>
-<span><span class="co">## [109] "pct_data.published_filed_date"                               </span></span>
-<span><span class="co">## [110] "us_related_documents.published_country"                      </span></span>
-<span><span class="co">## [111] "us_related_documents.related_doc_kind"                       </span></span>
-<span><span class="co">## [112] "us_related_documents.related_doc_number"                     </span></span>
-<span><span class="co">## [113] "us_related_documents.related_doc_published_date"             </span></span>
-<span><span class="co">## [114] "us_related_documents.related_doc_sequence"                   </span></span>
-<span><span class="co">## [115] "us_related_documents.related_doc_status"                     </span></span>
-<span><span class="co">## [116] "us_related_documents.related_doc_type"                       </span></span>
-<span><span class="co">## [117] "us_related_documents.wipo_kind"                              </span></span>
-<span><span class="co">## [118] "us_term_of_grant.disclaimer_date"                            </span></span>
-<span><span class="co">## [119] "us_term_of_grant.term_disclaimer"                            </span></span>
-<span><span class="co">## [120] "us_term_of_grant.term_extension"                             </span></span>
-<span><span class="co">## [121] "us_term_of_grant.term_grant"                                 </span></span>
-<span><span class="co">## [122] "uspc_at_issue.uspc_mainclass"                                </span></span>
-<span><span class="co">## [123] "uspc_at_issue.uspc_mainclass_id"                             </span></span>
-<span><span class="co">## [124] "uspc_at_issue.uspc_sequence"                                 </span></span>
-<span><span class="co">## [125] "uspc_at_issue.uspc_subclass"                                 </span></span>
-<span><span class="co">## [126] "uspc_at_issue.uspc_subclass_id"                              </span></span>
-<span><span class="co">## [127] "wipo.wipo_field"                                             </span></span>
-<span><span class="co">## [128] "wipo.wipo_field_id"                                          </span></span>
-<span><span class="co">## [129] "wipo.wipo_sequence"</span></span></code></pre>
+<span><span class="co">## [103] "pct_data.application_kind"                                   </span></span>
+<span><span class="co">## [104] "pct_data.pct_102_date"                                       </span></span>
+<span><span class="co">## [105] "pct_data.pct_371_date"                                       </span></span>
+<span><span class="co">## [106] "pct_data.pct_doc_number"                                     </span></span>
+<span><span class="co">## [107] "pct_data.pct_doc_type"                                       </span></span>
+<span><span class="co">## [108] "pct_data.published_filed_date"                               </span></span>
+<span><span class="co">## [109] "us_related_documents.published_country"                      </span></span>
+<span><span class="co">## [110] "us_related_documents.related_doc_kind"                       </span></span>
+<span><span class="co">## [111] "us_related_documents.related_doc_number"                     </span></span>
+<span><span class="co">## [112] "us_related_documents.related_doc_published_date"             </span></span>
+<span><span class="co">## [113] "us_related_documents.related_doc_sequence"                   </span></span>
+<span><span class="co">## [114] "us_related_documents.related_doc_status"                     </span></span>
+<span><span class="co">## [115] "us_related_documents.related_doc_type"                       </span></span>
+<span><span class="co">## [116] "us_related_documents.wipo_kind"                              </span></span>
+<span><span class="co">## [117] "us_term_of_grant.disclaimer_date"                            </span></span>
+<span><span class="co">## [118] "us_term_of_grant.term_disclaimer"                            </span></span>
+<span><span class="co">## [119] "us_term_of_grant.term_extension"                             </span></span>
+<span><span class="co">## [120] "us_term_of_grant.term_grant"                                 </span></span>
+<span><span class="co">## [121] "uspc_at_issue.uspc_mainclass"                                </span></span>
+<span><span class="co">## [122] "uspc_at_issue.uspc_mainclass_id"                             </span></span>
+<span><span class="co">## [123] "uspc_at_issue.uspc_sequence"                                 </span></span>
+<span><span class="co">## [124] "uspc_at_issue.uspc_subclass"                                 </span></span>
+<span><span class="co">## [125] "uspc_at_issue.uspc_subclass_id"                              </span></span>
+<span><span class="co">## [126] "wipo.wipo_field"                                             </span></span>
+<span><span class="co">## [127] "wipo.wipo_field_id"                                          </span></span>
+<span><span class="co">## [128] "wipo.wipo_sequence"                                          </span></span>
+<span><span class="co">## [129] "wipo_kind"</span></span></code></pre>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span>   <span class="co"># all attributes at the patent endpoint, fully qualified.  With a modest query this can</span></span>
 <span>   <span class="co"># be too much to send via a GET request</span></span>
@@ -711,7 +715,7 @@ requesting “patents” as a field.</li>
 <span><span class="co">##  [11] "application.filing_type"                                     </span></span>
 <span><span class="co">##  [12] "application.rule_47_flag"                                    </span></span>
 <span><span class="co">##  [13] "application.series_code"                                     </span></span>
-<span><span class="co">##  [14] "assignees.assignee"                                          </span></span>
+<span><span class="co">##  [14] "assignees.assignee_id"                                       </span></span>
 <span><span class="co">##  [15] "assignees.assignee_city"                                     </span></span>
 <span><span class="co">##  [16] "assignees.assignee_country"                                  </span></span>
 <span><span class="co">##  [17] "assignees.assignee_individual_name_first"                    </span></span>
@@ -762,27 +766,27 @@ requesting “patents” as a field.</li>
 <span><span class="co">##  [62] "gov_interest_organizations.level_one"                        </span></span>
 <span><span class="co">##  [63] "gov_interest_organizations.level_three"                      </span></span>
 <span><span class="co">##  [64] "gov_interest_organizations.level_two"                        </span></span>
-<span><span class="co">##  [65] "granted_pregrant_crosswalk.application_number"               </span></span>
-<span><span class="co">##  [66] "granted_pregrant_crosswalk.document_number"                  </span></span>
-<span><span class="co">##  [67] "inventors.inventor"                                          </span></span>
-<span><span class="co">##  [68] "inventors.inventor_city"                                     </span></span>
-<span><span class="co">##  [69] "inventors.inventor_country"                                  </span></span>
-<span><span class="co">##  [70] "inventors.inventor_name_first"                               </span></span>
-<span><span class="co">##  [71] "inventors.inventor_name_last"                                </span></span>
-<span><span class="co">##  [72] "inventors.inventor_sequence"                                 </span></span>
-<span><span class="co">##  [73] "inventors.inventor_state"                                    </span></span>
-<span><span class="co">##  [74] "ipcr.ipc_action_date"                                        </span></span>
-<span><span class="co">##  [75] "ipcr.ipc_class"                                              </span></span>
-<span><span class="co">##  [76] "ipcr.ipc_classification_data_source"                         </span></span>
-<span><span class="co">##  [77] "ipcr.ipc_classification_value"                               </span></span>
-<span><span class="co">##  [78] "ipcr.ipc_id"                                                 </span></span>
-<span><span class="co">##  [79] "ipcr.ipc_main_group"                                         </span></span>
-<span><span class="co">##  [80] "ipcr.ipc_section"                                            </span></span>
-<span><span class="co">##  [81] "ipcr.ipc_sequence"                                           </span></span>
-<span><span class="co">##  [82] "ipcr.ipc_subclass"                                           </span></span>
-<span><span class="co">##  [83] "ipcr.ipc_subgroup"                                           </span></span>
-<span><span class="co">##  [84] "ipcr.ipc_symbol_position"                                    </span></span>
-<span><span class="co">##  [85] "gov_interest_statement"                                      </span></span>
+<span><span class="co">##  [65] "gov_interest_statement"                                      </span></span>
+<span><span class="co">##  [66] "granted_pregrant_crosswalk.application_number"               </span></span>
+<span><span class="co">##  [67] "granted_pregrant_crosswalk.document_number"                  </span></span>
+<span><span class="co">##  [68] "inventors.inventor_id"                                       </span></span>
+<span><span class="co">##  [69] "inventors.inventor_city"                                     </span></span>
+<span><span class="co">##  [70] "inventors.inventor_country"                                  </span></span>
+<span><span class="co">##  [71] "inventors.inventor_name_first"                               </span></span>
+<span><span class="co">##  [72] "inventors.inventor_name_last"                                </span></span>
+<span><span class="co">##  [73] "inventors.inventor_sequence"                                 </span></span>
+<span><span class="co">##  [74] "inventors.inventor_state"                                    </span></span>
+<span><span class="co">##  [75] "ipcr.ipc_action_date"                                        </span></span>
+<span><span class="co">##  [76] "ipcr.ipc_class"                                              </span></span>
+<span><span class="co">##  [77] "ipcr.ipc_classification_data_source"                         </span></span>
+<span><span class="co">##  [78] "ipcr.ipc_classification_value"                               </span></span>
+<span><span class="co">##  [79] "ipcr.ipc_id"                                                 </span></span>
+<span><span class="co">##  [80] "ipcr.ipc_main_group"                                         </span></span>
+<span><span class="co">##  [81] "ipcr.ipc_section"                                            </span></span>
+<span><span class="co">##  [82] "ipcr.ipc_sequence"                                           </span></span>
+<span><span class="co">##  [83] "ipcr.ipc_subclass"                                           </span></span>
+<span><span class="co">##  [84] "ipcr.ipc_subgroup"                                           </span></span>
+<span><span class="co">##  [85] "ipcr.ipc_symbol_position"                                    </span></span>
 <span><span class="co">##  [86] "patent_abstract"                                             </span></span>
 <span><span class="co">##  [87] "patent_cpc_current_group_average_patent_processing_days"     </span></span>
 <span><span class="co">##  [88] "patent_date"                                                 </span></span>
@@ -800,33 +804,33 @@ requesting “patents” as a field.</li>
 <span><span class="co">## [100] "patent_type"                                                 </span></span>
 <span><span class="co">## [101] "patent_uspc_current_mainclass_average_patent_processing_days"</span></span>
 <span><span class="co">## [102] "patent_year"                                                 </span></span>
-<span><span class="co">## [103] "wipo_kind"                                                   </span></span>
-<span><span class="co">## [104] "pct_data.application_kind"                                   </span></span>
-<span><span class="co">## [105] "pct_data.pct_102_date"                                       </span></span>
-<span><span class="co">## [106] "pct_data.pct_371_date"                                       </span></span>
-<span><span class="co">## [107] "pct_data.pct_doc_number"                                     </span></span>
-<span><span class="co">## [108] "pct_data.pct_doc_type"                                       </span></span>
-<span><span class="co">## [109] "pct_data.published_filed_date"                               </span></span>
-<span><span class="co">## [110] "us_related_documents.published_country"                      </span></span>
-<span><span class="co">## [111] "us_related_documents.related_doc_kind"                       </span></span>
-<span><span class="co">## [112] "us_related_documents.related_doc_number"                     </span></span>
-<span><span class="co">## [113] "us_related_documents.related_doc_published_date"             </span></span>
-<span><span class="co">## [114] "us_related_documents.related_doc_sequence"                   </span></span>
-<span><span class="co">## [115] "us_related_documents.related_doc_status"                     </span></span>
-<span><span class="co">## [116] "us_related_documents.related_doc_type"                       </span></span>
-<span><span class="co">## [117] "us_related_documents.wipo_kind"                              </span></span>
-<span><span class="co">## [118] "us_term_of_grant.disclaimer_date"                            </span></span>
-<span><span class="co">## [119] "us_term_of_grant.term_disclaimer"                            </span></span>
-<span><span class="co">## [120] "us_term_of_grant.term_extension"                             </span></span>
-<span><span class="co">## [121] "us_term_of_grant.term_grant"                                 </span></span>
-<span><span class="co">## [122] "uspc_at_issue.uspc_mainclass"                                </span></span>
-<span><span class="co">## [123] "uspc_at_issue.uspc_mainclass_id"                             </span></span>
-<span><span class="co">## [124] "uspc_at_issue.uspc_sequence"                                 </span></span>
-<span><span class="co">## [125] "uspc_at_issue.uspc_subclass"                                 </span></span>
-<span><span class="co">## [126] "uspc_at_issue.uspc_subclass_id"                              </span></span>
-<span><span class="co">## [127] "wipo.wipo_field"                                             </span></span>
-<span><span class="co">## [128] "wipo.wipo_field_id"                                          </span></span>
-<span><span class="co">## [129] "wipo.wipo_sequence"</span></span></code></pre>
+<span><span class="co">## [103] "pct_data.application_kind"                                   </span></span>
+<span><span class="co">## [104] "pct_data.pct_102_date"                                       </span></span>
+<span><span class="co">## [105] "pct_data.pct_371_date"                                       </span></span>
+<span><span class="co">## [106] "pct_data.pct_doc_number"                                     </span></span>
+<span><span class="co">## [107] "pct_data.pct_doc_type"                                       </span></span>
+<span><span class="co">## [108] "pct_data.published_filed_date"                               </span></span>
+<span><span class="co">## [109] "us_related_documents.published_country"                      </span></span>
+<span><span class="co">## [110] "us_related_documents.related_doc_kind"                       </span></span>
+<span><span class="co">## [111] "us_related_documents.related_doc_number"                     </span></span>
+<span><span class="co">## [112] "us_related_documents.related_doc_published_date"             </span></span>
+<span><span class="co">## [113] "us_related_documents.related_doc_sequence"                   </span></span>
+<span><span class="co">## [114] "us_related_documents.related_doc_status"                     </span></span>
+<span><span class="co">## [115] "us_related_documents.related_doc_type"                       </span></span>
+<span><span class="co">## [116] "us_related_documents.wipo_kind"                              </span></span>
+<span><span class="co">## [117] "us_term_of_grant.disclaimer_date"                            </span></span>
+<span><span class="co">## [118] "us_term_of_grant.term_disclaimer"                            </span></span>
+<span><span class="co">## [119] "us_term_of_grant.term_extension"                             </span></span>
+<span><span class="co">## [120] "us_term_of_grant.term_grant"                                 </span></span>
+<span><span class="co">## [121] "uspc_at_issue.uspc_mainclass"                                </span></span>
+<span><span class="co">## [122] "uspc_at_issue.uspc_mainclass_id"                             </span></span>
+<span><span class="co">## [123] "uspc_at_issue.uspc_sequence"                                 </span></span>
+<span><span class="co">## [124] "uspc_at_issue.uspc_subclass"                                 </span></span>
+<span><span class="co">## [125] "uspc_at_issue.uspc_subclass_id"                              </span></span>
+<span><span class="co">## [126] "wipo.wipo_field"                                             </span></span>
+<span><span class="co">## [127] "wipo.wipo_field_id"                                          </span></span>
+<span><span class="co">## [128] "wipo.wipo_sequence"                                          </span></span>
+<span><span class="co">## [129] "wipo_kind"</span></span></code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>On <a href="understanding-the-api.html#unexpected-results">applying
 multiple conditions to related-entity fields</a>
@@ -1146,6 +1150,71 @@ in search_pv() so users could do their own paging. See the new <a href="result-s
 </ul>
 </li>
 </ul>
+</div>
+<div class="section level2">
+<h2 id="odd-demo">Odd Demo<a class="anchor" aria-label="anchor" href="#odd-demo"></a>
+</h2>
+<p>Here we demonstrate a weird interaction between the API and R package
+when no sort parmeter is specified.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patent_id"</span>, <span class="st">"patent_date"</span>, <span class="st">"patent_title"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span></span>
+<span>  query <span class="op">=</span> <span class="st">'{"_gte":{"patent_date":"2007-01-01"}}'</span>,</span>
+<span>  endpoint <span class="op">=</span> <span class="st">"patent"</span>, fields <span class="op">=</span> <span class="va">fields</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## $data</span></span>
+<span><span class="co">## #### A list with a single data frame on patents level:</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## List of 1</span></span>
+<span><span class="co">##  $ patents:'data.frame': 1000 obs. of  3 variables:</span></span>
+<span><span class="co">##   ..$ patent_id   : chr [1:1000] "10631087" ...</span></span>
+<span><span class="co">##   ..$ patent_title: chr [1:1000] "Method and device for voice operated contro"..</span></span>
+<span><span class="co">##   ..$ patent_date : chr [1:1000] "2020-04-21" ...</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## $query_results</span></span>
+<span><span class="co">## #### Distinct entity counts across all downloadable pages of output:</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## total_hits = 5,452,372</span></span></code></pre>
+<p>Note that the first patent_date returned above is “2020-04-21” and
+that what gets sent to the API is <code>&amp;s=[]&amp;o=</code></p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">url</span> <span class="op">&lt;-</span> <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_request</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">url</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/URLencode.html" class="external-link">URLdecode</a></span><span class="op">(</span><span class="va">url</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## https://search.patentsview.org/api/v1/patent/?q={"_gte":{"patent_date":"2007-01-01"}}&amp;f=["patent_date","patent_id","patent_title"]&amp;s=[]&amp;o={"size":1000}</span></span></code></pre>
+<p>Now we’ll send in our own GET with <code>&amp;s=&amp;o</code> to see
+that the API return is different, seemingly applying a default sort?</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://httr2.r-lib.org" class="external-link">httr2</a></span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">url</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">"&amp;s=\\[\\]"</span>, <span class="st">"&amp;s="</span>, <span class="va">url</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/URLencode.html" class="external-link">URLdecode</a></span><span class="op">(</span><span class="va">url</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## https://search.patentsview.org/api/v1/patent/?q={"_gte":{"patent_date":"2007-01-01"}}&amp;f=["patent_date","patent_id","patent_title"]&amp;s=&amp;o={"size":1000}</span></span></code></pre>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span>  <span class="va">api_key</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"PATENTSVIEW_API_KEY"</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">req</span> <span class="op">&lt;-</span> <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/request.html" class="external-link">request</a></span><span class="op">(</span><span class="va">url</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/req_method.html" class="external-link">req_method</a></span><span class="op">(</span><span class="st">"GET"</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">resp</span> <span class="op">&lt;-</span> <span class="va">req</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/req_user_agent.html" class="external-link">req_user_agent</a></span><span class="op">(</span><span class="st">"https://github.com/ropensci/patentsview"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/req_retry.html" class="external-link">req_retry</a></span><span class="op">(</span>max_tries <span class="op">=</span> <span class="fl">20</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="co"># automatic 429 Retry-After</span></span>
+<span>    <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/req_headers.html" class="external-link">req_headers</a></span><span class="op">(</span><span class="st">"X-Api-Key"</span> <span class="op">=</span> <span class="va">api_key</span>, .redact <span class="op">=</span> <span class="st">"X-Api-Key"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/req_perform.html" class="external-link">req_perform</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">json</span> <span class="op">&lt;-</span> <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_response</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/resp_body_raw.html" class="external-link">resp_body_json</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="va">json</span><span class="op">$</span><span class="va">patents</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
+<pre><code><span><span class="co">## $patent_id</span></span>
+<span><span class="co">## [1] "7155746"</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## $patent_title</span></span>
+<span><span class="co">## [1] "Anti-wicking protective workwear and methods of making and using same"</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## $patent_date</span></span>
+<span><span class="co">## [1] "2007-01-02"</span></span></code></pre>
+<p>For a while POSTs and GETs behaved differently when a sort wasn’t
+specified. Currently an API bug prevents seeing what the behavior is on
+POSTS.</p>
 </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
