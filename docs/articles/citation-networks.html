@@ -180,7 +180,8 @@ to identify the patents that relate to PCA.</p>
 <span><span class="va">citing_query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span>patent_id <span class="op">=</span> <span class="va">patent_ids</span><span class="op">)</span></span>
 <span><span class="va">cited_query</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span>citation_patent_id <span class="op">=</span> <span class="va">patent_ids</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Create a list of fields to pull from the API</span></span>
+<span><span class="co"># Create a list of fields to pull from the API.  Note that, with a recent API chanage,</span></span>
+<span><span class="co"># these aren't the only fields we receive back from the API</span></span>
 <span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="st">"patent_id"</span>,</span>
 <span>  <span class="st">"citation_patent_id"</span></span>
@@ -197,6 +198,7 @@ to identify the patents that relate to PCA.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Unnest the data found in the two lists of columns</span></span>
+<span><span class="co"># (citation_sequence being a field we didn't request)</span></span>
 <span><span class="va">res_lst</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">data</span>, pk <span class="op">=</span> <span class="st">"patent_id"</span><span class="op">)</span></span>
 <span><span class="va">res_lst</span></span>
 <span><span class="co">#&gt; List of 1</span></span>
@@ -231,6 +233,7 @@ frame of nodes and a data frame of edges.</p>
 <span><span class="va">edges</span> <span class="op">&lt;-</span></span>
 <span>  <span class="va">res_lst</span><span class="op">$</span><span class="va">us_patent_citations</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter-joins.html" class="external-link">semi_join</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.</span>, y <span class="op">=</span> <span class="va">.</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"citation_patent_id"</span> <span class="op">=</span> <span class="st">"patent_id"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">patent_id</span>, <span class="va">citation_patent_id</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>  <span class="co"># discard citation_sequence we didn't ask for</span></span>
 <span>  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">set_colnames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"from"</span>, <span class="st">"to"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">nodes</span> <span class="op">&lt;-</span></span>
@@ -246,8 +249,8 @@ frame of nodes and a data frame of edges.</p>
 <span>  main <span class="op">=</span> <span class="st">"Citations among patent citation analysis (PCA) patents"</span></span>
 <span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/visNetwork/man/visEdges.html" class="external-link">visEdges</a></span><span class="op">(</span>arrows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>enabled <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/visNetwork/man/visIgraphLayout.html" class="external-link">visIgraphLayout</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in if (length(nms) != n || any(nms == "")) stop("'options' must be a fully named list, or have no names (NULL)"): missing value where TRUE/FALSE needed</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/visNetwork/man/visIgraphLayout.html" class="external-link">visIgraphLayout</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="figure/citationvis-1.png"></p>
 <p>It looks like several of the patents cite patent number 6,499,026,
 perhaps indicating that this patent contains technology that is
 foundational to the field. However, when we hover over the nodes we see

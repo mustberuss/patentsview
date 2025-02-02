@@ -39,7 +39,8 @@ pat_lst <- unnest_pv_data(pv_out$data, pk = "patent_id")
 citing_query <- qry_funs$eq(patent_id = patent_ids)
 cited_query <- qry_funs$eq(citation_patent_id = patent_ids)
 
-# Create a list of fields to pull from the API
+# Create a list of fields to pull from the API.  Note that, with a recent API chanage,
+# these aren't the only fields we receive back from the API
 fields <- c(
   "patent_id",
   "citation_patent_id"
@@ -56,6 +57,7 @@ res2 <- search_pv(cited_query,
 )
 
 # Unnest the data found in the two lists of columns
+# (citation_sequence being a field we didn't request)
 res_lst <- unnest_pv_data(res$data, pk = "patent_id")
 res_lst
 #> List of 1
@@ -89,6 +91,7 @@ pat_title <- function(title, number) {
 edges <-
   res_lst$us_patent_citations %>%
   semi_join(x = ., y = ., by = c("citation_patent_id" = "patent_id")) %>%
+  select(patent_id, citation_patent_id) %>%  # discard citation_sequence we didn't ask for
   set_colnames(c("from", "to"))
 
 nodes <-
@@ -105,8 +108,9 @@ visNetwork(
 ) %>%
   visEdges(arrows = list(to = list(enabled = TRUE))) %>%
   visIgraphLayout()
-#> Error in if (length(nms) != n || any(nms == "")) stop("'options' must be a fully named list, or have no names (NULL)"): missing value where TRUE/FALSE needed
 ```
+
+![](figure/citationvis-1.png)
 
 It looks like several of the patents cite patent number 6,499,026, perhaps indicating that this patent contains technology that is foundational to the field. However, when we hover over the nodes we see that several of the patents have the same title. Clicking on the titles brings us to their full text on Google Patents, which confirms that many of these PCA patents belong to the same patent family.[^1]  Let's choose one of the patents in each family to act as the family's representative. This will reduce the size of the subsequent network, while hopefully retaining its overall structure.
 
