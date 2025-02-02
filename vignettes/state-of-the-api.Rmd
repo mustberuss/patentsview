@@ -504,6 +504,54 @@ but the build will silently fail on r-universe.  Don't ask how I know that.
 there isn't the 100,000 row limitation now.  The API's ```after``` is now exposed 
 in search_pv() so users could do their own paging. See the new [paging vignette](result-set-paging.html)
 
+## Odd Demo
+   Here we demonstrate a weird interaction between the API and R package when no sort parmeter
+is specified.  
+
+```{r}
+fields <- c("patent_id", "patent_date", "patent_title")
+
+search_pv(
+  query = '{"_gte":{"patent_date":"2007-01-01"}}',
+  endpoint = "patent", fields = fields
+)
+```
+
+Note that the first patent_date returned above is "2020-04-21" and that what gets 
+sent to the API is `&s=[]&o=`
+
+```{r}
+url <- httr2::last_request()$url
+cat(utils::URLdecode(url))
+```
+
+
+Now we'll send in our own GET with `&s=&o` to see that the API return is different,
+seemingly applying a default sort?
+
+```{r}
+library(httr2)
+
+  url <- sub("&s=\\[\\]", "&s=", url)
+  cat(utils::URLdecode(url))
+  api_key <- Sys.getenv("PATENTSVIEW_API_KEY")
+
+  req <- httr2::request(url) |>
+    httr2::req_method("GET")
+
+  resp <- req |>
+    httr2::req_user_agent("https://github.com/ropensci/patentsview") |>
+    httr2::req_retry(max_tries = 20) |> # automatic 429 Retry-After
+    httr2::req_headers("X-Api-Key" = api_key, .redact = "X-Api-Key") |>
+    httr2::req_perform()
+
+  json <- httr2::last_response() |> httr2::resp_body_json()
+  json$patents[[1]]
+
+```
+For a while POSTs and GETs behaved differently when a sort wasn't specified.  Currently
+an API bug prevents seeing what the behavior is on POSTS. 
+
 [^1]: Observation sent to the API team.
 [^2]: Observation sent to the API team.
 [^3]: There isn't a data dictionary for the API so I suggested they create one.

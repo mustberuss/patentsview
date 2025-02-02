@@ -26,9 +26,11 @@ Let's start with a basic example of how to use the package's primary function, `
 ```{r}
 library(patentsview)
 
+fields <- c("patent_id", "patent_date", "patent_title")
+
 search_pv(
   query = '{"_gte":{"patent_date":"2007-01-01"}}',
-  endpoint = "patent"
+  endpoint = "patent", fields = fields
 )
 ```
 
@@ -102,10 +104,12 @@ By default, `search_pv()` returns 1,000 records per page and only gives you the 
 You can download all pages of output in one call by setting `all_pages = TRUE`. This will set `size` equal to 1,000 and loop over all pages of output:
 
 ```{r}
+fields <- c("patent_id", "inventors.inventor_name_last", "inventors.inventor_name_first")
 search_pv(
   query = qry_funs$eq(inventors.inventor_name_last = "Chambers"),
-  all_pages = TRUE, size = 1000
+  all_pages = TRUE, size = 1000, fields = fields
 )
+
 ```
 See the [result set paging vignette](result-set-paging.html) for information on custom paging.
 

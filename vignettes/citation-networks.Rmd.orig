@@ -47,8 +47,10 @@ pat_lst <- unnest_pv_data(pv_out$data, pk = "patent_id")
 citing_query <- qry_funs$eq(patent_id = patent_ids)
 cited_query <- qry_funs$eq(citation_patent_id = patent_ids)
 
-# Create a list of fields to pull from the API.  Note that, with a recent API chanage,
-# these aren't the only fields we receive back from the API
+# Create a list of fields to pull from the API.  Note that, with a recent chanage
+# to the R package, these aren't the only fields we'll receive back from the API.
+# This is due to the way that the API's paging works now.  There is more about this
+# in the [Result Set Paging](result-set-paging.html) vignette.
 fields <- c(
   "patent_id",
   "citation_patent_id"
@@ -64,7 +66,7 @@ res2 <- search_pv(cited_query,
   endpoint = "patent/us_patent_citation", method = "POST", size = 1000
 )
 
-# Unnest the data found in the two lists of columns
+# Unnest the data found in the three lists of columns
 # (citation_sequence being a field we didn't request)
 res_lst <- unnest_pv_data(res$data, pk = "patent_id")
 res_lst
@@ -88,7 +90,7 @@ pat_title <- function(title, number) {
 edges <-
   res_lst$us_patent_citations %>%
   semi_join(x = ., y = ., by = c("citation_patent_id" = "patent_id")) %>%
-  select(patent_id, citation_patent_id) %>%  # discard citation_sequence we didn't ask for
+  select(-citation_sequence) %>%  # discard citation_sequence that we don't need here
   set_colnames(c("from", "to"))
 
 nodes <-
