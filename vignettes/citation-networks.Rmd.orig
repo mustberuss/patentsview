@@ -47,7 +47,8 @@ pat_lst <- unnest_pv_data(pv_out$data, pk = "patent_id")
 citing_query <- qry_funs$eq(patent_id = patent_ids)
 cited_query <- qry_funs$eq(citation_patent_id = patent_ids)
 
-# Create a list of fields to pull from the API
+# Create a list of fields to pull from the API.  Note that, with a recent API chanage,
+# these aren't the only fields we receive back from the API
 fields <- c(
   "patent_id",
   "citation_patent_id"
@@ -64,6 +65,7 @@ res2 <- search_pv(cited_query,
 )
 
 # Unnest the data found in the two lists of columns
+# (citation_sequence being a field we didn't request)
 res_lst <- unnest_pv_data(res$data, pk = "patent_id")
 res_lst
 
@@ -86,6 +88,7 @@ pat_title <- function(title, number) {
 edges <-
   res_lst$us_patent_citations %>%
   semi_join(x = ., y = ., by = c("citation_patent_id" = "patent_id")) %>%
+  select(patent_id, citation_patent_id) %>%  # discard citation_sequence we didn't ask for
   set_colnames(c("from", "to"))
 
 nodes <-
