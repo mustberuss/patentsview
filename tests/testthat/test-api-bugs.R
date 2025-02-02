@@ -356,6 +356,7 @@ test_that("endpoints are still broken", {
 })
 
 test_that("POSTs misbehave without all parameters", {
+  skip_on_cran()
 
   # as reported in the forum https://patentsview.org/forum/7/topic/815
   # see also https://patentsview.org/forum/7/topic/804#comment-13411
