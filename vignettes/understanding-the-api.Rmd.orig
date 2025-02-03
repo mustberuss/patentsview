@@ -59,7 +59,7 @@ explicit_results <- search_pv(query, fields = explicit_fields, method = "POST")
 # so what was POSTed to the API is the same!
 cat(httr2::last_request()$body$data)
 
-# but the results from the API are the same
+# and, of course, the results from the API are the same
 explicit_results$data$patent$application
 
 # (Observation reported to the API team: application_type, series_code and filing_type
@@ -151,7 +151,7 @@ actual_inventors[[1]]
 
 Now, with actual_inventors' inventor_ids in hand, we'll ask the patent endpoint for their patents.
 The results are quite different than what the first query returned. (These patents would 
-have names matching at least one of our two famous forefather's names.  The first query non-intuitively
+have names matching at least one of our two famous forefather's names.  The first query unintuitively
 matched names where the first and last name matches did not necessarily both occur on the same inventor.)
 
 ```{r}
