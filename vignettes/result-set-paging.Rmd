@@ -32,7 +32,6 @@ Here we'll retrieve 5000 utility patents using custom paging.
 
 ``` r
 library(patentsview)
-library(dplyr)
 
 # Lets get 5000 utility patents, 1000 at a time (the API's maximum rows per request)
 requested_rows <- 1000
@@ -79,7 +78,6 @@ the paging, the second will be our misguided attempt to do the paging ourselves.
 
 
 ``` r
-
 fields <- c("patent_id", "patent_date", "patent_title")
 sort <- c("patent_date" = "asc")
 query <- '{"_and":[{"_gte":{"patent_date":"1976-01-01"}},{"_lte":{"patent_date":"1976-01-31"}}]}'
@@ -109,8 +107,8 @@ just displayed)
 #> [1] "1379 1976-01-06 Tuesday"
 #> [1] "1257 1976-01-13 Tuesday"
 #> [1] "1383 1976-01-20 Tuesday"
-#> [1] "1332 1976-01-27 Tuesday"
 #> [1] "1 1976-01-25 Sunday"
+#> [1] "1332 1976-01-27 Tuesday"
    sum(unlist(counts))
 #> [1] 5352
 ```
@@ -120,7 +118,6 @@ as the sort field ( and thus the 'after' parameter we'll send to the API).
 
 
 ``` r
-
 after <- NULL
 combined_data <- NULL
 count <- 0
@@ -180,18 +177,11 @@ when we set 'after' to the last patent_date of a page of results, we weren't don
 of that date's patents.  (The page breaks aren't guaranteed to align with the patent_date
 changes in the result set.  See the page boundary shown in next example if this isn't clear yet.)
 
-The R package uses appropriate key(s) when 
-```all_pages = TRUE```.  The sort key for an endpoint is generally
- ```get_ok_pk(endpoint)``` but, as the next example shows, sometimes a
-secondary sort is required to guarantee row uniqueness (vital for paging via
+The R package uses appropriate key(s) when ```all_pages = TRUE```.  ```get_ok_pk(endpoint)```
+has been changed to also return a secondary sort key when needed. The next example shows that sometimes
+a secondary sort is required to guarantee row uniqueness (vital for paging via
 the 'after' parameter, so the API properly picks up exactly where the previous page
 of data left off).
-
-After all the pages
-have been retrieved, the R package sorts the data set as the user requested.
-(This sorting methodology is inspired by the [Patentsview's python wrapper](https://github.com/PatentsView/PatentsView-APIWrapper)).
-The lesson here is to pick a column, or pair of columns, that create row uniqueness to sort/page on.
-The next example shows when a secondary sort is required.
 
 ## Example 3
 
@@ -206,19 +196,17 @@ at these endpoints can lead to trouble, like sorting by patent_date did in the s
 
 
 ``` r
-  sequences <- fieldsdf[grepl("^[^.]*sequence",fieldsdf$field), c("endpoint", "field")]
-  rownames(sequences) <- NULL
-  pks <- lapply(sequences$endpoint, function(endpoint) {
-     get_ok_pk(endpoint)
+library(dplyr)
+
+  sequence_eps <- fieldsdf[grepl("^[^.]*sequence",fieldsdf$field), "endpoint"]
+  seq_pks <- lapply(sequence_eps, function(endpoint) {
+     c(endpoint, get_ok_pk(endpoint))
   })
 
-  pk_col <- do.call("rbind", pks)
-  rownames(pk_col) <- NULL
-
-  sequences %>%
-    mutate(pk=pk_col, .after=endpoint) %>%
-    rename(secondary = field)
-#>                         endpoint            pk.1               pk.2
+  sequences_df <- as.data.frame(do.call("rbind", seq_pks))
+  colnames(sequences_df) <- c("endpoint", "primary", "secondary")
+  sequences_df
+#>                         endpoint         primary          secondary
 #> 1                        g_claim       patent_id     claim_sequence
 #> 2               g_draw_desc_text       patent_id draw_desc_sequence
 #> 3        patent/foreign_citation       patent_id  citation_sequence
@@ -227,15 +215,6 @@ at these endpoints can lead to trouble, like sorting by patent_date did in the s
 #> 6      patent/us_patent_citation       patent_id  citation_sequence
 #> 7                       pg_claim document_number     claim_sequence
 #> 8              pg_draw_desc_text document_number draw_desc_sequence
-#>            secondary
-#> 1     claim_sequence
-#> 2 draw_desc_sequence
-#> 3  citation_sequence
-#> 4 reference_sequence
-#> 5  citation_sequence
-#> 6  citation_sequence
-#> 7     claim_sequence
-#> 8 draw_desc_sequence
 ```
 
 Ok, so here we'll do a minimalist custom paging with a secondary sort using the patent/us_patent_citation
@@ -340,7 +319,8 @@ takeaways are:
 1. The original version of the API and R package used `per_page` and `page` to allow
 users to page through result sets.  Those attributes are replaced by `size` and `after` in the
 new version of the API and R package.
-2. Your sort field(s) need to create row-wise uniqueness (hint only patent_date probably won't be good enough)
+2. Your sort field(s) need to create row-wise uniqueness.  At a minimum the ```get_ok_pk(endpoint)```
+fields need to be included as sort fields though others can be added.
 3. If patent_id is used as a sort field, its corresponding 'after' value needs padding, see how
 ```pad_patent_id()``` is used in Example 1
 4. If there is a single sort field, the after parameter's value is the sort field's last value in

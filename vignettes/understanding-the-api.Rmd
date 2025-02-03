@@ -40,7 +40,7 @@ shorthand_results <- search_pv(query, fields = c("application"), method = "POST"
 # Now that the R package uses httr2, we can use its last_request()
 # to see what was POSTed to the API
 cat(httr2::last_request()$body$data)
-#> {"q":{"_eq":{"patent_id":"10568228"}},"f":["application","patent_id"],"s":[],"o":{"size":1000}}
+#> {"q":{"_eq":{"patent_id":"10568228"}},"f":["application"],"s":[],"o":{"size":1000}}
 
 # Here we view the results
 shorthand_results$data$patent$application
@@ -61,9 +61,9 @@ explicit_results <- search_pv(query, fields = explicit_fields, method = "POST")
 # but the R package figured out that the shorthand could be used instead
 # so what was POSTed to the API is the same!
 cat(httr2::last_request()$body$data)
-#> {"q":{"_eq":{"patent_id":"10568228"}},"f":["application","patent_id"],"s":[],"o":{"size":1000}}
+#> {"q":{"_eq":{"patent_id":"10568228"}},"f":["application"],"s":[],"o":{"size":1000}}
 
-# but the results from the API are the same
+# and, of course, the results from the API are the same
 explicit_results$data$patent$application
 #> [[1]]
 #>   application_id application_type filing_date series_code rule_47_flag
@@ -197,7 +197,7 @@ actual_inventors[[1]]
 
 Now, with actual_inventors' inventor_ids in hand, we'll ask the patent endpoint for their patents.
 The results are quite different than what the first query returned. (These patents would 
-have names matching at least one of our two famous forefather's names.  The first query non-intuitively
+have names matching at least one of our two famous forefather's names.  The first query unintuitively
 matched names where the first and last name matches did not necessarily both occur on the same inventor.)
 
 
