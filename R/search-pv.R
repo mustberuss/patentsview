@@ -54,7 +54,7 @@ to_arglist <- function(fields, size, sort, after) {
 set_sort_param <- function(sort_vec) {
   jsonlite::toJSON(
     lapply(names(sort_vec), function(name) {
-      setNames(list(sort_vec[[name]]), name)
+      stats::setNames(list(sort_vec[[name]]), name)
     }),
     auto_unbox = TRUE
   )
