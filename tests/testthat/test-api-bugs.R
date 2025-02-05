@@ -1,4 +1,4 @@
-test_that("Queries returning non-utility patents don't page well", {
+test_that("Queries returning non-utility patents page well", {
   skip_on_cran()
   only_utility_qry <- with_qfuns(
     and(

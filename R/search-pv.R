@@ -140,8 +140,10 @@ one_request <- function(method, query, base_url, arg_list, api_key, ...) {
 #'
 #' @export
 pad_patent_id <- function(patent_id) {
-  sprintf("%08s", patent_id)
+  padding <-strrep("0", 8 - nchar(patent_id))
+  sub("^([[:alpha:]]*)([[:digit:]]+)", paste0("\\1", padding, "\\2"), patent_id)
 }
+
 
 #' @noRd
 request_apply <- function(result, method, query, base_url, arg_list, api_key, ...) {
