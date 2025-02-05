@@ -1,9 +1,5 @@
----
-title: "patentsview"
-output: github_document
----
-
-
+patentsview
+================
 
 > An R client to the PatentsView API
 
@@ -45,7 +41,19 @@ The [PatentsView API](https://patentsview.org/apis/api-endpoints) provides an in
 library(patentsview)
 
 search_pv(query = '{"_gte":{"patent_date":"2007-01-01"}}')
-#> Error: The new version of the API requires an API key
+#> $data
+#> #### A list with a single data frame on patents level:
+#> 
+#> List of 1
+#>  $ patents:'data.frame':	1000 obs. of  3 variables:
+#>   ..$ patent_id   : chr [1:1000] "10631087" ...
+#>   ..$ patent_title: chr [1:1000] "Method and device for voice operated contro"..
+#>   ..$ patent_date : chr [1:1000] "2020-04-21" ...
+#> 
+#> $query_results
+#> #### Distinct entity counts across all downloadable pages of output:
+#> 
+#> total_hits = 5,452,372
 ```
 
 ## Learning more
