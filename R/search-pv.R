@@ -327,10 +327,6 @@ search_pv <- function(query,
     query <- jsonlite::toJSON(query, auto_unbox = TRUE)
   }
 
-  pk <- get_ok_pk(endpoint)
-  # We need pk to be in the result for all_pages to work with ease, hence adding
-  # it below
-  fields <- unique(c(pk, fields))
   abbreviated_fields <- sub_grp_names_for_fields(endpoint, fields)
 
   arg_list <- to_arglist(abbreviated_fields, size, sort, after)
