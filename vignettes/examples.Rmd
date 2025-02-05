@@ -25,8 +25,10 @@ search_pv(query = qry_funs$gt(patent_num_times_cited_by_us_patents = 500))
 #> #### A list with a single data frame on patents level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	1000 obs. of  1 variable:
-#>   ..$ patent_id: chr [1:1000] "10631857" ...
+#>  $ patents:'data.frame':	1000 obs. of  3 variables:
+#>   ..$ patent_id   : chr [1:1000] "10631857" ...
+#>   ..$ patent_title: chr [1:1000] "Loading unit for surgical instruments with "..
+#>   ..$ patent_date : chr [1:1000] "2020-04-28" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
@@ -138,8 +140,10 @@ pv_out
 #> #### A list with a single data frame on inventors level:
 #> 
 #> List of 1
-#>  $ inventors:'data.frame':	1000 obs. of  1 variable:
-#>   ..$ inventor_id: chr [1:1000] "fl:cr_ln:goren-1" ...
+#>  $ inventors:'data.frame':	1000 obs. of  3 variables:
+#>   ..$ inventor_id        : chr [1:1000] "fl:cr_ln:goren-1" ...
+#>   ..$ inventor_name_first: chr [1:1000] "Craig" ...
+#>   ..$ inventor_name_last : chr [1:1000] "Goren" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:

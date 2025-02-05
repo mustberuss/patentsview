@@ -163,8 +163,10 @@ required.</p>
 <span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  1 variable:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id: chr [1:1000] "10631857" ...</span></span>
+<span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  3 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id   : chr [1:1000] "10631857" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_title: chr [1:1000] "Loading unit for surgical instruments with "..</span></span>
+<span><span class="co">#&gt;   ..$ patent_date : chr [1:1000] "2020-04-28" ...</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
@@ -195,7 +197,7 @@ the past few years?</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Write the query</span></span>
 <span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
+<span>  <span class="fu">and</span><span class="op">(</span></span>
 <span>    <span class="fu">gte</span><span class="op">(</span>patent_date <span class="op">=</span> <span class="st">"2022-07-26"</span><span class="op">)</span>, <span class="co"># Dates are in yyyy-mm-dd format</span></span>
 <span>    <span class="fu">begins</span><span class="op">(</span>assignees.assignee_organization <span class="op">=</span> <span class="st">"Microsoft"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
@@ -231,8 +233,8 @@ the past few years?</p>
 <p>Which assignees have an interest in beer?</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">query</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">contains</a></span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"beer"</span><span class="op">)</span>,</span>
+<span>  <span class="fu">and</span><span class="op">(</span></span>
+<span>    <span class="fu">contains</span><span class="op">(</span>patent_title <span class="op">=</span> <span class="st">"beer"</span><span class="op">)</span>,</span>
 <span>    <span class="fu">eq</span><span class="op">(</span>assignees.assignee_sequence <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
@@ -266,8 +268,10 @@ location.</p>
 <span><span class="co">#&gt; #### A list with a single data frame on inventors level:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ inventors:'data.frame':   1000 obs. of  1 variable:</span></span>
-<span><span class="co">#&gt;   ..$ inventor_id: chr [1:1000] "fl:cr_ln:goren-1" ...</span></span>
+<span><span class="co">#&gt;  $ inventors:'data.frame':   1000 obs. of  3 variables:</span></span>
+<span><span class="co">#&gt;   ..$ inventor_id        : chr [1:1000] "fl:cr_ln:goren-1" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_name_first: chr [1:1000] "Craig" ...</span></span>
+<span><span class="co">#&gt;   ..$ inventor_name_last : chr [1:1000] "Goren" ...</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
