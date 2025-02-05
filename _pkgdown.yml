@@ -24,7 +24,6 @@ reference:
     contents:
     - unnest_pv_data
     - get_ok_pk
-    - cast_pv_data
 
 navbar:
   components:
