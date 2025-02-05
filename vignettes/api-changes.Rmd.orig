@@ -89,7 +89,7 @@ httr2::last_response() |> httr2::resp_body_json()
 
 
 * Two methods were added
-   + HATEOAS and sample links can be retrieved using [retrieve_linked_data()](#HATEOAS)
+   + HATEOAS links can be retrieved using [retrieve_linked_data()](#HATEOAS)
    + In custom paging involving patent_id, its value needs to be padded with zeroes, see `pad_patent_id()`
 
 * The ropensci blog post that announced the original version of the R package was [reworked](ropensci-blog-post.html) to use the new version of the R package and API
@@ -222,11 +222,8 @@ qry <- qry_funs$ne(patent_id = "")
 sort <- c("patent_id" = "asc")
 grant <- search_pv(qry, sort = sort, endpoint = "g_brf_sum_text", size = 1)
 
-# former default fields, as mentioned above
-fields <- c("patent_id", "patent_date", "patent_title")
-
 res <- search_pv(qry_funs$eq(patent_id = grant$data$g_brf_sum_texts$patent_id), 
-  size = 1, fields = fields)
+  size = 1)
 
 res$data
     ```
@@ -234,13 +231,11 @@ res$data
     ```{r}
 qry <- qry_funs$gt(document_number = 0)
 sort <- c("document_number" = "asc")
-fields <- c("document_number", "summary_text")
-pre_grant <- search_pv(qry, sort = sort, endpoint = "pg_brf_sum_text", 
-  size = 1, fields = fields)
+pre_grant <- search_pv(qry, sort = sort, endpoint = "pg_brf_sum_text", size = 1)
 
 pre_grant$data
     ```
-    So, at this moment, both endpoints appear to have data going back to 2023.
+    So, at the time of this writing, both endpoints appear to have data going back to 2023.
 
 ### HATEOAS Links <a name="HATEOAS">
 Some of the returned fields are HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more information about that field. Slightly funky is the cpc_current's cpc_group, returned by the patent endpoint.  Here the slash in the CPC is turned into a colon.  This is a peculiarity of two of the new convenience URLs (new endpoints that accept a single URL parameter) that shouldn't be noticeable in the R package, unless you are trying to infer the USPC and CPC values from the returned URLs, without actually calling back for this data.  See `retrieve_linked_data()`
@@ -292,7 +287,7 @@ str(result$data)
 
 ```
 
-<a name="slight-weirdness">Slight weirdness</a>/sleight of hand where the returned field name loses the _id of the requested field
+<a name="slight-weirdness">Slight weirdness</a>/sleight-of-hand where the returned field name loses the _id of the requested field
 
 ```{r}
   # We'll make a call to the patent endpoint to get inventor and assignee HATEOAS links

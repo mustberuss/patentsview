@@ -133,7 +133,7 @@ top_asgns <- dl$assignees %>%
 
 # trying to avoid Error: Chromote: timed out waiting for event Page.loadEventFired
 knitr::opts_chunk$set(
-   delay = 30
+   delay = 45
 )
 # Create datatable
 datatable(
