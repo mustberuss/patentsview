@@ -146,7 +146,7 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
 })
 
 test_that("Shorthand specification of fields results in expected results", {
-
+    skip_on_cran()
     query <- TEST_QUERIES[["patent"]]
 
     all_assn_flds <- get_fields("patent", groups = "assignees")
@@ -155,9 +155,9 @@ test_that("Shorthand specification of fields results in expected results", {
     no_city <- all_assn_flds[all_assn_flds != "assignees.assignee_city"]
     no_city_res <- search_pv(query, fields = no_city)
 
-    no_city_has_seven <- length(no_city_res$data$patents$assignees[[1]]) == 7
+    no_city_has_eight <- length(no_city_res$data$patents$assignees[[1]]) == 8
     all_cols_has_nine <- length(full_res$data$patents$assignees[[1]]) == 9
-    expect_true(no_city_has_seven&& all_cols_has_nine)
+    expect_true(no_city_has_eight && all_cols_has_nine)
 })
 
 test_that("nested shorthand produces the same results as fully qualified ones", {
