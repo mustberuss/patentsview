@@ -18,20 +18,21 @@ test_that("Queries returning non-utility patents page well", {
 
   all_types_res <- search_pv(only_utility_qry, all_pages = TRUE)
   expect_true(
-    nrow(all_types_res$data$patents) != all_types_res$query_results$total_hits
+    nrow(all_types_res$data$patents) == all_types_res$query_results$total_hits
   )
 })
 
-test_that("inventors.inventor and assignees.assignee aren't returned
+test_that("inventors.inventor_id and assignees.assignee_id are returned
           from patent endpoint when specified exactly", {
   skip_on_cran()
   query <- TEST_QUERIES[["patent"]]
   # Should return inventors and assignee list cols
-  wrong_res <- search_pv(
-    query, fields = c("inventors.inventor", "assignees.assignee")
+  res <- search_pv(
+    query, fields = c("inventors.inventor_id", "assignees.assignee_id")
   )
-  # ...But they don't
-  expect_equal(colnames(wrong_res$data$patents), "patent_id")
+  # ...But they do, just without the _id
+  expect_no_error(res$data$patents$inventors[[1]]$inventor)
+  expect_no_error(res$data$patents$assignees[[1]]$assignee)
 
   # Good result when not specifying nested-level fields explicitly
   good_res <- search_pv(

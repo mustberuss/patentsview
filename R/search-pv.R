@@ -346,9 +346,32 @@ search_pv <- function(query,
     return(first_res) # else we iterate through pages below
   }
 
-  unique_sort_keys <- rep("asc", length(pk))
-  names(unique_sort_keys) <- pk
-  arg_list$sort <- unique_sort_keys
+  if(is.null(fields))
+  {
+    # request the default fields returned by the first call, otherwise adding the pk below
+    # will just return that/thoses fields.
+    fields <- names(first_res$data[[1]])
+  }
+
+  # add pk here instead - pk fields not added to first_res
+  # We need pk to be in the result for all_pages to work with ease, hence adding
+  # it below
+  pk <- get_ok_pk(endpoint)
+
+  fields <- unique(c(pk, fields))
+  abbreviated_fields <- sub_grp_names_for_fields(endpoint, fields)
+  arg_list$fields <- abbreviated_fields 
+
+  required_paging_keys <- rep("asc", length(pk))
+  names(required_paging_keys) <- pk
+
+  # append required_paging_keys to user's sort if needed when supplied
+  if(is.null(sort)) {
+    arg_list$sort <- required_paging_keys
+  } else {
+    non_duplicate_keys <- setdiff(names(required_paging_keys), names(sort))
+    arg_list$sort <- c(sort, required_paging_keys[non_duplicate_keys])
+  }
 
   paged_data <- request_apply(
     first_res, method, query, base_url, arg_list, api_key, ...
