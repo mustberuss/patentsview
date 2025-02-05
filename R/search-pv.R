@@ -140,7 +140,7 @@ one_request <- function(method, query, base_url, arg_list, api_key, ...) {
 #'
 #' @export
 pad_patent_id <- function(patent_id) {
-  padding <-strrep("0", 8 - nchar(patent_id))
+  padding <- strrep("0", 8 - nchar(patent_id))
   sub("^([[:alpha:]]*)([[:digit:]]+)", paste0("\\1", padding, "\\2"), patent_id)
 }
 
@@ -342,8 +342,7 @@ search_pv <- function(query,
     return(first_res) # else we iterate through pages below
   }
 
-  if(is.null(fields))
-  {
+  if (is.null(fields)) {
     # request the default fields returned by the first call, otherwise adding the pk below
     # will just return that/thoses fields.
     fields <- names(first_res$data[[1]])
@@ -362,7 +361,7 @@ search_pv <- function(query,
   names(required_paging_keys) <- pk
 
   # append required_paging_keys to user's sort if needed when supplied
-  if(is.null(sort)) {
+  if (is.null(sort)) {
     arg_list$sort <- required_paging_keys
   } else {
     non_duplicate_keys <- setdiff(names(required_paging_keys), names(sort))
