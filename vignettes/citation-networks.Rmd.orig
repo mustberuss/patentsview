@@ -12,9 +12,14 @@ knitr::opts_chunk$set(
   collapse = TRUE, 
   comment = "#>", 
   warning = FALSE,
-  message = FALSE
+  message = FALSE,
+  fig.cap = ""
 )
 ```
+> Important API Change
+>
+> The new version of the API requires an API key, or all of your requests will be blocked.  See the [API Changes](api-changes.html#an-api-key-is-required-1) page.
+
 
 The following is a brief foray into patent citation networks. The analysis is done on 3 patents that describe patent citation analysis (PCA) themselves. 
 
@@ -29,44 +34,69 @@ library(stringr)
 library(knitr)
 
 # Write a query to pull patents assigned to the CPC code of "Y10S707/933"
-query <- qry_funs$begins(cpc_subgroup_id = "Y10S707/933")
+query <- qry_funs$contains(cpc_current.cpc_group_id = "Y10S707/933")
+pv_out <- search_pv(query = query, fields = c("patent_id", "patent_title"))
+patent_ids <- pv_out$data$patents$patent_id
+pat_lst <- unnest_pv_data(pv_out$data, pk = "patent_id")
 
-# Create a list of fields to pull from the API
+# We have to go against the patent_citiation endpoint now, these fields
+# are no longer available from the patent endpoint
+
+citing_query <- qry_funs$eq(patent_id = patent_ids)
+cited_query <- qry_funs$eq(citation_patent_id = patent_ids)
+
+# Create a list of fields to pull from the API.  Note that, with a recent chanage
+# to the R package, these aren't the only fields we'll receive back from the API.
+# This is due to the way that the API's paging works now.  There is more about this
+# in the [Result Set Paging](result-set-paging.html) vignette.
 fields <- c(
-  "patent_number", 
-  "patent_title",
-  "cited_patent_number", # Which patents do these patents cite?
-  "citedby_patent_number" # Which patents cite them?
+  "patent_id",
+  "citation_patent_id"
 )
 
-# Send a request to the API
-res <- search_pv(query, fields = fields, all_pages = TRUE)
+# Post a request to the API
+res <- search_pv(citing_query,
+  fields = fields, all_pages = TRUE,
+  endpoint = "patent/us_patent_citation", method = "POST", size = 1000
+)
+res2 <- search_pv(cited_query,
+  fields = fields, all_pages = TRUE,
+  endpoint = "patent/us_patent_citation", method = "POST", size = 1000
+)
 
-# Unnest the data found in the list columns
-res_lst <- unnest_pv_data(res$data, pk = "patent_number")
+# Unnest the data found in the three lists of columns
+# (citation_sequence being a field we didn't request)
+res_lst <- unnest_pv_data(res$data, pk = "patent_id")
 res_lst
+
+res_lst2 <- unnest_pv_data(res2$data, pk = "patent_id")
+res_lst2
 ```
 
-There are only `r nrow(res_lst$patents)` PCA patents. These patents cite `r nrow(res_lst$cited_patents)` patents and are cited by `r nrow(res_lst$citedby_patents)` patents. Let's visualize the citations among the PCA patents. We'll create our visualization using the `visNetwork` package, which requires us to create a data frame of nodes and a data frame of edges.
+## Count the distinct patent_id and cited_patent_id
 
-```{r}
+There are only `r length(patent_ids)` PCA patents. These patents cite `r nrow(res_lst$us_patent_citations)` patents and are cited by `r nrow(res_lst2$us_patent_citations)` patents. Let's visualize the citations among the PCA patents. We'll create our visualization using the `visNetwork` package, which requires us to create a data frame of nodes and a data frame of edges.
+
+```{r citationvis}
+
 pat_title <- function(title, number) {
   temp_title <- str_wrap(title)
   i <- gsub("\\n", "<br>", temp_title)
-  paste0('<a href="https://patents.google.com/patent/US', number, '">', i, '</a>')
+  paste0('<a href="https://patents.google.com/patent/US', number, '">', i, "</a>")
 }
 
 edges <-
-  res_lst$cited_patents %>%
-    semi_join(x = ., y = ., by = c("cited_patent_number" = "patent_number")) %>%
+  res_lst$us_patent_citations %>%
+    semi_join(x = ., y = ., by = c("citation_patent_id" = "patent_id")) %>%
+    select(-citation_sequence) %>%  # discard citation_sequence that we don't need here
     set_colnames(c("from", "to"))
 
 nodes <-
-  res_lst$patents %>%
+  pat_lst$patents %>%
     mutate(
-      id = patent_number,
-      label = patent_number,
-      title = pat_title(patent_title, patent_number)
+      id = patent_id,
+      label = patent_id,
+      title = pat_title(patent_title, patent_id)
     )
 
 visNetwork(
@@ -81,53 +111,56 @@ It looks like several of the patents cite patent number 6,499,026, perhaps indic
 
 ```{r}
 p3 <- c("7797336", "9075849", "6499026")
-res_lst2 <- lapply(res_lst, function(x) x[x$patent_number %in% p3, ])
+res_lst2 <- lapply(res_lst, function(x) x[x$patent_id %in% p3, ])
 ```
 
 With only 3 patents, it will probably be possible to visualize how these patents' cited and citing patents are all related to one another. Let's create a list of these "relevant patents" (i.e., the 3 patents plus all of their cited and citing patents)[^2], and then get a list of all of their cited patents (i.e., the patents that they cite). This list of cited patents will allow us to measure how similar the relevant patents are to one another. 
 
 ```{r}
 rel_pats <-
-  res_lst2$cited_patents %>%
-    rbind(setNames(res_lst2$citedby_patents, names(.))) %>% 
-    select(-patent_number) %>%
-    rename(patent_number = cited_patent_number) %>%
-    bind_rows(data.frame(patent_number = p3)) %>% 
+  res_lst$us_patent_citations %>%
+    rbind(setNames(res_lst$us_patent_citations, names(.))) %>%
+    select(-patent_id) %>%
+    rename(patent_id = citation_patent_id) %>%
+    bind_rows(data.frame(patent_id = p3)) %>%
     distinct() %>%
-    filter(!is.na(patent_number))
+    filter(!is.na(patent_id))
 
-# Look up which patents the relevant patents cite
+# Look up which patents the relevant patents cite.  We need to use the
+# patent_citation endpoint now.
+
 rel_pats_res <- search_pv(
-  query = list(patent_number = rel_pats$patent_number),
-  fields =  c("cited_patent_number", "patent_number", "patent_title"), 
-  all_pages = TRUE, method = "POST"
+  query = list(patent_id = rel_pats$patent_id),
+  fields = c("citation_patent_id", "patent_id"),
+  all_pages = TRUE, size = 1000, method = "POST", endpoint = "patent/us_patent_citation"
 )
 
-rel_pats_lst <- unnest_pv_data(rel_pats_res$data, "patent_number")
+rel_pats_lst <- unnest_pv_data(rel_pats_res$data, "patent_id")
+
 ```
 
-Now we know which patents the `r nrow(rel_pats_lst$patents)` relevant patents cite. This allows us to measure the similarity between the `r nrow(rel_pats_lst$patents)` patents by seeing how many cited references they share in common (a method known as [bibliographic coupling](https://en.wikipedia.org/wiki/Bibliographic_coupling)).
+Now we know which patents the `r nrow(rel_pats_lst$us_patent_citations)` relevant patents cite. This allows us to measure the similarity between the `r nrow(rel_pats_lst$us_patent_citations)` patents by seeing how many cited references they share in common (a method known as [bibliographic coupling](https://en.wikipedia.org/wiki/Bibliographic_coupling)).
 
-```{r}
+```{r citationkable}
 cited_pats <-
-  rel_pats_lst$cited_patents %>%
-    filter(!is.na(cited_patent_number))
+  rel_pats_lst$us_patent_citations %>%
+  filter(!is.na(citation_patent_id))
 
-full_network <- 
+full_network <-
   cited_pats %>%
     do({
-      .$ind <- 
-        group_by(., patent_number) %>% 
-          group_indices()
-        group_by(., patent_number) %>%  
-          mutate(sqrt_num_cited = sqrt(n()))
+      .$ind <-
+        group_by(., patent_id) %>%
+        group_indices()
+      group_by(., patent_id) %>%
+        mutate(sqrt_num_cited = sqrt(n()))
     }) %>%
-    inner_join(x = ., y = ., by = "cited_patent_number") %>%
+    inner_join(x = ., y = ., by = "citation_patent_id") %>%
     filter(ind.x > ind.y) %>%
-    group_by(patent_number.x, patent_number.y) %>% 
-    mutate(cosine_sim = n() / (sqrt_num_cited.x * sqrt_num_cited.y)) %>% 
+    group_by(patent_id.x, patent_id.y) %>%
+    mutate(cosine_sim = n() / (sqrt_num_cited.x * sqrt_num_cited.y)) %>%
     ungroup() %>%
-    select(matches("patent_number\\.|cosine_sim")) %>%
+    select(matches("patent_id\\.|cosine_sim")) %>%
     distinct()
 
 kable(head(full_network))
@@ -135,9 +168,9 @@ kable(head(full_network))
 
 `full_network` contains the similarity score (`cosine_sim`) for all patent pairs that share at least one cited reference in common. This means that it probably contains a lot of patent pairs that have only one or two cited references in common, and thus aren't all that similar. Let's try to identify a natural level of `cosine_sim` to filter on so that our subsequent network is not too hairy.
 
-```{r, fig.height = 4, fig.width = 7}
+```{r citationhist, fig.height = 4, fig.width = 7}
 hist(
-  full_network$cosine_sim, 
+  full_network$cosine_sim,
   main = "Similarity scores between patents relevant to PCA",
   xlab = "Cosine similarity", ylab = "Number of patent pairs"
 )
@@ -145,22 +178,23 @@ hist(
 
 There appears to be a smallish group of patent pairs that are very similar to one another (`cosine_sim` > 0.8), which makes it tempting to choose 0.8 as a cutoff point. However, patent pairs that have reference lists that are this similar to each other are probably just patents in the same patent family. Let's choose 0.1 as a cutoff point instead, as there doesn't appear to be too many pairs above this point.[^3] 
 
-```{r}
-edges <- 
+```{r citationvis2}
+edges <-
   full_network %>%
-    filter(cosine_sim >= .1) %>% 
-    rename(from = patent_number.x, to = patent_number.y, value = cosine_sim) %>%
+    filter(cosine_sim >= .1) %>%
+    rename(from = patent_id.x, to = patent_id.y, value = cosine_sim) %>%
     mutate(title = paste("Cosine similarity =", as.character(round(value, 3))))
 
 nodes <-
-  rel_pats_lst$patents %>%
-    rename(id = patent_number) %>%
+  rel_pats_lst$us_patent_citations %>%
+    distinct(patent_id) %>%
+    rename(id = patent_id) %>%
     mutate(
       # the 3 patents of interest will be represented as blue nodes, all others
       # will be yellow
-      color = ifelse(id %in% p3, "#97C2FC", "#DDCC77"), 
+      color = ifelse(id %in% p3, "#97C2FC", "#DDCC77"),
       label = id,
-      title = pat_title(patent_title, id)
+      title = pat_title(id, id) # we don't get patent_title now (formerly first argument)
     )
 
 visNetwork(
