@@ -163,14 +163,12 @@ pat_res <- search_pv(id_query, fields=patent_fields, sort=c(patent_id = "asc"))
 
 dl <- unnest_pv_data(pat_res$data)
 
-# we'll repeat the same name filter we used on the first query's results
+# we'll apply a similar name filter like we did on the first query's results
+# we requested inventors.inventor_id but we also get back inventor, a HATEOAS link we don't need
 display_inventors <- 
    dl$inventors %>%
    filter(grepl("^(George|Thomas)", inventor_name_first ) | grepl("^(Washington|Jefferson)", inventor_name_last)) %>%
-   mutate(inventor = sub(".*/([^/]+)/$", "\\1", inventor)) # extract id from HATEOAS link
-
-# sample pre-mutate value, note that we requested inventor_id but the API sent back `inventor`
-dl$inventors$inventor[[1]]
+   select(-inventor)
 
 display_inventors
 

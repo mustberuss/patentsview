@@ -10,6 +10,75 @@ vignette: >
 There's a lot going on with the new version of the Patentsview API, recently renamed
 PatentSearch API, as announced [here](https://search.patentsview.org/docs/#naming-update).
 
+## 2024-02-14 Release
+
+The newest release brough new bugs
+
+1. These TEST_QUERIES now return zero rows: "cpc_subclass", "uspc_mainclass", "uspc_subclass", "wipo"  
+this one throws a 500 "ipc"  See test_that("Some test queries don't work")
+in test-api-bugs.
+
+2. get_fields("cpc_subclass") returns both "cpc_class" and "cpc_class_id" but "cpc_class" fails their validation
+(the request throws a 400 Invalid field: cpc_subclass)
+
+3. The publication endpoint's rule_47_flag is now requested as a boolean but all values seem to be FALSE.
+The returned values still seem to be strings.  See test-api-bugs' "Querying the publication endpoint on rule_47_flag isn't meaningful"
+
+4. We still cannot request or query by inventors.inventor or assignees.assignee.
+With a hack in fieldsdf we can request inventors.inventor_id and assignees.assignee_id to 
+receive inventor_id, assignee_id and the two HATEOAS links, inventor" and assignee.
+Without the hack test-search-pv's "Shorthand specification of fields results in expected results"
+returns fewer fields than requested on the second call.
+
+    More importantly, searching by invenor or inventor_id is not possible without the hack.  See the
+request just above [Acknowledgment](understanding-the-api.html#acknowledgment) which also shows
+the unrequested HATEOAS (_id-less) field being selected away.
+
+
+## Questions
+1. Should we expose the [two new options](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#options-o) "pad_patent_id" and "exclude_withdrawn"?
+If so, we would need to add back pad_patent_id() and making it an error if pad_patent_id
+is TRUE when all_pages is TRUE (or we'd have to pad while paging).
+
+The padding after alphas version of pad_patent_id() would need to be used   
+Request padded patent_id's
+```
+curl -X 'POST' \
+  'https://search.patentsview.org/api/v1/patent/' \
+  -H 'accept: application/json' \
+  -H "X-Api-Key: $PATENTSVIEW_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{"q":{"patent_date":"2007-03-06"},"f":["patent_id"],"s":[{"patent_id":"desc"}],
+"o":{"size":10, "pad_patent_id": true}}'
+```
+
+Same with "after"
+```
+curl -X 'POST' \
+  'https://search.patentsview.org/api/v1/patent/' \
+  -H 'accept: application/json' \
+  -H "X-Api-Key: $PATENTSVIEW_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{"q":{"patent_date":"2007-03-06"},"f":["patent_id"],"s":[{"patent_id":"desc"}],
+"o":{"size":10, "pad_patent_id": true, "after":"PP017481"}}'
+```
+For completeness, not sure why someone would want withdrawn patents.   
+patent_ids from test_that("Withdrawn patents are suppressed by default but some are present in the database")
+
+```
+curl -X 'POST' \
+  'https://search.patentsview.org/api/v1/patent/' \
+  -H 'accept: application/json' \
+  -H "X-Api-Key: $PATENTSVIEW_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{"q":{"patent_id":["9978309", "9978406", "9978509", "9978615", "9978659"]},
+ "f":["patent_id"],"s":[{"patent_id":"asc"}],
+"o":{"size":10, "exclude_withdrawn": false}}'
+
+```
+
+Note that the API returns no rows if you also specify `"pad_patent_id": true` (since the patent_ids in q: aren't padded)
+
 ## On the Plus Side
 
 Here are the positive API changes:
@@ -400,7 +469,7 @@ https://patentsview.org/forum
 
      ```
      system("R CMD build .")   
-     system("R CMD check patentsview_0.3.0.tar.gz --no-manual")
+     system("R CMD check patentsview_1.0.0.tar.gz --no-manual --as-cran")
      ```
 
   + rscript data-raw/fieldsdf.R to run the fieldsdf creator locally.  It parses the Patentsview OpenAPI object to 
@@ -440,15 +509,25 @@ produce fieldsdf.csv and fieldsdf.rda
     `devtools::document()`  
     `pkgdown::build_reference()`
 
-   + To see README.Rmd changes locally
+   + To see README.Rmd changes locally, from the Makefile
     ```
-    knitr::knit("README.Rmd", "README.md")
+    rmarkdown::render('README.Rmd', output_file = 'README.md', output_dir = getwd(), output_format = 'github_document', quiet = TRUE)
+    file.remove('README.html')
     pkgdown::build_home()
     ```
 
    + Run code coverage locally on the whole package: `devtools::test_coverage()` or
 ```devtools::test_coverage(function_exclusions = "\\.onLoad")``` or on an 
 individual file: ```devtools::test_coverage_active_file(file = "R/print.R")``` You'd need to have covr installed
+
+   + I needed to set an environmental variable `CHROMOTE_HEADLESS=new`    
+    [From](https://github.com/rstudio/chromote/issues/187#issuecomment-2596286873)
+    > Note that with chromote 0.3.1, you can opt into using the new headless mode by setting
+    Needed when this showed up in Rmd files   
+    #> Old Headless mode has been removed from the Chrome binary. Please use the new Headless mode (https://developer.chrome.com/docs/chromium/new-headless) or the chrome-headless-shell which is a standalone implementation of the old Headless mode (https://developer.chrome.com/blog/chrome-headless-shell).
+
+
+
 <br />
 <br />
 * Remotely
@@ -518,7 +597,7 @@ search_pv(
 ```
 
 Note that the first patent_date returned above is "2020-04-21" and that what gets 
-sent to the API is `&s=[]&o=`
+sent to the API is `&s=[]&o=` shown in the output of the next section
 
 ```{r}
 url <- httr2::last_request()$url

@@ -5,7 +5,7 @@ package_version: 1.0.0
 author:
   - Russ Allen
   - Chris Baker
-date: 2025-04-01
+date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 tags:
   - Software Peer Review
@@ -37,11 +37,12 @@ with the new version of the R package. Please don't shoot the messenger!
 
 The new version of the R package handles some of the API team's changes where possible, 
 however an API key is now required.  The Patentsview API team plans to shutdown 
-the original version of the API on February 12, 2025. At that
+the original version of the API in the near future. At that
 time the original version of the R package will stop working.
 
-The original version of the R package is available on CRAN with the new version available on r-universe.
-After the original version of the API is shutdown, the new R package will be submitted to CRAN.
+The original version of the R package is available on CRAN with the new version available on 
+[r-universe](https://ropensci.r-universe.dev/patentsview).
+After the original version of the API is shutdown, the updated R package will be submitted to CRAN.
 
 ## User Impacting API changes:
 1. Users will need to [request an API key](https://patentsview-support.atlassian.net/servicedesk/customer/portals) and set an environmental variable PATENTSVIEW_API_KEY to its value.
@@ -68,15 +69,15 @@ retrieved but couldn't be part of a conditional query.  That notion does not app
 new version of the API as all fields are now queryable.  You may be able
 to simplify your code if you found yourself doing post processing on returned data
 because a field you were interested in was not queryable.
-6. Currently not working properly, there isn't supposed to be a difference between
-operators used on full text fields, as there was in the original
+6. Now there isn't supposed to be a difference between
+operators used on strings vs full text fields, as there was in the original
 version of the API.  See the tip below the [Syntax section](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#syntax).
-Note that the result sizes aren't matching currently though, see
-testthat/test-api-bugs.R in the testthat folder.
 7. Result set paging has changed significantly.  This would matter only if users implemented their own
-paging, the R package continues to handle result set paging when search_pv's all_pages = TRUE. 
+paging, the R package continues to handle result set paging when search_pv's `all_pages = TRUE`. 
 There is a new result set paging vignette to explain the way the API now pages, 
 using the `size` and `after` parameters rather than using `per_page` and `page`.
+8. Result set sizes are seemingly unbounded now.  The original version of the API capped result sets at
+100,000 rows.
 
 The API team also [renamed the API](https://search.patentsview.org/docs/#naming-update), 
 PatentsView's Search API is now the PatentSearch API. 
@@ -100,9 +101,12 @@ httr2::last_response()
 httr2::last_response() |> httr2::resp_body_json() 
 ```
 
-6. Two new functions were added
+6. A new function was added
    - `retrieve_linked_data()` to retrieve data from a HATEOAS link the API sent back, retrying if throttled
-   - `pad_patent_id()`, needed in custom paging using `patent_id`, see the new Result Set Paging vignette
+
+7. An existing function was removed.  With the API changes, there is less of a need for
+`cast_pv_data()` which was previously part of the R package.  The API now returns most fields as appropriate
+types, boolean, numeric etc., instead of always returning strings.
 
 ## Online Documentation
 

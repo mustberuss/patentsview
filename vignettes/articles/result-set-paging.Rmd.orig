@@ -7,7 +7,14 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE
+)
+```
 
   Paging changed in the new version of the Patentsview API and R package.  This vignette tries to 
 explain the subtleties that the R package handles for you and to show how to do custom paging.  
@@ -22,20 +29,15 @@ shown in Example 2 and Example 3.
 
 ## Example 1
 
-**Note: A recent API release changed paging when sorting by patent_id.**  We used to pass the unaltered 
-last value we received.  Now we need to pad the patent_id to 8 characters in order to page through the result set.
-This seems to be an intentional change, seemingly only needed for patent_id when paging, so 
-```pad_patent_id()``` was added to the R package.
-
 Here we'll retrieve 5000 utility patents using custom paging.
 
-
-``` r
+```{r}
 library(patentsview)
 
-# Lets get 5000 utility patents, 1000 at a time (the API's maximum rows per request)
+# Lets get 5000 of the most recent utility patents (when this was written),
+# 1000 at a time (the API's maximum rows per request)
 requested_rows <- 1000
-sort <- c("patent_id" = "asc")
+sort <- c("patent_id" = "desc")
 query <- qry_funs$eq("patent_type" = "utility")
 fields <- c("patent_id", "patent_date", "patent_title")
 
@@ -46,7 +48,6 @@ after <- NULL
 results <- list()
 
 for (n in seq_len(5)) {
-  after <- if(is.null(after)) after else pad_patent_id(after)
   print(paste("page", n, "after is", ifelse(is.null(after),"NULL",after)))
 
   page_n <- search_pv(query, fields = fields, sort = sort, 
@@ -56,19 +57,11 @@ for (n in seq_len(5)) {
    after <- page_n$data[[1]][[s]][[last_index]] # the last value of the sort field
    results[[n]] = page_n$data
 }
-#> [1] "page 1 after is NULL"
-#> [1] "page 2 after is 03931271"
-#> [1] "page 3 after is 03932272"
-#> [1] "page 4 after is 03933272"
-#> [1] "page 5 after is 03934274"
 
 utility_sample <- as.data.frame(do.call(rbind, lapply(results, as.data.frame)))
 
 str(utility_sample)
-#> 'data.frame':	5000 obs. of  3 variables:
-#>  $ patents.patent_id   : chr  "3930271" "3930272" "3930273" "3930274" ...
-#>  $ patents.patent_title: chr  "Golf glove" "Crib leg lock" "Bed safety side rail arrangement" "Assembly for use in recreational activities" ...
-#>  $ patents.patent_date : chr  "1976-01-06" "1976-01-06" "1976-01-06" "1976-01-06" ...
+
 ```
 
 ## Example 2
@@ -76,8 +69,7 @@ str(utility_sample)
 Here we will execute a query two different ways, first having the R package do
 the paging, the second will be our misguided attempt to do the paging ourselves.
 
-
-``` r
+```{r}
 fields <- c("patent_id", "patent_date", "patent_title")
 sort <- c("patent_date" = "asc")
 query <- '{"_and":[{"_gte":{"patent_date":"1976-01-01"}},{"_lte":{"patent_date":"1976-01-31"}}]}'
@@ -85,7 +77,7 @@ r_pkg <- search_pv(query, sort = sort, fields = fields, all_pages = TRUE)
 
 # note the number of rows returned
 r_pkg$query_results$total_hits
-#> [1] 5352
+
 ```
 
 Quick piece of trivia: with a handful of exceptions, most US patents were issued on a Tuesday.
@@ -94,8 +86,7 @@ about to do will lead to trouble. (Note that the single patent issued on 1976-01
 patentsview database but we need it here so the sum will match r_pkg\$query_results\$total_hits
 just displayed)
 
-
-``` r
+```{r}
    issue_dates = unique(r_pkg$data$patents$patent_date)
    counts <- lapply(issue_dates, function(issue_date) {
       query <- qry_funs$eq(patent_date = issue_date)
@@ -104,20 +95,13 @@ just displayed)
       print(paste(res$query_results$total_hits, issue_date, weekday))
       res$query_results$total_hits
    })
-#> [1] "1379 1976-01-06 Tuesday"
-#> [1] "1257 1976-01-13 Tuesday"
-#> [1] "1383 1976-01-20 Tuesday"
-#> [1] "1 1976-01-25 Sunday"
-#> [1] "1332 1976-01-27 Tuesday"
    sum(unlist(counts))
-#> [1] 5352
 ```
 
 Now we'll try to do our own paging but, as you might notice, we'll run into trouble using patent_date
 as the sort field ( and thus the 'after' parameter we'll send to the API).
 
-
-``` r
+```{r}
 after <- NULL
 combined_data <- NULL
 count <- 0
@@ -159,16 +143,10 @@ repeat {
   after <- subsequent$data[[1]][[s]][[returned_rows]]
 
 }
-#> [1] "page 1 after is NULL"
-#> [1] "page 2 after is 1976-01-06"
-#> [1] "page 3 after is 1976-01-13"
-#> [1] "page 4 after is 1976-01-20"
-#> [1] "page 5 after is 1976-01-27"
 
 print(paste("count is", count))
-#> [1] "count is 4000"
 print(nrow(combined_data))
-#> [1] 4000
+
 ```
 
 We ran into trouble since we chose patent_date as the sort field which
@@ -194,8 +172,7 @@ Some of the new endpoints can return more than one row of data for their primary
 the endpoints that have a sequence parameter.  Sorting and thus paging by only the primary key 
 at these endpoints can lead to trouble, like sorting by patent_date did in the second half of Example 2.
 
-
-``` r
+```{r}
 library(dplyr)
 
   sequence_eps <- fieldsdf[grepl("^[^.]*sequence",fieldsdf$field), "endpoint"]
@@ -206,15 +183,6 @@ library(dplyr)
   sequences_df <- as.data.frame(do.call("rbind", seq_pks))
   colnames(sequences_df) <- c("endpoint", "primary", "secondary")
   sequences_df
-#>                         endpoint         primary          secondary
-#> 1                        g_claim       patent_id     claim_sequence
-#> 2               g_draw_desc_text       patent_id draw_desc_sequence
-#> 3        patent/foreign_citation       patent_id  citation_sequence
-#> 4         patent/other_reference       patent_id reference_sequence
-#> 5 patent/us_application_citation       patent_id  citation_sequence
-#> 6      patent/us_patent_citation       patent_id  citation_sequence
-#> 7                       pg_claim document_number     claim_sequence
-#> 8              pg_draw_desc_text document_number draw_desc_sequence
 ```
 
 Ok, so here we'll do a minimalist custom paging with a secondary sort using the patent/us_patent_citation
@@ -222,8 +190,7 @@ endpoint.  The code is similar to what's in the [citation network vignette](cita
 where we first learned that a primary sort is not always sufficient (requiring changes to the R package).
 
 
-
-``` r
+```{r}
 # Write a query to pull patents assigned to the CPC code of "Y10S707/933"
 query <- qry_funs$contains(cpc_current.cpc_group_id = "Y10S707/933")
 pv_out <- search_pv(query = query, fields = c("patent_id"))
@@ -256,7 +223,6 @@ last_patent_id <- res$data$us_patent_citations$patent_id[[last_row]]
 last_citation_sequence <- res$data$us_patent_citations$citation_sequence[[last_row]]
 after <- c(last_patent_id, last_citation_sequence)
 print(after)
-#> [1] "10095778" "57"
 
 # make our own request to get the second page of results, knowing that's it (1066 total rows)
 remaining <- search_pv(citing_query,
@@ -270,11 +236,7 @@ blend <- list(res$data[[1]], remaining$data[[1]])
 blended <- list(do.call("rbind", c(blend, make.row.names = FALSE)))
 names(blended) <- names(res$data)
 str(blended)
-#> List of 1
-#>  $ us_patent_citations:'data.frame':	1066 obs. of  3 variables:
-#>   ..$ patent_id         : chr [1:1066] "6339767" "6339767" "6339767" "6339767" ...
-#>   ..$ citation_sequence : int [1:1066] 0 1 2 3 4 5 6 7 8 9 ...
-#>   ..$ citation_patent_id: chr [1:1066] "4847604" "4622545" "4555775" "5283894" ...
+
 ```
 
 Here's a quick look at the data around the page boundary to try to show
@@ -282,30 +244,17 @@ why we needed a secondary sort. It's not that we necessarily wanted a
 secondary sort, but it gives us the ability to use a second column's value
 in the 'after' parameter.
 
-
-``` r
+```{r}
 # ending of the first page of results
 tail(res$data$us_patent_citations, n=3)
-#>      patent_id citation_sequence citation_patent_id
-#> 998   10095778                55            6311173
-#> 999   10095778                56            6330547
-#> 1000  10095778                57            6339767
 
 #  ***********  data page boundary ***********  
 
 # start of the second page of results
 head(remaining$data$us_patent_citations, n=3)
-#>   patent_id citation_sequence citation_patent_id
-#> 1  10095778                58            6360210
-#> 2  10095778                59            6363373
-#> 3  10095778                60            6389418
 
 # end of the second page of results
 tail(remaining$data$us_patent_citations, n=3)
-#>    patent_id citation_sequence citation_patent_id
-#> 64  10095778               121            8504560
-#> 65  10095778               122            8818996
-#> 66  10095778               123            9075849
 
 # If the sort was only by patent_id, the second request would return
 # zero rows since there aren't patent_ids 'after' 10095778
@@ -321,9 +270,7 @@ users to page through result sets.  Those attributes are replaced by `size` and 
 new version of the API and R package.
 2. Your sort field(s) need to create row-wise uniqueness.  At a minimum the ```get_ok_pk(endpoint)```
 fields need to be included as sort fields though others can be added.
-3. If patent_id is used as a sort field, its corresponding 'after' value needs padding, see how
-```pad_patent_id()``` is used in Example 1
-4. If there is a single sort field, the after parameter's value is the sort field's last value in
+3. If there is a single sort field, the after parameter's value is the sort field's last value in
 the most recently retrieved page of data (as in Example 1).
 If there are multiple sort fields, the after parameter's value is a vector of the sort fields'
 last values (as in Example 3).

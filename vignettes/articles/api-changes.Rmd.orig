@@ -29,8 +29,8 @@ Listed here are the API changes that matter to users of the original version of 
 of the API).  Toward the bottom of this page are additional API changes what would only matter if you called the API 
 directly or wanted to write a python library for the API. 
 
-* Probably most importantly, the current shutdown date for the original version of the API
-is February 12, 2025, as communicated in the August 2024 newsletter.
+* Probably most importantly, the API team plans on shuting down the original version of the API
+in February 2025.  The original version of the R package will stop working when that happens.
 * An [API key](#api-key-required) is now required.
 * All fields can be queried now and there is seemingly [no distinction](#operators) between using string and full text operators now, with a new [case sensitivity caveat](#case-sensitivity-caveat) though.  Note that now some
 fields are returned in nested objects and would need to be fully qualified in the query parameter.  Ex. ```search_pv(qry_funs$begins(cpc_current.cpc_group_id="A01B1/00"))```
@@ -46,10 +46,12 @@ as the R package will page until the entire result set is retrieved which could 
 Note that in the previous version of the API total_hits was capped at 100,000 rows.
 ```{r}
 library(patentsview)
-search_pv('{"patent_type":"utility"}', all_pages = FALSE )
+search_pv('{"patent_type":"utility"}', all_pages = FALSE)
 ```
-Also note that we did not specify the fields parameter.  In the past the API returned patent_id,
-patent_title and patent_date while now it only returned patent_id.
+Also note that we did not specify the fields parameter.  In the past the API returned a
+default set of parameters for each endpoint.  For the patent endpoint that was patent_id,
+patent_title and patent_date. Now the R package requests only the endpoint's primary key(s)
+when the user does not specify fields.
 
 * Endpoint Changes
    - nber_subcategories went away- it was an endpoint in the original version of the API
@@ -87,10 +89,10 @@ httr2::last_response()
 httr2::last_response() |> httr2::resp_body_json() 
 ```
 
-
-* Two methods were added
+* A new method was added
    + HATEOAS links can be retrieved using [retrieve_linked_data()](#HATEOAS)
-   + In custom paging involving patent_id, its value needs to be padded with zeroes, see `pad_patent_id()`
+
+* An existing function was removed. With the API changes, there is less of a need for cast_pv_data() which was previously part of the R package. The API now returns most fields as appropriate types, boolean, numeric etc., instead of always returning strings.
 
 * The ropensci blog post that announced the original version of the R package was [reworked](ropensci-blog-post.html) to use the new version of the R package and API
 
@@ -213,25 +215,27 @@ Now there are eight endpoints.  There are still four grant endpoints (with a g_ 
 to the names originally released) listed under "Patent Text" but now there are four more
  pre-grant (pg_) endpoints listed under "Publication Text".
 
-    It looks like the TextEndpointStatus page isn't being updated, so we'll check 
+    It looks like the TextEndpointStatus page isn't being updated frequently, so we'll check 
 one pair for ourselves.  patent_date isn't available from g_brf_sum_text so we'll
 ask the patent endpoint for it once we have the smallest patent_id from g_brf_sum_text.
 
     ```{r}
 qry <- qry_funs$ne(patent_id = "")
-sort <- c("patent_id" = "asc")
+sort <- c(patent_id = "asc")
 grant <- search_pv(qry, sort = sort, endpoint = "g_brf_sum_text", size = 1)
 
+fields <- c("patent_id", "patent_title", "patent_date")
 res <- search_pv(qry_funs$eq(patent_id = grant$data$g_brf_sum_texts$patent_id), 
-  size = 1)
+  fields = fields, size = 1)
 
 res$data
     ```
 
     ```{r}
-qry <- qry_funs$gt(document_number = 0)
+qry <- qry_funs$ne(document_number = "")
 sort <- c("document_number" = "asc")
-pre_grant <- search_pv(qry, sort = sort, endpoint = "pg_brf_sum_text", size = 1)
+pre_grant <- search_pv(qry, sort = sort, endpoint = "pg_brf_sum_text",
+  fields = get_fields("pg_brf_sum_text"), size = 1)
 
 pre_grant$data
     ```
@@ -295,10 +299,14 @@ str(result$data)
     fields = c("inventors.inventor_id", "assignees.assignee_id")
   )
 
-  # but note that the fields came back without the _id
-  print(res$data$patents$assignees[[1]]$assignee) # not $assignee_id as requested
+  # in the nested "assignees" object is "assignee", the HATEOAS link for the assignee and
+  # "assignee_id", just the id 
+  print(res$data$patents$assignees[[1]]$assignee)
+  print(res$data$patents$assignees[[1]]$assignee_id)
 
-  print(res$data$patents$inventors[[1]]$inventor) # not $inventor_id as requested
+  # there are similar fields in the nested "inventors" object
+  print(res$data$patents$inventors[[1]]$inventor) 
+  print(res$data$patents$inventors[[1]]$inventor_id)
 
 ```
 
@@ -308,29 +316,7 @@ The API will now allow 45 requests per minute, making more requests will anger t
 ### A Note on Paging <a name="a-note-on-paging">
 The API team changed [how paging works](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#pagination) and there is an 
 important subtlety that the R package handles for you.  This screams for a python library so python 
-users don't need to worry about this and throttling!  Here's a comment that used to be in search-pv.R 
-that tries to explain the danger.
-```
-  # Here we ignore the user's sort and instead have the API sort by the primary
-  # key and sometimes primary and secondary keys for the requested endpoint.  
-  # This simplifies the paging's after parameter.
-  # If we call the API with more than a primary sort, the after parameter would
-  # have to be a vector of all the sort fields' last values.
-  # After we've retrieved all the data we'll sort in R using the sort the user requested
-
-  # Doing this also protects users from needing to know the peculiarities
-  # of the API's paging.  Example: if a user requests a sort of
-  # [{"patent_date":"asc"}], on paging the after parameter may skip
-  # to the next issue date before having retured all the data for the last
-  # patent_date in the previous request - depending on where the
-  # patent_dates change relative to the API's page breaks.
-  # (Say the last patent in a retrieved page is the first patent
-  # of a particular date, we wouldn't want the after parameter to
-  # to begin the next page of data 'after' this date.)
-
-```
-
-See the new [Result Set Paging vignette](result-set-paging.html).
+users don't need to worry about this and throttling!  See the new [Result Set Paging vignette](result-set-paging.html).
 
 ### String and Full Text Operators <a name="operators">
 The Tip below "Syntax" in the API's [documentation](https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#syntax) says:
