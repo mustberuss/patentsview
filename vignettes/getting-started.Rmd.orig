@@ -28,7 +28,8 @@ library(patentsview)
 
 search_pv(
   query = '{"_gte":{"patent_date":"2007-01-01"}}',
-  endpoint = "patent"
+  endpoint = "patent",
+  fields = c("patent_id", "patent_title", "patent_date")
 )
 ```
 
@@ -66,10 +67,11 @@ Check out the [writing queries vignette](writing-queries.html) for more details 
 
 ## Fields
 
-Each endpoint has a different set of fields. The new version of the API allows all fields to be queried. In the first example, we didn't specify which fields we wanted to retrieve so we were given the default set. You can specify which fields you want using the `fields` argument:
+Each endpoint has a different set of fields. The new version of the API allows all fields to be queried. You can specify which fields you want using the `fields` argument.  If you don't specify any, you will get
+the primary key(s) for the specified endpoint.
 
 ```{r}
-# search_pv defaults the endpoint parameter to "patents" if not specified
+# search_pv defaults the endpoint parameter to "patent" if not specified
 result = search_pv(
   query = '{"_gte":{"patent_date":"2007-01-01"}}',
   fields = c("patent_id", "patent_title")
@@ -152,41 +154,6 @@ Your choice of endpoint determines two things:
 2. **The structure of the data frame that is returned.** The first call returned a data frame on the patent level, meaning that each row corresponded to a different patent. Fields that were not on the patent level (e.g., `inventors.inventor_name_last`) were returned in list columns that are named after the entity associated with the field (e.g., the `inventors` entity).[^3] Meanwhile, the second call gave us a data frame on the inventor level (one row for each inventor) because it used the inventor endpoint.
 
 Most of the time you will want to use the patent endpoint. Note that you can still effectively filter on fields that are not at the patent-level when using the patent endpoint (e.g., you can filter on assignee name or CPC category). This is because patents are relatively low-level entities. For higher level entities like assignees, if you filter on a field that is not at the assignee-level (e.g., inventor name), the API will return data on any assignee that has at least one inventor whose name matches your search, which is probably not what you want.
-
-## Casting fields
-
-The API now returns most data fields as an appropriate data type (e.g., numeric). There are, however,
-a few fields that are returned as strings rather than integers and there are 33 date fields now.
-There are also two rule_47_flags, one returned by the patent endpoint, the other by the publication endpoint.
-The former is a boolean while the latter is a string that can be cast to a boolean.  Lastly, most
-of the document numbers are numeric though there are two instances where they are strings that can
-be cast to integers.  You can cast all fields to their preferred R types using `cast_pv_data()`:
-
-```{r}
-library(knitr)
-
-# These fields are received as strings and would be cast to integers
-ints <- fieldsdf[fieldsdf$data_type == "int", c("endpoint","field")]
-ints <- ints[order(ints$field),]
-print(ints,  row.names = FALSE)
-
-# These fields are received as strings and would be cast to dates
-date_fields <- fieldsdf[fieldsdf$data_type == "date", c("endpoint","field")]
-kable(date_fields, row.names = FALSE)
-
-res <- search_pv(
-  query = '{"patent_id":"5116621"}', 
-  fields = c("patent_id", "patent_date", "patent_title", "patent_year", "assignees.assignee_type")
-)
-
-# unnest_pv_data shows that the assignee_type field is received as a string and patent_year
-# is received as an integer
-unnest_pv_data(res$data)
-
-# cast_pv_data will convert the string patent_date to an R date and assignee_type to an integer
-recast <- cast_pv_data(res$data)
-unnest_pv_data(recast)
-```
 
 ## FAQs
 
