@@ -6,13 +6,22 @@ half_render_vignettes <- function() {
   # be within the vignettes dir, hence the directory change below
   cur_dir <- getwd()
   on.exit(setwd(cur_dir))
-  setwd("vignettes")
 
-  source_files <- list.files(pattern = "\\.Rmd\\.orig$")
-  for (file in source_files) {
-    print(paste("Knitting", file))
-    knitr::knit(file, gsub("\\.orig$", "", file))
+  directories <- c("vignettes", "vignettes/articles")
+
+  for(directory in directories) {
+    setwd(directory)
+    print(paste("Directory", directory))
+    source_files <- list.files(pattern = "\\.Rmd\\.orig$")
+    for (file in source_files) {
+      print(paste("  Knitting", file))
+      knitr::knit(file, gsub("\\.orig$", "", file))
+    }
+
+    setwd(cur_dir)
   }
+
+
 }
 
 # Builds the pkgdown locally. This functions has to do some crazy working directory
