@@ -109,11 +109,12 @@ test_that("API returns all requested groups", {
     , "cpc_subclass" # 404?  check the test query
     , "uspc_subclass" # 404
     , "pg_claim" # Invalid field: claim_dependent
+    , "publication"
   )
 
   mismatched_returns <- c(
-    "patent",
-    "publication"
+    "patent"
+    # , "publication" throwing 500s now
   )
 
   # this will fail when the api is fixed

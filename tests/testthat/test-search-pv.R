@@ -71,6 +71,7 @@ test_that("search_pv can pull all fields for all endpoints", {
     "cpc_subclass", "location",
     "uspc_subclass", "uspc_mainclass", "wipo", "claim", "draw_desc_text",
     "pg_claim"  # Invalid field: claim_dependent
+    ,"publication" # 500 two flag fields in granted_pregrant_crosswalk
   )
 
   # We should be able to get all fields from the non troubled endpoints
@@ -208,7 +209,7 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
 test_that("posts and gets return the same data", {
   skip_on_cran()
 
-  bad_eps <- c(
+  prior_bad_eps <- c(
     "cpc_subclass"
     #  ,"location" # Error: Invalid field: location_latitude
     , "uspc_subclass" # Error: Internal Server Error
@@ -219,6 +220,13 @@ test_that("posts and gets return the same data", {
     , "cpc_subclass" # 404?  check the test query
     , "uspc_subclass" # 404
     #  , "pg_claim"  # check this one
+    , "ipc"
+  )
+
+  bad_eps <- c(
+    "ipc"
+    , "cpc_subclass"
+    , "uspc_mainclass"
   )
 
   good_eps <- endpoints[!endpoints %in% bad_eps]
