@@ -34,7 +34,7 @@ navbar:
       text: "API Changes"
       icon: fa-flag
       menu:
-        - text: "2024 API Changes"
+        - text: "2025 API Changes"
           icon: fa-exclamation
           href: articles/api-changes.html
         - text: "Converting an Existing Script"
