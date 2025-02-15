@@ -9,7 +9,7 @@ vignette: >
 
 
 > Important API Change
-> 
+>
 > The new version of the API requires an API key, or all of your requests will be blocked.  See the [API Changes](api-changes.html#an-api-key-is-required-1) page.
 
 
@@ -25,7 +25,6 @@ library(visNetwork)
 library(magrittr)
 library(stringr)
 library(knitr)
-library(webshot2)
 
 # Write a query to pull patents assigned to the CPC code of "Y10S707/933"
 query <- qry_funs$contains(cpc_current.cpc_group_id = "Y10S707/933")
@@ -64,22 +63,22 @@ res_lst <- unnest_pv_data(res$data, pk = "patent_id")
 res_lst
 #> List of 1
 #>  $ us_patent_citations:'data.frame':	1066 obs. of  3 variables:
-#>   ..$ patent_id         : chr [1:1066] "6339767" ...
+#>   ..$ patent_id         : chr [1:1066] "10095778" ...
 #>   ..$ citation_sequence : int [1:1066] 0 1 ...
-#>   ..$ citation_patent_id: chr [1:1066] "4847604" ...
+#>   ..$ citation_patent_id: chr [1:1066] "4991087" ...
 
 res_lst2 <- unnest_pv_data(res2$data, pk = "patent_id")
 res_lst2
 #> List of 1
-#>  $ us_patent_citations:'data.frame':	1028 obs. of  3 variables:
-#>   ..$ patent_id         : chr [1:1028] "6480854" ...
-#>   ..$ citation_sequence : int [1:1028] 4 2 ...
-#>   ..$ citation_patent_id: chr [1:1028] "6339767" ...
+#>  $ us_patent_citations:'data.frame':	1056 obs. of  3 variables:
+#>   ..$ patent_id         : chr [1:1056] "10007946" ...
+#>   ..$ citation_sequence : int [1:1056] 53 13 ...
+#>   ..$ citation_patent_id: chr [1:1056] "7716226" ...
 ```
 
 ## Count the distinct patent_id and cited_patent_id
 
-There are only 11 PCA patents. These patents cite 1066 patents and are cited by 1028 patents. Let's visualize the citations among the PCA patents. We'll create our visualization using the `visNetwork` package, which requires us to create a data frame of nodes and a data frame of edges.
+There are only 11 PCA patents. These patents cite 1066 patents and are cited by 1056 patents. Let's visualize the citations among the PCA patents. We'll create our visualization using the `visNetwork` package, which requires us to create a data frame of nodes and a data frame of edges.
 
 
 ``` r
@@ -92,17 +91,17 @@ pat_title <- function(title, number) {
 
 edges <-
   res_lst$us_patent_citations %>%
-  semi_join(x = ., y = ., by = c("citation_patent_id" = "patent_id")) %>%
-  select(-citation_sequence) %>%  # discard citation_sequence that we don't need here
-  set_colnames(c("from", "to"))
+    semi_join(x = ., y = ., by = c("citation_patent_id" = "patent_id")) %>%
+    select(-citation_sequence) %>%  # discard citation_sequence that we don't need here
+    set_colnames(c("from", "to"))
 
 nodes <-
   pat_lst$patents %>%
-  mutate(
-    id = patent_id,
-    label = patent_id,
-    title = pat_title(patent_title, patent_id)
-  )
+    mutate(
+      id = patent_id,
+      label = patent_id,
+      title = pat_title(patent_title, patent_id)
+    )
 
 visNetwork(
   nodes = nodes, edges = edges, height = "400px", width = "100%",
@@ -128,14 +127,14 @@ With only 3 patents, it will probably be possible to visualize how these patents
 ``` r
 rel_pats <-
   res_lst$us_patent_citations %>%
-  rbind(setNames(res_lst$us_patent_citations, names(.))) %>%
-  select(-patent_id) %>%
-  rename(patent_id = citation_patent_id) %>%
-  bind_rows(data.frame(patent_id = p3)) %>%
-  distinct() %>%
-  filter(!is.na(patent_id))
+    rbind(setNames(res_lst$us_patent_citations, names(.))) %>%
+    select(-patent_id) %>%
+    rename(patent_id = citation_patent_id) %>%
+    bind_rows(data.frame(patent_id = p3)) %>%
+    distinct() %>%
+    filter(!is.na(patent_id))
 
-# Look up which patents the relevant patents cite.  We need to use the 
+# Look up which patents the relevant patents cite.  We need to use the
 # patent_citation endpoint now.
 
 rel_pats_res <- search_pv(
@@ -158,20 +157,20 @@ cited_pats <-
 
 full_network <-
   cited_pats %>%
-  do({
-    .$ind <-
+    do({
+      .$ind <-
+        group_by(., patent_id) %>%
+        group_indices()
       group_by(., patent_id) %>%
-      group_indices()
-    group_by(., patent_id) %>%
-      mutate(sqrt_num_cited = sqrt(n()))
-  }) %>%
-  inner_join(x = ., y = ., by = "citation_patent_id") %>%
-  filter(ind.x > ind.y) %>%
-  group_by(patent_id.x, patent_id.y) %>%
-  mutate(cosine_sim = n() / (sqrt_num_cited.x * sqrt_num_cited.y)) %>%
-  ungroup() %>%
-  select(matches("patent_id\\.|cosine_sim")) %>%
-  distinct()
+        mutate(sqrt_num_cited = sqrt(n()))
+    }) %>%
+    inner_join(x = ., y = ., by = "citation_patent_id") %>%
+    filter(ind.x > ind.y) %>%
+    group_by(patent_id.x, patent_id.y) %>%
+    mutate(cosine_sim = n() / (sqrt_num_cited.x * sqrt_num_cited.y)) %>%
+    ungroup() %>%
+    select(matches("patent_id\\.|cosine_sim")) %>%
+    distinct()
 
 kable(head(full_network))
 ```
@@ -208,21 +207,21 @@ There appears to be a smallish group of patent pairs that are very similar to on
 ``` r
 edges <-
   full_network %>%
-  filter(cosine_sim >= .1) %>%
-  rename(from = patent_id.x, to = patent_id.y, value = cosine_sim) %>%
-  mutate(title = paste("Cosine similarity =", as.character(round(value, 3))))
+    filter(cosine_sim >= .1) %>%
+    rename(from = patent_id.x, to = patent_id.y, value = cosine_sim) %>%
+    mutate(title = paste("Cosine similarity =", as.character(round(value, 3))))
 
 nodes <-
   rel_pats_lst$us_patent_citations %>%
-  distinct(patent_id) %>%
-  rename(id = patent_id) %>%
-  mutate(
-    # the 3 patents of interest will be represented as blue nodes, all others
-    # will be yellow
-    color = ifelse(id %in% p3, "#97C2FC", "#DDCC77"),
-    label = id,
-    title = pat_title(id, id) # we don't get patent_title now (formerly first argument)
-  )
+    distinct(patent_id) %>%
+    rename(id = patent_id) %>%
+    mutate(
+      # the 3 patents of interest will be represented as blue nodes, all others
+      # will be yellow
+      color = ifelse(id %in% p3, "#97C2FC", "#DDCC77"),
+      label = id,
+      title = pat_title(id, id) # we don't get patent_title now (formerly first argument)
+    )
 
 visNetwork(
   nodes = nodes, edges = edges, height = "700px", width = "100%",

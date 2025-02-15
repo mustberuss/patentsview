@@ -24,21 +24,22 @@ library(patentsview)
 
 search_pv(
   query = '{"_gte":{"patent_date":"2007-01-01"}}',
-  endpoint = "patent"
+  endpoint = "patent",
+  fields = c("patent_id", "patent_title", "patent_date")
 )
 #> $data
 #> #### A list with a single data frame on patents level:
 #> 
 #> List of 1
 #>  $ patents:'data.frame':	1000 obs. of  3 variables:
-#>   ..$ patent_id   : chr [1:1000] "10631087" ...
-#>   ..$ patent_title: chr [1:1000] "Method and device for voice operated contro"..
-#>   ..$ patent_date : chr [1:1000] "2020-04-21" ...
+#>   ..$ patent_id   : chr [1:1000] "10045335" ...
+#>   ..$ patent_title: chr [1:1000] "Method of delivering data for use by base s"..
+#>   ..$ patent_date : chr [1:1000] "2018-08-07" ...
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 5,452,372
+#> total_hits = 5,530,246
 ```
 
 This call to `search_pv()` sends our query to the patent endpoint (the default). The API has 27 endpoints, corresponding to 27 different entity types.
@@ -79,11 +80,12 @@ Check out the [writing queries vignette](writing-queries.html) for more details 
 
 ## Fields
 
-Each endpoint has a different set of fields. The new version of the API allows all fields to be queried. In the first example, we didn't specify which fields we wanted to retrieve so we were given the default set. You can specify which fields you want using the `fields` argument:
+Each endpoint has a different set of fields. The new version of the API allows all fields to be queried. You can specify which fields you want using the `fields` argument.  If you don't specify any, you will get
+the primary key(s) for the specified endpoint.
 
 
 ``` r
-# search_pv defaults the endpoint parameter to "patents" if not specified
+# search_pv defaults the endpoint parameter to "patent" if not specified
 result = search_pv(
   query = '{"_gte":{"patent_date":"2007-01-01"}}',
   fields = c("patent_id", "patent_title")
@@ -94,13 +96,13 @@ result
 #> 
 #> List of 1
 #>  $ patents:'data.frame':	1000 obs. of  2 variables:
-#>   ..$ patent_id   : chr [1:1000] "10631087" ...
-#>   ..$ patent_title: chr [1:1000] "Method and device for voice operated contro"..
+#>   ..$ patent_id   : chr [1:1000] "10045335" ...
+#>   ..$ patent_title: chr [1:1000] "Method of delivering data for use by base s"..
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 5,452,372
+#> total_hits = 5,530,246
 ```
 
 To list all of the fields for a given endpoint, use `get_fields()`:
@@ -140,14 +142,14 @@ search_pv(
 #> #### A list with a single data frame (with list column(s) inside) on patents level:
 #> 
 #> List of 1
-#>  $ patents:'data.frame':	2487 obs. of  2 variables:
-#>   ..$ patent_id: chr [1:2487] "3931611" ...
-#>   ..$ inventors:List of 2487
+#>  $ patents:'data.frame':	2497 obs. of  2 variables:
+#>   ..$ patent_id: chr [1:2497] "10000988" ...
+#>   ..$ inventors:List of 2497
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 2,487
+#> total_hits = 2,497
 ```
 See the [result set paging vignette](result-set-paging.html) for information on custom paging.
 
@@ -196,25 +198,48 @@ result
 #> 
 #> List of 1
 #>  $ patents:'data.frame':	1000 obs. of  2 variables:
-#>   ..$ patent_id: chr [1:1000] "10631591" ...
+#>   ..$ patent_id: chr [1:1000] "10046778" ...
 #>   ..$ inventors:List of 1000
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 2,487
+#> total_hits = 2,497
 
 # Here's the first inventors
 result$data$patents$inventors[[1]]
-#>                                                              inventor
-#> 1   https://search.patentsview.org/api/v1/inventor/fl:jo_ln:droege-1/
-#> 2 https://search.patentsview.org/api/v1/inventor/fl:cl_ln:chambers-3/
-#>   inventor_name_first inventor_name_last inventor_city inventor_state
-#> 1                John             Droege      Portland             OR
-#> 2             Clayton           Chambers      Portland             OR
-#>   inventor_country inventor_sequence
-#> 1               US                 1
-#> 2               US                 0
+#>                                                                inventor
+#> 1      https://search.patentsview.org/api/v1/inventor/fl:st_ln:crane-1/
+#> 2   https://search.patentsview.org/api/v1/inventor/fl:mi_ln:chambers-4/
+#> 3 https://search.patentsview.org/api/v1/inventor/fl:to_ln:yarrington-1/
+#> 4      https://search.patentsview.org/api/v1/inventor/fl:da_ln:bardo-1/
+#> 5      https://search.patentsview.org/api/v1/inventor/fl:ch_ln:pallo-1/
+#> 6     https://search.patentsview.org/api/v1/inventor/fl:se_ln:gitmez-1/
+#> 7     https://search.patentsview.org/api/v1/inventor/fl:ph_ln:tullai-1/
+#>             inventor_id inventor_name_first inventor_name_last
+#> 1      fl:st_ln:crane-1     Stephen Michael              Crane
+#> 2   fl:mi_ln:chambers-4               Misty           Chambers
+#> 3 fl:to_ln:yarrington-1                Todd         Yarrington
+#> 4      fl:da_ln:bardo-1               David              Bardo
+#> 5      fl:ch_ln:pallo-1               Chris              Pallo
+#> 6     fl:se_ln:gitmez-1              Serkan             Gitmez
+#> 7     fl:ph_ln:tullai-1                Phil             Tullai
+#>   inventor_gender_code                 inventor_location_id inventor_city
+#> 1                    M 9100070f-16c8-11ed-9b5f-1234bde3cd05          Erie
+#> 2                    F 9100070f-16c8-11ed-9b5f-1234bde3cd05          Erie
+#> 3                    M 9100070f-16c8-11ed-9b5f-1234bde3cd05          Erie
+#> 4                    M 9100070f-16c8-11ed-9b5f-1234bde3cd05          Erie
+#> 5                    M 9100070f-16c8-11ed-9b5f-1234bde3cd05          Erie
+#> 6                    M 9100070f-16c8-11ed-9b5f-1234bde3cd05          Erie
+#> 7                    M 9100070f-16c8-11ed-9b5f-1234bde3cd05          Erie
+#>   inventor_state inventor_country inventor_sequence
+#> 1             PA               US                 0
+#> 2             PA               US                 5
+#> 3             PA               US                 3
+#> 4             PA               US                 1
+#> 5             PA               US                 6
+#> 6             PA               US                 2
+#> 7             PA               US                 4
 
 # Now we will see what the inventor endpoint returns for a similar query.
 # We use get_fields() to get all the available for the inventor endpoint.
@@ -226,28 +251,28 @@ search_pv(query, endpoint = "inventor", fields = fields)
 #> #### A list with a single data frame (with list column(s) inside) on inventors level:
 #> 
 #> List of 1
-#>  $ inventors:'data.frame':	439 obs. of  16 variables:
-#>   ..$ inventor_id                 : chr [1:439] "fl:er_ln:chambers-1" ...
-#>   ..$ inventor_name_first         : chr [1:439] "Erin E." ...
-#>   ..$ inventor_name_last          : chr [1:439] "Chambers" ...
-#>   ..$ inventor_gender_code        : chr [1:439] "F" ...
-#>   ..$ inventor_lastknown_city     : chr [1:439] "Sutton" ...
-#>   ..$ inventor_lastknown_state    : chr [1:439] "MA" ...
-#>   ..$ inventor_lastknown_country  : chr [1:439] "US" ...
-#>   ..$ inventor_lastknown_latitude : num [1:439] 42.1 ...
-#>   ..$ inventor_lastknown_longitude: num [1:439] -71.8 ...
-#>   ..$ inventor_lastknown_location : chr [1:439] "https://search.patentsview.o"..
-#>   ..$ inventor_num_patents        : int [1:439] 6 2 ...
-#>   ..$ inventor_num_assignees      : int [1:439] 1 1 ...
-#>   ..$ inventor_first_seen_date    : chr [1:439] "2011-11-01" ...
-#>   ..$ inventor_last_seen_date     : chr [1:439] "2023-09-05" ...
-#>   ..$ inventor_years_active       : num [1:439] 12 9 ...
-#>   ..$ inventor_years              :List of 439
+#>  $ inventors:'data.frame':	442 obs. of  16 variables:
+#>   ..$ inventor_id                 : chr [1:442] "8au06rg5lq96f7pqd62sfgq8q" ...
+#>   ..$ inventor_name_first         : chr [1:442] "Dwight M." ...
+#>   ..$ inventor_name_last          : chr [1:442] "Chambers" ...
+#>   ..$ inventor_gender_code        : chr [1:442] "M" ...
+#>   ..$ inventor_lastknown_city     : chr [1:442] "Atlanta" ...
+#>   ..$ inventor_lastknown_state    : chr [1:442] "GA" ...
+#>   ..$ inventor_lastknown_country  : chr [1:442] "US" ...
+#>   ..$ inventor_lastknown_latitude : num [1:442] 33.7 ...
+#>   ..$ inventor_lastknown_longitude: num [1:442] -84.4 ...
+#>   ..$ inventor_lastknown_location : chr [1:442] "https://search.patentsview.o"..
+#>   ..$ inventor_num_patents        : int [1:442] 1 1 ...
+#>   ..$ inventor_num_assignees      : int [1:442] 2 1 ...
+#>   ..$ inventor_first_seen_date    : chr [1:442] "2023-01-03" ...
+#>   ..$ inventor_last_seen_date     : chr [1:442] "2023-01-03" ...
+#>   ..$ inventor_years_active       : num [1:442] 1 1 ...
+#>   ..$ inventor_years              :List of 442
 #> 
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 439
+#> total_hits = 442
 ```
 
 Your choice of endpoint determines two things:
@@ -257,101 +282,6 @@ Your choice of endpoint determines two things:
 2. **The structure of the data frame that is returned.** The first call returned a data frame on the patent level, meaning that each row corresponded to a different patent. Fields that were not on the patent level (e.g., `inventors.inventor_name_last`) were returned in list columns that are named after the entity associated with the field (e.g., the `inventors` entity).[^3] Meanwhile, the second call gave us a data frame on the inventor level (one row for each inventor) because it used the inventor endpoint.
 
 Most of the time you will want to use the patent endpoint. Note that you can still effectively filter on fields that are not at the patent-level when using the patent endpoint (e.g., you can filter on assignee name or CPC category). This is because patents are relatively low-level entities. For higher level entities like assignees, if you filter on a field that is not at the assignee-level (e.g., inventor name), the API will return data on any assignee that has at least one inventor whose name matches your search, which is probably not what you want.
-
-## Casting fields
-
-The API now returns most data fields as an appropriate data type (e.g., numeric). There are, however,
-a few fields that are returned as strings rather than integers and there are 33 date fields now.
-There are also two rule_47_flags, one returned by the patent endpoint, the other by the publication endpoint.
-The former is a boolean while the latter is a string that can be cast to a boolean.  Lastly, most
-of the document numbers are numeric though there are two instances where they are strings that can
-be cast to integers.  You can cast all fields to their preferred R types using `cast_pv_data()`:
-
-
-``` r
-library(knitr)
-
-# These fields are received as strings and would be cast to integers
-ints <- fieldsdf[fieldsdf$data_type == "int", c("endpoint","field")]
-ints <- ints[order(ints$field),]
-print(ints,  row.names = FALSE)
-#>                        endpoint                    field
-#>                        assignee            assignee_type
-#>                          patent  assignees.assignee_type
-#>                     publication  assignees.assignee_type
-#>  patent/us_application_citation citation_document_number
-
-# These fields are received as strings and would be cast to dates
-date_fields <- fieldsdf[fieldsdf$data_type == "date", c("endpoint","field")]
-kable(date_fields, row.names = FALSE)
-```
-
-
-
-|endpoint                       |field                                           |
-|:------------------------------|:-----------------------------------------------|
-|assignee                       |assignee_first_seen_date                        |
-|assignee                       |assignee_last_seen_date                         |
-|cpc_class                      |cpc_class_first_seen_date                       |
-|cpc_class                      |cpc_class_last_seen_date                        |
-|cpc_subclass                   |cpc_subclass_first_seen_date                    |
-|cpc_subclass                   |cpc_subclass_last_seen_date                     |
-|inventor                       |inventor_first_seen_date                        |
-|inventor                       |inventor_last_seen_date                         |
-|patent                         |application.filing_date                         |
-|patent                         |foreign_priority.filing_date                    |
-|patent                         |ipcr.ipc_action_date                            |
-|patent                         |patent_date                                     |
-|patent                         |patent_earliest_application_date                |
-|patent                         |pct_data.pct_102_date                           |
-|patent                         |pct_data.pct_371_date                           |
-|patent                         |pct_data.published_filed_date                   |
-|patent                         |us_related_documents.related_doc_published_date |
-|patent                         |us_term_of_grant.disclaimer_date                |
-|patent/attorney                |attorney_first_seen_date                        |
-|patent/attorney                |attorney_last_seen_date                         |
-|patent/foreign_citation        |citation_date                                   |
-|patent/us_application_citation |citation_date                                   |
-|patent/us_patent_citation      |citation_date                                   |
-|publication                    |cpc_at_issue.action_date                        |
-|publication                    |foreign_priority.filing_date                    |
-|publication                    |ipcr.ipc_action_date                            |
-|publication                    |pct_data.pct_102_date                           |
-|publication                    |pct_data.pct_371_date                           |
-|publication                    |pct_data.published_filed_date                   |
-|publication                    |publication_date                                |
-|publication                    |us_related_documents.related_doc_published_date |
-|uspc_mainclass                 |uspc_mainclass_first_seen_date                  |
-|uspc_mainclass                 |uspc_mainclass_last_seen_date                   |
-
-
-
-``` r
-
-res <- search_pv(
-  query = '{"patent_id":"5116621"}', 
-  fields = c("patent_id", "patent_date", "patent_title", "patent_year", "assignees.assignee_type")
-)
-
-# unnest_pv_data shows that the assignee_type field is received as a string and patent_year
-# is received as an integer
-unnest_pv_data(res$data)
-#> List of 2
-#>  $ assignees:'data.frame':	2 obs. of  2 variables:
-#>   ..$ patent_id    : chr [1:2] "5116621" ...
-#>   ..$ assignee_type: chr [1:2] "3" ...
-#>  $ patents  :'data.frame':	1 obs. of  4 variables:
-#>   ..$ patent_id   : chr "5116621"
-#>   ..$ patent_title: chr "Anti-inflammatory analgesic patch"
-#>   ..$ patent_date : chr "1992-05-26"
-#>   ..$ patent_year : int 1992
-
-# cast_pv_data will convert the string patent_date to an R date and assignee_type to an integer
-recast <- cast_pv_data(res$data)
-#> Error in cast_pv_data(res$data): could not find function "cast_pv_data"
-unnest_pv_data(recast)
-#> Error in "pv_data_result" %in% class(data): object 'recast' not found
-```
 
 ## FAQs
 
@@ -390,9 +320,9 @@ res$data
 #> 
 #> List of 1
 #>  $ patents:'data.frame':	1000 obs. of  6 variables:
-#>   ..$ patent_id                 : chr [1:1000] "10631478" ...
-#>   ..$ patent_title              : chr [1:1000] "Automated Christmas tree wate"..
-#>   ..$ patent_date               : chr [1:1000] "2020-04-28" ...
+#>   ..$ patent_id                 : chr [1:1000] "10045399" ...
+#>   ..$ patent_title              : chr [1:1000] "System and method for providi"..
+#>   ..$ patent_date               : chr [1:1000] "2018-08-07" ...
 #>   ..$ application               :List of 1000
 #>   ..$ assignees                 :List of 1000
 #>   ..$ gov_interest_organizations:List of 1000
@@ -405,26 +335,31 @@ res$data
 
 ``` r
 library(tidyr)
+#> 
+#> Attaching package: 'tidyr'
+#> The following object is masked from 'package:magrittr':
+#> 
+#>     extract
 
 # Get assignee data:
 res$data$patents %>% 
   unnest(assignees) %>%
   head()
-#> # A tibble: 6 × 14
+#> # A tibble: 6 × 16
 #>   patent_id patent_title paten…¹ appli…² assig…³ assig…⁴ assig…⁵ assig…⁶ assig…⁷
 #>   <chr>     <chr>        <chr>   <list>  <chr>   <chr>   <chr>   <chr>   <chr>  
-#> 1 10631478  Automated C… 2020-0… <df>    https:… 2       <NA>    <NA>    CHRIST…
-#> 2 10631557  Preservativ… 2020-0… <df>    https:… 2       <NA>    <NA>    PepsiC…
-#> 3 10631704  Dishwasher … 2020-0… <df>    https:… 2       <NA>    <NA>    WHIRLP…
-#> 4 10631705  Household a… 2020-0… <df>    https:… 2       <NA>    <NA>    WHIRLP…
-#> 5 10631855  Wound closu… 2020-0… <df>    https:… 2       <NA>    <NA>    Covidi…
-#> 6 10631872  Hemostatic … 2020-0… <df>    https:… 2       <NA>    <NA>    Boston…
-#> # … with 5 more variables: assignee_city <chr>, assignee_state <chr>,
+#> 1 10045399  System and … 2018-0… <df>    https:… f0c24f… 2       <NA>    <NA>   
+#> 2 10045452  Electronic … 2018-0… <df>    https:… 86c4fe… 2       <NA>    <NA>   
+#> 3 10045764  Minimally i… 2018-0… <df>    https:… 90fc55… 2       <NA>    <NA>   
+#> 4 10045807  Bone positi… 2018-0… <df>    https:… f39520… 2       <NA>    <NA>   
+#> 5 10045844  Post-implan… 2018-0… <df>    https:… e9dcc0… 2       <NA>    <NA>   
+#> 6 10045989  Quinazoline… 2018-0… <df>    https:… 520ef9… 2       <NA>    <NA>   
+#> # … with 7 more variables: assignee_organization <chr>,
+#> #   assignee_location_id <chr>, assignee_city <chr>, assignee_state <chr>,
 #> #   assignee_country <chr>, assignee_sequence <int>,
 #> #   gov_interest_organizations <list>, and abbreviated variable names
-#> #   ¹​patent_date, ²​application, ³​assignee, ⁴​assignee_type,
-#> #   ⁵​assignee_individual_name_first, ⁶​assignee_individual_name_last,
-#> #   ⁷​assignee_organization
+#> #   ¹​patent_date, ²​application, ³​assignee, ⁴​assignee_id, ⁵​assignee_type,
+#> #   ⁶​assignee_individual_name_first, ⁷​assignee_individual_name_last
 ```
 
 2. **Use patentsview::unnest_pv_data.** `unnest_pv_data()` creates a series of data frames (one for each entity level) that are like tables in a relational database. You provide it with the data returned by `search_pv()` and a field that can act as a unique identifier for the primary entities:
@@ -434,34 +369,36 @@ res$data$patents %>%
 unnest_pv_data(data = res$data, pk = "patent_id")
 #> List of 4
 #>  $ application               :'data.frame':	1000 obs. of  7 variables:
-#>   ..$ patent_id       : chr [1:1000] "10631478" ...
-#>   ..$ application_id  : chr [1:1000] "15/625439" ...
-#>   ..$ application_type: chr [1:1000] "15" ...
-#>   ..$ filing_date     : chr [1:1000] "2017-06-16" ...
-#>   ..$ series_code     : chr [1:1000] "15" ...
+#>   ..$ patent_id       : chr [1:1000] "10045399" ...
+#>   ..$ application_id  : chr [1:1000] "14/883264" ...
+#>   ..$ application_type: chr [1:1000] "14" ...
+#>   ..$ filing_date     : chr [1:1000] "2015-10-14" ...
+#>   ..$ series_code     : chr [1:1000] "14" ...
 #>   ..$ rule_47_flag    : logi [1:1000] FALSE ...
-#>   ..$ filing_type     : chr [1:1000] "15" ...
-#>  $ assignees                 :'data.frame':	978 obs. of  10 variables:
-#>   ..$ patent_id                     : chr [1:978] "10631478" ...
-#>   ..$ assignee                      : chr [1:978] "https://search.patentsview"..
-#>   ..$ assignee_type                 : chr [1:978] "2" ...
-#>   ..$ assignee_individual_name_first: chr [1:978] NA ...
-#>   ..$ assignee_individual_name_last : chr [1:978] NA ...
-#>   ..$ assignee_organization         : chr [1:978] "CHRISTMAS TREE BUTLER, INC"..
-#>   ..$ assignee_city                 : chr [1:978] "Saratoga Springs" ...
-#>   ..$ assignee_state                : chr [1:978] "NY" ...
-#>   ..$ assignee_country              : chr [1:978] "US" ...
-#>   ..$ assignee_sequence             : int [1:978] 0 0 ...
-#>  $ gov_interest_organizations:'data.frame':	48 obs. of  5 variables:
-#>   ..$ patent_id     : chr [1:48] "10639298" ...
-#>   ..$ fedagency_name: chr [1:48] "National Institutes of Health" ...
-#>   ..$ level_one     : chr [1:48] "Department of Health and Human Services" ...
-#>   ..$ level_two     : chr [1:48] "National Institutes of Health" ...
-#>   ..$ level_three   : chr [1:48] NA ...
+#>   ..$ filing_type     : chr [1:1000] "14" ...
+#>  $ assignees                 :'data.frame':	981 obs. of  12 variables:
+#>   ..$ patent_id                     : chr [1:981] "10045399" ...
+#>   ..$ assignee                      : chr [1:981] "https://search.patentsview"..
+#>   ..$ assignee_id                   : chr [1:981] "f0c24f2e-5fe5-4945-84e6-8b"..
+#>   ..$ assignee_type                 : chr [1:981] "2" ...
+#>   ..$ assignee_individual_name_first: chr [1:981] NA ...
+#>   ..$ assignee_individual_name_last : chr [1:981] NA ...
+#>   ..$ assignee_organization         : chr [1:981] "AT&T Intellectual Property"..
+#>   ..$ assignee_location_id          : chr [1:981] "ec2f0cf3-16c7-11ed-9b5f-12"..
+#>   ..$ assignee_city                 : chr [1:981] "Atlanta" ...
+#>   ..$ assignee_state                : chr [1:981] "GA" ...
+#>   ..$ assignee_country              : chr [1:981] "US" ...
+#>   ..$ assignee_sequence             : int [1:981] 0 0 ...
+#>  $ gov_interest_organizations:'data.frame':	45 obs. of  5 variables:
+#>   ..$ patent_id     : chr [1:45] "10045989" ...
+#>   ..$ fedagency_name: chr [1:45] "National Institutes of Health" ...
+#>   ..$ level_one     : chr [1:45] "Department of Health and Human Services" ...
+#>   ..$ level_two     : chr [1:45] "National Institutes of Health" ...
+#>   ..$ level_three   : chr [1:45] NA ...
 #>  $ patents                   :'data.frame':	1000 obs. of  3 variables:
-#>   ..$ patent_id   : chr [1:1000] "10631478" ...
-#>   ..$ patent_title: chr [1:1000] "Automated Christmas tree watering system" ...
-#>   ..$ patent_date : chr [1:1000] "2020-04-28" ...
+#>   ..$ patent_id   : chr [1:1000] "10045399" ...
+#>   ..$ patent_title: chr [1:1000] "System and method for providing integrated "..
+#>   ..$ patent_date : chr [1:1000] "2018-08-07" ...
 ```
 
 Now we are left with a series of flat data frames instead of having a single data frame with other data frames nested inside of it. These flat data frames can be joined together as needed via the primary key (`patent_id`) for this endpoint.
