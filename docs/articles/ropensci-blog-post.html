@@ -46,7 +46,7 @@
     <a class="dropdown-item" href="../articles/api-changes.html">
       <span class="fa fa-exclamation"></span>
        
-      2024 API Changes
+      2025 API Changes
     </a>
     <a class="dropdown-item" href="../articles/converting-an-existing-script.html">
       <span class="fa fa-sync"></span>
@@ -146,7 +146,7 @@ Allen</h4>
                         
             <h4 data-toc-skip class="date">2024-09-12</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/ropensci/patentsview/blob/HEAD/vignettes/ropensci-blog-post.Rmd" class="external-link"><code>vignettes/ropensci-blog-post.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/ropensci/patentsview/blob/HEAD/vignettes/articles/ropensci-blog-post.Rmd" class="external-link"><code>vignettes/articles/ropensci-blog-post.Rmd</code></a></small>
       <div class="d-none name"><code>ropensci-blog-post.Rmd</code></div>
     </div>
 
@@ -289,12 +289,12 @@ string to <code><a href="../reference/search_pv.html">search_pv()</a></code>:</p
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
 <span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  1 variable:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id: chr [1:1000] "10631087" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_id: chr [1:1000] "10045335" ...</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 3,491,425</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 3,572,265</span></span></code></pre></div>
 <p>…Or you can use the domain specific language (DSL) provided in the
 <code>patentsview</code> package to help you write the query:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -308,12 +308,12 @@ string to <code><a href="../reference/search_pv.html">search_pv()</a></code>:</p
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
 <span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  1 variable:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id: chr [1:1000] "10631087" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_id: chr [1:1000] "10045335" ...</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 3,491,425</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 3,572,265</span></span></code></pre></div>
 <p><code>qry_1</code> and <code>qry_2</code> will result in the same
 HTTP call to the API. Both queries search for patents in USPTO that were
 published after 2014. There are three gotchas to look out for when
@@ -365,14 +365,14 @@ fields are no longer available from the patent endpoint.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
 <span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  3 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id      : chr [1:1000] "10631087" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_abstract: chr [1:1000] "Methods and devices for processing and v"..</span></span>
+<span><span class="co">#&gt;   ..$ patent_id      : chr [1:1000] "10045335" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_abstract: chr [1:1000] "The disclosure proposes a method of deli"..</span></span>
 <span><span class="co">#&gt;   ..$ inventors      :List of 1000</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 3,491,425</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 3,572,265</span></span></code></pre></div>
 <p>The fields that you can retrieve depends on the endpoint that you are
 hitting. We’ve been using the “patent” endpoint thus far, so all of
 these are retrievable:
@@ -389,7 +389,7 @@ level fields</p>
 <span><span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  20 variables:</span></span>
+<span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  21 variables:</span></span>
 <span><span class="co">#&gt;   ..$ patent_id                                                   : chr [1:10"..</span></span>
 <span><span class="co">#&gt;   ..$ patent_title                                                : chr [1:10"..</span></span>
 <span><span class="co">#&gt;   ..$ patent_type                                                 : chr [1:10"..</span></span>
@@ -397,6 +397,7 @@ level fields</p>
 <span><span class="co">#&gt;   ..$ patent_year                                                 : int [1:100..</span></span>
 <span><span class="co">#&gt;   ..$ patent_abstract                                             : chr [1:10"..</span></span>
 <span><span class="co">#&gt;   ..$ patent_cpc_current_group_average_patent_processing_days     : int [1:100..</span></span>
+<span><span class="co">#&gt;   ..$ withdrawn                                                   : logi [1:10..</span></span>
 <span><span class="co">#&gt;   ..$ patent_detail_desc_length                                   : int [1:100..</span></span>
 <span><span class="co">#&gt;   ..$ patent_earliest_application_date                            : chr [1:10"..</span></span>
 <span><span class="co">#&gt;   ..$ patent_num_foreign_documents_cited                          : int [1:100..</span></span>
@@ -408,13 +409,13 @@ level fields</p>
 <span><span class="co">#&gt;   ..$ patent_term_extension                                       : int [1:100..</span></span>
 <span><span class="co">#&gt;   ..$ gov_interest_statement                                      : chr [1:100..</span></span>
 <span><span class="co">#&gt;   ..$ patent_uspc_current_mainclass_average_patent_processing_days: logi [1:10..</span></span>
-<span><span class="co">#&gt;   ..$ inventors                                                   :List of 1000</span></span>
 <span><span class="co">#&gt;   ..$ wipo_kind                                                   : chr [1:10"..</span></span>
+<span><span class="co">#&gt;   ..$ inventors                                                   :List of 1000</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 3,491,425</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 3,572,265</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">

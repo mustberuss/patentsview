@@ -46,7 +46,7 @@
     <a class="dropdown-item" href="../articles/api-changes.html">
       <span class="fa fa-exclamation"></span>
        
-      2024 API Changes
+      2025 API Changes
     </a>
     <a class="dropdown-item" href="../articles/converting-an-existing-script.html">
       <span class="fa fa-sync"></span>
@@ -141,7 +141,7 @@
       <img src="" class="logo" alt=""><h1>Understanding the API</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/ropensci/patentsview/blob/HEAD/vignettes/understanding-the-api.Rmd" class="external-link"><code>vignettes/understanding-the-api.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/ropensci/patentsview/blob/HEAD/vignettes/articles/understanding-the-api.Rmd" class="external-link"><code>vignettes/articles/understanding-the-api.Rmd</code></a></small>
       <div class="d-none name"><code>understanding-the-api.Rmd</code></div>
     </div>
 
@@ -181,7 +181,7 @@ in the fields parameter.</a></p>
 <span><span class="co"># Now that the R package uses httr2, we can use its last_request()</span></span>
 <span><span class="co"># to see what was POSTed to the API</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_request</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">body</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span>
-<span><span class="co">#&gt; {"q":{"_eq":{"patent_id":"10568228"}},"f":["application"],"s":[],"o":{"size":1000}}</span></span>
+<span><span class="co">#&gt; {"q":{"_eq":{"patent_id":"10568228"}},"f":["application","patent_id"],"s":[],"o":{"size":1000}}</span></span>
 <span></span>
 <span><span class="co"># Here we view the results</span></span>
 <span><span class="va">shorthand_results</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patent</span><span class="op">$</span><span class="va">application</span></span>
@@ -202,7 +202,7 @@ in the fields parameter.</a></p>
 <span><span class="co"># but the R package figured out that the shorthand could be used instead</span></span>
 <span><span class="co"># so what was POSTed to the API is the same!</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_request</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">body</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span>
-<span><span class="co">#&gt; {"q":{"_eq":{"patent_id":"10568228"}},"f":["application"],"s":[],"o":{"size":1000}}</span></span>
+<span><span class="co">#&gt; {"q":{"_eq":{"patent_id":"10568228"}},"f":["application","patent_id"],"s":[],"o":{"size":1000}}</span></span>
 <span></span>
 <span><span class="co"># and, of course, the results from the API are the same</span></span>
 <span><span class="va">explicit_results</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patent</span><span class="op">$</span><span class="va">application</span></span>
@@ -245,12 +245,12 @@ or two dollar bills in the US.</p>
 <span></span>
 <span><span class="va">patents_query</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>    <span class="fu">or</span><span class="op">(</span></span>
-<span>      <span class="fu">and</span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">or</a></span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_first <span class="op">=</span> <span class="st">"George"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_last <span class="op">=</span> <span class="st">"Washington"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span>,</span>
-<span>      <span class="fu">and</span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_first <span class="op">=</span> <span class="st">"Thomas"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventors.inventor_name_last <span class="op">=</span> <span class="st">"Jefferson"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span></span>
@@ -271,37 +271,37 @@ or two dollar bills in the US.</p>
 <span></span>
 <span><span class="va">display_inventors</span></span>
 <span><span class="co">#&gt;    patent_id inventor_name_first inventor_name_last</span></span>
-<span><span class="co">#&gt; 1   10568228      George Elliott         Washington</span></span>
-<span><span class="co">#&gt; 2   10664808                Joel         Washington</span></span>
-<span><span class="co">#&gt; 3   11032709           Thomas J.             Bonola</span></span>
-<span><span class="co">#&gt; 4   11032709             Lorri L          Jefferson</span></span>
-<span><span class="co">#&gt; 5   10180440          Stanley T.          Jefferson</span></span>
-<span><span class="co">#&gt; 6   10180440              Thomas                FAY</span></span>
-<span><span class="co">#&gt; 7    4104193              Thomas          Jefferson</span></span>
-<span><span class="co">#&gt; 8    4078607              Thomas          Jefferson</span></span>
-<span><span class="co">#&gt; 9   10374815           Thomas J.             Bonola</span></span>
-<span><span class="co">#&gt; 10  10374815             Lorri L          Jefferson</span></span>
-<span><span class="co">#&gt; 11   5736046              George         Washington</span></span>
-<span><span class="co">#&gt; 12   5914971           George E.         Burke, Jr.</span></span>
-<span><span class="co">#&gt; 13   5914971           Rodney B.         Washington</span></span>
-<span><span class="co">#&gt; 14   5897817              George         Washington</span></span>
-<span><span class="co">#&gt; 15   5643452              George         Washington</span></span>
-<span><span class="co">#&gt; 16   5645778              George         Washington</span></span>
-<span><span class="co">#&gt; 17   6218441              George         Washington</span></span>
-<span><span class="co">#&gt; 18   7971908              Thomas              Tilly</span></span>
-<span><span class="co">#&gt; 19   7971908           Thomas M.           DiMambro</span></span>
-<span><span class="co">#&gt; 20   7971908           Alfred A.          Jefferson</span></span>
-<span><span class="co">#&gt; 21   7598629           George E.         Burke, Jr.</span></span>
-<span><span class="co">#&gt; 22   7598629           Rodney B.         Washington</span></span>
-<span><span class="co">#&gt; 23   8347213           Thomas M.            Clifton</span></span>
-<span><span class="co">#&gt; 24   8347213          Bradley C.          Jefferson</span></span>
-<span><span class="co">#&gt; 25   8717367           Thomas M.            Clifton</span></span>
-<span><span class="co">#&gt; 26   8717367          Bradley C.          Jefferson</span></span>
-<span><span class="co">#&gt; 27   7144505              George         Washington</span></span>
-<span><span class="co">#&gt; 28   6881337              George         Washington</span></span>
-<span><span class="co">#&gt; 29   6905071              Thomas           Amundsen</span></span>
-<span><span class="co">#&gt; 30   6905071              George              Kolis</span></span>
-<span><span class="co">#&gt; 31   6905071             Matthew          Jefferson</span></span></code></pre></div>
+<span><span class="co">#&gt; 1   10374815           Thomas J.             Bonola</span></span>
+<span><span class="co">#&gt; 2   10374815             Lorri L          Jefferson</span></span>
+<span><span class="co">#&gt; 3   10568228      George Elliott         Washington</span></span>
+<span><span class="co">#&gt; 4   10180440          Stanley T.          Jefferson</span></span>
+<span><span class="co">#&gt; 5   10180440              Thomas                FAY</span></span>
+<span><span class="co">#&gt; 6   11032709           Thomas J.             Bonola</span></span>
+<span><span class="co">#&gt; 7   11032709             Lorri L          Jefferson</span></span>
+<span><span class="co">#&gt; 8   10664808                Joel         Washington</span></span>
+<span><span class="co">#&gt; 9    7598629           George E.         Burke, Jr.</span></span>
+<span><span class="co">#&gt; 10   7598629           Rodney B.         Washington</span></span>
+<span><span class="co">#&gt; 11   8717367           Thomas M.            Clifton</span></span>
+<span><span class="co">#&gt; 12   8717367          Bradley C.          Jefferson</span></span>
+<span><span class="co">#&gt; 13   7971908              Thomas              Tilly</span></span>
+<span><span class="co">#&gt; 14   7971908           Thomas M.           DiMambro</span></span>
+<span><span class="co">#&gt; 15   7971908           Alfred A.          Jefferson</span></span>
+<span><span class="co">#&gt; 16   7144505              George         Washington</span></span>
+<span><span class="co">#&gt; 17   4104193              Thomas          Jefferson</span></span>
+<span><span class="co">#&gt; 18   4078607              Thomas          Jefferson</span></span>
+<span><span class="co">#&gt; 19   6881337              George         Washington</span></span>
+<span><span class="co">#&gt; 20   6905071              Thomas           Amundsen</span></span>
+<span><span class="co">#&gt; 21   6905071              George              Kolis</span></span>
+<span><span class="co">#&gt; 22   6905071             Matthew          Jefferson</span></span>
+<span><span class="co">#&gt; 23   6218441              George         Washington</span></span>
+<span><span class="co">#&gt; 24   5643452              George         Washington</span></span>
+<span><span class="co">#&gt; 25   5645778              George         Washington</span></span>
+<span><span class="co">#&gt; 26   5914971           George E.         Burke, Jr.</span></span>
+<span><span class="co">#&gt; 27   5914971           Rodney B.         Washington</span></span>
+<span><span class="co">#&gt; 28   5897817              George         Washington</span></span>
+<span><span class="co">#&gt; 29   5736046              George         Washington</span></span>
+<span><span class="co">#&gt; 30   8347213           Thomas M.            Clifton</span></span>
+<span><span class="co">#&gt; 31   8347213          Bradley C.          Jefferson</span></span></code></pre></div>
 <p>Some rows act as you’d expect, like patent 4078607’s Thomas
 Jefferson. In others, two inventors combine to meet the search
 cititeria, like 6905071’s <strong>Thomas</strong> Amundsen and Matthew
@@ -312,12 +312,12 @@ jupyter notebook suggests.</p>
 <code class="sourceCode R"><span></span>
 <span><span class="va">inventors_query</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/with_qfuns.html">with_qfuns</a></span><span class="op">(</span></span>
-<span>    <span class="fu">or</span><span class="op">(</span></span>
-<span>      <span class="fu">and</span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">or</a></span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventor_name_first <span class="op">=</span> <span class="st">"George"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventor_name_last <span class="op">=</span> <span class="st">"Washington"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span>,</span>
-<span>      <span class="fu">and</span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html" class="external-link">and</a></span><span class="op">(</span></span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventor_name_first <span class="op">=</span> <span class="st">"Thomas"</span><span class="op">)</span>,</span>
 <span>        <span class="fu">text_phrase</span><span class="op">(</span>inventor_name_last <span class="op">=</span> <span class="st">"Jefferson"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span></span>
@@ -330,8 +330,8 @@ jupyter notebook suggests.</p>
 <span></span>
 <span><span class="va">actual_inventors</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="co">#&gt;             inventor_id inventor_name_first inventor_name_last</span></span>
-<span><span class="co">#&gt; 1 fl:ge_ln:washington-4              George         Washington</span></span>
-<span><span class="co">#&gt; 2 fl:ge_ln:washington-5      George Elliott         Washington</span></span>
+<span><span class="co">#&gt; 1 fl:ge_ln:washington-1      George Elliott         Washington</span></span>
+<span><span class="co">#&gt; 2 fl:ge_ln:washington-2              George         Washington</span></span>
 <span><span class="co">#&gt; 3  fl:th_ln:jefferson-1              Thomas          Jefferson</span></span></code></pre></div>
 <p>Now, with actual_inventors’ inventor_ids in hand, we’ll ask the
 patent endpoint for their patents. The results are quite different than
@@ -348,28 +348,25 @@ not necessarily both occur on the same inventor.)</p>
 <span></span>
 <span><span class="va">dl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">pat_res</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># we'll repeat the same name filter we used on the first query's results</span></span>
+<span><span class="co"># we'll apply a similar name filter like we did on the first query's results</span></span>
+<span><span class="co"># we requested inventors.inventor_id but we also get back inventor, a HATEOAS link we don't need</span></span>
 <span><span class="va">display_inventors</span> <span class="op">&lt;-</span> </span>
 <span>   <span class="va">dl</span><span class="op">$</span><span class="va">inventors</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"^(George|Thomas)"</span>, <span class="va">inventor_name_first</span> <span class="op">)</span> <span class="op">|</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"^(Washington|Jefferson)"</span>, <span class="va">inventor_name_last</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>inventor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">".*/([^/]+)/$"</span>, <span class="st">"\\1"</span>, <span class="va">inventor</span><span class="op">)</span><span class="op">)</span> <span class="co"># extract id from HATEOAS link</span></span>
-<span></span>
-<span><span class="co"># sample pre-mutate value, note that we requested inventor_id but the API sent back `inventor`</span></span>
-<span><span class="va">dl</span><span class="op">$</span><span class="va">inventors</span><span class="op">$</span><span class="va">inventor</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/inventor/fl:wa_ln:carter-1/"</span></span>
+<span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">inventor</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">display_inventors</span></span>
-<span><span class="co">#&gt;    patent_id              inventor inventor_name_first inventor_name_last</span></span>
-<span><span class="co">#&gt; 1    4078607  fl:th_ln:jefferson-1              Thomas          Jefferson</span></span>
-<span><span class="co">#&gt; 2    4104193  fl:th_ln:jefferson-1              Thomas          Jefferson</span></span>
-<span><span class="co">#&gt; 3    5643452 fl:ge_ln:washington-4              George         Washington</span></span>
-<span><span class="co">#&gt; 4    5645778 fl:ge_ln:washington-4              George         Washington</span></span>
-<span><span class="co">#&gt; 5    5736046 fl:ge_ln:washington-4              George         Washington</span></span>
-<span><span class="co">#&gt; 6    5897817 fl:ge_ln:washington-4              George         Washington</span></span>
-<span><span class="co">#&gt; 7    6218441 fl:ge_ln:washington-4              George         Washington</span></span>
-<span><span class="co">#&gt; 8    6881337 fl:ge_ln:washington-4              George         Washington</span></span>
-<span><span class="co">#&gt; 9    7144505 fl:ge_ln:washington-4              George         Washington</span></span>
-<span><span class="co">#&gt; 10  10568228 fl:ge_ln:washington-5      George Elliott         Washington</span></span></code></pre></div>
+<span><span class="co">#&gt;    patent_id           inventor_id inventor_name_first inventor_name_last</span></span>
+<span><span class="co">#&gt; 1   10568228 fl:ge_ln:washington-1      George Elliott         Washington</span></span>
+<span><span class="co">#&gt; 2    4078607  fl:th_ln:jefferson-1              Thomas          Jefferson</span></span>
+<span><span class="co">#&gt; 3    4104193  fl:th_ln:jefferson-1              Thomas          Jefferson</span></span>
+<span><span class="co">#&gt; 4    5643452 fl:ge_ln:washington-2              George         Washington</span></span>
+<span><span class="co">#&gt; 5    5645778 fl:ge_ln:washington-2              George         Washington</span></span>
+<span><span class="co">#&gt; 6    5736046 fl:ge_ln:washington-2              George         Washington</span></span>
+<span><span class="co">#&gt; 7    5897817 fl:ge_ln:washington-2              George         Washington</span></span>
+<span><span class="co">#&gt; 8    6218441 fl:ge_ln:washington-2              George         Washington</span></span>
+<span><span class="co">#&gt; 9    6881337 fl:ge_ln:washington-2              George         Washington</span></span>
+<span><span class="co">#&gt; 10   7144505 fl:ge_ln:washington-2              George         Washington</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="acknowledgment">Acknowledgment<a class="anchor" aria-label="anchor" href="#acknowledgment"></a>

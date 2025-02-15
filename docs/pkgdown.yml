@@ -7,15 +7,15 @@ articles:
   converting-an-existing-script: converting-an-existing-script.html
   examples: examples.html
   getting-started: getting-started.html
-  patentsview-breaking-change: patentsview-breaking-change.html
+  patentsview-breaking-release: patentsview-breaking-release.html
   result-set-paging: result-set-paging.html
   ropensci-blog-post: ropensci-blog-post.html
   state-of-the-api: state-of-the-api.html
   top-assignees: top-assignees.html
   understanding-the-api: understanding-the-api.html
   writing-queries: writing-queries.html
-last_built: 2024-11-05T23:26Z
+last_built: 2025-02-07T16:55Z
 urls:
-  reference: https://mustberuss.github.io/patentsview/index.html/reference
-  article: https://mustberuss.github.io/patentsview/index.html/articles
+  reference: https://docs.ropensci.org/patentsview/index.html/reference
+  article: https://docs.ropensci.org/patentsview/index.html/articles
 

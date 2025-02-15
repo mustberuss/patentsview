@@ -46,7 +46,7 @@
     <a class="dropdown-item" href="../articles/api-changes.html">
       <span class="fa fa-exclamation"></span>
        
-      2024 API Changes
+      2025 API Changes
     </a>
     <a class="dropdown-item" href="../articles/converting-an-existing-script.html">
       <span class="fa fa-sync"></span>
@@ -141,7 +141,7 @@
       <img src="" class="logo" alt=""><h1>API Changes</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/ropensci/patentsview/blob/HEAD/vignettes/api-changes.Rmd" class="external-link"><code>vignettes/api-changes.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/ropensci/patentsview/blob/HEAD/vignettes/articles/api-changes.Rmd" class="external-link"><code>vignettes/articles/api-changes.Rmd</code></a></small>
       <div class="d-none name"><code>api-changes.Rmd</code></div>
     </div>
 
@@ -167,9 +167,9 @@ Toward the bottom of this page are additional API changes what would
 only matter if you called the API directly or wanted to write a python
 library for the API.</p>
 <ul>
-<li><p>Probably most importantly, the current shutdown date for the
-original version of the API is February 12, 2025, as communicated in the
-August 2024 newsletter.</p></li>
+<li><p>Probably most importantly, the API team plans on shuting down the
+original version of the API in February 2025. The original version of
+the R package will stop working when that happens.</p></li>
 <li><p>An <a href="#api-key-required">API key</a> is now
 required.</p></li>
 <li>
@@ -198,23 +198,23 @@ rows.</a></p></li>
 </ul>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/patentsview/index.html">patentsview</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"patent_type":"utility"}'</span>, all_pages <span class="op">=</span> <span class="cn">FALSE</span> <span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"patent_type":"utility"}'</span>, all_pages <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  3 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id   : chr [1:1000] "10631087" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_title: chr [1:1000] "Method and device for voice operated contro"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_date : chr [1:1000] "2020-04-21" ...</span></span>
+<span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  1 variable:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id: chr [1:1000] "10045335" ...</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 8,123,346</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 8,187,839</span></span></code></pre></div>
 <p>Also note that we did not specify the fields parameter. In the past
-the API returned patent_id, patent_title and patent_date while now it
-only returned patent_id.</p>
+the API returned a default set of parameters for each endpoint. For the
+patent endpoint that was patent_id, patent_title and patent_date. Now
+the R package requests only the endpoint’s primary key(s) when the user
+does not specify fields.</p>
 <ul>
 <li>
 <p>Endpoint Changes</p>
@@ -293,18 +293,20 @@ more about this <a href="result-set-paging.html">here</a>.</p></li>
 <span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_response</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_response</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/resp_body_raw.html" class="external-link">resp_body_json</a></span><span class="op">(</span><span class="op">)</span> </span></code></pre>
 <ul>
-<li>Two methods were added
+<li>
+<p>A new method was added</p>
 <ul>
 <li>HATEOAS links can be retrieved using <a href="#HATEOAS">retrieve_linked_data()</a>
 </li>
-<li>In custom paging involving patent_id, its value needs to be padded
-with zeroes, see <code><a href="../reference/pad_patent_id.html">pad_patent_id()</a></code>
-</li>
 </ul>
 </li>
-<li>The ropensci blog post that announced the original version of the R
-package was <a href="ropensci-blog-post.html">reworked</a> to use the
-new version of the R package and API</li>
+<li><p>An existing function was removed. With the API changes, there is
+less of a need for cast_pv_data() which was previously part of the R
+package. The API now returns most fields as appropriate types, boolean,
+numeric etc., instead of always returning strings.</p></li>
+<li><p>The ropensci blog post that announced the original version of the
+R package was <a href="ropensci-blog-post.html">reworked</a> to use the
+new version of the R package and API</p></li>
 </ul>
 </div>
 <div class="section level2">
@@ -478,17 +480,18 @@ Now there are eight endpoints. There are still four grant endpoints
 (with a g_ prepended to the names originally released) listed under
 “Patent Text” but now there are four more pre-grant (pg_) endpoints
 listed under “Publication Text”.</p>
-<p>It looks like the TextEndpointStatus page isn’t being updated, so
-we’ll check one pair for ourselves. patent_date isn’t available from
-g_brf_sum_text so we’ll ask the patent endpoint for it once we have the
-smallest patent_id from g_brf_sum_text.</p>
+<p>It looks like the TextEndpointStatus page isn’t being updated
+frequently, so we’ll check one pair for ourselves. patent_date isn’t
+available from g_brf_sum_text so we’ll ask the patent endpoint for it
+once we have the smallest patent_id from g_brf_sum_text.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">qry</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">ne</span><span class="op">(</span>patent_id <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
-<span><span class="va">sort</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patent_id"</span> <span class="op">=</span> <span class="st">"asc"</span><span class="op">)</span></span>
+<span><span class="va">sort</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>patent_id <span class="op">=</span> <span class="st">"asc"</span><span class="op">)</span></span>
 <span><span class="va">grant</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">qry</span>, sort <span class="op">=</span> <span class="va">sort</span>, endpoint <span class="op">=</span> <span class="st">"g_brf_sum_text"</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
+<span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patent_id"</span>, <span class="st">"patent_title"</span>, <span class="st">"patent_date"</span><span class="op">)</span></span>
 <span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">qry_funs</span><span class="op">$</span><span class="fu">eq</span><span class="op">(</span>patent_id <span class="op">=</span> <span class="va">grant</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">g_brf_sum_texts</span><span class="op">$</span><span class="va">patent_id</span><span class="op">)</span>, </span>
-<span>  size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>  fields <span class="op">=</span> <span class="va">fields</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">res</span><span class="op">$</span><span class="va">data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
@@ -499,9 +502,10 @@ smallest patent_id from g_brf_sum_text.</p>
 <span><span class="co">#&gt;   ..$ patent_title: chr "Curved cultivating disc with a straight cutting edge"..</span></span>
 <span><span class="co">#&gt;   ..$ patent_date : chr "2023-01-03"</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">qry</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">gt</span><span class="op">(</span>document_number <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">qry</span> <span class="op">&lt;-</span> <span class="va">qry_funs</span><span class="op">$</span><span class="fu">ne</span><span class="op">(</span>document_number <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
 <span><span class="va">sort</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"document_number"</span> <span class="op">=</span> <span class="st">"asc"</span><span class="op">)</span></span>
-<span><span class="va">pre_grant</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">qry</span>, sort <span class="op">=</span> <span class="va">sort</span>, endpoint <span class="op">=</span> <span class="st">"pg_brf_sum_text"</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">pre_grant</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">qry</span>, sort <span class="op">=</span> <span class="va">sort</span>, endpoint <span class="op">=</span> <span class="st">"pg_brf_sum_text"</span>,</span>
+<span>  fields <span class="op">=</span> <span class="fu"><a href="../reference/get_fields.html">get_fields</a></span><span class="op">(</span><span class="st">"pg_brf_sum_text"</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">pre_grant</span><span class="op">$</span><span class="va">data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame on pg_brf_sum_texts level:</span></span>
@@ -588,11 +592,8 @@ HATEOAS link, you’d use a slash instead of a colon.</p>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"cpc_group_id": "A01B1/00"}'</span>, endpoint <span class="op">=</span> <span class="st">'cpc_group'</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ cpc_groups:'data.frame':  1 obs. of  4 variables:</span></span>
-<span><span class="co">#&gt;   ..$ cpc_class      : chr "https://search.patentsview.org/api/v1/cpc_class/A01/"</span></span>
-<span><span class="co">#&gt;   ..$ cpc_subclass   : chr "https://search.patentsview.org/api/v1/cpc_subclass/A01B/"</span></span>
-<span><span class="co">#&gt;   ..$ cpc_group_id   : chr "A01B1/00"</span></span>
-<span><span class="co">#&gt;   ..$ cpc_group_title: chr "Hand tools"</span></span>
+<span><span class="co">#&gt;  $ cpc_groups:'data.frame':  1 obs. of  1 variable:</span></span>
+<span><span class="co">#&gt;   ..$ cpc_group_id: chr "A01B1/00"</span></span>
 <span><span class="co">#&gt;  - attr(*, "class")= chr [1:2] "list" "pv_data_result"</span></span></code></pre></div>
 <p><a name="slight-weirdness">Slight weirdness</a>/sleight-of-hand where
 the returned field name loses the _id of the requested field</p>
@@ -602,12 +603,18 @@ the returned field name loses the _id of the requested field</p>
 <span>    fields <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"inventors.inventor_id"</span>, <span class="st">"assignees.assignee_id"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
-<span>  <span class="co"># but note that the fields came back without the _id</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span><span class="op">$</span><span class="va">assignees</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">assignee</span><span class="op">)</span> <span class="co"># not $assignee_id as requested</span></span>
-<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/assignee/b06175c5-768b-43af-bb65-1978370e6ce2/"</span></span>
+<span>  <span class="co"># in the nested "assignees" object is "assignee", the HATEOAS link for the assignee and</span></span>
+<span>  <span class="co"># "assignee_id", just the id </span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span><span class="op">$</span><span class="va">assignees</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">assignee</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/assignee/a4b14180-6e72-4316-bf91-4f27cdd22bcd/"</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span><span class="op">$</span><span class="va">assignees</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">assignee_id</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "a4b14180-6e72-4316-bf91-4f27cdd22bcd"</span></span>
 <span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span><span class="op">$</span><span class="va">inventors</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">inventor</span><span class="op">)</span> <span class="co"># not $inventor_id as requested</span></span>
-<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/inventor/fl:jo_ln:marron-5/"</span></span></code></pre></div>
+<span>  <span class="co"># there are similar fields in the nested "inventors" object</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span><span class="op">$</span><span class="va">inventors</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">inventor</span><span class="op">)</span> </span>
+<span><span class="co">#&gt; [1] "https://search.patentsview.org/api/v1/inventor/fl:jo_ln:marron-5/"</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">patents</span><span class="op">$</span><span class="va">inventors</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">inventor_id</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "fl:jo_ln:marron-5"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="api-throttling">API Throttling <a name="throttling"></a><a class="anchor" aria-label="anchor" href="#api-throttling"></a>
@@ -625,26 +632,7 @@ script.</p>
 <p>The API team changed <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#pagination" class="external-link">how
 paging works</a> and there is an important subtlety that the R package
 handles for you. This screams for a python library so python users don’t
-need to worry about this and throttling! Here’s a comment that used to
-be in search-pv.R that tries to explain the danger.</p>
-<pre><code><span>  <span class="co"># Here we ignore the user's sort and instead have the API sort by the primary</span></span>
-<span>  <span class="co"># key and sometimes primary and secondary keys for the requested endpoint.  </span></span>
-<span>  <span class="co"># This simplifies the paging's after parameter.</span></span>
-<span>  <span class="co"># If we call the API with more than a primary sort, the after parameter would</span></span>
-<span>  <span class="co"># have to be a vector of all the sort fields' last values.</span></span>
-<span>  <span class="co"># After we've retrieved all the data we'll sort in R using the sort the user requested</span></span>
-<span></span>
-<span>  <span class="co"># Doing this also protects users from needing to know the peculiarities</span></span>
-<span>  <span class="co"># of the API's paging.  Example: if a user requests a sort of</span></span>
-<span>  <span class="co"># [{"patent_date":"asc"}], on paging the after parameter may skip</span></span>
-<span>  <span class="co"># to the next issue date before having retured all the data for the last</span></span>
-<span>  <span class="co"># patent_date in the previous request - depending on where the</span></span>
-<span>  <span class="co"># patent_dates change relative to the API's page breaks.</span></span>
-<span>  <span class="co"># (Say the last patent in a retrieved page is the first patent</span></span>
-<span>  <span class="co"># of a particular date, we wouldn't want the after parameter to</span></span>
-<span>  <span class="co"># to begin the next page of data 'after' this date.)</span></span></code></pre>
-<p>See the new <a href="result-set-paging.html">Result Set Paging
-vignette</a>.</p>
+need to worry about this and throttling! See the new <a href="result-set-paging.html">Result Set Paging vignette</a>.</p>
 </div>
 <div class="section level3">
 <h3 id="string-and-full-text-operators">String and Full Text Operators <a name="operators"></a><a class="anchor" aria-label="anchor" href="#string-and-full-text-operators"></a>
@@ -663,7 +651,7 @@ endpoints (listed at the top of the <a href="https://search.patentsview.org/swag
 or not. Also not sure what to make of the result set size differences<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Observation sent to the API team.&lt;/p&gt;"><sup>2</sup></a>,
 total_hits, noting that no errors were thrown by the API:</p>
 <p>hitting the patent endpoint:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">query1</span> <span class="op">&lt;-</span> <span class="st">'{"_contains":{"patent_title":"dog"}}'</span></span>
 <span><span class="va">query2</span> <span class="op">&lt;-</span> <span class="st">'{"_text_any":{"patent_title":"dog"}}'</span></span>
 <span></span>
@@ -672,32 +660,28 @@ total_hits, noting that no errors were thrown by the API:</p>
 <span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  3 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id   : chr [1:1000] "10632101" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_title: chr [1:1000] "Methods and compositions for supporting end"..</span></span>
-<span><span class="co">#&gt;   ..$ patent_date : chr [1:1000] "2020-04-28" ...</span></span>
+<span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  1 variable:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id: chr [1:1000] "10098346" ...</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 3,706</span></span>
+<span><span class="co">#&gt; total_hits = 3,754</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="va">query2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $data</span></span>
 <span><span class="co">#&gt; #### A list with a single data frame on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  3 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id   : chr [1:1000] "D792527" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_title: chr [1:1000] "Dog" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_date : chr [1:1000] "2017-07-18" ...</span></span>
+<span><span class="co">#&gt;  $ patents:'data.frame': 1000 obs. of  1 variable:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id: chr [1:1000] "10094427" ...</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 2,115</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 2,156</span></span></code></pre></div>
 <p>hitting the g_brf_sum_text endpoint:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">query1</span> <span class="op">&lt;-</span> <span class="st">'{"_contains":{"summary_text":"particular depth"}}'</span></span>
 <span><span class="va">query2</span> <span class="op">&lt;-</span> <span class="st">'{"_text_phrase":{"summary_text":"particular depth"}}'</span></span>
 <span></span>
@@ -718,14 +702,13 @@ total_hits, noting that no errors were thrown by the API:</p>
 <span><span class="co">#&gt; #### A list with a single data frame on g_brf_sum_texts level:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ g_brf_sum_texts:'data.frame': 68 obs. of  2 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id   : chr [1:68] "12020165" ...</span></span>
-<span><span class="co">#&gt;   ..$ summary_text: chr [1:68] "TECHNICAL FIELD\n\nThe technical field genera"..</span></span>
+<span><span class="co">#&gt;  $ g_brf_sum_texts:'data.frame': 84 obs. of  1 variable:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id: chr [1:84] "12020165" ...</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 68</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 84</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="case-sensitivity-caveat">Case Sensitivity Caveat <a name="case-sensitivity-caveat"></a><a class="anchor" aria-label="anchor" href="#case-sensitivity-caveat"></a>
@@ -735,7 +718,7 @@ sure if this is a bug or feature<a class="footnote-ref" tabindex="0" data-bs-tog
 something to be aware of.</p>
 <p>As you’ll see from the queries below, the two forms of equal now seem
 to be case sensitive.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/search_pv.html">search_pv</a></span><span class="op">(</span><span class="st">'{"assignee_organization": "Johnson &amp; Johnson International"}'</span>, endpoint<span class="op">=</span><span class="st">"assignee"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span> <span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">query_results</span><span class="op">$</span><span class="va">total_hits</span><span class="op">)</span></span>

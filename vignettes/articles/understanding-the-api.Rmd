@@ -1,0 +1,244 @@
+---
+title: "Understanding the API"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Understanding the API}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+Oh, the interesting things you'll learn when you take the time to read the API's documentation!
+Here are two gems gleaned from a [jupyter notebook](https://github.com/PatentsView/PatentsView-Code-Examples/blob/main/PatentSearch/0-patentsearch-api-demo.ipynb) in PatentsView's PatentsView-Code-Snippets
+repo.
+
+## Fields Shorthand
+The notebook starts out fairly fluffy but things really get interesting really quickly.
+See this under "constructing your query",  I don't remember seeing this anywhere else:
+
+> Some endpoints contain groups of fields representing related entities connected to one of that
+> endpoint's primary entity type; for example, the patent endpoint contains a field "inventors",
+> which contains information on all inventors associated with any given patent. *The fields for
+> related entities can be requested in the API request's fields parameter as a group by using the
+> group name in the fields parameter*, or individually by specifying the required field as "{entity_type}.{subfield}".
+
+Mind blown, so we can, for example, request all the nested application fields from the patent endpoint
+by simply requesting "application" in the fields list.  
+
+<a name="all-fields">
+The new version of the R package will let its users leverage this same feature, allowing
+group names to be specified in the fields parameter.  
+
+
+``` r
+library(patentsview)
+
+query <- qry_funs$eq(patent_id = "10568228")
+shorthand_results <- search_pv(query, fields = c("application"), method = "POST")
+
+# Now that the R package uses httr2, we can use its last_request()
+# to see what was POSTed to the API
+cat(httr2::last_request()$body$data)
+#> {"q":{"_eq":{"patent_id":"10568228"}},"f":["application","patent_id"],"s":[],"o":{"size":1000}}
+
+# Here we view the results
+shorthand_results$data$patent$application
+#> [[1]]
+#>   application_id application_type filing_date series_code rule_47_flag
+#> 1      15/995745               15  2018-06-01          15        FALSE
+#>   filing_type
+#> 1          15
+
+# Now we'll try to explicitly request all the application fields and make a POST to the API
+explicit_fields <- get_fields("patent", groups = "application")
+explicit_fields
+#> [1] "application.application_id"   "application.application_type"
+#> [3] "application.filing_date"      "application.filing_type"     
+#> [5] "application.rule_47_flag"     "application.series_code"
+explicit_results <- search_pv(query, fields = explicit_fields, method = "POST")
+
+# but the R package figured out that the shorthand could be used instead
+# so what was POSTed to the API is the same!
+cat(httr2::last_request()$body$data)
+#> {"q":{"_eq":{"patent_id":"10568228"}},"f":["application","patent_id"],"s":[],"o":{"size":1000}}
+
+# and, of course, the results from the API are the same
+explicit_results$data$patent$application
+#> [[1]]
+#>   application_id application_type filing_date series_code rule_47_flag
+#> 1      15/995745               15  2018-06-01          15        FALSE
+#>   filing_type
+#> 1          15
+
+# (Observation reported to the API team: application_type, series_code and filing_type
+# all seem to have the same values and not just in this one example.)
+
+```
+The motivation to adopt the API's shorthand is that, with a modest query, explicitly requesting all of the
+patent endpoint's fields can be too much to send via a GET request (the resulting URL can exceed 4K). 
+
+
+## Unexpected Results
+
+Then, as if that wasn't enough, some non-obvious behavior appears under the second bullet point
+under the "Queries using related entity fields" header:
+
+> When applying multiple conditions to related-entity fields, a central entity record will be 
+> returned if any combination of its related entities satisfy those conditions.
+
+In their example, they use George Washington as an inventor.  Humorously, there are modern
+inventors with that name!  Abraham Lincoln is also used as an inventor.  Good ol' Abe is the only
+US president so far to receive a [patent](https://ppubs.uspto.gov/pubwebapp/external.html?db=USPAT&type=ids&q=(0006469).pn.) but
+it's too early to be in the patentsview database and there are no modern Abraham Lincolns to be found
+as inventors.
+
+To demonstrate the API's not-exactly-intuitive behavior, we'll keep George as an inventor but substitute 
+Thomas Jefferson for Abe, as there are inventors going by that famous name, though they aren't on nickels or
+two dollar bills in the US.
+
+
+``` r
+library(dplyr)
+
+patents_query <- 
+  with_qfuns(
+    or(
+      and(
+        text_phrase(inventors.inventor_name_first = "George"),
+        text_phrase(inventors.inventor_name_last = "Washington")
+      ),
+      and(
+        text_phrase(inventors.inventor_name_first = "Thomas"),
+        text_phrase(inventors.inventor_name_last = "Jefferson")
+      )
+    )
+  )
+
+patent_fields <-c("patent_id", "inventors.inventor_name_first", "inventors.inventor_name_last")
+pat_res <- search_pv(patents_query, fields=patent_fields, endpoint="patent")
+dl <- unnest_pv_data(pat_res$data)
+
+# We got back all the inventors on the patents that met our search criteria.  We'll filter out
+# the inventors that didn't strictly meet our criteria (they're coinventors that came along for 
+# the ride with the ones that met our criteria), we want the noted behavior to be clear.
+
+display_inventors <- 
+   dl$inventors %>%
+   filter(grepl("^(George|Thomas)", inventor_name_first ) | grepl("^(Washington|Jefferson)", inventor_name_last))
+
+display_inventors
+#>    patent_id inventor_name_first inventor_name_last
+#> 1   10374815           Thomas J.             Bonola
+#> 2   10374815             Lorri L          Jefferson
+#> 3   10568228      George Elliott         Washington
+#> 4   10180440          Stanley T.          Jefferson
+#> 5   10180440              Thomas                FAY
+#> 6   11032709           Thomas J.             Bonola
+#> 7   11032709             Lorri L          Jefferson
+#> 8   10664808                Joel         Washington
+#> 9    7598629           George E.         Burke, Jr.
+#> 10   7598629           Rodney B.         Washington
+#> 11   8717367           Thomas M.            Clifton
+#> 12   8717367          Bradley C.          Jefferson
+#> 13   7971908              Thomas              Tilly
+#> 14   7971908           Thomas M.           DiMambro
+#> 15   7971908           Alfred A.          Jefferson
+#> 16   7144505              George         Washington
+#> 17   4104193              Thomas          Jefferson
+#> 18   4078607              Thomas          Jefferson
+#> 19   6881337              George         Washington
+#> 20   6905071              Thomas           Amundsen
+#> 21   6905071              George              Kolis
+#> 22   6905071             Matthew          Jefferson
+#> 23   6218441              George         Washington
+#> 24   5643452              George         Washington
+#> 25   5645778              George         Washington
+#> 26   5914971           George E.         Burke, Jr.
+#> 27   5914971           Rodney B.         Washington
+#> 28   5897817              George         Washington
+#> 29   5736046              George         Washington
+#> 30   8347213           Thomas M.            Clifton
+#> 31   8347213          Bradley C.          Jefferson
+```
+Some rows act as you'd expect, like patent 4078607's Thomas Jefferson.  In others, two inventors
+combine to meet the search cititeria, like 6905071's
+ **Thomas** Amundsen and Matthew **Jefferson**.  This might be a match we didn't intend.
+
+Now we'll hit the inventor endpoint with a similar query, as the jupyter notebook suggests.
+
+
+``` r
+
+inventors_query <- 
+  with_qfuns(
+    or(
+      and(
+        text_phrase(inventor_name_first = "George"),
+        text_phrase(inventor_name_last = "Washington")
+      ),
+      and(
+        text_phrase(inventor_name_first = "Thomas"),
+        text_phrase(inventor_name_last = "Jefferson")
+      )
+    )
+  )
+
+inventor_fields <- c("inventor_id","inventor_name_first","inventor_name_last")
+inventor_res <- search_pv(inventors_query, fields=inventor_fields, endpoint="inventor")
+actual_inventors <- unnest_pv_data(inventor_res$data)
+
+actual_inventors[[1]]
+#>             inventor_id inventor_name_first inventor_name_last
+#> 1 fl:ge_ln:washington-1      George Elliott         Washington
+#> 2 fl:ge_ln:washington-2              George         Washington
+#> 3  fl:th_ln:jefferson-1              Thomas          Jefferson
+```
+
+Now, with actual_inventors' inventor_ids in hand, we'll ask the patent endpoint for their patents.
+The results are quite different than what the first query returned. (These patents would 
+have names matching at least one of our two famous forefather's names.  The first query unintuitively
+matched names where the first and last name matches did not necessarily both occur on the same inventor.)
+
+
+``` r
+id_query <- qry_funs$eq(inventors.inventor_id=actual_inventors$inventors$inventor_id)
+
+patent_fields <-c("patent_id", "inventors.inventor_name_first", "inventors.inventor_name_last",
+  "inventors.inventor_id")
+pat_res <- search_pv(id_query, fields=patent_fields, sort=c(patent_id = "asc"))
+
+dl <- unnest_pv_data(pat_res$data)
+
+# we'll apply a similar name filter like we did on the first query's results
+# we requested inventors.inventor_id but we also get back inventor, a HATEOAS link we don't need
+display_inventors <- 
+   dl$inventors %>%
+   filter(grepl("^(George|Thomas)", inventor_name_first ) | grepl("^(Washington|Jefferson)", inventor_name_last)) %>%
+   select(-inventor)
+
+display_inventors
+#>    patent_id           inventor_id inventor_name_first inventor_name_last
+#> 1   10568228 fl:ge_ln:washington-1      George Elliott         Washington
+#> 2    4078607  fl:th_ln:jefferson-1              Thomas          Jefferson
+#> 3    4104193  fl:th_ln:jefferson-1              Thomas          Jefferson
+#> 4    5643452 fl:ge_ln:washington-2              George         Washington
+#> 5    5645778 fl:ge_ln:washington-2              George         Washington
+#> 6    5736046 fl:ge_ln:washington-2              George         Washington
+#> 7    5897817 fl:ge_ln:washington-2              George         Washington
+#> 8    6218441 fl:ge_ln:washington-2              George         Washington
+#> 9    6881337 fl:ge_ln:washington-2              George         Washington
+#> 10   7144505 fl:ge_ln:washington-2              George         Washington
+```
+
+## Acknowledgment
+
+Again, credit goes to the Patentsview API team for creating the cited jupyter notebook.  This is just portions of it
+in R package form.  The repo doesn't have a stated license but when I checked, I was told:
+
+> For the repo license we are looking at the [GNU General Public License v3](https://www.gnu.org/licenses/quick-guide-gplv3.html) (GPL3).
+
+That is the same license as R itself so I don't think we've violated anything.  For extra fun check
+out [Russ' fork](https://github.com/mustberuss/PatentsView-Code-Snippets/blob/master/07_PatentSearch_API_demo/PV%20PatentSearch%20API%20tutorial.ipynb)
+where there's python code for retrieving Mr. Jefferson's patents etc.  There was no reply when we asked if 
+they'd be receptive to a PR.

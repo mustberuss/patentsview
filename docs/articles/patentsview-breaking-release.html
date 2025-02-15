@@ -46,7 +46,7 @@
     <a class="dropdown-item" href="../articles/api-changes.html">
       <span class="fa fa-exclamation"></span>
        
-      2024 API Changes
+      2025 API Changes
     </a>
     <a class="dropdown-item" href="../articles/converting-an-existing-script.html">
       <span class="fa fa-sync"></span>
@@ -143,9 +143,9 @@
                         <h4 data-toc-skip class="author">Chris
 Baker</h4>
             
-            <h4 data-toc-skip class="date">2025-04-01</h4>
+            <h4 data-toc-skip class="date">2025-02-15</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/ropensci/patentsview/blob/HEAD/vignettes/patentsview-breaking-release.Rmd" class="external-link"><code>vignettes/patentsview-breaking-release.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/ropensci/patentsview/blob/HEAD/vignettes/articles/patentsview-breaking-release.Rmd" class="external-link"><code>vignettes/articles/patentsview-breaking-release.Rmd</code></a></small>
       <div class="d-none name"><code>patentsview-breaking-release.Rmd</code></div>
     </div>
 
@@ -162,11 +162,12 @@ the R package. Please don’t shoot the messenger!</p>
 <p>The new version of the R package handles some of the API team’s
 changes where possible, however an API key is now required. The
 Patentsview API team plans to shutdown the original version of the API
-on February 12, 2025. At that time the original version of the R package
+in the near future. At that time the original version of the R package
 will stop working.</p>
 <p>The original version of the R package is available on CRAN with the
-new version available on r-universe. After the original version of the
-API is shutdown, the new R package will be submitted to CRAN.</p>
+new version available on <a href="https://ropensci.r-universe.dev/patentsview" class="external-link">r-universe</a>. After
+the original version of the API is shutdown, the updated R package will
+be submitted to CRAN.</p>
 <div class="section level2">
 <h2 id="user-impacting-api-changes">User Impacting API changes:<a class="anchor" aria-label="anchor" href="#user-impacting-api-changes"></a>
 </h2>
@@ -213,17 +214,18 @@ conditional query. That notion does not apply to the new version of the
 API as all fields are now queryable. You may be able to simplify your
 code if you found yourself doing post processing on returned data
 because a field you were interested in was not queryable.</p></li>
-<li><p>Currently not working properly, there isn’t supposed to be a
-difference between operators used on full text fields, as there was in
-the original version of the API. See the tip below the <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#syntax" class="external-link">Syntax
-section</a>. Note that the result sizes aren’t matching currently
-though, see testthat/test-api-bugs.R in the testthat folder.</p></li>
+<li><p>Now there isn’t supposed to be a difference between operators
+used on strings vs full text fields, as there was in the original
+version of the API. See the tip below the <a href="https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/#syntax" class="external-link">Syntax
+section</a>.</p></li>
 <li><p>Result set paging has changed significantly. This would matter
 only if users implemented their own paging, the R package continues to
-handle result set paging when search_pv’s all_pages = TRUE. There is a
-new result set paging vignette to explain the way the API now pages,
-using the <code>size</code> and <code>after</code> parameters rather
-than using <code>per_page</code> and <code>page</code>.</p></li>
+handle result set paging when search_pv’s <code>all_pages = TRUE</code>.
+There is a new result set paging vignette to explain the way the API now
+pages, using the <code>size</code> and <code>after</code> parameters
+rather than using <code>per_page</code> and <code>page</code>.</p></li>
+<li><p>Result set sizes are seemingly unbounded now. The original
+version of the API capped result sets at 100,000 rows.</p></li>
 </ol>
 <p>The API team also <a href="https://search.patentsview.org/docs/#naming-update" class="external-link">renamed the
 API</a>, PatentsView’s Search API is now the PatentSearch API. Note that
@@ -261,16 +263,17 @@ the raw API response.</li>
 <span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_response</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_response</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/resp_body_raw.html" class="external-link">resp_body_json</a></span><span class="op">(</span><span class="op">)</span> </span></code></pre>
 <ol start="6" style="list-style-type: decimal">
-<li>Two new functions were added
+<li>A new function was added
 <ul>
 <li>
 <code><a href="../reference/retrieve_linked_data.html">retrieve_linked_data()</a></code> to retrieve data from a HATEOAS
 link the API sent back, retrying if throttled</li>
-<li>
-<code><a href="../reference/pad_patent_id.html">pad_patent_id()</a></code>, needed in custom paging using
-<code>patent_id</code>, see the new Result Set Paging vignette</li>
 </ul>
 </li>
+<li>An existing function was removed. With the API changes, there is
+less of a need for <code><a href="../reference/cast_pv_data.html">cast_pv_data()</a></code> which was previously part
+of the R package. The API now returns most fields as appropriate types,
+boolean, numeric etc., instead of always returning strings.</li>
 </ol>
 </div>
 <div class="section level2">

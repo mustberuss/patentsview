@@ -1,114 +1,117 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/404.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/404.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/articles/api-changes.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/articles/api-changes.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/articles/articles/citation-networks.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/articles/articles/citation-networks.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/articles/articles/examples.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/articles/articles/examples.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/articles/articles/getting-started.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/articles/articles/getting-started.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/articles/articles/top-assignees.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/articles/articles/top-assignees.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/articles/articles/writing-queries.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/articles/articles/writing-queries.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/articles/citation-networks.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/articles/citation-networks.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/articles/converting-an-existing-script.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/articles/converting-an-existing-script.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/articles/examples.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/articles/examples.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/articles/getting-started.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/articles/getting-started.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/articles/index.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/articles/index.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/articles/patentsview-breaking-change.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/articles/patentsview-breaking-release.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/articles/result-set-paging.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/articles/result-set-paging.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/articles/ropensci-blog-post.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/articles/ropensci-blog-post.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/articles/state-of-the-api.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/articles/state-of-the-api.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/articles/top-assignees.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/articles/top-assignees.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/articles/understanding-the-api.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/articles/understanding-the-api.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/articles/writing-queries.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/articles/writing-queries.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/authors.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/authors.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/index.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/index.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/LICENSE-text.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/news/index.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/news/index.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/reference/cast_pv_data.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/reference/cast_pv_data.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/reference/fieldsdf.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/reference/fieldsdf.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/reference/get_endpoints.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/reference/get_endpoints.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/reference/get_fields.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/reference/get_fields.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/reference/get_ok_pk.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/reference/get_ok_pk.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/reference/get_patent_num_searchable_endpoints.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/reference/get_patent_num_searchable_endpoints.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/reference/get_test_query.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/reference/get_test_query.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/reference/index.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/reference/patentsview-package.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/reference/pad_patent_id.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/reference/qry_funs.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/reference/patentsview-package.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/reference/retrieve_linked_data.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/reference/qry_funs.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/reference/search_pv.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/reference/retrieve_linked_data.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/reference/unnest_pv_data.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/reference/search_pv.html</loc>
   </url>
   <url>
-    <loc>https://mustberuss.github.io/patentsview/index.html/reference/with_qfuns.html</loc>
+    <loc>https://docs.ropensci.org/patentsview/index.html/reference/unnest_pv_data.html</loc>
+  </url>
+  <url>
+    <loc>https://docs.ropensci.org/patentsview/index.html/reference/with_qfuns.html</loc>
   </url>
 </urlset>
