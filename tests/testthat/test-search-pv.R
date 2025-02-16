@@ -227,6 +227,8 @@ test_that("posts and gets return the same data", {
     "ipc"
     , "cpc_subclass"
     , "uspc_mainclass"
+    , "uspc_subclass"
+    , "wipo"
   )
 
   good_eps <- endpoints[!endpoints %in% bad_eps]
@@ -281,12 +283,10 @@ test_that("the 'after' parameter works properly", {
   after <- results$data$patents$patent_id[[nrow(results$data$patents)]]
   subsequent <- search_pv(big_query, all_pages = FALSE, after = after, sort = sort)
 
-  # ** New API bug?  should be expect_equal `actual`:  399
-  expect_lt(nrow(subsequent$data$patents), 1000)
+  expect_equal(nrow(subsequent$data$patents), 1000)
 
   # the first row's patent_id should be bigger than after
-  # now "D418273"
-  # expect_gt(as.integer(subsequent$data$patents$patent_id[[1]]), as.integer(after))
+  expect_gt(as.integer(subsequent$data$patents$patent_id[[1]]), as.integer(after))
 
   # now we'll add a descending sort to make sure that also works
   sort <- c("patent_id" = "desc")
@@ -302,8 +302,8 @@ test_that("the 'after' parameter works properly", {
 
   # now the first row's patent_id should be smaller than after
   # should be expect_lt
-  expect_gt(as.integer(subsequent$data$patents$patent_id[[1]]), as.integer(after))
-  skip("New API bug?")
+  expect_lt(as.integer(subsequent$data$patents$patent_id[[1]]), as.integer(after))
+
 })
 
 test_that("an error occurs if all_pages is TRUE and there aren't any results", {

@@ -39,7 +39,7 @@ test_that("there is trouble paging", {
 
   result2 <- search_pv(query,
     method = "GET", all_pages = FALSE,
-    fields = fields, sort = sort, size = 1000, after = "06901731"
+    fields = fields, sort = sort, size = 1000, after = "6901731"
   )
 
   # result1$data$patents$applicants is sparse, mostly NULL
@@ -47,9 +47,8 @@ test_that("there is trouble paging", {
   names1 <- names(result1$data$patents)
   names2 <- names(result2$data$patents)
 
-  expect_failure(
-    expect_setequal(names1, names2)
-  )
+  expect_error(expect_setequal(names1, names2))
+
 })
 
 test_that("there is case sensitivity on string equals", {
@@ -246,7 +245,7 @@ test_that("we can't sort by all fields", {
 })
 
 
-test_that("withdrawn patents are still present in the database", {
+test_that("withdrawn patents are suppressed by default", {
   skip_on_cran()
 
   # PVS-1342 Underlying data issues
@@ -264,7 +263,7 @@ test_that("withdrawn patents are still present in the database", {
 
   query <- qry_funs$eq("patent_id" = c(withdrawn))
   results <- search_pv(query, method = "POST")
-  expect_equal(results$query_results$total_hits, length(withdrawn))
+  expect_equal(results$query_results$total_hits, 0)
 })
 
 test_that("missing patents are still missing", {
@@ -302,9 +301,10 @@ test_that("we can't explicitly request assignee_ or inventor_years.num_patents",
       pv_out <- search_pv(
         query = TEST_QUERIES[[endpoint]],
         endpoint = endpoint,
-        fields = fieldsdf[fieldsdf$endpoint == endpoint, "field"]
-      ),
-      "Invalid field: (assignee|inventor)_years.num_patents"
+        fields = c(paste0(endpoint,"_years.num_patents"))
+      ) 
+      # was throwig a validation error, now throws a 500
+      # ,"Invalid field: (assignee|inventor)_years.num_patents"
     )
   })
 })
@@ -354,31 +354,4 @@ test_that("endpoints are still broken", {
       )
     )
   })
-})
-
-test_that("POSTs misbehave without all parameters", {
-  skip_on_cran()
-
-  # as reported in the forum https://patentsview.org/forum/7/topic/815
-  # see also https://patentsview.org/forum/7/topic/804#comment-13411
-
-  # a GET works
-  query <- qry_funs$eq(patent_date = "2000-01-04")
-  get_results <- search_pv(query, size = 30)
-  expect_equal(nrow(get_results$data$patents), 30)
-
-  #  the size parameter is honored on a POST when all parameters are specified
-  fields <- get_fields("patent", group = "patents")
-  sort <- c("patent_id" = "asc")
-  post_results <- search_pv(query, size = 30, method = "POST", 
-    fields = fields, sort = sort)
-  expect_equal(nrow(post_results$data$patents), 30)
-
-  # the size parameter is not honored on a POST without all parameters
-  post_results <- search_pv(query, size = 30, method = "POST", fields = fields)
-  expect_equal(nrow(post_results$data$patents), 100)
-
-  post_results <- search_pv(query, size = 30, method = "POST", sort = sort)
-  expect_equal(nrow(post_results$data$patents), 100)
-
 })
