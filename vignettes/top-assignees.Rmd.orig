@@ -66,8 +66,7 @@ query
 fields <- c(
   "patent_id", "patent_date", "patent_year", "patent_earliest_application_date",
   "patent_num_us_patents_cited", "application.filing_date",
-  "assignees.assignee_organization",
-  "assignees.assignee_id"  # the assignee fields come back in a nested object
+  "assignees"  # the assignee fields come back in a nested object
 )
 
 # Send an HTTP request to the PatentsView API to get the data

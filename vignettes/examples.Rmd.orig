@@ -24,7 +24,9 @@ Which patents have been cited by more than 500 US patents?
 ```{r}
 library(patentsview)
 
-search_pv(query = qry_funs$gt(patent_num_times_cited_by_us_patents = 500))
+fields = c("patent_id", "patent_title", "patent_date")
+search_pv(query = qry_funs$gt(patent_num_times_cited_by_us_patents = 500),
+  fields = fields)
 ```
 
 How many distinct inventors are represented by these highly-cited patents?
@@ -33,7 +35,7 @@ How many distinct inventors are represented by these highly-cited patents?
 
 search_pv(
   query = qry_funs$gt(patent_num_times_cited_by_us_patents = 500),
-  fields = c("patent_id", "inventors.inventor_id")
+  fields = c("patent_id", "inventors")
 )
 ```
 
@@ -84,7 +86,8 @@ Which inventor's most recent patent has Chicago, IL listed as their location.
 pv_out <- search_pv(
   query = '{"_and":[{"_text_phrase": {"inventor_lastknown_city":"Chicago"}},
                     {"_text_phrase": {"inventor_lastknown_state":"IL"}}]}',
-  endpoint = "inventor"
+  endpoint = "inventor",
+  fields = c("inventor_id", "inventor_name_first", "inventor_name_last")
 )
 
 pv_out
@@ -119,7 +122,7 @@ What assignee's organizations start Microsoft?
 
 ```{r}
 query <- qry_funs$begins(assignee_organization = "Microsoft")
-fields <- c("assignee_id", "assignee_organization")
+fields <- c("assignees")
 pv_out <- search_pv(query, fields = fields, endpoint = "assignee")
 pv_out$data$assignees$assignee_organization
 ```
