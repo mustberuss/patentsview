@@ -4,19 +4,6 @@ library(rapiclient)
 
 load_all()
 
-# TODO(any): remove corrections when bugs are fixed
-
-corrections <- read.table(
-  text = "endpoint field data_type
-  assignee assignee_type int
-  patent assignees.assignee_type int
-  patent/us_application_citation citation_document_number int
-  publication assignees.assignee_type int
-  publication rule_47_flag bool",
-  header = TRUE,
-  stringsAsFactors = FALSE
-)
-
 api <- get_api(url = "https://search.patentsview.org/static/openapi.json")
 
 endpoint_paths <- names(api$paths)
@@ -35,9 +22,6 @@ entities <-
 
 lookup <- endpoints
 names(lookup) <- entities
-
-# detect "type":"string", "format":"date" (which is normal)
-# Not sure if the other checks are standard but they're used in the patentsview object
 
 data_type_intuit <- function(field_definition) {
   type <- field_definition$type
@@ -58,15 +42,8 @@ data_type_intuit <- function(field_definition) {
   }
 }
 
-
-# recurse if type is array?
-
 extract_relevant_schema_info <- function(schema_elements) {
   lapply(schema_elements, function(schema_element) {
-
-    endpoint <- lookup[[schema_element]]
-    plural <- names(api$components$schemas[[schema_element]]$properties)
-
     middle <- lapply(
       names(api$components$schemas[[schema_element]]$properties[[1]]$items$properties),
       function(x, y) {
@@ -80,11 +57,10 @@ extract_relevant_schema_info <- function(schema_elements) {
             function(a, b) {
               # only nested one deep- wouldn't be an array here
               data.frame(
-                endpoint = endpoint,
+                endpoint = lookup[[schema_element]],
                 field = paste0(group, ".", a),
                 data_type = data_type_intuit(b[[a]]),
-                group = group,
-                common_name = a
+                group = group
               )
             },
             y[[x]]$items$properties
@@ -93,11 +69,10 @@ extract_relevant_schema_info <- function(schema_elements) {
           do.call(rbind, inner)
         } else {
           data.frame(
-            endpoint = endpoint,
+            endpoint = lookup[[schema_element]],
             field = x,
             data_type = data_type,
-            group = plural,
-            common_name = x
+            group = names(api$components$schemas[[schema_element]]$properties)
           )
         }
       }, api$components$schemas[[schema_element]]$properties[[1]]$items$properties
@@ -106,35 +81,19 @@ extract_relevant_schema_info <- function(schema_elements) {
     do.call(rbind, middle)
   }) %>%
     do.call(rbind, .) %>%
-    arrange(endpoint, field) # sort so we can tell if the csv file changed
+    arrange(endpoint, group, field)
 }
 
 fieldsdf <- extract_relevant_schema_info(entities)
+row.names(fieldsdf) <- NULL
 
-# TODO(any): remove hard coding corrections when possible
-
-# We need to make two sets of corrections.  First we make hard coded type corrections
-# that we reported as bugs
-fieldsdf <- fieldsdf %>%
-  left_join(corrections, by = c("endpoint", "field")) %>%
-  mutate(data_type = coalesce(data_type.y, data_type.x)) %>%
-  select(-data_type.x, -data_type.y) %>%
-  relocate(data_type, .after = field)
-
-# The second set of corrections is to append "_id" to fields and common_names below.
-# The API team may not concider this to be a bug.  The OpenAPI object describes the
-# API's return, not the requests we make (requests with the _id are returned without them)
-# "patent","assignees.assignee","string","assignees","assignee"
-# "patent","inventors.inventor","string","inventors","inventor"
-# "publication","assignees.assignee","string","assignees","assignee"
-# "publication","inventors.inventor","string","inventors","inventor"
+# API weirdness:
+# We need to append "_id" to fields below to allow them to be queried.
 
 add_id_to <- c("assignees.assignee", "inventors.inventor")
 
-# change common_name first, condition isn't met if field is changed first DAMHIKT
 fieldsdf <- fieldsdf %>%
   mutate(
-    common_name = if_else(field %in% add_id_to, paste0(common_name, "_id"), common_name),
     field = if_else(field %in% add_id_to, paste0(field, "_id"), field)
   )
 
