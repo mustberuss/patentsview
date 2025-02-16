@@ -7,33 +7,19 @@
 retrieve_linked_data(url, api_key = Sys.getenv("PATENTSVIEW_API_KEY"), ...)
 }
 \arguments{
-\item{url}{A link that was returned by the API on a previous call}
+\item{url}{A link that was returned by the API on a previous call.}
 
 \item{api_key}{API key, it defaults to Sys.getenv("PATENTSVIEW_API_KEY"). Request a key
 \href{https://patentsview-support.atlassian.net/servicedesk/customer/portals}{here}.}
 
-\item{...}{Curl options passed along to httr2's \code{\link[httr2]{req_options}} function.}
-}
-\value{
-A list with the following three elements:
-\describe{
-\item{data}{A list with one element - a named data frame containing the
-data returned by the server. Each row in the data frame corresponds to a
-single value for the primary entity. For example, if you search the
-assignee endpoint, then the data frame will be on the assignee-level,
-where each row corresponds to a single assignee. Fields that are not on
-the assignee-level would be returned in list columns.}
-
-\item{query_results}{Entity counts across all pages of output (not just
-the page returned to you).}
-
-\item{request}{Details of the GET HTTP request that was sent to the server.}
-}
+\item{...}{Curl options passed along to httr2's \code{\link[httr2]{req_options}}
+when we do GETs or POSTs.}
 }
 \description{
 Some of the endpoints now return HATEOAS style links to get more data. E.g.,
 the patent endpoint may return a link such as:
-"https://search.patentsview.org/api/v1/inventor/fl:th_ln:jefferson-1/"
+"https://search.patentsview.org/api/v1/inventor/fl:th_ln:jefferson-1/". Use
+this function to fetch details from those links.
 }
 \examples{
 \dontrun{
