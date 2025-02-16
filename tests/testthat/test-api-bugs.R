@@ -213,3 +213,39 @@ test_that("Missing patents are still missing", {
 
   expect_equal(results$query_results$total_hits, 0)
 })
+
+# PVS-1884 The publication endpoint's rule_47_flag is always false
+test_that("Querying the publication endpoint on rule_47_flag isn't meaningful", {
+  skip_on_cran()
+
+  res <- search_pv(qry_funs$eq(rule_47_flag = TRUE), endpoint = "publication")
+  expect_equal(res$query_results$total_hits, 0)
+
+  res <- search_pv(qry_funs$eq(rule_47_flag = FALSE), endpoint = "publication")
+  expect_gt(res$query_results$total_hits, 8000000)
+
+})
+
+test_that("Some test queries don't work", {
+  skip_on_cran()
+
+  locally_bad_eps <- c( "ipc")  # currently throws a 500
+
+  flags <- lapply(EPS[!(EPS %in% locally_bad_eps)], function(x) {
+    print(x)
+    res <- search_pv(TEST_QUERIES[[x]], endpoint = x)
+    res$query_results$total_hits > 0
+  })
+
+  expect_false(all(unlist(flags)))
+
+  names <- unlist(EPS[!(EPS %in% locally_bad_eps)])
+  print(names[tf == FALSE])
+
+  dev_null <-  lapply(locally_bad_eps, function(x) {
+    print(x)
+    expect_error(
+      res <- search_pv(TEST_QUERIES[[x]], endpoint = x)
+    )
+  })
+})
