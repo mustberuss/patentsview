@@ -25,6 +25,7 @@ test_that("Queries returning non-utility patents page well", {
 test_that("inventors.inventor_id and assignees.assignee_id are returned
           from patent endpoint when specified exactly", {
   skip_on_cran()
+
   query <- TEST_QUERIES[["patent"]]
   # Should return inventors and assignee list cols
   res <- search_pv(
@@ -58,14 +59,16 @@ test_that("Fields that are all NULL don't return at all", {
     "gov_interest_contract_award_numbers", "uspc_at_issue"
   )
 
+  # now we get cpc_at_issue
   result1 <- search_pv(query, fields = fields, sort = sort, size = 1000)
   no_cpc_at_issue <- colnames(result1$data$patents)
-  expect_false("cpc_at_issue" %in% no_cpc_at_issue)
+  expect_true("cpc_at_issue" %in% no_cpc_at_issue)
 
+  # now we get applicants
   result2 <- search_pv(query, fields = fields, sort = sort, size = 10)
-  two_field_result <- colnames(result2$data$patents)
+  three_field_result <- colnames(result2$data$patents)
   # only returns: c("patent_id", "uspc_at_issue")
-  expect_true(length(two_field_result) == 2)
+  expect_true(length(three_field_result) == 3)
 })
 
 # Reported to the API team PVS-1147
@@ -178,7 +181,7 @@ test_that("We can't sort by all fields", {
 # PVS-1342 Underlying data issues
 # There are ~8,000 patents that were in the bulk XML files that PatentsView is
 # is based on that were subsequently withdrawn but not removed from the database
-test_that("Withdrawn patents are still present in the database", {
+test_that("Withdrawn patents are suppressed by default but some are present in the database", {
   skip_on_cran()
   withdrawn <- c(
     "9978309", "9978406", "9978509", "9978615", "9978659",
@@ -192,7 +195,9 @@ test_that("Withdrawn patents are still present in the database", {
 
   query <- qry_funs$eq("patent_id" = withdrawn)
   results <- search_pv(query, method = "POST")
-  expect_equal(results$query_results$total_hits, length(withdrawn))
+
+  # Now withdrawn patents are not included unless the new option exclude_withdrawn is false
+  expect_equal(results$query_results$total_hits, 0)
 })
 
 # PVS-1342 Underlying data issues
