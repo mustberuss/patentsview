@@ -21,8 +21,8 @@ validate_args <- function(api_key, fields, endpoint, method,
   # the group's nested fields.  ex.: "assignees" on the patent endpoint gets you all
   # of the assignee fields. Note that "patents" can't be requested
   groups <- unique(fieldsdf[fieldsdf$endpoint == endpoint, c("group")])
-  pk <- get_ok_pk(endpoint)
-  plural_entity <- fieldsdf[fieldsdf$endpoint == endpoint & fieldsdf$field == pk, "group"]
+  first_pk <- get_ok_pk(endpoint)[[1]]
+  plural_entity <- fieldsdf[fieldsdf$endpoint == endpoint & fieldsdf$field == first_pk, "group"]
   flds_flt <- append(flds_flt, groups[!groups == plural_entity])
 
   asrt(
