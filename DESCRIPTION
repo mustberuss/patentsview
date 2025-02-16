@@ -1,7 +1,7 @@
 Package: patentsview
 Type: Package
 Title: An R Client to the 'PatentsView' API
-Version: 0.3.0
+Version: 1.0.0
 Authors@R: c(
       person("Christopher", "Baker", email = "chriscrewbaker@gmail.com", 
         role = c("aut", "cre")),
@@ -10,7 +10,7 @@ Authors@R: c(
 Encoding: UTF-8
 Description: Provides functions to simplify the 'PatentsView' API
     (<https://patentsview.org/apis/purpose>) query language,
-    send GET and POST requests to the API's twelve endpoints, and parse the data
+    send GET and POST requests to the API's twenty seven endpoints, and parse the data
     that comes back.
 URL: https://docs.ropensci.org/patentsview/index.html
 BugReports: https://github.com/ropensci/patentsview/issues
@@ -22,7 +22,8 @@ Imports:
     httr2,
     lifecycle,
     jsonlite,
-    utils
+    utils,
+    stats
 Suggests:
     dplyr,
     knitr,
