@@ -15,7 +15,6 @@ reference:
     - get_endpoints
     - get_fields
     - fieldsdf
-    - pad_patent_id
   - title: Writing queries with the DSL
     contents:
     - qry_funs

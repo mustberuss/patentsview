@@ -189,7 +189,6 @@ test_that("The 'after' parameter works properly", {
   expect_gt(results$query_results$total_hits, 1000)
 
   after <- results$data$patents$patent_id[[nrow(results$data$patents)]]
-  after <- pad_patent_id(after)
   subsequent <- search_pv(big_query, after = after, sort = sort)
 
   expect_equal(nrow(subsequent$data$patents), 1000)
