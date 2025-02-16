@@ -302,6 +302,10 @@ search_pv <- function(query,
     query <- jsonlite::toJSON(query, auto_unbox = TRUE)
   }
 
+  pk <- get_ok_pk(endpoint)
+  # We need pk to be in the result for all_pages to work with ease, hence adding
+  # it below
+  fields <- unique(c(pk, fields))
   abbreviated_fields <- sub_grp_names_for_fields(endpoint, fields)
 
   arg_list <- to_arglist(abbreviated_fields, size, sort, after)
@@ -316,21 +320,6 @@ search_pv <- function(query,
   if (!all_pages || zero_hits || hits_equal_rows) {
     return(first_res) # else we iterate through pages below
   }
-
-  if (is.null(fields)) {
-    # request the default fields returned by the first call, otherwise adding the pk below
-    # will just return that/thoses fields.
-    fields <- names(first_res$data[[1]])
-  }
-
-  # add pk here instead - pk fields not added to first_res
-  # We need pk to be in the result for all_pages to work with ease, hence adding
-  # it below
-  pk <- get_ok_pk(endpoint)
-
-  fields <- unique(c(pk, fields))
-  abbreviated_fields <- sub_grp_names_for_fields(endpoint, fields)
-  arg_list$fields <- abbreviated_fields 
 
   required_paging_keys <- rep("asc", length(pk))
   names(required_paging_keys) <- pk
