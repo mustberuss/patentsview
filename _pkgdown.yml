@@ -22,11 +22,7 @@ reference:
     contents:
     - unnest_pv_data
     - get_ok_pk
-    - cast_pv_data
     - retrieve_linked_data
-  - title: Utility
-    contents:
-    - pad_patent_id
 
 navbar:
   components:
