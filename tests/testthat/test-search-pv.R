@@ -158,15 +158,31 @@ test_that("Shorthand specification of fields results in expected results", {
     skip_on_cran()
     query <- TEST_QUERIES[["patent"]]
 
+    # We ask for all of assignee's nested fields (total of 9 fields currently).
+    # It gets turned into a shorthand request, however now 11 fields are returned.
+    # Returned but not requested:  assignee and assignee_location_id
+    # Now the test is really that the shorthand notation was used and
+    # that we got back all of the requested fields, ignoring the extras
     all_assn_flds <- get_fields("patent", groups = "assignees")
-    full_res <- search_pv(query, fields = all_assn_flds)
+    full_res <- search_pv(query, fields = all_assn_flds, method = "POST")
+    api_request <- httr2::last_request()$body$data
+    expect_true(grepl('"f":\\["assignees","patent_id"\\]', api_request))
 
+    unnested_requested_flds <- sub(".*\\.(.*)", "\\1", all_assn_flds)
+    returned_flds <- names(full_res$data$patents$assignees[[1]])
+    expect_true(all(unnested_requested_flds %in% returned_flds))
+
+
+    # Here we explicitly request 8 fields but we get 9 back.  We get assignee_id back
+    # as well as assignee (that we didn't ask for).  The opposite is not true,
+    # asking for just assignee doesn't return assignee or assignee_id
     no_city <- all_assn_flds[all_assn_flds != "assignees.assignee_city"]
     no_city_res <- search_pv(query, fields = no_city)
 
-    no_city_has_eight <- length(no_city_res$data$patents$assignees[[1]]) == 8
-    all_cols_has_nine <- length(full_res$data$patents$assignees[[1]]) == 9
-    expect_true(no_city_has_eight && all_cols_has_nine)
+    unnested_requested_flds <- sub(".*\\.(.*)", "\\1", no_city)
+    returned_flds <- names(no_city_res$data$patents$assignees[[1]])
+    expect_true(all(unnested_requested_flds %in% returned_flds))
+
 })
 
 test_that("nested shorthand produces the same results as fully qualified ones", {
