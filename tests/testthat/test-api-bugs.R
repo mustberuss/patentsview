@@ -242,7 +242,8 @@ test_that("Some test queries don't work", {
     res$query_results$total_hits > 0
   })
 
-  expect_false(all(unlist(flags)))
+  tf <- unlist(flags)
+  expect_false(all(tf))
 
   names <- unlist(EPS[!(EPS %in% locally_bad_eps)])
   print(names[tf == FALSE])
