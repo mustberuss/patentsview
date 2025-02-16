@@ -33,7 +33,16 @@ test_that("Iteration through pages works insofar as we can tell", {
 test_that("search_pv can pull all fields for all endpoints", {
   skip_on_cran()
 
-  dev_null <- lapply(EPS[!(EPS %in% GENERALLY_BAD_EPS)], function(x) {
+  locally_bad_eps = c(
+    "cpc_subclass"  # Invalid field: cpc_subclass
+   ,"location"      # Invalid field: location_num_assignees
+   ,"pg_claim"      # Invalid field: claim_dependent
+   ,"publication"   # thows a 500
+   ,"uspc_subclass" # Invalid field: uspc_mainclass
+  )
+
+
+  dev_null <- lapply(EPS[!(EPS %in% locally_bad_eps)], function(x) {
     print(x)
     search_pv(
       query = TEST_QUERIES[[x]],
