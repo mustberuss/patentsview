@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 [![](http://badges.ropensci.org/112_status.svg)](https://github.com/ropensci/software-review/issues/112)
 [![R-CMD-check](https://github.com/ropensci/patentsview/workflows/R-CMD-check/badge.svg)](https://github.com/ropensci/patentsview/actions)
 [![CRAN version](http://www.r-pkg.org/badges/version/patentsview)](https://cran.r-project.org/package=patentsview)
-[![](https://mustberuss.r-universe.dev/badges/patentsview)](https://mustberuss.r-universe.dev/ui#package:patentsview)
+[![patentsview status badge](https://mustberuss.r-universe.dev/patentsview/badges/version)](https://mustberuss.r-universe.dev/patentsview)
 
 ## Installation
 
@@ -54,7 +54,7 @@ devtools::install_github("mustberuss/patentsview@api-redesign")
 
 ## Important API Change
 
-The new version of the API requires an API key, or all of your requests will be blocked.  An API key can be obtained [here](https://patentsview.org/apis/keyrequest).  The updated R package will look for an environmental variable PATENTSVIEW_API_KEY set to the value of your key. For windows it would be
+The new version of the API requires an API key, or all of your requests will be blocked.  An API key can be obtained [here](https://patentsview-support.atlassian.net/servicedesk/customer/portals).  The updated R package will look for an environmental variable PATENTSVIEW_API_KEY set to the value of your key. For windows it would be
 ```
 set PATENTSVIEW_API_KEY=my_keys_value_without quotes
 ```
