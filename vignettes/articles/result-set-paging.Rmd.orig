@@ -138,7 +138,7 @@ repeat {
 
   # Now to page we need to set the "after" attribute to where the
   # current results ended.  Its value is the last row's [[sort field]]. 
-  # It would need to be an array of values if there are multiple sort fields
+  # It would need to be a vector of values if there are multiple sort fields
   s <- names(sort)[[1]]
   after <- subsequent$data[[1]][[s]][[returned_rows]]
 
@@ -155,7 +155,7 @@ when we set 'after' to the last patent_date of a page of results, we weren't don
 of that date's patents.  (The page breaks aren't guaranteed to align with the patent_date
 changes in the result set.  See the page boundary shown in next example if this isn't clear yet.)
 
-The R package uses appropriate key(s) when ```all_pages = TRUE```.  ```get_ok_pk(endpoint)```
+The R package uses appropriate key(s) when `all_pages = TRUE`.  `get_ok_pk(endpoint)`
 has been changed to also return a secondary sort key when needed. The next example shows that sometimes
 a secondary sort is required to guarantee row uniqueness (vital for paging via
 the 'after' parameter, so the API properly picks up exactly where the previous page
@@ -164,9 +164,9 @@ of data left off).
 ## Example 3
 
 Here we'll demonstrate that sometimes, in order to do custom paging, a secondary sort is
-required.  Normally the R package handles this for its users when all_pages = TRUE.  It all has
+required.  Normally the R package handles this for its users when `all_pages = TRUE`.  It all has
 to do with the way the API now handles paging, where the sort key(s) is(are) used to determine the 'after'
-parameter's value(s), instructing the API where the next page of results begins.  
+parameter's value(s), instructing the API where the next page of results begin.  
 
 Some of the new endpoints can return more than one row of data for their primary key.  They are
 the endpoints that have a sequence parameter.  Sorting and thus paging by only the primary key 

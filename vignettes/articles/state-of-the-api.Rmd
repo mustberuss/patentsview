@@ -23,8 +23,13 @@ in test-api-bugs.
 
 3. The publication endpoint's rule_47_flag is now requested as a boolean but all values seem to be FALSE.
 The returned values still seem to be strings.  See test-api-bugs' "Querying the publication endpoint on rule_47_flag isn't meaningful"
+Reported as bug PVS-1884.
 
-4. We still cannot request or query by inventors.inventor or assignees.assignee.
+4. Not strictly a bug, but now openapi.json has all document_numbers as strings.  Previously most were
+numbers and two were strings. The down side is we don't let users use math functions on it (gt, lt etc).  The
+return from the API remains numeric.  I probably should open this as a bug.
+
+5. We still cannot request or query by inventors.inventor or assignees.assignee.
 With a hack in fieldsdf we can request inventors.inventor_id and assignees.assignee_id to 
 receive inventor_id, assignee_id and the two HATEOAS links, inventor" and assignee.
 Without the hack test-search-pv's "Shorthand specification of fields results in expected results"
@@ -51,29 +56,62 @@ curl -X 'POST' \
   -d '{"q":{"patent_date":"2007-03-06"},"f":["patent_id"],"s":[{"patent_id":"desc"}],
 "o":{"size":10, "pad_patent_id": true}}'
 ```
+While working on this I realized that with [two small changes](https://github.com/ropensci/patentsview/commit/98776d65191e9950274026623010cb3f1c8dbcdd) 
+retrieve_linked_data() can use sample urls as long as they aren't already url encoded.  I'm worried people 
+not familar with R will try to use the R package since its harder to work with the new version of the 
+API natively.  I think it's worth the extra technical debt to make the package as helpful as possible.
+It's handy here even if you don't think it should be in the R package! 
 
-Same with "after"
-```
-curl -X 'POST' \
-  'https://search.patentsview.org/api/v1/patent/' \
-  -H 'accept: application/json' \
-  -H "X-Api-Key: $PATENTSVIEW_API_KEY" \
-  -H 'Content-Type: application/json' \
-  -d '{"q":{"patent_date":"2007-03-06"},"f":["patent_id"],"s":[{"patent_id":"desc"}],
-"o":{"size":10, "pad_patent_id": true, "after":"PP017481"}}'
-```
-For completeness, not sure why someone would want withdrawn patents.   
-patent_ids from test_that("Withdrawn patents are suppressed by default but some are present in the database")
+```{r}
+  library(patentsview)
 
+  using_padding <- 
+    paste0(
+      'https://search.patentsview.org/api/v1/patent/',
+      '?q={"patent_date":"2007-03-06"}',
+      '&f=["patent_id"]',
+      '&o={"size":10, "pad_patent_id": true}',
+      '&s=[{"patent_id": "desc"}]'
+    )
+
+  result <- retrieve_linked_data(using_padding)
+  result$data$patents$patent_id
+  
 ```
-curl -X 'POST' \
-  'https://search.patentsview.org/api/v1/patent/' \
-  -H 'accept: application/json' \
-  -H "X-Api-Key: $PATENTSVIEW_API_KEY" \
-  -H 'Content-Type: application/json' \
-  -d '{"q":{"patent_id":["9978309", "9978406", "9978509", "9978615", "9978659"]},
- "f":["patent_id"],"s":[{"patent_id":"asc"}],
-"o":{"size":10, "exclude_withdrawn": false}}'
+
+Same with a padded "after"
+
+```{r}
+  using_padding <- 
+    paste0(
+      'https://search.patentsview.org/api/v1/patent/',
+      '?q={"patent_date":"2007-03-06"}',
+      '&f=["patent_id"]',
+      '&o={"size":10, "pad_patent_id": true, "after":"PP017481"}',
+      '&s=[{"patent_id": "desc"}]'
+    )
+
+  result <- retrieve_linked_data(using_padding)
+  result$data$patents$patent_id
+  
+```
+For completeness, not sure why someone would want withdrawn patents!  (Now there is a `withdrawn` boolean in 
+patents that could be queried or examined if exclude_withdrawn is false).  The patent_ids are from
+the test case that queries for them.
+
+```{r}
+  withdrawn <- 
+    paste0(
+      'https://search.patentsview.org/api/v1/patent/',
+      '?q={"patent_id":["9978309", "9978406", "9978509", "9978615", "9978659"]}',
+      '&f=["patent_id"]',
+      '&o={"size":10, "exclude_withdrawn": false}',
+      '&s=[{"patent_id": "desc"}]'
+    )
+
+  result <- retrieve_linked_data(withdrawn)
+  result$data$patents$patent_id
+  
 
 ```
 
