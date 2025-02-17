@@ -62,13 +62,13 @@ set_sort_param <- function(sort_vec) {
 
 #' @noRd
 get_get_url <- function(query, base_url, arg_list) {
-  j <- paste0(
+  j <- ifelse(is.null(arg_list), base_url, paste0(
     base_url,
     "?q=", utils::URLencode(query, reserved = TRUE),
     "&f=", tojson_2(arg_list$fields),
     "&s=", set_sort_param(arg_list$sort),
     "&o=", tojson_2(arg_list$opts, auto_unbox = TRUE)
-  )
+  ))
 
   utils::URLencode(j)
 }
@@ -366,6 +366,9 @@ retrieve_linked_data <- function(url,
   if (is.null(url)) {
     stop2("URL must be a valid URL")
   }
-  res <- one_request("GET", "", url, list(), api_key, ...)
+
+  # The NULL arg_list supresses the ?q=&f=&o=&s= that was appended to the url
+  # and lets example urls be passed
+  res <- one_request("GET", "", url, NULL, api_key, ...)
   process_resp(res)
 }
