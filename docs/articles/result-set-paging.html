@@ -27,7 +27,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">patentsview</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -279,7 +279,7 @@ run into trouble using patent_date as the sort field ( and thus the
 <span></span>
 <span>  <span class="co"># Now to page we need to set the "after" attribute to where the</span></span>
 <span>  <span class="co"># current results ended.  Its value is the last row's [[sort field]]. </span></span>
-<span>  <span class="co"># It would need to be an array of values if there are multiple sort fields</span></span>
+<span>  <span class="co"># It would need to be a vector of values if there are multiple sort fields</span></span>
 <span>  <span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">sort</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
 <span>  <span class="va">after</span> <span class="op">&lt;-</span> <span class="va">subsequent</span><span class="op">$</span><span class="va">data</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="va">s</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="va">returned_rows</span><span class="op">]</span><span class="op">]</span></span>
 <span></span>
@@ -313,10 +313,10 @@ properly picks up exactly where the previous page of data left off).</p>
 </h2>
 <p>Here we’ll demonstrate that sometimes, in order to do custom paging,
 a secondary sort is required. Normally the R package handles this for
-its users when all_pages = TRUE. It all has to do with the way the API
-now handles paging, where the sort key(s) is(are) used to determine the
-‘after’ parameter’s value(s), instructing the API where the next page of
-results begins.</p>
+its users when <code>all_pages = TRUE</code>. It all has to do with the
+way the API now handles paging, where the sort key(s) is(are) used to
+determine the ‘after’ parameter’s value(s), instructing the API where
+the next page of results begin.</p>
 <p>Some of the new endpoints can return more than one row of data for
 their primary key. They are the endpoints that have a sequence
 parameter. Sorting and thus paging by only the primary key at these

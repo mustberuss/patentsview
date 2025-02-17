@@ -77,9 +77,6 @@ parameter via search_pv().  Note that the old parameters are now deprecated.
 
 ## Additional R Package Changes <a name="r-package-changes">
 
-These changes were also made to the R package, in addition to the 
-[API changes](#summary-of-the-api-changes) outlined above and the [Other API Changes](#other-api-changes) below
-
 * The R package changed internally from using httr to httr2.  This only affects users if 
 they passed additional arguments (...) to search_pv().  Previously if they passed config = httr::timeout(40)
 they'd now pass timeout = 40 (name-value pairs of valid curl options, as found in curl::curl_options() see [req_options](https://httr2.r-lib.org/reference/req_options.html))
@@ -101,6 +98,10 @@ httr2::last_response() |> httr2::resp_body_json()
 
 * The ropensci blog post that announced the original version of the R package was [reworked](ropensci-blog-post.html) to use the new version of the R package and API
 
+* If the fields parameter on search_pv() isn't specified, the R package will default to them to the
+primary key(s) for that endpoint.  Previously no fields were specified and the API's default fields 
+were returned.
+
 ## Swagger UI Page <a name="swagger-ui-page"></a>
 The Patentsview API team has provided a Swagger UI page for the new version of the API 
 at https://search.patentsview.org/swagger-ui/. How cool is that?
@@ -113,53 +114,6 @@ https://search.patentsview.org/static/openapi.json can be imported into Postman 
 you a nicely loaded collection for the new version of the API. You'll just need to set 
 a global variable PVIEW_KEY and set the authorization's value to {{PVIEW_KEY}} to your API key. 
 
-## Other API Changes <a name="other-api-changes"></a>
-
-These API changes would only matter if you want to call the API directly or want to write a python library for the API etc.
-Or maybe you're on the receiving end of a PR and need to know about all of the API's changes.
-
-* These options parameters went away: matched_subentities_only, subent_cnts, per_page and page
-(paging now uses `after` instead of `page` and `size` instead of `per_page`)
-* Now the API's response is always JSON.  The original version of the API
-had a 'format' parameter that defaulted to json but could be set to xml.  The original R package
-did not expose this parameter so your script won't know the difference (unless you were calling the
-API directly).
-
-* Changes the updated R package handles for users:
-   - The API now [throttles requests](#throttling).  The R package retries throttled requests.
-   - The API's [paging](#a-note-on-paging) is completely different, but to users, all_pages=TRUE still works the same (however, note
-the possibly unbounded result set size mentioned above).
-   - The API change says that POST requests will need to send JSON data (instead of string representation of JSON). A Content-Type: application/json header was added.
-   - The subdomain of the API changed from https://api.patentsview.org/ to https://search.patentsview.org and the paths to the endpoints changed.  
-   - The order the fields are returned by the API has changed
-   ```
-     # Response body now
-     {
-       "error": false,
-       "count": 1,
-       "total_hits": 1,
-       "patent": [...]
-     }
-
-     # Original response
-
-     {
-       "patents": [...],
-       "count": 1,
-       "total_patent_count": 1
-     }
-     ```
-     Note that now total_hits comes back from all endpoints, previously there was an endpoint 
-specific count, like total_patent_count.  Again, all of this is handled for you
-by the R package.  The way total_hits comes back from the R package remains unchanged.
-
-
-``` r
-   result <- search_pv('{"patent_id": "11530080"}')
-   print (result$query_results$total_hits)
-#> [1] 1
-```
-
 ## Details of the API changes
 
 ### An API Key is required <a name="api-key-required"></a>
@@ -168,7 +122,7 @@ Perhaps the most important change, without an API key your queries will be rejec
 The user's API key needs to be sent on all requests
 ```
 api_key = Sys.getenv("PATENTSVIEW_API_KEY")
-httr::add_headers("X-Api-Key" = api_key)
+httr2::req_headers("X-Api-Key" = api_key, .redact = "X-Api-Key")
 ```
 
 ### Endpoints <a name="endpoints">
@@ -215,14 +169,11 @@ field in both is related_text.
 1. Some endpoints now return [HATEOAS links](#HATEOAS)
 1. Some fields went away, like rawinventor_first_name and rawinventor_last_name, and some have new names, most significantly, patent_number is now patent_id. Requesting patent_number will result in an error being thrown. Note also that the CPC related fields have new names, see the next section.
 1. <a name="text_endpoints">On</a> the [Swagger UI page](https://search.patentsview.org/swagger-ui/) before the 
-2024-10-06 API release, there were four
-endpoints listed under "Patent Text" with a link that showed how far back the data went
-https://search.patentsview.org/docs/docs/Search%20API/TextEndpointStatus
-Now there are eight endpoints.  There are still four grant endpoints (with a g_ prepended 
-to the names originally released) listed under "Patent Text" but now there are four more
- pre-grant (pg_) endpoints listed under "Publication Text".
+2024-10-06 API release, there was a link to a 
+[TextEndpointStatus](https://search.patentsview.org/docs/docs/Search%20API/TextEndpointStatus)
+showing what years were populated at the Patent Text endpoints (the ones starting with g_ and pg_).
 
-    It looks like the TextEndpointStatus page isn't being updated frequently, so we'll check 
+    It's unclear if the TextEndpointStatus page will be updated on each data release, so we'll check 
 one pair for ourselves.  patent_date isn't available from g_brf_sum_text so we'll
 ask the patent endpoint for it once we have the smallest patent_id from g_brf_sum_text.
 
@@ -261,7 +212,27 @@ ask the patent endpoint for it once we have the smallest patent_id from g_brf_su
     #>   ..$ document_number: num 20230000001
     #>   ..$ summary_text   : chr "TECHNICAL FIELD\n\nThe present disclosure relates"..
     ```
-    So, at the time of this writing, both endpoints appear to have data going back to 2023.
+    So, at the time this vignette was generated, both endpoints appear to have data going back to 2023. 
+Note that the current year may not be populated yet.  
+
+    
+    ``` r
+    qry <- qry_funs$ne(patent_id = "")
+    sort <- c(patent_id = "desc")  # here we flip the sort
+    grant <- search_pv(qry, sort = sort, endpoint = "g_brf_sum_text", size = 1)
+    
+    fields <- c("patent_id", "patent_title", "patent_date")
+    res <- search_pv(qry_funs$eq(patent_id = grant$data$g_brf_sum_texts$patent_id), 
+      fields = fields, size = 1)
+    res$data
+    #> #### A list with a single data frame on patents level:
+    #> 
+    #> List of 1
+    #>  $ patents:'data.frame':	1 obs. of  3 variables:
+    #>   ..$ patent_id   : chr "RE50258"
+    #>   ..$ patent_title: chr "Projection device"
+    #>   ..$ patent_date : chr "2024-12-31"
+    ```
 
 ### HATEOAS Links <a name="HATEOAS">
 Some of the returned fields are HATEOAS (Hypermedia as the Engine of Application State) links to retrieve more information about that field. Slightly funky is the cpc_current's cpc_group, returned by the patent endpoint.  Here the slash in the CPC is turned into a colon.  This is a peculiarity of two of the new convenience URLs (new endpoints that accept a single URL parameter) that shouldn't be noticeable in the R package, unless you are trying to infer the USPC and CPC values from the returned URLs, without actually calling back for this data.  See `retrieve_linked_data()`
@@ -456,22 +427,49 @@ As you'll see from the queries below, the two forms of equal now seem to be case
 
 
 ``` r
+library(patentsview)
 
-result <- search_pv('{"assignee_organization": "Johnson & Johnson International"}', endpoint="assignee")
+organization <- "Johnson & Johnson International"
+
+# explicit equal
+eq_query <- qry_funs$eq(assignee_organization = organization)
+eq_query
+#> {"_eq":{"assignee_organization":"Johnson & Johnson International"}}
+result <- search_pv(eq_query, endpoint="assignee")
 print (result$query_results$total_hits)
 #> [1] 1
 
-result <- search_pv('{"assignee_organization": "johnson & Johnson International"}', endpoint="assignee")
-print (result$query_results$total_hits)
-#> [1] 0
-
-result <- search_pv('{"_eq":{"assignee_organization": "Johnson & Johnson International"}}', endpoint="assignee")
+# implied equal
+implied_eq_query <- paste0('{"assignee_organization": "', organization, '"}')
+cat(implied_eq_query)
+#> {"assignee_organization": "Johnson & Johnson International"}
+result <- search_pv(implied_eq_query, endpoint="assignee")
 print (result$query_results$total_hits)
 #> [1] 1
 
-result <- search_pv('{"_eq":{"assignee_organization": "johnson & Johnson International"}}', endpoint="assignee")
+organization <- tolower(organization)
+
+eq_query <- qry_funs$eq(assignee_organization = organization)
+eq_query
+#> {"_eq":{"assignee_organization":"johnson & johnson international"}}
+result <- search_pv(eq_query, endpoint="assignee")
 print (result$query_results$total_hits)
 #> [1] 0
+
+implied_eq_query <- paste0('{"assignee_organization": "', organization, '"}')
+cat(implied_eq_query)
+#> {"assignee_organization": "johnson & johnson international"}
+result <- search_pv(implied_eq_query, endpoint="assignee")
+print (result$query_results$total_hits)
+#> [1] 0
+
+# text_phrase seems to be case insensitive but equal is not
+text_query <- with_qfuns(text_phrase(assignee_organization = organization))
+text_query
+#> {"_text_phrase":{"assignee_organization":"johnson & johnson international"}}
+result <- search_pv(text_query, endpoint = "assignee")
+print (result$query_results$total_hits)
+#> [1] 1
 ```
 
 [^1]: Observation sent to the API team.
