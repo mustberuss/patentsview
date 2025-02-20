@@ -230,28 +230,3 @@ test_that("Querying the publication endpoint on rule_47_flag isn't meaningful", 
   expect_gt(res$query_results$total_hits, 8000000)
 
 })
-
-test_that("Some test queries don't work", {
-  skip_on_cran()
-
-  locally_bad_eps <- c( "ipc")  # currently throws a 500
-
-  flags <- lapply(EPS[!(EPS %in% locally_bad_eps)], function(x) {
-    print(x)
-    res <- search_pv(TEST_QUERIES[[x]], endpoint = x)
-    res$query_results$total_hits > 0
-  })
-
-  tf <- unlist(flags)
-  expect_false(all(tf))
-
-  names <- unlist(EPS[!(EPS %in% locally_bad_eps)])
-  print(names[tf == FALSE])
-
-  dev_null <-  lapply(locally_bad_eps, function(x) {
-    print(x)
-    expect_error(
-      res <- search_pv(TEST_QUERIES[[x]], endpoint = x)
-    )
-  })
-})

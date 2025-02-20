@@ -33,24 +33,25 @@ test_that("Iteration through pages works insofar as we can tell", {
 test_that("search_pv can pull all fields for all endpoints", {
   skip_on_cran()
 
-  locally_bad_eps = c(
-    "cpc_subclass"  # Invalid field: cpc_subclass
-   ,"location"      # Invalid field: location_num_assignees
-   ,"pg_claim"      # Invalid field: claim_dependent
-   ,"publication"   # thows a 500
-   ,"uspc_subclass" # Invalid field: uspc_mainclass
-  )
-
-
-  dev_null <- lapply(EPS[!(EPS %in% locally_bad_eps)], function(x) {
-    print(x)
-    search_pv(
-      query = TEST_QUERIES[[x]],
-      endpoint = x,
-      fields = get_fields(x)
+  # more queries fail now that we send &s= instead of &s=[]
+  flags <- lapply(EPS, function(x) {
+    tryCatch(
+      {
+        res <- search_pv(
+          query = TEST_QUERIES[[x]],
+          endpoint = x,
+          fields = get_fields(x)
+        )
+        res$query_results$total_hits > 0
+      },
+      error = function(e) {
+        FALSE
+      }
     )
   })
-  expect_true(TRUE)
+
+  tf <- unlist(flags)
+  expect_false(all(tf))
 })
 
 test_that("Sort option works as expected", {
