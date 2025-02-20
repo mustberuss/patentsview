@@ -25,15 +25,13 @@ to_arglist <- function(fields, size, sort, after) {
 }
 
 #' @noRd
-set_sort_param <- function(before) {
-  # Fixes former bug
-  # for sort = c("patent_id" = "asc", "citation_patent_id" = "asc")
-  #  we sent  [{"patent_id":"asc","citation_patent_id":"asc"}]
-  # API wants [{"patent_id": "asc" },{"citation_patent_id": "asc" }]
-  # TODO(any): brute meet force- there must be a better way...
-  after <- tojson_2(before, auto_unbox = TRUE)
-  after <- gsub('","', '"},{"', after)
-  after
+set_sort_param <- function(sort_vec) {
+  jsonlite::toJSON(
+    lapply(names(sort_vec), function(name) {
+      setNames(list(sort_vec[[name]]), name)
+    }),
+    auto_unbox = TRUE
+  )
 }
 
 #' @noRd
