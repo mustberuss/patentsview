@@ -16,7 +16,8 @@ The newest release brough new bugs
 
 1. These TEST_QUERIES now return zero rows: "cpc_subclass", "uspc_mainclass", "uspc_subclass", "wipo"  
 this one throws a 500 "ipc"  See test_that("Some test queries don't work")
-in test-api-bugs.
+in test-api-bugs.  Note that when no sort is specified we send in &s=[].  The ones that return no
+rows throw 500s if we send in &s=.  See the [odd demo](#odd-demo) below.
 
 2. get_fields("cpc_subclass") returns both "cpc_class" and "cpc_class_id" but "cpc_class" fails their validation
 (the request throws a 400 Invalid field: cpc_subclass)
@@ -235,10 +236,12 @@ PVS-1342 "Underlying data issues", with slighly more diplomatic wording.  It's m
 expectation that I'd get the same results by querying [ppubs' advanced search](https://www.uspto.gov/patents/search/patent-public-search) 
 as I would with patentsview.  Differences due to disambiguation would be one thing,
 but I'm expecting the underlying data to be the same.
-     * One of the weirdest things is that there are approximately 8000 withdrawn patents 
+     * _This has been fixed!_  One of the weirdest things is that there are approximately 8000 withdrawn patents 
 in the patentsview database.  The source of the database is the [bulk xml files](https://bulkdata.uspto.gov/) the US Patent Office releases weekly.  The problem is that sometimes patents are withdrawn after appearing in a bulk xml file but they are kept 
-in the patentsview database alongside non withdrawn patents.  How weird is that?  Here is the Patent Office's [withdrawn patent list](http://www.uspto.gov/patents-application-process/patent-search/withdrawn-patent-numbers), which is updated weekly.  See
-test_that("withdrawn patents are still present in the database") in test-api-bugs.R
+in the patentsview database alongside non withdrawn patents.  How weird is that?  Here is the Patent Office's [withdrawn patent list](http://www.uspto.gov/patents-application-process/patent-search/withdrawn-patent-numbers), which is updated weekly.
+
+       Now there is an API option to exclude withdrawn patents. There is also a `withdrawn` boolean in the
+patents entity returned by the patent endpoint.
 
      * An equally strange situation is the approximately 300 non-withdrawn patents that, for whatever reason, did not appear in the bulk xml file for the week they were issued.  They are granted patents that are not in the patentsview database.  See test_that("missing patents are still missing") in test-api-bugs.R
 
@@ -313,7 +316,7 @@ The API accepts invalid fields that start out looking like valid fields when it 
 Ex f: is["patent_iddddddddddddd", "patent_dateagogo"] and q: is {"patent_idd":"10000000"} with this result: { "error": false, "count": 0, "total_hits": 0, "patents": [] }
 See test_that("invalid fields are accepted") in test-api-bugs.R
 
-PVS-1342  
+PVS-1342  _withdrawn patents have been fixed!_  
 Underlying data issues  
 There are ~300 issued patents are missing from the database, ~8000 withdrawn patents are present
 in the database, and plant patents and reissued patents don't have current CPC assigments when
@@ -622,8 +625,8 @@ there isn't the 100,000 row limitation now.  The API's ```after``` is now expose
 in search_pv() so users could do their own paging. See the new [paging vignette](result-set-paging.html)
 
 ## Odd Demo
-   Here we demonstrate a weird interaction between the API and R package when no sort parmeter
-is specified.  
+   Here we demonstrate a weird interaction between the API and R package when no sort parameter
+is specified.  Trying here to provide background for  [# TODO(0): check this out](https://github.com/ropensci/patentsview/blob/russ-pr-refactorings/R/search-pv.R#L86) in search-pv
 
 ```{r}
 fields <- c("patent_id", "patent_date", "patent_title")
@@ -642,7 +645,6 @@ url <- httr2::last_request()$url
 cat(utils::URLdecode(url))
 ```
 
-
 Now we'll send in our own GET with `&s=&o` to see that the API return is different,
 seemingly applying a default sort?
 
@@ -650,24 +652,19 @@ seemingly applying a default sort?
 library(httr2)
 
   url <- sub("&s=\\[\\]", "&s=", url)
-  cat(utils::URLdecode(url))
-  api_key <- Sys.getenv("PATENTSVIEW_API_KEY")
+  url <- utils::URLdecode(url)
+  cat(url)
 
-  req <- httr2::request(url) |>
-    httr2::req_method("GET")
-
-  resp <- req |>
-    httr2::req_user_agent("https://github.com/ropensci/patentsview") |>
-    httr2::req_retry(max_tries = 20) |> # automatic 429 Retry-After
-    httr2::req_headers("X-Api-Key" = api_key, .redact = "X-Api-Key") |>
-    httr2::req_perform()
-
-  json <- httr2::last_response() |> httr2::resp_body_json()
-  json$patents[[1]]
+  results <- retrieve_linked_data(url)
+  results$data
 
 ```
-For a while POSTs and GETs behaved differently when a sort wasn't specified.  Currently
-an API bug prevents seeing what the behavior is on POSTS. 
+
+For a while POSTs and GETs behaved differently when a sort wasn't specified but that doesn't seem
+to be the case now.  At one point we were sending in `&s={}` which did return different results
+between POSTs and GETs. Probably the right fix would be to add a null check in set_sort_param().
+We still need to substitute away  "s":, in get_post_body or the API throws a 400 JSON parse error.
+See [a4df35a](https://github.com/ropensci/patentsview/commit/a4df35a78cb4312adcd38533734cd81cd85a602d)
 
 [^1]: Observation sent to the API team.
 [^2]: Observation sent to the API team.
