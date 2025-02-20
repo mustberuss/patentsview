@@ -1,4 +1,4 @@
----
+--- 
 title: "Converting an Existing Script"
 output: rmarkdown::html_vignette
 vignette: >

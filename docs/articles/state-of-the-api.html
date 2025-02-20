@@ -157,7 +157,9 @@ recently renamed PatentSearch API, as announced <a href="https://search.patentsv
 <li><p>These TEST_QUERIES now return zero rows: “cpc_subclass”,
 “uspc_mainclass”, “uspc_subclass”, “wipo”<br>
 this one throws a 500 “ipc” See test_that(“Some test queries don’t
-work”) in test-api-bugs.</p></li>
+work”) in test-api-bugs. Note that when no sort is specified we send in
+&amp;s=[]. The ones that return no rows throw 500s if we send in
+&amp;s=. See the <a href="#odd-demo">odd demo</a> below.</p></li>
 <li><p>get_fields(“cpc_subclass”) returns both “cpc_class” and
 “cpc_class_id” but “cpc_class” fails their validation (the request
 throws a 400 Invalid field: cpc_subclass)</p></li>
@@ -486,15 +488,19 @@ advanced search</a> as I would with patentsview. Differences due to
 disambiguation would be one thing, but I’m expecting the underlying data
 to be the same.</p>
 <ul>
-<li><p>One of the weirdest things is that there are approximately 8000
-withdrawn patents in the patentsview database. The source of the
-database is the <a href="https://bulkdata.uspto.gov/" class="external-link">bulk xml files</a>
-the US Patent Office releases weekly. The problem is that sometimes
-patents are withdrawn after appearing in a bulk xml file but they are
-kept in the patentsview database alongside non withdrawn patents. How
-weird is that? Here is the Patent Office’s <a href="http://www.uspto.gov/patents-application-process/patent-search/withdrawn-patent-numbers" class="external-link">withdrawn
-patent list</a>, which is updated weekly. See test_that(“withdrawn
-patents are still present in the database”) in test-api-bugs.R</p></li>
+<li>
+<p><em>This has been fixed!</em> One of the weirdest things is that
+there are approximately 8000 withdrawn patents in the patentsview
+database. The source of the database is the <a href="https://bulkdata.uspto.gov/" class="external-link">bulk xml files</a> the US Patent
+Office releases weekly. The problem is that sometimes patents are
+withdrawn after appearing in a bulk xml file but they are kept in the
+patentsview database alongside non withdrawn patents. How weird is that?
+Here is the Patent Office’s <a href="http://www.uspto.gov/patents-application-process/patent-search/withdrawn-patent-numbers" class="external-link">withdrawn
+patent list</a>, which is updated weekly.</p>
+<p>Now there is an API option to exclude withdrawn patents. There is
+also a <code>withdrawn</code> boolean in the patents entity returned by
+the patent endpoint.</p>
+</li>
 <li><p>An equally strange situation is the approximately 300
 non-withdrawn patents that, for whatever reason, did not appear in the
 bulk xml file for the week they were issued. They are granted patents
@@ -593,7 +599,7 @@ when it should throw an error. Ex f: is[“patent_iddddddddddddd”,
 “patent_dateagogo”] and q: is {“patent_idd”:“10000000”} with this
 result: { “error”: false, “count”: 0, “total_hits”: 0, “patents”: [] }
 See test_that(“invalid fields are accepted”) in test-api-bugs.R</p>
-<p>PVS-1342<br>
+<p>PVS-1342 <em>withdrawn patents have been fixed!</em><br>
 Underlying data issues<br>
 There are ~300 issued patents are missing from the database, ~8000
 withdrawn patents are present in the database, and plant patents and
@@ -1274,7 +1280,9 @@ in search_pv() so users could do their own paging. See the new <a href="result-s
 <h2 id="odd-demo">Odd Demo<a class="anchor" aria-label="anchor" href="#odd-demo"></a>
 </h2>
 <p>Here we demonstrate a weird interaction between the API and R package
-when no sort parmeter is specified.</p>
+when no sort parameter is specified. Trying here to provide background
+for <a href="https://github.com/ropensci/patentsview/blob/russ-pr-refactorings/R/search-pv.R#L86" class="external-link">#
+TODO(0): check this out</a> in search-pv</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fields</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patent_id"</span>, <span class="st">"patent_date"</span>, <span class="st">"patent_title"</span><span class="op">)</span></span>
 <span></span>
@@ -1308,33 +1316,23 @@ that the API return is different, seemingly applying a default sort?</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://httr2.r-lib.org" class="external-link">httr2</a></span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="va">url</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">"&amp;s=\\[\\]"</span>, <span class="st">"&amp;s="</span>, <span class="va">url</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/URLencode.html" class="external-link">URLdecode</a></span><span class="op">(</span><span class="va">url</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="va">url</span> <span class="op">&lt;-</span> <span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/URLencode.html" class="external-link">URLdecode</a></span><span class="op">(</span><span class="va">url</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">url</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## https://search.patentsview.org/api/v1/patent/?q={"_gte":{"patent_date":"2007-01-01"}}&amp;f=["patent_date","patent_id","patent_title"]&amp;s=&amp;o={"size":1000}</span></span></code></pre>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span>  <span class="va">api_key</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"PATENTSVIEW_API_KEY"</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="va">req</span> <span class="op">&lt;-</span> <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/request.html" class="external-link">request</a></span><span class="op">(</span><span class="va">url</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/req_method.html" class="external-link">req_method</a></span><span class="op">(</span><span class="st">"GET"</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="va">resp</span> <span class="op">&lt;-</span> <span class="va">req</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/req_user_agent.html" class="external-link">req_user_agent</a></span><span class="op">(</span><span class="st">"https://github.com/ropensci/patentsview"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/req_retry.html" class="external-link">req_retry</a></span><span class="op">(</span>max_tries <span class="op">=</span> <span class="fl">20</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="co"># automatic 429 Retry-After</span></span>
-<span>    <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/req_headers.html" class="external-link">req_headers</a></span><span class="op">(</span><span class="st">"X-Api-Key"</span> <span class="op">=</span> <span class="va">api_key</span>, .redact <span class="op">=</span> <span class="st">"X-Api-Key"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/req_perform.html" class="external-link">req_perform</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="va">json</span> <span class="op">&lt;-</span> <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/last_response.html" class="external-link">last_response</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">httr2</span><span class="fu">::</span><span class="fu"><a href="https://httr2.r-lib.org/reference/resp_body_raw.html" class="external-link">resp_body_json</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="va">json</span><span class="op">$</span><span class="va">patents</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">## $patent_id</span></span>
-<span><span class="co">## [1] "10000000"</span></span>
+<code class="sourceCode R"><span>  <span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/retrieve_linked_data.html">retrieve_linked_data</a></span><span class="op">(</span><span class="va">url</span><span class="op">)</span></span>
+<span>  <span class="va">results</span><span class="op">$</span><span class="va">data</span></span></code></pre></div>
+<pre><code><span><span class="co">## #### A list with a single data frame on patents level:</span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">## $patent_title</span></span>
-<span><span class="co">## [1] "Coherent LADAR using intra-pixel quadrature detection"</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $patent_date</span></span>
-<span><span class="co">## [1] "2018-06-19"</span></span></code></pre>
+<span><span class="co">## List of 1</span></span>
+<span><span class="co">##  $ patents:'data.frame': 1000 obs. of  3 variables:</span></span>
+<span><span class="co">##   ..$ patent_id   : chr [1:1000] "10000000" ...</span></span>
+<span><span class="co">##   ..$ patent_title: chr [1:1000] "Coherent LADAR using intra-pixel quadrature"..</span></span>
+<span><span class="co">##   ..$ patent_date : chr [1:1000] "2018-06-19" ...</span></span></code></pre>
 <p>For a while POSTs and GETs behaved differently when a sort wasn’t
-specified. Currently an API bug prevents seeing what the behavior is on
-POSTS.</p>
+specified but that doesn’t seem to be the case now. At one point we were
+sending in <code>&amp;s={}</code> which did return different results
+between POSTs and GETs.</p>
 </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

@@ -335,11 +335,6 @@ res$data
 
 ``` r
 library(tidyr)
-#> 
-#> Attaching package: 'tidyr'
-#> The following object is masked from 'package:magrittr':
-#> 
-#>     extract
 
 # Get assignee data:
 res$data$patents %>% 
