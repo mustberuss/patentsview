@@ -17,7 +17,8 @@ The newest release brough new bugs
 1. These TEST_QUERIES now return zero rows: "cpc_subclass", "uspc_mainclass", "uspc_subclass", "wipo"  
 this one throws a 500 "ipc"  See test_that("Some test queries don't work")
 in test-api-bugs.  Note that when no sort is specified we send in &s=[].  The ones that return no
-rows throw 500s if we send in &s=.  See the [odd demo](#odd-demo) below.
+rows throw 500s if we send in &s=.  See the [odd demo](#odd-demo) below- though now the results are
+coming back the same.
 
 2. get_fields("cpc_subclass") returns both "cpc_class" and "cpc_class_id" but "cpc_class" fails their validation
 (the request throws a 400 Invalid field: cpc_subclass)
@@ -637,8 +638,8 @@ search_pv(
 )
 ```
 
-Note that the first patent_date returned above is "2020-04-21" and that what gets 
-sent to the API is `&s=[]&o=` shown in the output of the next section
+Note that the first patent_date returned above may be different that what's shown lower
+and that what gets sent to the API is `&s=[]&o=` shown in the output of the next section
 
 ```{r}
 url <- httr2::last_request()$url
