@@ -52,12 +52,12 @@ to_arglist <- function(fields, size, sort, after) {
 
 #' @noRd
 set_sort_param <- function(sort_vec) {
-  jsonlite::toJSON(
+  ifelse(is.null(sort_vec), "", jsonlite::toJSON(
     lapply(names(sort_vec), function(name) {
       stats::setNames(list(sort_vec[[name]]), name)
     }),
     auto_unbox = TRUE
-  )
+  ))
 }
 
 #' @noRd
@@ -83,11 +83,7 @@ get_post_body <- function(query, arg_list) {
     '"o":', tojson_2(arg_list$opts, auto_unbox = TRUE),
     "}"
   )
-  # TODO(0): check this out
-  # The API can now act weirdly if we pass f:{},s:{} as we did in the past
-  # (weirdly in that the POST results may not equal the GET results, or POSTs
-  # error out)
-  gsub('("[fs]":,)', "", body)
+  sub('"s":,', "", body)
 }
 
 #' @noRd
