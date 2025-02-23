@@ -1,4 +1,4 @@
-test_that("Queries returning non-utility patents don't page well", {
+test_that("Queries returning non-utility patents well", {
   skip_on_cran()
   only_utility_qry <- with_qfuns(
     and(
@@ -18,20 +18,20 @@ test_that("Queries returning non-utility patents don't page well", {
 
   all_types_res <- search_pv(only_utility_qry, all_pages = TRUE)
   expect_true(
-    nrow(all_types_res$data$patents) != all_types_res$query_results$total_hits
+    nrow(all_types_res$data$patents) == all_types_res$query_results$total_hits
   )
 })
 
-test_that("inventors.inventor and assignees.assignee aren't returned
+test_that("inventors.inventor_id and assignees.assignee_id are returned
           from patent endpoint when specified exactly", {
   skip_on_cran()
   query <- TEST_QUERIES[["patent"]]
   # Should return inventors and assignee list cols
-  wrong_res <- search_pv(
-    query, fields = c("inventors.inventor", "assignees.assignee")
+  results <- search_pv(
+    query, fields = c("inventors.inventor_id", "assignees.assignee_id")
   )
-  # ...But they don't
-  expect_equal(colnames(wrong_res$data$patents), "patent_id")
+
+  expect_true(all(colnames(results$data$patents) %in% c("patent_id", "assignees", "inventors")))
 
   # Good result when not specifying nested-level fields explicitly
   good_res <- search_pv(
@@ -41,6 +41,7 @@ test_that("inventors.inventor and assignees.assignee aren't returned
   expect_no_error(good_res$data$patents$assignees[[1]]$assignee)
 })
 
+# this seems to have been fixed- empty lists are returned
 # See bug report in PatentsView API repo: PVS-1125
 test_that("Fields that are all NULL don't return at all", {
   skip_on_cran()
@@ -59,12 +60,12 @@ test_that("Fields that are all NULL don't return at all", {
 
   result1 <- search_pv(query, fields = fields, sort = sort, size = 1000)
   no_cpc_at_issue <- colnames(result1$data$patents)
-  expect_false("cpc_at_issue" %in% no_cpc_at_issue)
+  expect_true("cpc_at_issue" %in% no_cpc_at_issue)
 
   result2 <- search_pv(query, fields = fields, sort = sort, size = 10)
-  two_field_result <- colnames(result2$data$patents)
+  three_field_result <- colnames(result2$data$patents)
   # only returns: c("patent_id", "uspc_at_issue")
-  expect_true(length(two_field_result) == 2)
+  expect_true(length(three_field_result) == 3)
 })
 
 # Reported to the API team PVS-1147
@@ -173,6 +174,7 @@ test_that("We can't sort by all fields", {
   expect_lt(length(results), length(sorts_to_try))
 })
 
+# this is fixed, w/d patents only come back if option exclude_withdrawn is false
 
 # PVS-1342 Underlying data issues
 # There are ~8,000 patents that were in the bulk XML files that PatentsView is
@@ -191,7 +193,7 @@ test_that("Withdrawn patents are still present in the database", {
 
   query <- qry_funs$eq("patent_id" = withdrawn)
   results <- search_pv(query, method = "POST")
-  expect_equal(results$query_results$total_hits, length(withdrawn))
+  expect_equal(results$query_results$total_hits, 0)
 })
 
 # PVS-1342 Underlying data issues
@@ -211,4 +213,16 @@ test_that("Missing patents are still missing", {
   results <- search_pv(query, method = "POST")
 
   expect_equal(results$query_results$total_hits, 0)
+})
+
+# PVS-1884 The publication endpoint's rule_47_flag is always false
+test_that("Querying the publication endpoint on rule_47_flag isn't meaningful", {
+  skip_on_cran()
+
+  res <- search_pv(qry_funs$eq(rule_47_flag = TRUE), endpoint = "publication")
+  expect_equal(res$query_results$total_hits, 0)
+
+  res <- search_pv(qry_funs$eq(rule_47_flag = FALSE), endpoint = "publication")
+  expect_gt(res$query_results$total_hits, 8000000)
+
 })
