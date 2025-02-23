@@ -157,10 +157,6 @@ request_apply <- function(result, method, query, base_url, arg_list, api_key, ..
     if (is.null(last_row)) return(NULL)
 
     last_values <- x$data[[1]][last_row, sort_cols, drop = FALSE]
-
-    if ("patent_id" %in% colnames(last_values)) {
-      last_values$patent_id <- pad_patent_id(last_values$patent_id)
-    }
     last_values <- unlist(last_values[1, ], use.names = FALSE)
 
     arg_list$opts$after <<- last_values
