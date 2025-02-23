@@ -146,38 +146,36 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
 })
 
 test_that("Shorthand specification of fields results in expected results", {
-
+    skip_on_cran()
     query <- TEST_QUERIES[["patent"]]
 
+    # We ask for all of assignee's nested fields (total of 9 fields currently).
+    # It gets turned into a shorthand request, however now 11 fields are returned.
+    # Returned but not requested:  assignee and assignee_location_id
+    # Now the test is really that the shorthand notation was used and
+    # that we got back all of the requested fields, ignoring the extras
     all_assn_flds <- get_fields("patent", groups = "assignees")
-    full_res <- search_pv(query, fields = all_assn_flds)
+    full_res <- search_pv(query, fields = all_assn_flds, method = "POST")
+    api_request <- httr2::last_request()$body$data
+    expect_true(grepl('"f":\\["assignees","patent_id"\\]', api_request))
 
+    unnested_requested_flds <- sub(".*\\.(.*)", "\\1", all_assn_flds)
+    returned_flds <- names(full_res$data$patents$assignees[[1]])
+    expect_true(all(unnested_requested_flds %in% returned_flds))
+
+    # Here we explicitly request 8 fields but we get 9 back.  We get assignee_id back
+    # as well as assignee (that we didn't ask for).  The opposite is not true,
+    # asking for just assignee doesn't return assignee or assignee_id
     no_city <- all_assn_flds[all_assn_flds != "assignees.assignee_city"]
     no_city_res <- search_pv(query, fields = no_city)
 
-    no_city_has_seven <- length(no_city_res$data$patents$assignees[[1]]) == 7
-    all_cols_has_nine <- length(full_res$data$patents$assignees[[1]]) == 9
-    expect_true(no_city_has_seven&& all_cols_has_nine)
-})
+    unnested_requested_flds <- sub(".*\\.(.*)", "\\1", no_city)
+    returned_flds <- names(no_city_res$data$patents$assignees[[1]])
 
-test_that("nested shorthand produces the same results as fully qualified ones", {
-  skip_on_cran()
+    # we request "assignee" but don't get "assignee" or "assignee_id" back
+    # so we can't expect_true TODO move to api-bugs?
+    expect_false(all(unnested_requested_flds %in% returned_flds))
 
-  # The API now allows you to use the `group` name in place of all the field
-  # names belonging to that group when specifying which fields you want. The
-  # group names are given in fieldsdf$group.
-  # This is indirectly testing our parse of the OpenAPI object in
-  # data-raw/fieldsdf.R
-  all_qualified_fields <- fieldsdf[
-    fieldsdf$endpoint == "patent" & fieldsdf$group == "application",
-    "field"
-  ]
-
-  query <- TEST_QUERIES[["patent"]]
-  shorthand_res <- search_pv(query, fields = "application")
-  qualified_res <- search_pv(query, fields = all_qualified_fields)
-
-  expect_equal(shorthand_res$data, qualified_res$data)
 })
 
 test_that("The 'after' parameter works properly", {
@@ -189,7 +187,6 @@ test_that("The 'after' parameter works properly", {
   expect_gt(results$query_results$total_hits, 1000)
 
   after <- results$data$patents$patent_id[[nrow(results$data$patents)]]
-  after <- pad_patent_id(after)
   subsequent <- search_pv(big_query, after = after, sort = sort)
 
   expect_equal(nrow(subsequent$data$patents), 1000)

@@ -38,8 +38,8 @@ test_that("errors are thrown on invalid queries", {
   )
 
   expect_error(
-    search_pv(qry_funs$eq("rule_47_flag" = TRUE), endpoint = "publication"),
-    "^.* must be of type character$"
+    search_pv(qry_funs$eq("rule_47_flag" = "TRUE"), endpoint = "publication"),
+    "^.* must be a boolean$"
   )
 
   expect_error(
