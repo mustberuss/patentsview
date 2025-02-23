@@ -1,7 +1,7 @@
 EPS <- get_endpoints()
 
 GENERALLY_BAD_EPS <- c(
-  "claim", "draw_desc_text", "cpc_subclass",
+  "cpc_subclass", "publication",
   "location", "pg_claim", "uspc_subclass", "uspc_mainclass",
   "wipo"
 )
