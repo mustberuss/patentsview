@@ -1,6 +1,7 @@
 library(tidyverse)
 library(devtools)
 library(rapiclient)
+library(dplyr)
 
 load_all()
 
