@@ -22,7 +22,8 @@ Imports:
     httr2,
     lifecycle,
     jsonlite,
-    utils
+    utils,
+    stats
 Suggests:
     knitr,
     rmarkdown,
