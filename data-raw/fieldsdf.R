@@ -87,6 +87,16 @@ extract_relevant_schema_info <- function(schema_elements) {
 fieldsdf <- extract_relevant_schema_info(entities)
 row.names(fieldsdf) <- NULL
 
+# API weirdness:
+# We need to append "_id" to fields below to allow them to be queried.
+
+add_id_to <- c("assignees.assignee", "inventors.inventor")
+
+fieldsdf <- fieldsdf %>%
+  mutate(
+    field = if_else(field %in% add_id_to, paste0(field, "_id"), field)
+  )
+
 write.csv(fieldsdf, "data-raw/fieldsdf.csv", row.names = FALSE)
 
 use_data(fieldsdf, internal = FALSE, overwrite = TRUE)
