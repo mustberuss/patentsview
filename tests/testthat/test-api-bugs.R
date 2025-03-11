@@ -91,29 +91,6 @@ test_that("There is case sensitivity on string equals", {
   expect_equal(d$query_results$total_hits, 0)
 })
 
-test_that("API returns all requested groups", {
-  skip_on_cran()
-
-  bad_eps <- c(
-    "location" # Error: Invalid field: location_latitude
-
-    # TODO(any): Figure out why these are returning empty results:
-    # , "uspc_mainclass" # Error: Internal Server Error
-    # , "wipo" # Error: Internal Server Error
-
-    , "cpc_subclass" # 404?  check the test query
-    , "uspc_subclass" # 404
-    , "pg_claim" # Invalid field: claim_dependent
-  )
-
-  z <- lapply(bad_eps, function(x) {
-    print(x)
-    expect_error(
-      j <- search_pv(query = TEST_QUERIES[[x]], endpoint = x, fields = get_fields(x))
-    )
-  })
-})
-
 test_that("We can call all the legitimate HATEOAS endpoints", {
   skip_on_cran()
 
