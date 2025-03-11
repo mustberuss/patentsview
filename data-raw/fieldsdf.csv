@@ -33,7 +33,6 @@
 "cpc_group","cpc_subclass_id","string","cpc_groups"
 "cpc_subclass","cpc_class","string","cpc_subclasses"
 "cpc_subclass","cpc_class_id","string","cpc_subclasses"
-"cpc_subclass","cpc_subclass","string","cpc_subclasses"
 "cpc_subclass","cpc_subclass_first_seen_date","date","cpc_subclasses"
 "cpc_subclass","cpc_subclass_id","string","cpc_subclasses"
 "cpc_subclass","cpc_subclass_last_seen_date","date","cpc_subclasses"
