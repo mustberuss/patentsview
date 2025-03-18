@@ -18,6 +18,7 @@ search_pv(
   sort = NULL,
   method = "GET",
   error_browser = lifecycle::deprecated(),
+  exclude_withdrawn = NULL,
   api_key = Sys.getenv("PATENTSVIEW_API_KEY"),
   ...
 )
@@ -96,7 +97,11 @@ You must include any fields that you wish to sort by in \code{fields}.}
 Possible values include "GET" or "POST". Use the POST method when
 your query is very long (say, over 2,000 characters in length).}
 
-\item{error_browser}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
+\item{error_browser}{`r lifecycle::badge("deprecated"}
+
+\item{exclude_withdrawn}{only used by the patent endpoint, if FALSE withdrawn patents
+in the database can be returned by a query.  The API defaults this to TRUE, not
+returning withdrawn patents in the database that met the query parameter.}
 
 \item{api_key}{API key, it defaults to Sys.getenv("PATENTSVIEW_API_KEY"). Request a key
 \href{https://patentsview-support.atlassian.net/servicedesk/customer/portals}{here}.}
@@ -165,6 +170,18 @@ search_pv(
 search_pv(
   query = qry_funs$eq(patent_id = "11530080"),
   fields = "application"
+)
+
+search_pv(
+  query = qry_funs$eq(patent_id = "9494444"),  # a withdrawn patent in the pview dbs
+  fields = c("patent_id", "patent_date", "withdrawn"),
+  exclude_withdrawn = FALSE
+)
+
+search_pv(
+  query = qry_funs$eq(withdrawn = TRUE),
+  fields = c("patent_id", "patent_date", "withdrawn"),
+  exclude_withdrawn = FALSE
 )
 }
 

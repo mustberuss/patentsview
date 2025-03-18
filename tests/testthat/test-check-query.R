@@ -43,8 +43,8 @@ test_that("errors are thrown on invalid queries", {
   )
 
   expect_error(
-    search_pv(qry_funs$gt("location_latitude" = "TRUE"), endpoint = "location"),
-    "^.* must be a number$"
+    search_pv(qry_funs$eq("patent_id" = "10000000"), exclude_withdrawn = "FALSE"),
+    "^.* must be NULL or a boolean$"
   )
 
   expect_error(
@@ -61,6 +61,11 @@ test_that("errors are thrown on invalid queries", {
   expect_error(
     search_pv(bogus_operator_query),
     "is not a valid operator or not a valid field"
+  )
+
+  expect_error(
+    search_pv(qry_funs$eq("application.rule_47_flag" = "TRUE")),
+    "^.* must be a boolean$"
   )
 })
 

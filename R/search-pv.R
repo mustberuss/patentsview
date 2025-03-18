@@ -36,12 +36,14 @@ tojson_2 <- function(x, ...) {
 }
 
 #' @noRd
-to_arglist <- function(fields, size, sort, after) {
+to_arglist <- function(fields, size, sort, after, exclude_withdrawn) {
   opts <- list(size = size)
   if (!is.null(after)) {
     opts$after <- after
   }
-
+  if (!is.null(exclude_withdrawn)) {
+    opts$exclude_withdrawn <- exclude_withdrawn
+  }
   out <- list(
     fields = fields,
     opts = opts
@@ -232,7 +234,10 @@ request_apply <- function(result, method, query, base_url, arg_list, api_key, ..
 #' @param method The HTTP method that you want to use to send the request.
 #'  Possible values include "GET" or "POST". Use the POST method when
 #'  your query is very long (say, over 2,000 characters in length).
-#' @param error_browser `r lifecycle::badge("deprecated")`
+#' @param error_browser `r lifecycle::badge("deprecated"
+#' @param exclude_withdrawn only used by the patent endpoint, if FALSE withdrawn patents
+#'  in the database can be returned by a query.  The API defaults this to TRUE, not
+#'  returning withdrawn patents in the database that met the query parameter.
 #' @param api_key API key, it defaults to Sys.getenv("PATENTSVIEW_API_KEY"). Request a key
 #' \href{https://patentsview-support.atlassian.net/servicedesk/customer/portals}{here}.
 #' @param ... Curl options passed along to httr2's \code{\link[httr2]{req_options}}
@@ -295,6 +300,18 @@ request_apply <- function(result, method, query, base_url, arg_list, api_key, ..
 #'   query = qry_funs$eq(patent_id = "11530080"),
 #'   fields = "application"
 #' )
+#'
+#' search_pv(
+#'   query = qry_funs$eq(patent_id = "9494444"),  # a withdrawn patent in the pview dbs
+#'   fields = c("patent_id", "patent_date", "withdrawn"),
+#'   exclude_withdrawn = FALSE
+#' )
+#'
+#' search_pv(
+#'   query = qry_funs$eq(withdrawn = TRUE),
+#'   fields = c("patent_id", "patent_date", "withdrawn"),
+#'   exclude_withdrawn = FALSE
+#' )
 #' }
 #'
 #' @export
@@ -311,9 +328,10 @@ search_pv <- function(query,
                       sort = NULL,
                       method = "GET",
                       error_browser = lifecycle::deprecated(),
+                      exclude_withdrawn = NULL,
                       api_key = Sys.getenv("PATENTSVIEW_API_KEY"),
                       ...) {
-  validate_args(api_key, fields, endpoint, method, sort, after, size, all_pages)
+  validate_args(api_key, fields, endpoint, method, sort, after, size, all_pages, exclude_withdrawn)
   deprecate_warn_all(error_browser, subent_cnts, mtchd_subent_only, page, per_page)
 
   if (is.list(query)) {
@@ -327,7 +345,7 @@ search_pv <- function(query,
   fields <- unique(c(pk, fields))
   abbreviated_fields <- sub_grp_names_for_fields(endpoint, fields)
 
-  arg_list <- to_arglist(abbreviated_fields, size, sort, after)
+  arg_list <- to_arglist(abbreviated_fields, size, sort, after, exclude_withdrawn)
 
   base_url <- get_base(endpoint)
 

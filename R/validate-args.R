@@ -9,7 +9,7 @@ validate_endpoint <- function(endpoint) {
 
 #' @noRd
 validate_args <- function(api_key, fields, endpoint, method,
-                          sort, after, size, all_pages) {
+                          sort, after, size, all_pages, exclude_withdrawn) {
   asrt(
     !identical(api_key, ""),
     "The new version of the API requires an API key"
@@ -58,6 +58,11 @@ validate_args <- function(api_key, fields, endpoint, method,
   asrt(
     any(is.null(after), !all_pages),
     "'after' cannot be set when all_pages = TRUE"
+  )
+
+  asrt(
+    !all(!is.null(exclude_withdrawn), !is.logical(exclude_withdrawn)),
+    "'exclude_withdrawn' must be NULL or a boolean"
   )
 }
 
