@@ -102,8 +102,8 @@ just displayed)
 #> [1] "1379 1976-01-06 Tuesday"
 #> [1] "1257 1976-01-13 Tuesday"
 #> [1] "1383 1976-01-20 Tuesday"
-#> [1] "1 1976-01-25 Sunday"
 #> [1] "1332 1976-01-27 Tuesday"
+#> [1] "1 1976-01-25 Sunday"
    sum(unlist(counts))
 #> [1] 5352
 ```
