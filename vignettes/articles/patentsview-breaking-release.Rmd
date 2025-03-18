@@ -105,7 +105,7 @@ httr2::last_response() |> httr2::resp_body_json()
    - `retrieve_linked_data()` to retrieve data from a HATEOAS link the API sent back, retrying if throttled
 
 7. An existing function was removed.  With the API changes, there is less of a need for
-`cast_pv_data()` which was previously part of the R package.  The API now returns most fields as appropriate
+cast_pv_data() which was previously part of the R package.  The API now returns most fields as appropriate
 types, boolean, numeric etc., instead of always returning strings.
 
 ## Online Documentation
