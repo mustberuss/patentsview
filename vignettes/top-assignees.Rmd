@@ -186,9 +186,8 @@ datatable(
   ),
   options = list(pageLength = 10)
 )
+#> Error in loadNamespace(name): there is no package called 'webshot'
 ```
-
-![](figure/topdatatable-1.png)
 
 <br>
 
@@ -240,9 +239,8 @@ hchart(
   hc_yAxis(title = list(text = "Patents")) %>%
   hc_title(text = "Top five assignees in 'databases'") %>%
   hc_subtitle(text = "Yearly patent applications over time")
+#> Error in loadNamespace(name): there is no package called 'webshot'
 ```
-
-![](figure/topchart-1.png)
 
 It's hard to see any clear trends in this graph. What is clear is that the top assignees have all been patenting in the field for many years.
 
@@ -308,9 +306,8 @@ hchart(
     y = c("{point.db_pats:.0f}","{point.mean_perc:.2f}", "{point.frac_db_pats:.3f}")
   )) %>%
   hc_legend(enabled = FALSE)
+#> Error in loadNamespace(name): there is no package called 'webshot'
 ```
-
-![](figure/tophchart-1.png)
 
 <br>
 

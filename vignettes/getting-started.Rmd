@@ -335,26 +335,30 @@ res$data
 
 ``` r
 library(tidyr)
+#> 
+#> Attaching package: 'tidyr'
+#> The following object is masked from 'package:magrittr':
+#> 
+#>     extract
 
 # Get assignee data:
 res$data$patents %>% 
   unnest(assignees) %>%
   head()
 #> # A tibble: 6 × 16
-#>   patent_id patent_title paten…¹ appli…² assig…³ assig…⁴ assig…⁵ assig…⁶ assig…⁷
-#>   <chr>     <chr>        <chr>   <list>  <chr>   <chr>   <chr>   <chr>   <chr>  
-#> 1 10045399  System and … 2018-0… <df>    https:… f0c24f… 2       <NA>    <NA>   
-#> 2 10045452  Electronic … 2018-0… <df>    https:… 86c4fe… 2       <NA>    <NA>   
-#> 3 10045764  Minimally i… 2018-0… <df>    https:… 90fc55… 2       <NA>    <NA>   
-#> 4 10045807  Bone positi… 2018-0… <df>    https:… f39520… 2       <NA>    <NA>   
-#> 5 10045844  Post-implan… 2018-0… <df>    https:… e9dcc0… 2       <NA>    <NA>   
-#> 6 10045989  Quinazoline… 2018-0… <df>    https:… 520ef9… 2       <NA>    <NA>   
-#> # … with 7 more variables: assignee_organization <chr>,
-#> #   assignee_location_id <chr>, assignee_city <chr>, assignee_state <chr>,
-#> #   assignee_country <chr>, assignee_sequence <int>,
-#> #   gov_interest_organizations <list>, and abbreviated variable names
-#> #   ¹​patent_date, ²​application, ³​assignee, ⁴​assignee_id, ⁵​assignee_type,
-#> #   ⁶​assignee_individual_name_first, ⁷​assignee_individual_name_last
+#>   patent_id patent_title            patent_date application assignee assignee_id
+#>   <chr>     <chr>                   <chr>       <list>      <chr>    <chr>      
+#> 1 10045399  System and method for … 2018-08-07  <df>        https:/… f0c24f2e-5…
+#> 2 10045452  Electronic device stru… 2018-08-07  <df>        https:/… 86c4fec0-2…
+#> 3 10045764  Minimally invasive imp… 2018-08-14  <df>        https:/… 90fc558b-6…
+#> 4 10045807  Bone positioning and p… 2018-08-14  <df>        https:/… f3952062-5…
+#> 5 10045844  Post-implant accommoda… 2018-08-14  <df>        https:/… e9dcc023-d…
+#> 6 10045989  Quinazoline derivative… 2018-08-14  <df>        https:/… 520ef995-7…
+#> # ℹ 10 more variables: assignee_type <chr>,
+#> #   assignee_individual_name_first <chr>, assignee_individual_name_last <chr>,
+#> #   assignee_organization <chr>, assignee_location_id <chr>,
+#> #   assignee_city <chr>, assignee_state <chr>, assignee_country <chr>,
+#> #   assignee_sequence <int>, gov_interest_organizations <list>
 ```
 
 2. **Use patentsview::unnest_pv_data.** `unnest_pv_data()` creates a series of data frames (one for each entity level) that are like tables in a relational database. You provide it with the data returned by `search_pv()` and a field that can act as a unique identifier for the primary entities:

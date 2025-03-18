@@ -109,9 +109,8 @@ visNetwork(
 ) %>%
   visEdges(arrows = list(to = list(enabled = TRUE))) %>%
   visIgraphLayout()
+#> Error in loadNamespace(name): there is no package called 'webshot'
 ```
-
-![](figure/citationvis-1.png)
 
 It looks like several of the patents cite patent number 6,499,026, perhaps indicating that this patent contains technology that is foundational to the field. However, when we hover over the nodes we see that several of the patents have the same title. Clicking on the titles brings us to their full text on Google Patents, which confirms that many of these PCA patents belong to the same patent family.[^1]  Let's choose one of the patents in each family to act as the family's representative. This will reduce the size of the subsequent network, while hopefully retaining its overall structure.
 
@@ -230,9 +229,8 @@ visNetwork(
   visEdges(color = list(color = "#343434")) %>%
   visOptions(highlightNearest = list(enabled = TRUE, degree = 1)) %>%
   visIgraphLayout()
+#> Error in loadNamespace(name): there is no package called 'webshot'
 ```
-
-![](figure/citationvis2-1.png)
 
 
 [^1]: A patent family is a group of related patents, usually all authored by the same inventor and relating to the same technology.
