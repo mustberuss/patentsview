@@ -98,17 +98,10 @@ test_that("API returns all requested groups", {
 
   # TODO: remove the trickery to get this test to pass, once the API is fixed
   bad_eps <- c(
-    "cpc_subclasses",
-    "location" # Error: Invalid field: location_latitude
+    "cpc_subclasses"
     , "uspc_subclasse" # Error: Internal Server Error
-    , "uspc_mainclass" # Error: Internal Server Error
-    , "wipo" # Error: Internal Server Error
     , "claim" # Error: Invalid field: claim_dependent
     , "draw_desc_text" # Error: Invalid field: description_sequence
-    , "cpc_subclass" # 404?  check the test query
-    , "uspc_subclass" # 404
-    , "pg_claim" # Invalid field: claim_dependent
-    , "publication"
   )
 
   mismatched_returns <- c(
@@ -156,27 +149,6 @@ test_that("API returns all requested groups", {
 
 eps <- (get_endpoints())
 
-test_that("We can call all the legitimate HATEOAS endpoints", {
-  skip_on_cran()
-
-  # these currently throw Error: Internal Server Error
-  broken_single_item_queries <- c(
-    "cpc_subclass/A01B/",
-    "uspc_mainclass/30/",
-    "uspc_subclass/30:100/",
-    "wipo/1/"
-  )
-
-
-  # TODO: remove when this is fixed
-  # we'll know the api is fixed when this test fails
-  dev_null <- lapply(broken_single_item_queries, function(q) {
-    expect_error(
-      j <- retrieve_linked_data(add_base_url(q))
-    )
-  })
-})
-
 test_that("individual fields are still broken", {
   skip_on_cran()
 
@@ -201,49 +173,6 @@ test_that("individual fields are still broken", {
     )
   })
 })
-
-test_that("we can't sort by all fields", {
-  skip_on_cran()
-
-  # PVS-1377
-  sorts_to_try <- c(
-    assignee = "assignee_lastknown_city",
-    cpc_class = "cpc_class_title",
-    cpc_group = "cpc_group_title",
-    cpc_subclass = "cpc_subclass",
-    g_brf_sum_text = "summary_text",
-    g_claim = "claim_text",
-    g_detail_desc_text = "description_text",
-    g_draw_desc_text = "draw_desc_text",
-    inventor = "inventor_lastknown_city",
-    patent = "patent_id" # good pair to show that the code works
-  )
-
-  results <- lapply(names(sorts_to_try), function(endpoint) {
-    field <- sorts_to_try[[endpoint]]
-    print(paste(endpoint, field))
-
-    tryCatch(
-      {
-        sort <- c("asc")
-        names(sort) <- field
-        j <- search_pv(
-          query = TEST_QUERIES[[endpoint]],
-          endpoint = endpoint, sort = sort, method = "GET"
-        )
-        NA
-      },
-      error = function(e) {
-        paste(endpoint, field)
-      }
-    )
-  })
-
-  results <- results[!is.na(results)]
-  expect_gt(length(results), 0)
-  expect_lt(length(results), length(sorts_to_try)) # assert that at least one sort worked
-})
-
 
 test_that("withdrawn patents are suppressed by default", {
   skip_on_cran()
@@ -336,12 +265,6 @@ test_that("endpoints are still broken", {
   broken_endpoints <- c(
     "claim" # Error: Invalid field: claim_dependent
     , "draw_desc_text" # Error: Invalid field: description_sequence
-    , "cpc_subclass" # 404?  check the test query
-    , "location" # Error: Invalid field: location_latitude
-    , "pg_claim" # Invalid field: claim_dependent
-    , "uspc_subclass" # Error: Internal Server Error
-    , "uspc_mainclass" # Error: Internal Server Error
-    , "wipo" # Error: Internal Server Error
   )
 
   dev_null <- lapply(broken_endpoints, function(x) {
