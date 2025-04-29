@@ -47,12 +47,3 @@ navbar:
   structure:
     left:  [intro, queries, examples, applications, news]
     right: [reference, search, github, lightswitch]
-
-extra_packages:
-  - visNetwork
-  - igraph
-  - highcharter
-  - dplyr
-  - DT
-  - magrittr
-  - stringr
