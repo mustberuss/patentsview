@@ -28,5 +28,6 @@ Suggests:
     rmarkdown,
     testthat,
     tidyr
+Config/Needs/website: visNetwork, igraph, highcharter, dplyr, DT, magrittr, stringr
 RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
