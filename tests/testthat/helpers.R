@@ -1,9 +1,7 @@
 EPS <- get_endpoints()
 
 GENERALLY_BAD_EPS <- c(
-  "cpc_subclass", "publication",
-  "location", "pg_claim", "uspc_subclass", "uspc_mainclass",
-  "wipo"
+   "pg_draw_desc_text"
 )
 
 # Queries (one for each endpoint) that are used during testing. We
@@ -31,7 +29,7 @@ TEST_QUERIES <- c(
   "patent/us_patent_citation" = '{"patent_id":"5116621"}',
   "pg_brf_sum_text" = '{"document_number": 20240324479}',
   "pg_claim" = '{"document_number": 20230000001}',
-  "pg_detail_desc_text" = '{"document_number": 20230000001}',
+  "pg_detail_desc_text" = '{"document_number": 20230003697}',
   "pg_draw_desc_text" = '{"document_number": 20230000001}',
   "publication" = '{"document_number": 20010000002}',
   "publication/rel_app_text" = '{"document_number": 20010000001}',

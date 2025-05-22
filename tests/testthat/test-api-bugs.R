@@ -196,10 +196,10 @@ test_that("Missing patents are still missing", {
 test_that("Querying the publication endpoint on rule_47_flag isn't meaningful", {
   skip_on_cran()
 
-  res <- search_pv(qry_funs$eq(rule_47_flag = TRUE), endpoint = "publication")
+  res <- search_pv(qry_funs$eq(rule_47_flag = FALSE), endpoint = "publication")
   expect_equal(res$query_results$total_hits, 0)
 
-  res <- search_pv(qry_funs$eq(rule_47_flag = FALSE), endpoint = "publication")
+  res <- search_pv(qry_funs$eq(rule_47_flag = TRUE), endpoint = "publication")
   expect_gt(res$query_results$total_hits, 8000000)
 
 })
