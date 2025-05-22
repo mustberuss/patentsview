@@ -8,17 +8,10 @@ endpoints <- get_endpoints()
 test_that("API returns expected df names for all endpoints", {
   skip_on_cran()
 
-  broken_endpoints <- c(
-    "cpc_subclass",
-    "uspc_subclass",
-    "uspc_mainclass",
-    "wipo"
-  )
-
   # these both return rel_app_texts
   overloaded_entities <- c("patent/rel_app_text", "publication/rel_app_text")
 
-  goodendpoints <- endpoints[!endpoints %in% c(broken_endpoints, overloaded_entities)]
+  goodendpoints <- endpoints[!endpoints %in% c(GENERALLY_BAD_EPS, overloaded_entities)]
 
   df_names <- vapply(goodendpoints, function(x) {
     print(x)
@@ -67,15 +60,8 @@ test_that("You can download up to 9,000+ records", {
 test_that("search_pv can pull all fields for all endpoints", {
   skip_on_cran()
 
-  troubled_endpoints <- c(
-    "cpc_subclass", "location",
-    "uspc_subclass", "uspc_mainclass", "wipo", "claim", "draw_desc_text",
-    "pg_claim"  # Invalid field: claim_dependent
-    ,"publication" # 500 two flag fields in granted_pregrant_crosswalk
-  )
-
   # We should be able to get all fields from the non troubled endpoints
-  dev_null <- lapply(endpoints[!(endpoints %in% troubled_endpoints)], function(x) {
+  dev_null <- lapply(endpoints[!(endpoints %in% GENERALLY_BAD_EPS)], function(x) {
     print(x)
     search_pv(
       query = TEST_QUERIES[[x]],
@@ -153,13 +139,9 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
 
   # these currently throw Error: Internal Server Error
   broken_single_item_queries <- c(
-    "cpc_subclass/A01B/",
-    "uspc_mainclass/30/",
-    "uspc_subclass/30:100/",
-    "wipo/1/"
   )
 
-  single_item_queries <- single_item_queries[!single_item_queries %in% broken_single_item_queries]
+  single_item_queries <- single_item_queries[!single_item_queries %in% GENERALLY_BAD_EPS]
 
   dev_null <- lapply(single_item_queries, function(q) {
     print(q)
@@ -209,7 +191,7 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
 test_that("posts and gets return the same data", {
   skip_on_cran()
 
-  prior_bad_eps <- c(
+  prior_GENERALLY_BAD_EPS <- c(
     "cpc_subclass"
     #  ,"location" # Error: Invalid field: location_latitude
     , "uspc_subclass" # Error: Internal Server Error
@@ -223,15 +205,7 @@ test_that("posts and gets return the same data", {
     , "ipc"
   )
 
-  bad_eps <- c(
-    "ipc"
-    , "cpc_subclass"
-    , "uspc_mainclass"
-    , "uspc_subclass"
-    , "wipo"
-  )
-
-  good_eps <- endpoints[!endpoints %in% bad_eps]
+  good_eps <- endpoints[!endpoints %in% GENERALLY_BAD_EPS]
 
   z <- lapply(good_eps, function(endpoint) {
     print(endpoint)

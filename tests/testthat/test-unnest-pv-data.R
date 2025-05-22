@@ -6,12 +6,8 @@ test_that("we can unnest all entities", {
   # TODO(any): add back fields = get_fields(x)
   # API throws 500s if some nested fields are included
 
-  bad_endpoints <- c(
-    "claim",
-    "draw_desc_text"
-  )
   overloaded_entities <- c("patent/rel_app_text", "publication/rel_app_text")
-  good_eps <- eps[!eps %in% c(bad_endpoints, overloaded_entities)]
+  good_eps <- eps[!eps %in% c(GENERALLY_BAD_EPS, overloaded_entities)]
 
   z <- lapply(good_eps, function(x) {
     print(x)
@@ -29,7 +25,7 @@ test_that("we can unnest all entities", {
   expect_true(TRUE)
 
   # this will fail when the api is fixed
-  z <- lapply(bad_endpoints, function(x) {
+  z <- lapply(GENERALLY_BAD_EPS, function(x) {
     print(x)
     expect_error(
       pv_out <- search_pv(
@@ -51,7 +47,7 @@ test_that("endpoint's pks match their entity's pks", {
   # so we can't determine the endpoint from the entity like we can
   # for the rest of the entities
   overloaded_entities <- c("patent/rel_app_text", "publication/rel_app_text")
-  good_eps <- eps[!eps %in% overloaded_entities]
+  good_eps <- eps[!eps %in% c(GENERALLY_BAD_EPS, overloaded_entities)]
 
   endpoint_pks <- lapply(good_eps, function(endpoint) {
     print(endpoint)

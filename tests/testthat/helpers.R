@@ -1,3 +1,7 @@
+GENERALLY_BAD_EPS <- c(
+   "pg_draw_desc_text"
+)
+
 # Vector of queries (one for each endpoint) that are used during testing. We
 # need this b/c in the new version of the api, only ten of the endpoints are
 # searchable by patent number (i.e., we can't use a generic patent number
@@ -24,7 +28,7 @@ TEST_QUERIES <- c(
   "patent/us_patent_citation" = '{"patent_id":"5116621"}',
   "pg_brf_sum_text" = '{"document_number": 20240324479}',
   "pg_claim" = '{"document_number": 20230000001}',
-  "pg_detail_desc_text" = '{"document_number": 20230000001}',
+  "pg_detail_desc_text" = '{"document_number": 20230003697}',
   "pg_draw_desc_text" = '{"document_number": 20230000001}',
   "publication" = '{"document_number": 20010000002}',
   "publication/rel_app_text" = '{"document_number": 20010000001}',

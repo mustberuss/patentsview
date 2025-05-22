@@ -67,7 +67,7 @@ test_that("errors are thrown on invalid queries", {
 test_that("a valid nested field can be queried", {
   skip_on_cran()
 
-  results <- search_pv(qry_funs$eq("application.rule_47_flag" = FALSE))
+  results <- search_pv(qry_funs$eq("application.rule_47_flag" = TRUE))
 
   expect_gt(results$query_results$total_hits, 8000000)
 })
