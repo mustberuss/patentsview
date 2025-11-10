@@ -67,15 +67,17 @@ set_sort_param <- function(sort_vec) {
 
 #' @noRd
 get_get_url <- function(query, base_url, arg_list) {
-  j <- paste0(
+  paste0(
     base_url,
     "?q=", utils::URLencode(query, reserved = TRUE),
-    "&f=", tojson_2(arg_list$fields),
-    "&s=", set_sort_param(arg_list$sort),
-    "&o=", tojson_2(arg_list$opts, auto_unbox = TRUE)
+    utils::URLencode(
+      paste0(
+        "&f=", tojson_2(arg_list$fields),
+        "&s=", set_sort_param(arg_list$sort),
+        "&o=", tojson_2(arg_list$opts, auto_unbox = TRUE)
+      )
+    )
   )
-
-  utils::URLencode(j)
 }
 
 #' @noRd
