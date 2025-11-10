@@ -77,7 +77,7 @@ jobs:
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: rcmdcheck # Ensure rcmdcheck is installed
+          extra-packages: rcmdcheck devtools # Ensure this packages are installed- failing in ubuntu
           needs: check # If your package has dependencies listed in DESCRIPTION
 
       - name: Check
