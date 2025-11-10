@@ -75,7 +75,7 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
       - name: Install dependencies
-      - uses: r-lib/actions/setup-r-dependencies@v2
+        uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: rcmdcheck # Ensure rcmdcheck is installed
           needs: check # If your package has dependencies listed in DESCRIPTION
