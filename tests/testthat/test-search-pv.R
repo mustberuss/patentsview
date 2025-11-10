@@ -23,9 +23,16 @@ test_that("Iteration through pages works insofar as we can tell", {
   query <- with_qfuns(
     and(
       gte(patent_date = "2021-12-13"),
-      lte(patent_date = "2021-12-30")
+      lte(patent_date = "2021-12-30"),
+
+      # new API bug: returned fields not consistent
+      # when paging hits non utility patents
+      # Error in rbind(deparse.level, ...) :
+      # numbers of columns of arguments do not match
+      eq(patent_type = "utility")
     )
   )
+
   out <- search_pv(query, all_pages = TRUE)
   expect_gt(out$query_results$total_hits, 9000)
 })
@@ -137,10 +144,19 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
     fields = c("inventors", "assignees")
   )
 
-  assignee <- retrieve_linked_data(res$data$patents$assignees[[1]]$assignee)
+  # new api bug: the hateoas links are coming back as search.patentsview.org:80
+  bad_url <- res$data$patents$assignees[[1]]$assignee
+  expect_true(grepl(':80', bad_url))  # fails on API fix
+  good_url <- sub(':80', '', bad_url)
+
+  assignee <- retrieve_linked_data(good_url)
   expect_true(assignee$query_results$total_hits == 1)
 
-  inventor <- retrieve_linked_data(res$data$patents$inventors[[1]]$inventor)
+  bad_url <- res$data$patents$inventors[[1]]$inventor
+  expect_true(grepl(':80', bad_url))  # fails on API fix
+  good_url <- sub(':80', '', bad_url)
+
+  inventor <- retrieve_linked_data(good_url)
   expect_true(inventor$query_results$total_hits == 1)
 
 })
@@ -197,15 +213,21 @@ test_that("Throttled requests are automatically retried", {
   print("Starting throttling test")
   skip_on_cran()
 
-  res <- search_pv('{"_gte":{"patent_date":"2007-01-04"}}', size = 50)
+  # new API behavior:
+  # need to specify fields now or patent_id assignees
+  # cpc_current inventors wipo are returned 
+  # and bind fails Error in rbind(deparse.level, ...) :
+  # numbers of columns of arguments do not match
+  # doesnt seem to be honoring the requested fields?
+  fields <- c("patent_id", "patent_title", "patent_date")
+
+  res <- search_pv('{"_gte":{"patent_date":"2007-01-04"}}', fields = fields, size = 60)
   built_batch <- res$data$patents$patent_id
 
   built_singly <- lapply(built_batch, function(patent_id) {
-    one_res <- search_pv(qry_funs$eq(patent_id = patent_id))
-    one_res$data[[1]]
+    one_res <- search_pv(qry_funs$eq(patent_id = patent_id), fields = fields)
+    one_res$data[[1]]$patent_id
   })
-  built_singly <- do.call(rbind, built_singly)
-  built_singly <- built_singly$patent_id
-
+  built_singly <- unlist(built_singly)
   expect_equal(built_batch, built_singly)
 })

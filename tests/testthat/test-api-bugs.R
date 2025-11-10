@@ -16,10 +16,16 @@ test_that("Queries returning non-utility patents well", {
   # Drop eq(patent_type = "utility") from query:
   only_utility_qry[[1]][3] <- NULL
 
-  all_types_res <- search_pv(only_utility_qry, all_pages = TRUE)
-  expect_true(
-    nrow(all_types_res$data$patents) == all_types_res$query_results$total_hits
-  )
+  # New API bug: this query fails now, the same number of
+  # columns aren't returned and the after of non utility patents
+  # seems broken- like it wants them padded?
+  expect_error({
+    all_types_res <- search_pv(only_utility_qry, all_pages = TRUE)
+
+    expect_true(
+      nrow(all_types_res$data$patents) == all_types_res$query_results$total_hits
+    )
+  })
 })
 
 test_that("inventors.inventor_id and assignees.assignee_id are returned
@@ -31,7 +37,10 @@ test_that("inventors.inventor_id and assignees.assignee_id are returned
     query, fields = c("inventors.inventor_id", "assignees.assignee_id")
   )
 
-  expect_true(all(colnames(results$data$patents) %in% c("patent_id", "assignees", "inventors")))
+  # now the API returns more data than we asked for so we've 
+  # flipped the %in% so we test that we got back at least 
+  # what we asked for
+  expect_true(all(c("patent_id", "assignees", "inventors")  %in% colnames(results$data$patents)))
 
   # Good result when not specifying nested-level fields explicitly
   good_res <- search_pv(
@@ -41,32 +50,6 @@ test_that("inventors.inventor_id and assignees.assignee_id are returned
   expect_no_error(good_res$data$patents$assignees[[1]]$assignee)
 })
 
-# this seems to have been fixed- empty lists are returned
-# See bug report in PatentsView API repo: PVS-1125
-test_that("Fields that are all NULL don't return at all", {
-  skip_on_cran()
-
-  query <- with_qfuns(
-    and(
-      gte(application.filing_date = "2000-01-01"),
-      eq(cpc_current.cpc_subclass_id = "A01D")
-    )
-  )
-  sort <- c("patent_id" = "asc")
-  fields <- c(
-    "patent_id", "applicants", "cpc_at_issue",
-    "gov_interest_contract_award_numbers", "uspc_at_issue"
-  )
-
-  result1 <- search_pv(query, fields = fields, sort = sort, size = 1000)
-  no_cpc_at_issue <- colnames(result1$data$patents)
-  expect_true("cpc_at_issue" %in% no_cpc_at_issue)
-
-  result2 <- search_pv(query, fields = fields, sort = sort, size = 10)
-  three_field_result <- colnames(result2$data$patents)
-  # only returns: c("patent_id", "uspc_at_issue")
-  expect_true(length(three_field_result) == 3)
-})
 
 # Reported to the API team PVS-1147
 # Not sure if this is a bug or feature - original API was case insensitive
