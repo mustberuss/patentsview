@@ -54,11 +54,14 @@ to_arglist <- function(fields, size, sort, after, exclude_withdrawn) {
 
 #' @noRd
 set_sort_param <- function(sort_vec) {
-  jsonlite::toJSON(
-    lapply(names(sort_vec), function(name) {
-      stats::setNames(list(sort_vec[[name]]), name)
-    }),
-    auto_unbox = TRUE
+  # the API now throws a 500 on &s=[]
+  ifelse(is.null(sort_vec),'',
+    jsonlite::toJSON(
+      lapply(names(sort_vec), function(name) {
+        stats::setNames(list(sort_vec[[name]]), name)
+      }),
+      auto_unbox = TRUE
+    )
   )
 }
 
