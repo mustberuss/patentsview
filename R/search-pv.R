@@ -364,6 +364,8 @@ search_pv <- function(query,
     query <- jsonlite::toJSON(query, auto_unbox = TRUE)
   }
 
+  requested_fields <- fields  # before we mess with them
+
   pk <- get_ok_pk(endpoint)
   # We need pk to be in the result for all_pages to work with ease, hence adding
   # it below
@@ -376,6 +378,7 @@ search_pv <- function(query,
 
   first_req <- one_request(method, query, base_url, arg_list, api_key, ...)
   first_res <- process_resp(first_req)
+  first_res$data <- repair_resp(first_res$data, requested_fields) # was passing fields
 
   zero_hits <- first_res$query_result$total_hits == 0
   hits_equal_rows <- first_res$query_result$total_hits == nrow(first_res$data[[1]])
@@ -390,6 +393,12 @@ search_pv <- function(query,
   paged_data <- request_apply(
     first_res, method, query, base_url, arg_list, api_key, ...
   )
+
+  # remove any pk fields we added
+  if(!setequal(names(paged_data), requested_fields)) {
+    keep_columns <- intersect(names(paged_data), requested_fields)
+    paged_data <- subset(paged_data, select = keep_columns)
+  }
 
   first_res$data[[1]] <- paged_data
   first_res
@@ -426,5 +435,5 @@ retrieve_linked_data <- function(url,
   url <- sub(':80', '', url)
 
   res <- one_request("GET", "", url, list(), api_key, ...)
-  process_resp(res)
+  process_resp(res)  # here there are no fields so we don't call repair_resp
 }

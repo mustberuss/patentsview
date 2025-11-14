@@ -144,19 +144,12 @@ test_that("We can call all the legitimate HATEOAS endpoints", {
     fields = c("inventors", "assignees")
   )
 
-  # new api bug: the hateoas links are coming back as search.patentsview.org:80
-  bad_url <- res$data$patents$assignees[[1]]$assignee
-  expect_true(grepl(':80', bad_url))  # fails on API fix
-  good_url <- sub(':80', '', bad_url)
-
-  assignee <- retrieve_linked_data(good_url)
+  url <- res$data$patents$assignees[[1]]$assignee
+  assignee <- retrieve_linked_data(url)
   expect_true(assignee$query_results$total_hits == 1)
 
-  bad_url <- res$data$patents$inventors[[1]]$inventor
-  expect_true(grepl(':80', bad_url))  # fails on API fix
-  good_url <- sub(':80', '', bad_url)
-
-  inventor <- retrieve_linked_data(good_url)
+  url <- res$data$patents$inventors[[1]]$inventor
+  inventor <- retrieve_linked_data(url)
   expect_true(inventor$query_results$total_hits == 1)
 
 })

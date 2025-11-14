@@ -16,31 +16,33 @@ test_that("Queries returning non-utility patents well", {
   # Drop eq(patent_type = "utility") from query:
   only_utility_qry[[1]][3] <- NULL
 
-  # New API bug: this query fails now, the same number of
-  # columns aren't returned and the after of non utility patents
-  # seems broken- like it wants them padded?
-  expect_error({
-    all_types_res <- search_pv(only_utility_qry, all_pages = TRUE)
+  all_types_res <- search_pv(only_utility_qry, all_pages = TRUE)
 
-    expect_true(
-      nrow(all_types_res$data$patents) == all_types_res$query_results$total_hits
-    )
-  })
+  expect_true(
+    nrow(all_types_res$data$patents) == all_types_res$query_results$total_hits
+  )
+
+  # if would be a problem if the second query didn't return more rows than the first one
+  expect_gt(all_types_res$query_results$total_hits, only_utility_res$query_results$total_hits)
+
 })
 
 test_that("inventors.inventor_id and assignees.assignee_id are returned
           from patent endpoint when specified exactly", {
   skip_on_cran()
   query <- TEST_QUERIES[["patent"]]
-  # Should return inventors and assignee list cols
+  fields <- c("inventors.inventor_id", "assignees.assignee_id")
+
+  # Should return just inventors and assignees
   results <- search_pv(
-    query, fields = c("inventors.inventor_id", "assignees.assignee_id")
+    query, fields = fields
   )
 
-  # now the API returns more data than we asked for so we've 
-  # flipped the %in% so we test that we got back at least 
-  # what we asked for
-  expect_true(all(c("patent_id", "assignees", "inventors")  %in% colnames(results$data$patents)))
+  # now the API returns more data than we asked - inventors and
+  # assignees are fully populated.  here we'll check that we
+  # got back the two high level attributes
+  high_level <- unique(sub("\\..*", "", fields))
+  expect_true(setequal(high_level,colnames(results$data$patents)))
 
   # Good result when not specifying nested-level fields explicitly
   good_res <- search_pv(
