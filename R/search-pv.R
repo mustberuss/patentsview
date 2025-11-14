@@ -154,10 +154,30 @@ pad_patent_id <- function(patent_id) {
 request_apply <- function(result, method, query, base_url, arg_list, api_key, ...) {
   matched_records <- result$query_results[[1]]
   req_pages <- ceiling(matched_records / arg_list$opts$size)
+  col_names <- NULL
 
   tmp <- lapply(seq_len(req_pages), function(i) {
     x <- one_request(method, query, base_url, arg_list, api_key, ...)
     x <- process_resp(x)
+
+    # now the API can freak out while paging
+    # it doesn't always return the same columns
+    # and disregards the requested fields
+    # rbind can handle the possible column order difference
+    # but not when fewer or more columns are returned
+    x$data <- repair_resp(x$data, arg_list$fields)
+
+    if(is.null(col_names))
+       col_names <<- names(x$data[[1]])
+    else
+    {
+       if(!setequal(col_names, names(x$data[[1]])))
+       {
+          cat("Error: the API returned paged data with a different structure\n")
+          cat(" ", sort(col_names), "(initial)\n")
+          cat(" ", sort(names(x$data[[1]])), "(after", arg_list$opts$after, ")\n\n")
+       }
+    }
 
     sort_cols <- names(arg_list$sort)
     last_row <- nrow(x$data[[1]])
