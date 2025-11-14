@@ -186,3 +186,109 @@ test_that("Querying the publication endpoint on rule_47_flag isn't meaningful", 
   expect_gt(res$query_results$total_hits, 8000000)
 
 })
+
+test_that("some endpoints don't return all of their advertised fields", {
+  skip_on_cran()
+
+  # these endpoints don't return all their advertised fields
+  bad_eps <- c("patent",  "publication")
+
+  dev_null <- lapply(EPS, function(x) {
+    print(x)
+    pv_out <- search_pv(
+      query = TEST_QUERIES[[x]],
+      endpoint = x,
+      fields = get_fields(x)
+    )
+    actual_fields <- colnames(pv_out$data[[1]])
+
+    # we only want the top level fields, not ones in groups
+    this_ep_fields <- fieldsdf[fieldsdf$endpoint == x & !grepl("\\.", fieldsdf$field), "field"]
+
+    # also need groups, excluding the top level group like patents
+    entity <- names(pv_out$data)
+    this_ep_grps <- unique(fieldsdf[fieldsdf$endpoint == x, "group"])
+    this_ep_grps <- setdiff(this_ep_grps, c(entity))
+
+    expected_fields <- c(this_ep_fields, this_ep_grps)
+
+    if(x %in% bad_eps)
+      expect_false(setequal(actual_fields, expected_fields))
+    else
+      expect_true(setequal(actual_fields, expected_fields))
+  })
+})
+
+test_that("some endpoint return unadvertised fields", {
+  skip_on_cran()
+
+  # test for endpoints that return extra fields that
+  # weren't advertised (not in the openapi json spec) and
+  # weren't requested
+
+  # where getting a "patent" attribute back that's the
+  # HATEOAS link for "patent_id"
+  bad_eps <- c(
+    "patent/foreign_citation",
+    "patent/us_application_citation",
+    "patent/us_patent_citation"
+  )
+
+  dev_null <- lapply(bad_eps , function(x) {
+    print(x)
+    pv_out <- search_pv(
+      query = TEST_QUERIES[[x]],
+      endpoint = x,
+      fields = get_fields(x)
+    )
+    expected_fields <- colnames(pv_out$data[[1]])
+
+    # another abuse of retrieve_linked_data()
+    url <- httr2::last_request()$url
+    pv_out <- retrieve_linked_data(url)
+
+    actual_fields <- colnames(pv_out$data[[1]])
+    expect_false(setequal(actual_fields, expected_fields))
+  })
+})
+
+
+test_that("HATEOAS links are still coming back wrong", {
+  skip_on_cran()
+
+  # the API added a :80 to the https links, causing SSL connect errors
+  # this test will fail when that's fixed and the hack in
+  # retrieve_linked_data can be removed
+
+  res <- search_pv(
+    '{"patent_id":"10000000"}',
+    # We have to specify the group names instead of the fully-qualified group
+    # names here b/c there's a bug with requesting specific fields for those
+    # endpoints
+    fields = c("inventors", "assignees")
+  )
+
+  bad_url <- res$data$patents$assignees[[1]]$assignee
+  expect_true(grepl(':80', bad_url))
+  good_url <- sub(':80', '', bad_url)
+
+  # make sure the altered url works
+  pv_out = retrieve_linked_data(good_url)
+  expect_equal(pv_out$query_results$total_hits, 1)
+})
+
+test_that("unrequested fields are still being returned", {
+  skip_on_cran()
+
+   query <- TEST_QUERIES[["patent"]]
+   fields <- c("patent_id", "patent_date")
+   pv_out <- search_pv(query, fields = fields)
+
+   # now we're removing the extra fields in search_pv
+   # so we'll abuse retrieve_linked_data() which doesnt remove fields
+   url <- httr2::last_request()$url
+   pv_out <- retrieve_linked_data(url)
+
+   returned <- colnames(pv_out$data[[1]])
+   expect_false(setequal(returned, fields))
+})
