@@ -421,6 +421,10 @@ retrieve_linked_data <- function(url,
   if (is.null(url)) {
     stop2("URL must be a valid URL")
   }
+
+  # API bug, :80 was added to https links
+  url <- sub(':80', '', url)
+
   res <- one_request("GET", "", url, list(), api_key, ...)
   process_resp(res)
 }
