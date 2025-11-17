@@ -17,7 +17,7 @@ BugReports: https://github.com/ropensci/patentsview/issues
 License: MIT + file LICENSE
 LazyData: TRUE
 Depends:
-    R (>= 3.5)
+    R (>= 4.1.0)
 Imports:
     httr2,
     lifecycle,
