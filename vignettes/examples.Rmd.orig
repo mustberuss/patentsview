@@ -14,70 +14,115 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Patents endpoint
+With the recent [API changes](api-changes.html), the patent endpoint is the main way to retrieve data. The other
+endpoints supply additional information.  Also note that an API key is required.
+
+## Patent endpoint
 
 Which patents have been cited by more than 500 US patents?
 
 ```{r}
 library(patentsview)
 
-search_pv(query = qry_funs$gt(patent_num_cited_by_us_patents = 500))
+fields = c("patent_id", "patent_title", "patent_date")
+search_pv(query = qry_funs$gt(patent_num_times_cited_by_us_patents = 500),
+  fields = fields)
 ```
 
 How many distinct inventors are represented by these highly-cited patents?
 
 ```{r}
-# Setting subent_cnts = TRUE will give us the subentity counts. Since inventors 
-# are subentities for the patents endpoint, this means we will get their counts.
+
 search_pv(
-  query = qry_funs$gt(patent_num_cited_by_us_patents = 500),
-  fields = c("patent_number", "inventor_id"), 
-  subent_cnts = TRUE
+  query = qry_funs$gt(patent_num_times_cited_by_us_patents = 500),
+  fields = c("patent_id", "inventors")
 )
 ```
 
-Where geographically have Microsoft inventors been coming from over the past 20 years?
+Where geographically have Microsoft inventors been coming from over the past few years?
 
 ```{r}
 # Write the query
 query <- with_qfuns(
   and(
-    gte(patent_date = "2007-07-25"), # Dates are in yyyy-mm-dd format 
-    contains(assignee_organization = "microsoft")
+    gte(patent_date = "2022-07-26"), # Dates are in yyyy-mm-dd format
+    begins(assignees.assignee_organization = "Microsoft")
   )
 )
 
-# Create a field list
-inv_fields <- get_fields(endpoint = "patents", groups = "inventors")
-fields <- c(inv_fields, "patent_number")
+# Create a field list by getting the inventors fields- the primary key is needed
+# for unnest_pv_data()
+inv_fields <- get_fields(endpoint = "patent", groups="inventors")
+inv_fields <- c("patent_id", inv_fields)
+inv_fields
 
 # Pull the data
-pv_out <- search_pv(query, fields = fields, all_pages = TRUE)
+pv_out <- search_pv(query, fields = inv_fields, all_pages = TRUE, size = 1000)
 
 # Unnest the inventor list column
-unnest_pv_data(pv_out$data, "patent_number")
+unnest_pv_data(pv_out$data, "patent_id")
 ```
-
-## Inventors endpoint
-
-Which inventors have Chicago, IL listed as their location on at least one patent.[^1]
-
-```{r}
-search_pv(
-  query = '{"_and":[{"location_city":"Chicago"},{"location_state":"IL"}]}',
-  endpoint = "inventors"
-)
-```
-
-## Assignees endpoint
-
 Which assignees have an interest in beer?
 
 ```{r}
-search_pv(
-  query = qry_funs$text_phrase(patent_title = "beer"), 
-  endpoint = "assignees"
+query <- with_qfuns(
+  and(
+    contains(patent_title = "beer"),
+    eq(assignees.assignee_sequence = 0)
+  )
 )
+
+fields <- c("patent_id", "patent_title", "assignees.assignee_organization")
+res <- search_pv(query = query, fields = fields, endpoint = "patent", size = 1)
+str(res$data)
+
 ```
 
-[^1]: Example taken from http://www.patentsview.org/api/inventor.html.
+## Inventor Endpoint
+
+Which inventor's most recent patent has Chicago, IL listed as their location.
+
+```{r}
+pv_out <- search_pv(
+  query = '{"_and":[{"_text_phrase": {"inventor_lastknown_city":"Chicago"}},
+                    {"_text_phrase": {"inventor_lastknown_state":"IL"}}]}',
+  endpoint = "inventor",
+  fields = c("inventor_id", "inventor_name_first", "inventor_name_last")
+)
+
+pv_out
+
+```
+ In the new version of the API, the behavior of this endpoint has changed.  See the similar example
+on the [legacy inventors endpoint](https://patentsview.org/apis/api-endpoints/inventors) page
+for its original behavior.
+
+We could also call the new version of the patent endpoint to find inventors who listed
+Chicago, IL as their location when applying for a patent.
+
+```{r}
+fields <- get_fields('patent', groups="inventors")
+fields <- c("patent_id", fields)
+fields
+
+query <- '{"_and":[{"_text_phrase": {"inventors.inventor_city":"Chicago"}},
+                   {"_text_phrase": {"inventors.inventor_state":"IL"}}]}'
+
+search_pv(query, fields=fields, endpoint="patent")
+
+```
+
+Note that here all the inventors on a particular patent will be returned, not just the ones whose
+location was Chicago, IL.  Also see the [Writing Queries Vignette](writing-queries.html) for more readable ways
+to write queries.
+
+## Assignee Endpoint
+
+What assignee's organizations start Microsoft?
+
+```{r}
+query <- qry_funs$begins(assignee_organization = "Microsoft")
+fields <- c("assignees")
+pv_out <- search_pv(query, fields = fields, endpoint = "assignee")
+pv_out$data$assignees$assignee_organization
+```
