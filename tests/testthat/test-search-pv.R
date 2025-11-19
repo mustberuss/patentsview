@@ -1,4 +1,3 @@
-context("search_pv")
 
 test_that("DSL-based query returns expected results", {
   skip_on_cran()

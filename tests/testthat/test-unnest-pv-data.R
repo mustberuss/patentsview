@@ -15,6 +15,25 @@ test_that("we can unnest all entities", {
       fields = get_fields(x)
     )
     unnested <- unnest_pv_data(pv_out[["data"]])
-    expect_is(unnested, "list")
+    expect_type(unnested, "list")
   })
 })
+
+test_that("we can unnest when only one pk is requested", {
+  skip_on_cran()
+
+  dev_null <- lapply(EPS, function(x) {
+    pks <- get_ok_pk(x)
+    if(length(pks) > 1) {
+      print(x)
+      pv_out <- search_pv(
+        query = TEST_QUERIES[[x]],
+        endpoint = x,
+        fields = c(pks[[1]])
+      )
+      unnested <- unnest_pv_data(pv_out[["data"]])
+      expect_type(unnested, "list")
+    }
+  })
+})
+

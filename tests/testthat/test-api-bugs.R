@@ -42,7 +42,10 @@ test_that("inventors.inventor_id and assignees.assignee_id are returned
   # assignees are fully populated.  here we'll check that we
   # got back the two high level attributes
   high_level <- unique(sub("\\..*", "", fields))
-  expect_true(setequal(high_level,colnames(results$data$patents)))
+
+  # we get back "patent_id", the pk for the patent endpoint
+  # so we can't use setequal
+  expect_true(all(high_level %in% colnames(results$data$patents)))
 
   # Good result when not specifying nested-level fields explicitly
   good_res <- search_pv(
