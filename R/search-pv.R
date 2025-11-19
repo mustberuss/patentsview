@@ -363,7 +363,7 @@ search_pv <- function(query,
 
   first_req <- one_request(method, query, base_url, arg_list, api_key, ...)
   first_res <- process_resp(first_req)
-  first_res$data <- repair_resp(first_res$data, requested_fields) # was passing fields
+  first_res$data <- repair_resp(first_res$data, fields)
 
   zero_hits <- first_res$query_result$total_hits == 0
   hits_equal_rows <- first_res$query_result$total_hits == nrow(first_res$data[[1]])
@@ -379,11 +379,7 @@ search_pv <- function(query,
     first_res, method, query, base_url, arg_list, api_key, ...
   )
 
-  # remove any pk fields we added
-  if(!setequal(names(paged_data), requested_fields)) {
-    keep_columns <- intersect(names(paged_data), requested_fields)
-    paged_data <- subset(paged_data, select = keep_columns)
-  }
+  # we can't remove any pk fields we added or unnest_pv_data could fail
 
   first_res$data[[1]] <- paged_data
   first_res
