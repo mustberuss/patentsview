@@ -109,7 +109,11 @@ patentsview_error_body <- function(resp) {
 one_request <- function(method, query, base_url, arg_list, api_key, ...) {
 
   if (method == "GET") {
-    get_url <- get_get_url(query, base_url, arg_list)
+    if(query == "") {
+       get_url <- base_url
+    } else {
+       get_url <- get_get_url(query, base_url, arg_list)
+    }
     req <- httr2::request(get_url) |>
       httr2::req_method("GET")
   } else {
