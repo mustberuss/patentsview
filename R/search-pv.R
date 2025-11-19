@@ -131,25 +131,6 @@ one_request <- function(method, query, base_url, arg_list, api_key, ...) {
   resp
 }
 
-#' Pad patent_id
-#'
-#' Pad a patent_id with zeroes to 8 characters. This is needed only for custom
-#' paging that uses sorts by patent_id.
-#'
-#' @param patent_id The patent_id to be padded.
-#'
-#' @examples
-#' \dontrun{
-#' padded <- pad_patent_id("RE36479")
-#'
-#' padded2 <- pad_patent_id("3930306")
-#' }
-#'
-#' @export
-pad_patent_id <- function(patent_id) {
-  sprintf("%08s", patent_id)
-}
-
 #' @noRd
 request_apply <- function(result, method, query, base_url, arg_list, api_key, ...) {
   matched_records <- result$query_results[[1]]
