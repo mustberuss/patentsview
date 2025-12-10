@@ -1,0 +1,22 @@
+http_interactions:
+- request:
+    method: GET
+    uri: https://search.patentsview.org/api/v1/assignee/?q=%7B%22_text_phrase%22%3A%7B%22assignee_organization%22%3A%22Johnson+%26+Johnson+International%22%7D%7D&f=%5B%22assignee_id%22%5D&s=&o=%7B%22size%22%3A1000%7D
+  response:
+    status: 200
+    headers:
+      Date: Wed, 10 Dec 2025 02:19:25 GMT
+      Content-Type: application/json
+      Content-Length: '109'
+      Connection: keep-alive
+      Server: nginx
+      Vary: Accept, origin
+      Allow: GET, POST, HEAD, OPTIONS
+      X-Frame-Options: DENY
+      X-Content-Type-Options: nosniff
+      Referrer-Policy: same-origin
+      Cross-Origin-Opener-Policy: same-origin
+    body:
+      string: '{"error":false,"count":1,"total_hits":1,"assignees":[{"assignee_id":"8547488a-2876-4f43-b3e4-f137ada0e957"}]}'
+  recorded_at: 2025-12-10 02:19:25
+recorded_with: VCR-vcr/2.0.0
