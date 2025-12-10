@@ -1,7 +1,7 @@
 EPS <- get_endpoints()
 
 GENERALLY_BAD_EPS <- c(
-   "pg_draw_desc_text"
+  # None currently - pg_draw_desc_text now works (as of Dec 2025)
 )
 
 # Queries (one for each endpoint) that are used during testing. We
