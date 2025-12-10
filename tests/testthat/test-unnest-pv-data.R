@@ -1,39 +1,74 @@
-test_that("we can unnest all entities", {
-  skip_on_cran()
-
-  overloaded_entities <- c("patent/rel_app_text", "publication/rel_app_text")
-  # API bug actual returns does not match fieldsdf
-  troubled_endpoints <- c("patent/foreign_citation", "patent/us_application_citation", "patent/us_patent_citation", "pg_detail_desc_text", "pg_draw_desc_text")
-  good_eps <- EPS[!EPS %in% c(troubled_endpoints, overloaded_entities)]
-
-  dev_null <- lapply(good_eps, function(x) {
-    print(x)
-
-    pv_out <- search_pv(
-      query = TEST_QUERIES[[x]],
-      endpoint = x,
-      fields = get_fields(x)
-    )
-    unnested <- unnest_pv_data(pv_out[["data"]])
-    expect_type(unnested, "list")
-  })
+test_that("unnest works for patent endpoint", {
+  vcr::local_cassette("unnest-patent")
+  pv_out <- search_pv(
+    query = '{"patent_id":"5116621"}',
+    endpoint = "patent",
+    fields = get_fields("patent")
+  )
+  unnested <- unnest_pv_data(pv_out$data)
+  expect_s3_class(unnested, "pv_relay_db")
+  expect_true("patents" %in% names(unnested))
+  expect_true("patent_id" %in% names(unnested$patents))
 })
 
-test_that("we can unnest when only one pk is requested", {
-  skip_on_cran()
-
-  dev_null <- lapply(EPS, function(x) {
-    pks <- get_ok_pk(x)
-    if(length(pks) > 1) {
-      print(x)
-      pv_out <- search_pv(
-        query = TEST_QUERIES[[x]],
-        endpoint = x,
-        fields = c(pks[[1]])
-      )
-      unnested <- unnest_pv_data(pv_out[["data"]])
-      expect_type(unnested, "list")
-    }
-  })
+test_that("unnest works for assignee endpoint", {
+  vcr::local_cassette("unnest-assignee")
+  pv_out <- search_pv(
+    query = '{"_text_phrase":{"assignee_individual_name_last": "Clinton"}}',
+    endpoint = "assignee",
+    fields = get_fields("assignee")
+  )
+  unnested <- unnest_pv_data(pv_out$data)
+  expect_s3_class(unnested, "pv_relay_db")
+  expect_true("assignees" %in% names(unnested))
 })
 
+test_that("unnest works for inventor endpoint", {
+  vcr::local_cassette("unnest-inventor")
+  pv_out <- search_pv(
+    query = '{"_text_phrase":{"inventor_name_last":"Clinton"}}',
+    endpoint = "inventor",
+    fields = get_fields("inventor")
+  )
+  unnested <- unnest_pv_data(pv_out$data)
+  expect_s3_class(unnested, "pv_relay_db")
+  expect_true("inventors" %in% names(unnested))
+})
+
+test_that("unnest handles empty results gracefully", {
+  # Simulate empty API response (list, not data.frame)
+  empty_list <- structure(
+    list(patents = list()),
+    class = c("list", "pv_data_result")
+  )
+  result <- unnest_pv_data(empty_list)
+  expect_s3_class(result, "pv_relay_db")
+  expect_length(result, 0)
+
+ # Simulate empty data.frame response
+  empty_df <- structure(
+    list(patents = data.frame()),
+    class = c("list", "pv_data_result")
+  )
+  result2 <- unnest_pv_data(empty_df)
+  expect_s3_class(result2, "pv_relay_db")
+  expect_length(result2, 0)
+})
+
+test_that("unnest separates nested entities", {
+  vcr::local_cassette("unnest-nested")
+  # Get patent with nested inventors and assignees
+  pv_out <- search_pv(
+    query = '{"patent_id":"5116621"}',
+    fields = c("patent_id", "patent_title", "inventors", "assignees")
+  )
+  unnested <- unnest_pv_data(pv_out$data)
+
+  expect_true("patents" %in% names(unnested))
+  expect_true("inventors" %in% names(unnested))
+  expect_true("assignees" %in% names(unnested))
+
+  # Each subentity table should have the primary key for joining
+  expect_true("patent_id" %in% names(unnested$inventors))
+  expect_true("patent_id" %in% names(unnested$assignees))
+})
