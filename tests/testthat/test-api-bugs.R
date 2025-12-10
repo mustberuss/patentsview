@@ -1,6 +1,8 @@
 # These tests verify known API bugs/quirks.
 # They hit the live API intentionally - we want to know when bugs are fixed.
 # Run with: Sys.setenv(PATENTSVIEW_LIVE_TESTS = "true")
+#
+# When a test fails, the bug may be fixed - verify and remove the workaround.
 
 skip_if_not_live <- function() {
   skip_on_cran()
@@ -13,7 +15,74 @@ skip_if_not_live <- function() {
   skip_if(Sys.getenv("PATENTSVIEW_API_KEY") == "", "No API key")
 }
 
-test_that("case sensitivity on string equals (PVS-1147)", {
+# --- HATEOAS :80 bug ---
+# HATEOAS links include :80 in https URLs causing SSL errors.
+# Workaround: retrieve_linked_data() strips :80 (search-pv.R:416)
+
+test_that("HATEOAS links contain :80 bug", {
+  skip_if_not_live()
+
+  res <- search_pv(
+    '{"patent_id":"10000000"}',
+    fields = c("assignees")
+  )
+
+  url <- res$data$patents$assignees[[1]]$assignee
+  # Test fails when bug is fixed - then remove workaround in retrieve_linked_data()
+  expect_match(url, ":80")
+})
+
+# --- Extra fields returned bug ---
+# API returns more fields than requested, can break paging with rbind.
+# Workaround: repair_resp() strips unrequested fields (process-resp.R:54)
+
+test_that("API returns extra fields not requested", {
+  skip_if_not_live()
+
+  # Bypass repair_resp() by using retrieve_linked_data()
+  url <- paste0(
+    "https://search.patentsview.org/api/v1/patent/",
+    "?q=%7B%22patent_id%22%3A%225116621%22%7D",
+    "&f=%5B%22patent_id%22%5D&s=&o=%7B%22size%22%3A1000%7D"
+  )
+  res <- retrieve_linked_data(url)
+  returned <- names(res$data[[1]])
+
+  # Should only get patent_id, but API returns more
+  extra <- setdiff(returned, "patent_id")
+  # Test fails when bug is fixed - then remove repair_resp() workaround
+  expect_true(
+    length(extra) > 0,
+    label = "Bug may be fixed - check repair_resp() workaround"
+  )
+})
+
+# --- Unadvertised fields bug ---
+# Some endpoints return fields not in openapi.json spec.
+
+test_that("patent/foreign_citation returns unadvertised 'patent' field", {
+  skip_if_not_live()
+
+  res <- search_pv(
+    '{"patent_id": "10000001"}',
+    endpoint = "patent/foreign_citation",
+    fields = get_fields("patent/foreign_citation")
+  )
+
+  # Bypass repair_resp()
+  url <- httr2::last_request()$url
+  raw <- retrieve_linked_data(url)
+  returned <- names(raw$data[[1]])
+  advertised <- get_fields("patent/foreign_citation")
+
+  extra <- setdiff(returned, advertised)
+  expect_true("patent" %in% extra)
+})
+
+# --- Case sensitivity bug (PVS-1147) ---
+# String equality is case-sensitive, unlike the old API.
+
+test_that("string equals is case sensitive (PVS-1147)", {
   skip_if_not_live()
 
   # Exact case works
@@ -23,7 +92,7 @@ test_that("case sensitivity on string equals (PVS-1147)", {
   )
   expect_equal(res$query_results$total_hits, 1)
 
-  # Lowercase fails - this is the bug
+  # Lowercase returns nothing
   res <- search_pv(
     qry_funs$eq(assignee_organization = "johnson & johnson international"),
     endpoint = "assignee"
@@ -31,39 +100,28 @@ test_that("case sensitivity on string equals (PVS-1147)", {
   expect_equal(res$query_results$total_hits, 0)
 })
 
+# --- Withdrawn patents (PVS-1342) ---
+# Withdrawn patents excluded by default (this is correct behavior now).
+
 test_that("withdrawn patents excluded by default (PVS-1342)", {
   skip_if_not_live()
 
-  # These patents were withdrawn but used to appear in results
   withdrawn <- c("9978309", "9978406", "9978509")
   query <- qry_funs$eq(patent_id = withdrawn)
 
-  # With default exclude_withdrawn (TRUE), should get 0 hits
   res <- search_pv(query, method = "POST")
   expect_equal(res$query_results$total_hits, 0)
 })
 
-test_that("HATEOAS links contain :80 bug", {
+# --- publication rule_47_flag bug (PVS-1884) ---
+
+test_that("publication rule_47_flag query inverted (PVS-1884)", {
   skip_if_not_live()
 
-  res <- search_pv(
-    '{"patent_id":"10000000"}',
-    fields = c("inventors", "assignees")
-  )
-
-  url <- res$data$patents$assignees[[1]]$assignee
-  # Test will fail when bug is fixed - then we can remove the workaround
-  expect_match(url, ":80")
-})
-
-test_that("publication rule_47_flag always FALSE (PVS-1884)", {
-  skip_if_not_live()
-
-  # This should return results but doesn't due to bug
+  # FALSE should return results but returns 0
   res <- search_pv(
     qry_funs$eq(rule_47_flag = FALSE),
     endpoint = "publication"
   )
-  # Bug: returns 0 even though there should be matches
   expect_equal(res$query_results$total_hits, 0)
 })
