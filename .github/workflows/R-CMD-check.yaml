@@ -17,11 +17,9 @@ on:
   pull_request_target:
     types: [opened, synchronize]
 
-# don't do anything in other forks
-if: ${{ github.repository == 'ropensci/patentsview' }}
-
 jobs:
   pre-check:
+    if: ${{ github.repository == 'ropensci/patentsview' }}
     runs-on: ubuntu-latest
     steps:
       - name: Confirm crew102 triggered the build
@@ -35,6 +33,7 @@ jobs:
 
   R-CMD-check:
     needs: [pre-check]
+    if: ${{ github.repository == 'ropensci/patentsview' }}
     runs-on: ${{ matrix.config.os }}
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
