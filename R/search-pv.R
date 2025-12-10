@@ -152,16 +152,16 @@ request_apply <- function(result, method, query, base_url, arg_list, api_key, ..
     # but not when fewer or more columns are returned
     x$data <- repair_resp(x$data, arg_list$fields)
 
-    if(is.null(col_names))
-       col_names <<- names(x$data[[1]])
-    else
-    {
-       if(!setequal(col_names, names(x$data[[1]])))
-       {
-          cat("Error: the API returned paged data with a different structure\n")
-          cat(" ", sort(col_names), "(initial)\n")
-          cat(" ", sort(names(x$data[[1]])), "(after", arg_list$opts$after, ")\n\n")
-       }
+    if (is.null(col_names)) {
+      col_names <<- names(x$data[[1]])
+    } else if (!setequal(col_names, names(x$data[[1]]))) {
+      warning(
+        "API returned paged data with different structure.\n",
+        "Initial columns: ", paste(sort(col_names), collapse = ", "), "\n",
+        "After '", arg_list$opts$after[1], "': ",
+        paste(sort(names(x$data[[1]])), collapse = ", "),
+        call. = FALSE
+      )
     }
 
     sort_cols <- names(arg_list$sort)
