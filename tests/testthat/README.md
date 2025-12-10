@@ -20,12 +20,16 @@ devtools::test()
 
 ## Live API Tests
 
-`test-api-bugs.R` hits the live API to detect when bugs are fixed. Skipped by default:
+`test-api-bugs.R` hits the live API to detect when bugs are fixed. These tests run by default when `PATENTSVIEW_API_KEY` is set (required for CI to catch API changes).
+
+To skip live tests locally:
 
 ```r
-Sys.setenv(PATENTSVIEW_LIVE_TESTS = "true")
-testthat::test_file("tests/testthat/test-api-bugs.R")
+Sys.setenv(PATENTSVIEW_SKIP_LIVE_TESTS = "true")
+devtools::test()
 ```
+
+Live tests are always skipped on CRAN (via `skip_on_cran()`).
 
 ## Adding Tests
 
