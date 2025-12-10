@@ -6,3 +6,4 @@ R/* text=lf
 docs/* linguist-documentation=true
 inst/* linguist-documentation=true
 man/* linguist-documentation=true
+tests/testthat/_vcr/**/* -diff linguist-generated=true
