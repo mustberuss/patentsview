@@ -17,6 +17,9 @@ on:
   pull_request_target:
     types: [opened, synchronize]
 
+# don't do anything in other forks
+if: ${{ github.repository == 'ropensci/patentsview' }}
+
 jobs:
   pre-check:
     runs-on: ubuntu-latest
