@@ -22,8 +22,7 @@ Listed here are the API changes that matter to users of the original version of 
 of the API).  Toward the bottom of this page are additional API changes what would only matter if you called the API 
 directly or wanted to write a python library for the API. 
 
-* Probably most importantly, the API team plans on shuting down the original version of the API
-in February 2025.  The original version of the R package will stop working when that happens.
+* The original version of the API was shut down in early 2025. The original version of the R package no longer works.
 * An [API key](#api-key-required) is now required.
 * All fields can be queried now and there is seemingly [no distinction](#operators) between using string and full text operators now, with a new [case sensitivity caveat](#case-sensitivity-caveat) though.  Note that now some
 fields are returned in nested objects and would need to be fully qualified in the query parameter.  Ex. ```search_pv(qry_funs$begins(cpc_current.cpc_group_id="A01B1/00"))```
@@ -141,7 +140,7 @@ httr2::req_headers("X-Api-Key" = api_key, .redact = "X-Api-Key")
    -  /api/v1/uspc_subclass/
    -  /api/v1/patent/attorney/
    -  /api/v1/patent/foreign_citation/
-   -  /api/v1/patent/otherreference/ (not currently working)
+   -  /api/v1/patent/otherreference/
    -  /api/v1/patent/rel_app_text/
    -  /api/v1/patent/us_application_citation/ 
    -  /api/v1/patent/us_patent_citation/
