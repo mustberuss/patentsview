@@ -33,7 +33,7 @@
 * Tests now use vcr for HTTP mocking, improving speed and reliability
 * `unnest_pv_data()` handles empty API results without crashing
 * Paging structure mismatch now throws an error instead of warning (prevents confusing `rbind` failures)
-* Live API tests run by default in CI; skip with `PATENTSVIEW_SKIP_LIVE_TESTS=true`
+* Live API tests skip by default; enable with `PATENTSVIEW_LIVE_TESTS=true`
 
 # patentsview 0.3.0 (2021-09-03)
 

@@ -1,7 +1,6 @@
 # These tests verify known API bugs/quirks.
 # They hit the live API intentionally - we want to know when bugs are fixed.
-# Tests run by default when API key is available.
-# Skip with: Sys.setenv(PATENTSVIEW_SKIP_LIVE_TESTS = "true")
+# Tests skip by default; enable with: Sys.setenv(PATENTSVIEW_LIVE_TESTS = "true")
 #
 # When a test fails, the bug may be fixed - verify and remove the workaround.
 
@@ -9,8 +8,8 @@ skip_if_not_live <- function() {
   skip_on_cran()
   skip_if_offline()
   skip_if(
-    Sys.getenv("PATENTSVIEW_SKIP_LIVE_TESTS") == "true",
-    "PATENTSVIEW_SKIP_LIVE_TESTS=true, skipping live API tests"
+    Sys.getenv("PATENTSVIEW_LIVE_TESTS") != "true",
+    "Set PATENTSVIEW_LIVE_TESTS=true to run live API tests"
   )
   skip_if(Sys.getenv("PATENTSVIEW_API_KEY") == "", "No API key")
 }

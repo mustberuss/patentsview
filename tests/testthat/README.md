@@ -20,12 +20,12 @@ devtools::test()
 
 ## Live API Tests
 
-`test-api-bugs.R` hits the live API to detect when bugs are fixed. These tests run by default when `PATENTSVIEW_API_KEY` is set (required for CI to catch API changes).
+`test-api-bugs.R` hits the live API to detect when bugs are fixed. These tests are skipped by default.
 
-To skip live tests locally:
+To run live tests (requires `PATENTSVIEW_API_KEY`):
 
 ```r
-Sys.setenv(PATENTSVIEW_SKIP_LIVE_TESTS = "true")
+Sys.setenv(PATENTSVIEW_LIVE_TESTS = "true")
 devtools::test()
 ```
 
