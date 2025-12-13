@@ -124,3 +124,21 @@ test_that("publication rule_47_flag query inverted (PVS-1884)", {
   )
   expect_equal(res$query_results$total_hits, 0)
 })
+
+# --- Test query validation ---
+# Verify that all TEST_QUERIES in helpers.R return at least 1 result.
+# This catches cases where API data changes cause queries to return 0 hits.
+
+test_that("all TEST_QUERIES return at least 1 result", {
+  skip_if_not_live()
+
+  for (ep in names(TEST_QUERIES)) {
+    if (ep %in% GENERALLY_BAD_EPS) next
+
+    res <- search_pv(TEST_QUERIES[[ep]], endpoint = ep)
+    expect_gte(
+      res$query_results$total_hits, 1,
+      label = sprintf("Endpoint '%s' should return >= 1 hit", ep)
+    )
+  }
+})
