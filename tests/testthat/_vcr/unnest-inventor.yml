@@ -10,7 +10,7 @@ http_interactions:
       Content-Encoding: gzip
       Content-Type: application/json
       Cross-Origin-Opener-Policy: same-origin
-      Date: Wed, 10 Dec 2025 02:23:43 GMT
+      Date: Sat, 13 Dec 2025 16:27:11 GMT
       Referrer-Policy: same-origin
       Server: nginx
       Transfer-Encoding: chunked
@@ -99,5 +99,5 @@ http_interactions:
         City","inventor_lastknown_state":"MO","inventor_lastknown_country":"US","inventor_lastknown_latitude":38.6569,"inventor_lastknown_longitude":-90.3103,"inventor_lastknown_location":"https://search.patentsview.org:80/api/v1/location/c907112f-16c7-11ed-9b5f-1234bde3cd05/","inventor_num_patents":7,"inventor_num_assignees":2,"inventor_first_seen_date":"1976-06-08","inventor_last_seen_date":"2025-03-04","inventor_years_active":49.0,"inventor_years":[{"year":1976,"num_patents":1},{"year":1977,"num_patents":2},{"year":2020,"num_patents":2},{"year":2023,"num_patents":1},{"year":2025,"num_patents":1}]},{"inventor_id":"fl:wi_ln:clinton-4","inventor_name_first":"William
         P.","inventor_name_last":"Clinton","inventor_gender_code":"M","inventor_lastknown_city":"Chesterfield","inventor_lastknown_state":"MO","inventor_lastknown_country":"US","inventor_lastknown_latitude":38.662,"inventor_lastknown_longitude":-90.5643,"inventor_lastknown_location":"https://search.patentsview.org:80/api/v1/location/8bf5b0c0-16c8-11ed-9b5f-1234bde3cd05/","inventor_num_patents":1,"inventor_num_assignees":1,"inventor_first_seen_date":"1998-04-14","inventor_last_seen_date":"1998-04-14","inventor_years_active":1.0,"inventor_years":[{"year":1998,"num_patents":1}]},{"inventor_id":"x5sowlhagd4mii1grlfj07ye8","inventor_name_first":"Kenneth
         M.","inventor_name_last":"Clinton","inventor_gender_code":"M","inventor_lastknown_city":"Nokomis","inventor_lastknown_state":"FL","inventor_lastknown_country":"US","inventor_lastknown_latitude":27.1192,"inventor_lastknown_longitude":-82.4443,"inventor_lastknown_location":"https://search.patentsview.org:80/api/v1/location/f60e344b-16c7-11ed-9b5f-1234bde3cd05/","inventor_num_patents":1,"inventor_num_assignees":0,"inventor_first_seen_date":"1996-12-10","inventor_last_seen_date":"1996-12-10","inventor_years_active":1.0,"inventor_years":[{"year":1996,"num_patents":1}]},{"inventor_id":"xkipxmy4ucs9yps2xevzdl5e5","inventor_name_first":"Caroline","inventor_name_last":"Clinton","inventor_gender_code":"F","inventor_lastknown_city":"Drogheda","inventor_lastknown_state":null,"inventor_lastknown_country":"IE","inventor_lastknown_latitude":53.715,"inventor_lastknown_longitude":-6.35242,"inventor_lastknown_location":"https://search.patentsview.org:80/api/v1/location/854b85c1-16c8-11ed-9b5f-1234bde3cd05/","inventor_num_patents":1,"inventor_num_assignees":1,"inventor_first_seen_date":"2001-04-10","inventor_last_seen_date":"2001-04-10","inventor_years_active":1.0,"inventor_years":[{"year":2001,"num_patents":1}]}]}'
-  recorded_at: 2025-12-10 02:23:43
+  recorded_at: 2025-12-13 16:27:11
 recorded_with: VCR-vcr/2.0.0
