@@ -1,7 +1,7 @@
 EPS <- get_endpoints()
 
 GENERALLY_BAD_EPS <- c(
-  "ipc" # Returns HTTP 500 errors for all queries (as of Dec 2025)
+  # Empty - all endpoints work when requesting all fields via get_fields()
 )
 
 # Queries (one for each endpoint) that are used during testing. We

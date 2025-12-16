@@ -413,7 +413,7 @@ retrieve_linked_data <- function(url,
     stop2("URL must be a valid URL")
   }
 
-  # API bug, :80 was added to https links
+  # API bug (fixed Dec 2025): :80 was added to https links. Keep workaround for safety.
   url <- sub(':80', '', url)
 
   res <- one_request("GET", "", url, list(), api_key, ...)
