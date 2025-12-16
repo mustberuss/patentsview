@@ -155,13 +155,12 @@ request_apply <- function(result, method, query, base_url, arg_list, api_key, ..
     if (is.null(col_names)) {
       col_names <<- names(x$data[[1]])
     } else if (!setequal(col_names, names(x$data[[1]]))) {
-      stop(
+      stop2(
         "API returned paged data with different structure.\n",
         "Initial columns: ", paste(sort(col_names), collapse = ", "), "\n",
         "After '", arg_list$opts$after[1], "': ",
         paste(sort(names(x$data[[1]])), collapse = ", "), "\n",
-        "This is an API bug - results cannot be combined.",
-        call. = FALSE
+        "This is an API bug - results cannot be combined."
       )
     }
 
