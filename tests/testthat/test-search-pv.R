@@ -99,6 +99,7 @@ test_that("can connect to API", {
   skip_on_cran()
   skip_if_offline()
   skip_if(Sys.getenv("PATENTSVIEW_API_KEY") == "", "No API key")
+  skip_if(Sys.getenv("PATENTSVIEW_API_KEY") == "test-api-key", "Using fake API key")
 
   out <- search_pv('{"patent_id":"5116621"}', fields = "patent_id")
   expect_equal(out$query_results$total_hits, 1)
