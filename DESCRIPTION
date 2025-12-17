@@ -29,7 +29,9 @@ Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0),
-    tidyr
-RoxygenNote: 7.3.2
+    tidyr,
+    vcr (>= 1.6.0)
+RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
 Config/testthat/edition: 3
+Config/Needs/website: visNetwork, igraph, highcharter, dplyr, DT, magrittr, stringr

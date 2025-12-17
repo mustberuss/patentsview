@@ -35,14 +35,10 @@ correspondingly new version of the [patentsview](https://docs.ropensci.org/paten
 The problem for users is that the API team has made **breaking changes**, existing programs will not run
 with the new version of the R package. Please don't shoot the messenger!
 
-The new version of the R package handles some of the API team's changes where possible, 
-however an API key is now required.  The Patentsview API team plans to shutdown 
-the original version of the API in the near future. At that
-time the original version of the R package will stop working.
+The new version of the R package handles some of the API team's changes where possible,
+however an API key is now required. The original version of the API was shut down in early 2025, and the original version of the R package no longer works.
 
-The original version of the R package is available on CRAN with the new version available on 
-[r-universe](https://ropensci.r-universe.dev/patentsview).
-After the original version of the API is shutdown, the updated R package will be submitted to CRAN.
+The new version of the R package is available on CRAN and [r-universe](https://ropensci.r-universe.dev/patentsview).
 
 ## User Impacting API changes:
 1. Users will need to [request an API key](https://patentsview-support.atlassian.net/servicedesk/customer/portals) and set an environmental variable PATENTSVIEW_API_KEY to its value.

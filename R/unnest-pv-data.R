@@ -63,8 +63,18 @@ infer_endpoint <- function(data) {
 unnest_pv_data <- function(data, pk = lifecycle::deprecated()) {
   validate_pv_data(data)
 
-  endpoint <- infer_endpoint(data)
   df <- data[[1]]
+
+
+  # Handle empty results
+  if (!is.data.frame(df) || nrow(df) == 0) {
+    return(structure(
+      list(),
+      class = c("list", "pv_relay_db")
+    ))
+  }
+
+  endpoint <- infer_endpoint(data)
   prim_ent_var <- !vapply(df, is.list, logical(1))
 
   sub_ent_df <- df[, !prim_ent_var, drop = FALSE]

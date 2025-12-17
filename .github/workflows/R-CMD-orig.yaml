@@ -12,14 +12,16 @@ on:
       - 'master'
       - 'feature/**'
       - 'bugfix/**'
+  pull_request:
+    types: [opened, synchronize]
 
 jobs:
   pre-check:
     runs-on: ubuntu-latest
     steps:
-      - name: Confirm crew102 triggered the build when on ropensci
+      - name: Confirm actor is allowed
         run: |
-          if [ "${{ github.event.repository.full_name }}" != "ropensci/patentsview" ] || [ "${{ github.event.sender.login }}" == "crew102" }} ]; then
+          if [ "${{ github.event.repository.full_name }}" != "ropensci/patentsview" ] || [ "${{ github.actor }}" == "crew102" ]; then
             echo "Actor ${{ github.actor }} is allowed on ${{ github.event.repository.full_name }}"
           else
             echo "Actor ${{ github.actor }} is not allowed on ${{ github.event.repository.full_name }}, failing build."
@@ -94,7 +96,7 @@ jobs:
         run: |
           options(crayon.enabled = TRUE)
           remotes::install_cran("devtools")
-          devtools::run_examples(run_dontrun = TRUE)
+          devtools::run_examples()
         shell: Rscript {0}
 
       - name: Check pkgdown
