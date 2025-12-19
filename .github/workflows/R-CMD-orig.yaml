@@ -52,8 +52,8 @@ jobs:
       RSPM: ${{ matrix.config.rspm }}
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       PATENTSVIEW_API_KEY: ${{ secrets.PATENTSVIEW_API_KEY }}
-      PATENTSVIEW_LIVE_TESTS: ${{ env.PATENTSVIEW_API_KEY == '' && 'false' || 'true' }}
-      _R_CHECK_EXAMPLES_RUN_DONT_RUN_: ${{ env.PATENTSVIEW_LIVE_TESTS }}
+      PATENTSVIEW_LIVE_TESTS: ${{ secrets.PATENTSVIEW_API_KEY == '' && 'false' || 'true' }}
+      _R_CHECK_EXAMPLES_RUN_DONT_RUN_: ${{ secrets.PATENTSVIEW_API_KEY == '' && 'FALSE' || 'TRUE' }}
     steps:
       - uses: actions/checkout@v4
 
