@@ -3,6 +3,7 @@
 
 # This is the original build script resurrected to run on pushes to branches not 
 # handled by R-CMD-check.yaml
+# We run live tests and run \dontrun examples if the actor has access to the API secret
 
 name: R-CMD-orig
 
@@ -51,7 +52,8 @@ jobs:
       RSPM: ${{ matrix.config.rspm }}
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       PATENTSVIEW_API_KEY: ${{ secrets.PATENTSVIEW_API_KEY }}
-
+      PATENTSVIEW_LIVE_TESTS: ${{ env.PATENTSVIEW_API_KEY == '' && 'false' || 'true' }}
+      _R_CHECK_EXAMPLES_RUN_DONT_RUN_: ${{ env.PATENTSVIEW_LIVE_TESTS }}
     steps:
       - uses: actions/checkout@v4
 
