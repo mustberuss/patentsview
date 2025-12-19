@@ -15,6 +15,7 @@ knitr::opts_chunk$set(
 [![](http://badges.ropensci.org/112_status.svg)](https://github.com/ropensci/software-review/issues/112)
 [![R-CMD-check](https://github.com/ropensci/patentsview/workflows/R-CMD-check/badge.svg)](https://github.com/ropensci/patentsview/actions)
 [![CRAN version](http://www.r-pkg.org/badges/version/patentsview)](https://cran.r-project.org/package=patentsview)
+[![runiverse-package](https://ropensci.r-universe.dev/badges/patentsview)](https://ropensci.r-universe.dev/patentsview)
 
 ## Installation
 
