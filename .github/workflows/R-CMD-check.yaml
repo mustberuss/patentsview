@@ -114,7 +114,7 @@ jobs:
         run: |
           options(crayon.enabled = TRUE)
           remotes::install_cran("devtools")
-          devtools::run_examples()
+          devtools::run_examples(run_dontrun = TRUE)
         shell: Rscript {0}
 
       - name: Upload check results
