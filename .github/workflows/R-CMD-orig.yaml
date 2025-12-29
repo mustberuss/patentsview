@@ -100,6 +100,16 @@ jobs:
           devtools::run_examples(run_dontrun = as.logical(Sys.getenv("PATENTSVIEW_LIVE_TESTS")))
         shell: Rscript {0}
 
+      - name: Run API tests
+        env:
+          _R_CHECK_CRAN_INCOMING_REMOTE_: false
+        run: |
+          options(crayon.enabled = TRUE)
+          remotes::install_cran("devtools")
+          echo "PATENTSVIEW_LIVE_TESTS: $PATENTSVIEW_LIVE_TESTS"
+          devtools::test(filter="api-bugs")
+        shell: Rscript {0}
+
       - name: Check pkgdown
         env:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
