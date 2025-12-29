@@ -53,7 +53,6 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       PATENTSVIEW_API_KEY: ${{ secrets.PATENTSVIEW_API_KEY }}
       PATENTSVIEW_LIVE_TESTS: ${{ secrets.PATENTSVIEW_API_KEY == '' && 'false' || 'true' }}
-      _R_CHECK_EXAMPLES_RUN_DONT_RUN_: ${{ secrets.PATENTSVIEW_API_KEY == '' && 'FALSE' || 'TRUE' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -98,7 +97,7 @@ jobs:
         run: |
           options(crayon.enabled = TRUE)
           remotes::install_cran("devtools")
-          devtools::run_examples()
+          devtools::run_examples(run_dontrun = as.logical(Sys.getenv("PATENTSVIEW_LIVE_TESTS")))
         shell: Rscript {0}
 
       - name: Check pkgdown
