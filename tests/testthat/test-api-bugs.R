@@ -5,14 +5,28 @@
 # When a test fails, the bug may be fixed - verify and remove the workaround.
 
 skip_if_not_live <- function() {
+  print("checking");
   skip_on_cran()
+  print("not cran")
   skip_if_offline()
+  print("not offline")
   skip_if(
     Sys.getenv("PATENTSVIEW_LIVE_TESTS") != "true",
     "Set PATENTSVIEW_LIVE_TESTS=true to run live API tests"
   )
+  print("live testing")
   skip_if(Sys.getenv("PATENTSVIEW_API_KEY") == "", "No API key")
+  print("have API key")
 }
+
+test_that("we're really calling the API", {
+  skip_if_not_live()
+
+  # make sure we're really calling the API- it'll throw an error
+  search_pv('{"patent_number": "10000000"}')
+
+})
+
 
 # --- HATEOAS :80 bug (FIXED as of Dec 2025 API release) ---
 # HATEOAS links previously included :80 in https URLs causing SSL errors.
