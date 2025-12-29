@@ -105,8 +105,7 @@ jobs:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
         run: |
           options(crayon.enabled = TRUE)
-          remotes::install_cran("devtools")
-          echo "PATENTSVIEW_LIVE_TESTS: $PATENTSVIEW_LIVE_TESTS"
+          print(Sys.getenv("PATENTSVIEW_LIVE_TESTS"))
           devtools::test(filter="api-bugs")
         shell: Rscript {0}
 
