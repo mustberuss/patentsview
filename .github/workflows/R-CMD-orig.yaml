@@ -89,7 +89,7 @@ jobs:
           needs: check # If your package has dependencies listed in DESCRIPTION
 
       - name: ubuntu record new cassettes if user has API key access
-        if: matrix.os == 'ubuntu-latest'  && env.PATENTSVIEW_LIVE_TESTS == 'true'
+        if: runner.os == 'Linux' && env.PATENTSVIEW_LIVE_TESTS == 'true'
         run: rm tests/testthat/_vcr/*.yml
 
       - name: Check
@@ -122,7 +122,7 @@ jobs:
       - name: ubuntu check in cassettes if recorded
         # recorded_at: will be different  allow/Allow os dependent
         # this won't trigger another action
-        if: matrix.os == 'ubuntu-latest' && env.PATENTSVIEW_LIVE_TESTS == 'true'
+        if: runner.os == 'Linux' && env.PATENTSVIEW_LIVE_TESTS == 'true'
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: cassette recordings from workflow
