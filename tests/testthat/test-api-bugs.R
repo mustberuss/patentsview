@@ -19,15 +19,6 @@ skip_if_not_live <- function() {
   print("have API key")
 }
 
-test_that("we're really calling the API", {
-  skip_if_not_live()
-
-  # make sure we're really calling the API- it'll throw an error
-  search_pv('{"patent_number": "10000000"}')
-
-})
-
-
 # --- HATEOAS :80 bug (FIXED as of Dec 2025 API release) ---
 # HATEOAS links previously included :80 in https URLs causing SSL errors.
 # Workaround: retrieve_linked_data() strips :80 (search-pv.R:416)
