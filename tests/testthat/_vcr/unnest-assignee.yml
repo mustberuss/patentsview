@@ -9,7 +9,7 @@ http_interactions:
       content-encoding: gzip
       content-type: application/json
       cross-origin-opener-policy: same-origin
-      date: Tue, 06 Jan 2026 21:30:24 GMT
+      date: Wed, 07 Jan 2026 13:53:37 GMT
       referrer-policy: same-origin
       server: nginx
       vary:
@@ -24,5 +24,5 @@ http_interactions:
         Hollywood","assignee_lastknown_state":"CA","assignee_lastknown_country":"US","assignee_lastknown_latitude":34.0923,"assignee_lastknown_longitude":-118.369,"assignee_lastknown_location":"https://search.patentsview.org/api/v1/location/c6927b67-16c7-11ed-9b5f-1234bde3cd05/","assignee_first_seen_date":"1977-08-30","assignee_last_seen_date":"1978-10-24","assignee_num_inventors":1,"assignee_num_patents":2,"assignee_years_active":1,"assignee_years":[{"year":1977,"num_patents":1},{"year":1978,"num_patents":1}]},{"assignee_id":"dc0a7ba9-b0ac-458f-ad88-9898a8b68158","assignee_individual_name_first":"Joseph
         De Witt","assignee_individual_name_last":"Clinton","assignee_organization":null,"assignee_type":"4","assignee_lastknown_city":"West
         Chester","assignee_lastknown_state":"PA","assignee_lastknown_country":"US","assignee_lastknown_latitude":39.9597,"assignee_lastknown_longitude":-75.606,"assignee_lastknown_location":"https://search.patentsview.org/api/v1/location/4a5fece3-16c8-11ed-9b5f-1234bde3cd05/","assignee_first_seen_date":"2004-03-23","assignee_last_seen_date":"2004-03-23","assignee_num_inventors":1,"assignee_num_patents":1,"assignee_years_active":1,"assignee_years":[{"year":2004,"num_patents":1}]}]}'
-  recorded_at: 2026-01-06 21:30:23
+  recorded_at: 2026-01-07 13:53:37
 recorded_with: VCR-vcr/2.1.0

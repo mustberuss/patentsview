@@ -9,7 +9,7 @@ http_interactions:
       content-encoding: gzip
       content-type: application/json
       cross-origin-opener-policy: same-origin
-      date: Tue, 06 Jan 2026 21:29:19 GMT
+      date: Wed, 07 Jan 2026 13:52:21 GMT
       referrer-policy: same-origin
       server: nginx
       vary:
@@ -22,5 +22,5 @@ http_interactions:
         of systems according to groups G01S13/00, G01S15/00, G01S17/00-of systems
         according to group G01S17/00-Constructional features, e.g. arrangements of
         optical elements-common to transmitter and receiver","cpc_class_id":"G01","cpc_class":"https://search.patentsview.org/api/v1/cpc_class/G01/","cpc_subclass_id":"G01S","cpc_subclass":"https://search.patentsview.org/api/v1/cpc_subclass/G01S/"}]}'
-  recorded_at: 2026-01-06 21:29:19
+  recorded_at: 2026-01-07 13:52:21
 recorded_with: VCR-vcr/2.1.0

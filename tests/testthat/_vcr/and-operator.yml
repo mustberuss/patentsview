@@ -9,7 +9,7 @@ http_interactions:
       content-encoding: gzip
       content-type: application/json
       cross-origin-opener-policy: same-origin
-      date: Tue, 06 Jan 2026 21:29:07 GMT
+      date: Wed, 07 Jan 2026 13:52:08 GMT
       referrer-policy: same-origin
       server: nginx
       vary:
@@ -90,5 +90,5 @@ http_interactions:
         E.","inventor_name_last":"Burke, Jr.","inventor_gender_code":"M","inventor_location_id":"04726932-16c8-11ed-9b5f-1234bde3cd05","inventor_city":"Raleigh","inventor_state":"NC","inventor_country":"US","inventor_sequence":2},{"inventor":"https://search.patentsview.org/api/v1/inventor/fl:sc_ln:brown-13/","inventor_id":"fl:sc_ln:brown-13","inventor_name_first":"Scott","inventor_name_last":"Brown","inventor_gender_code":"M","inventor_location_id":"f9d80b4b-16c7-11ed-9b5f-1234bde3cd05","inventor_city":"Wake
         Forest","inventor_state":"NC","inventor_country":"US","inventor_sequence":0},{"inventor":"https://search.patentsview.org/api/v1/inventor/fl:ro_ln:washington-2/","inventor_id":"fl:ro_ln:washington-2","inventor_name_first":"Rodney
         B.","inventor_name_last":"Washington","inventor_gender_code":"M","inventor_location_id":"04726932-16c8-11ed-9b5f-1234bde3cd05","inventor_city":"Raleigh","inventor_state":"NC","inventor_country":"US","inventor_sequence":1}],"uspc_at_issue":[{"uspc_mainclass":"https://search.patentsview.org/api/v1/uspc_mainclass/307/","uspc_mainclass_id":"307","uspc_subclass":"https://search.patentsview.org/api/v1/uspc_subclass/307:134/","uspc_subclass_id":"307/134","uspc_sequence":0}],"wipo":[{"wipo_field":"https://search.patentsview.org/api/v1/wipo/1/","wipo_field_id":"1","wipo_sequence":0}]}]}'
-  recorded_at: 2026-01-06 21:29:07
+  recorded_at: 2026-01-07 13:52:08
 recorded_with: VCR-vcr/2.1.0

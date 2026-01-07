@@ -9,7 +9,7 @@ http_interactions:
       content-encoding: gzip
       content-type: application/json
       cross-origin-opener-policy: same-origin
-      date: Wed, 07 Jan 2026 01:17:31 GMT
+      date: Wed, 07 Jan 2026 13:51:05 GMT
       referrer-policy: same-origin
       server: nginx
       vary:
@@ -23,7 +23,7 @@ http_interactions:
         by applicant","citation_country":"KR"},{"patent_id":"10000001","patent":"https://search.patentsview.org/api/v1/patent/10000001/","citation_number":"3276727","citation_sequence":0,"citation_date":"2002-04-01","citation_category":"cited
         by applicant","citation_country":"JP"},{"patent_id":"10000001","patent":"https://search.patentsview.org/api/v1/patent/10000001/","citation_number":"2009-208412","citation_sequence":1,"citation_date":"2009-09-01","citation_category":"cited
         by applicant","citation_country":"JP"}]}'
-  recorded_at: 2026-01-07 01:17:30
+  recorded_at: 2026-01-07 13:51:04
 - request:
     method: GET
     uri: https://search.patentsview.org/api/v1/patent/foreign_citation?q=%7B%22patent_id%22%3A%2210000001%22%7D&f=%5B%22citation_category%22%2C%22citation_country%22%2C%22citation_date%22%2C%22citation_number%22%2C%22citation_sequence%22%2C%22patent_id%22%5D&s=&o=%7B%22size%22%3A1000%7D
@@ -34,7 +34,7 @@ http_interactions:
       content-encoding: gzip
       content-type: application/json
       cross-origin-opener-policy: same-origin
-      date: Wed, 07 Jan 2026 01:17:31 GMT
+      date: Wed, 07 Jan 2026 13:51:05 GMT
       referrer-policy: same-origin
       server: nginx
       vary:
@@ -48,5 +48,5 @@ http_interactions:
         by applicant","citation_country":"KR"},{"patent_id":"10000001","patent":"https://search.patentsview.org/api/v1/patent/10000001/","citation_number":"3276727","citation_sequence":0,"citation_date":"2002-04-01","citation_category":"cited
         by applicant","citation_country":"JP"},{"patent_id":"10000001","patent":"https://search.patentsview.org/api/v1/patent/10000001/","citation_number":"2009-208412","citation_sequence":1,"citation_date":"2009-09-01","citation_category":"cited
         by applicant","citation_country":"JP"}]}'
-  recorded_at: 2026-01-07 01:17:31
+  recorded_at: 2026-01-07 13:51:04
 recorded_with: VCR-vcr/2.1.0

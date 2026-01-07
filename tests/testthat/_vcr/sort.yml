@@ -9,7 +9,7 @@ http_interactions:
       content-encoding: gzip
       content-type: application/json
       cross-origin-opener-policy: same-origin
-      date: Tue, 06 Jan 2026 21:29:19 GMT
+      date: Wed, 07 Jan 2026 13:52:21 GMT
       referrer-policy: same-origin
       server: nginx
       vary:
@@ -113,5 +113,5 @@ http_interactions:
         AS","assignee_type":"3","assignee_lastknown_city":"Longyearbyen","assignee_lastknown_state":null,"assignee_lastknown_country":"NO","assignee_lastknown_latitude":78.2232,"assignee_lastknown_longitude":15.6464,"assignee_lastknown_location":"https://search.patentsview.org/api/v1/location/4b60c05c-16c8-11ed-9b5f-1234bde3cd05/","assignee_first_seen_date":"2017-04-04","assignee_last_seen_date":"2017-04-04","assignee_num_inventors":1,"assignee_num_patents":1,"assignee_years_active":1,"assignee_years":[{"year":2017,"num_patents":1}]},{"assignee_id":"5e63dcc9-a86e-46b3-94af-55af1a1b987d","assignee_individual_name_first":"Walter","assignee_individual_name_last":"Nilsen","assignee_organization":null,"assignee_type":"5","assignee_lastknown_city":"Longyearbyen","assignee_lastknown_state":null,"assignee_lastknown_country":"NO","assignee_lastknown_latitude":78.2232,"assignee_lastknown_longitude":15.6464,"assignee_lastknown_location":"https://search.patentsview.org/api/v1/location/4b60c05c-16c8-11ed-9b5f-1234bde3cd05/","assignee_first_seen_date":"1996-05-21","assignee_last_seen_date":"1996-05-21","assignee_num_inventors":2,"assignee_num_patents":1,"assignee_years_active":1,"assignee_years":[{"year":1996,"num_patents":1}]},{"assignee_id":"5492f111-38c9-4d7b-8885-0e58b7d51663","assignee_individual_name_first":null,"assignee_individual_name_last":null,"assignee_organization":"Swix
         Sport","assignee_type":"3","assignee_lastknown_city":"Longyearbyen","assignee_lastknown_state":null,"assignee_lastknown_country":"NO","assignee_lastknown_latitude":78.2232,"assignee_lastknown_longitude":15.6464,"assignee_lastknown_location":"https://search.patentsview.org/api/v1/location/4b60c05c-16c8-11ed-9b5f-1234bde3cd05/","assignee_first_seen_date":"2003-10-14","assignee_last_seen_date":"2003-10-14","assignee_num_inventors":1,"assignee_num_patents":1,"assignee_years_active":1,"assignee_years":[{"year":2003,"num_patents":1}]},{"assignee_id":"55095345-ba9f-42a6-aa55-8efae8564081","assignee_individual_name_first":null,"assignee_individual_name_last":null,"assignee_organization":"Visuray
         AS","assignee_type":"3","assignee_lastknown_city":"Longyearbyen","assignee_lastknown_state":null,"assignee_lastknown_country":"NO","assignee_lastknown_latitude":78.2232,"assignee_lastknown_longitude":15.6464,"assignee_lastknown_location":"https://search.patentsview.org/api/v1/location/4b60c05c-16c8-11ed-9b5f-1234bde3cd05/","assignee_first_seen_date":"2010-03-09","assignee_last_seen_date":"2011-02-22","assignee_num_inventors":2,"assignee_num_patents":3,"assignee_years_active":1,"assignee_years":[{"year":2010,"num_patents":2},{"year":2011,"num_patents":1}]}]}'
-  recorded_at: 2026-01-06 21:29:18
+  recorded_at: 2026-01-07 13:52:20
 recorded_with: VCR-vcr/2.1.0

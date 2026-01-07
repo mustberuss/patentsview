@@ -9,7 +9,7 @@ http_interactions:
       content-encoding: gzip
       content-type: application/json
       cross-origin-opener-policy: same-origin
-      date: Tue, 06 Jan 2026 21:29:15 GMT
+      date: Wed, 07 Jan 2026 13:52:16 GMT
       referrer-policy: same-origin
       server: nginx
       vary:
@@ -3309,5 +3309,5 @@ http_interactions:
         Business Machines Corporation","assignee_location_id":"0e228f17-16c8-11ed-9b5f-1234bde3cd05","assignee_city":"Armonk","assignee_state":"NY","assignee_country":"US","assignee_sequence":0}],"cpc_current":[{"cpc_sequence":0,"cpc_class":"https://search.patentsview.org/api/v1/cpc_class/G06/","cpc_class_id":"G06","cpc_subclass":"https://search.patentsview.org/api/v1/cpc_subclass/G06F/","cpc_subclass_id":"G06F","cpc_group":"https://search.patentsview.org/api/v1/cpc_group/G06F3:017/","cpc_group_id":"G06F3/017"},{"cpc_sequence":1,"cpc_class":"https://search.patentsview.org/api/v1/cpc_class/G06/","cpc_class_id":"G06","cpc_subclass":"https://search.patentsview.org/api/v1/cpc_subclass/G06F/","cpc_subclass_id":"G06F","cpc_group":"https://search.patentsview.org/api/v1/cpc_group/G06F3:014/","cpc_group_id":"G06F3/014"},{"cpc_sequence":2,"cpc_class":"https://search.patentsview.org/api/v1/cpc_class/G06/","cpc_class_id":"G06","cpc_subclass":"https://search.patentsview.org/api/v1/cpc_subclass/G06F/","cpc_subclass_id":"G06F","cpc_group":"https://search.patentsview.org/api/v1/cpc_group/G06F3:0236/","cpc_group_id":"G06F3/0236"},{"cpc_sequence":3,"cpc_class":"https://search.patentsview.org/api/v1/cpc_class/G06/","cpc_class_id":"G06","cpc_subclass":"https://search.patentsview.org/api/v1/cpc_subclass/G06F/","cpc_subclass_id":"G06F","cpc_group":"https://search.patentsview.org/api/v1/cpc_group/G06F3:016/","cpc_group_id":"G06F3/016"}],"inventors":[{"inventor":"https://search.patentsview.org/api/v1/inventor/fl:al_ln:chakra-1/","inventor_id":"fl:al_ln:chakra-1","inventor_name_first":"Al","inventor_name_last":"Chakra","inventor_gender_code":"M","inventor_location_id":"003d9d56-16c8-11ed-9b5f-1234bde3cd05","inventor_city":"Apex","inventor_state":"NC","inventor_country":"US","inventor_sequence":0},{"inventor":"https://search.patentsview.org/api/v1/inventor/fl:br_ln:dixon-11/","inventor_id":"fl:br_ln:dixon-11","inventor_name_first":"Bret
         W.","inventor_name_last":"Dixon","inventor_gender_code":"M","inventor_location_id":"56de368d-16c8-11ed-9b5f-1234bde3cd05","inventor_city":"Perth","inventor_state":null,"inventor_country":"AU","inventor_sequence":1},{"inventor":"https://search.patentsview.org/api/v1/inventor/fl:ti_ln:koh-4/","inventor_id":"fl:ti_ln:koh-4","inventor_name_first":"Timothy
         W. L.","inventor_name_last":"Koh","inventor_gender_code":"M","inventor_location_id":"a05aa000-16c8-11ed-9b5f-1234bde3cd05","inventor_city":"Hitachinaka","inventor_state":null,"inventor_country":"JP","inventor_sequence":2}],"wipo":[{"wipo_field":"https://search.patentsview.org/api/v1/wipo/6/","wipo_field_id":"6","wipo_sequence":0}]}]}'
-  recorded_at: 2026-01-06 21:29:15
+  recorded_at: 2026-01-07 13:52:17
 recorded_with: VCR-vcr/2.1.0
