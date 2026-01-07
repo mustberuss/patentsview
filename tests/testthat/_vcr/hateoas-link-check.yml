@@ -1,0 +1,25 @@
+http_interactions:
+- request:
+    method: GET
+    uri: https://search.patentsview.org/api/v1/patent/?q=%7B%22patent_id%22%3A%2210000000%22%7D&f=%5B%22assignees%22%2C%22patent_id%22%5D&s=&o=%7B%22size%22%3A1000%7D
+  response:
+    status: 200
+    headers:
+      allow: GET, POST, HEAD, OPTIONS
+      content-encoding: gzip
+      content-type: application/json
+      cross-origin-opener-policy: same-origin
+      date: Tue, 06 Jan 2026 21:29:07 GMT
+      referrer-policy: same-origin
+      server: nginx
+      vary:
+      - Accept-Encoding
+      - Accept, origin
+      x-content-type-options: nosniff
+      x-frame-options: DENY
+    body:
+      string: '{"error":false,"count":1,"total_hits":1,"patents":[{"patent_id":"10000000","assignees":[{"assignee":"https://search.patentsview.org/api/v1/assignee/9e8542bf-1e3f-45ae-8584-6a6bbdce5021/","assignee_id":"9e8542bf-1e3f-45ae-8584-6a6bbdce5021","assignee_type":"2","assignee_individual_name_first":null,"assignee_individual_name_last":null,"assignee_organization":"Raytheon
+        Company","assignee_location_id":"09e25130-16c8-11ed-9b5f-1234bde3cd05","assignee_city":"Waltham","assignee_state":"MA","assignee_country":"US","assignee_sequence":0}],"cpc_current":[{"cpc_sequence":0,"cpc_class":"https://search.patentsview.org/api/v1/cpc_class/G01/","cpc_class_id":"G01","cpc_subclass":"https://search.patentsview.org/api/v1/cpc_subclass/G01S/","cpc_subclass_id":"G01S","cpc_group":"https://search.patentsview.org/api/v1/cpc_group/G01S7:4863/","cpc_group_id":"G01S7/4863"},{"cpc_sequence":1,"cpc_class":"https://search.patentsview.org/api/v1/cpc_class/G01/","cpc_class_id":"G01","cpc_subclass":"https://search.patentsview.org/api/v1/cpc_subclass/G01S/","cpc_subclass_id":"G01S","cpc_group":"https://search.patentsview.org/api/v1/cpc_group/G01S7:4865/","cpc_group_id":"G01S7/4865"},{"cpc_sequence":2,"cpc_class":"https://search.patentsview.org/api/v1/cpc_class/G01/","cpc_class_id":"G01","cpc_subclass":"https://search.patentsview.org/api/v1/cpc_subclass/G01S/","cpc_subclass_id":"G01S","cpc_group":"https://search.patentsview.org/api/v1/cpc_group/G01S7:4914/","cpc_group_id":"G01S7/4914"},{"cpc_sequence":3,"cpc_class":"https://search.patentsview.org/api/v1/cpc_class/G01/","cpc_class_id":"G01","cpc_subclass":"https://search.patentsview.org/api/v1/cpc_subclass/G01S/","cpc_subclass_id":"G01S","cpc_group":"https://search.patentsview.org/api/v1/cpc_group/G01S7:4917/","cpc_group_id":"G01S7/4917"},{"cpc_sequence":4,"cpc_class":"https://search.patentsview.org/api/v1/cpc_class/G01/","cpc_class_id":"G01","cpc_subclass":"https://search.patentsview.org/api/v1/cpc_subclass/G01S/","cpc_subclass_id":"G01S","cpc_group":"https://search.patentsview.org/api/v1/cpc_group/G01S17:894/","cpc_group_id":"G01S17/894"}],"inventors":[{"inventor":"https://search.patentsview.org/api/v1/inventor/fl:jo_ln:marron-5/","inventor_id":"fl:jo_ln:marron-5","inventor_name_first":"Joseph","inventor_name_last":"Marron","inventor_gender_code":"M","inventor_location_id":"198b0471-16c8-11ed-9b5f-1234bde3cd05","inventor_city":"Manhattan
+        Beach","inventor_state":"CA","inventor_country":"US","inventor_sequence":0}],"wipo":[{"wipo_field":"https://search.patentsview.org/api/v1/wipo/10/","wipo_field_id":"10","wipo_sequence":0}]}]}'
+  recorded_at: 2026-01-06 21:29:07
+recorded_with: VCR-vcr/2.1.0

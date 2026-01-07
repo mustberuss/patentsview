@@ -1,0 +1,23 @@
+http_interactions:
+- request:
+    method: POST
+    uri: https://search.patentsview.org/api/v1/patent/
+    body:
+      string: '{"q":{"_or":[{"_eq":{"patent_id":"9978309"}},{"_eq":{"patent_id":"9978406"}},{"_eq":{"patent_id":"9978509"}}]},"f":["patent_id"],"o":{"size":1000}}'
+  response:
+    status: 200
+    headers:
+      date: Tue, 06 Jan 2026 21:29:08 GMT
+      content-type: application/json
+      content-length: '53'
+      server: nginx
+      vary: Accept, origin
+      allow: GET, POST, HEAD, OPTIONS
+      x-frame-options: DENY
+      x-content-type-options: nosniff
+      referrer-policy: same-origin
+      cross-origin-opener-policy: same-origin
+    body:
+      string: '{"error":false,"count":0,"total_hits":0,"patents":[]}'
+  recorded_at: 2026-01-06 21:29:07
+recorded_with: VCR-vcr/2.1.0
