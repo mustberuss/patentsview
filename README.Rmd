@@ -36,7 +36,7 @@ pak::pak("ropensci/patentsview")
 
 ## Basic usage
 
-The [PatentsView API](https://patentsview.org/apis/api-endpoints) provides an interface to a disambiguated version of USPTO. The `patentsview` R package provides one main function, `search_pv()`, to make it easy to interact with the API:
+The [PatentsView API](<https://search.patentsview.org/docs/docs/Search%20API/SearchAPIReference/>) provides an interface to a disambiguated version of USPTO. The `patentsview` R package provides one main function, `search_pv()`, to make it easy to interact with the API:
 
 ```{r}
 library(patentsview)
