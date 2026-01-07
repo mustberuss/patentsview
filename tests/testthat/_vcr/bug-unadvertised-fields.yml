@@ -1,0 +1,52 @@
+http_interactions:
+- request:
+    method: GET
+    uri: https://search.patentsview.org/api/v1/patent/foreign_citation/?q=%7B%22patent_id%22%3A+%2210000001%22%7D&f=%5B%22citation_category%22%2C%22citation_country%22%2C%22citation_date%22%2C%22citation_number%22%2C%22citation_sequence%22%2C%22patent_id%22%5D&s=&o=%7B%22size%22%3A1000%7D
+  response:
+    status: 200
+    headers:
+      allow: GET, POST, HEAD, OPTIONS
+      content-encoding: gzip
+      content-type: application/json
+      cross-origin-opener-policy: same-origin
+      date: Wed, 07 Jan 2026 01:17:31 GMT
+      referrer-policy: same-origin
+      server: nginx
+      vary:
+      - Accept-Encoding
+      - Accept, origin
+      x-content-type-options: nosniff
+      x-frame-options: DENY
+    body:
+      string: '{"error":false,"count":4,"total_hits":4,"foreign_citations":[{"patent_id":"10000001","patent":"https://search.patentsview.org/api/v1/patent/10000001/","citation_number":"2013132796","citation_sequence":2,"citation_date":"2013-07-01","citation_category":"cited
+        by applicant","citation_country":"JP"},{"patent_id":"10000001","patent":"https://search.patentsview.org/api/v1/patent/10000001/","citation_number":"10-0512595","citation_sequence":3,"citation_date":"2005-09-01","citation_category":"cited
+        by applicant","citation_country":"KR"},{"patent_id":"10000001","patent":"https://search.patentsview.org/api/v1/patent/10000001/","citation_number":"3276727","citation_sequence":0,"citation_date":"2002-04-01","citation_category":"cited
+        by applicant","citation_country":"JP"},{"patent_id":"10000001","patent":"https://search.patentsview.org/api/v1/patent/10000001/","citation_number":"2009-208412","citation_sequence":1,"citation_date":"2009-09-01","citation_category":"cited
+        by applicant","citation_country":"JP"}]}'
+  recorded_at: 2026-01-07 01:17:30
+- request:
+    method: GET
+    uri: https://search.patentsview.org/api/v1/patent/foreign_citation?q=%7B%22patent_id%22%3A%2210000001%22%7D&f=%5B%22citation_category%22%2C%22citation_country%22%2C%22citation_date%22%2C%22citation_number%22%2C%22citation_sequence%22%2C%22patent_id%22%5D&s=&o=%7B%22size%22%3A1000%7D
+  response:
+    status: 200
+    headers:
+      allow: GET, POST, HEAD, OPTIONS
+      content-encoding: gzip
+      content-type: application/json
+      cross-origin-opener-policy: same-origin
+      date: Wed, 07 Jan 2026 01:17:31 GMT
+      referrer-policy: same-origin
+      server: nginx
+      vary:
+      - Accept-Encoding
+      - Accept, origin
+      x-content-type-options: nosniff
+      x-frame-options: DENY
+    body:
+      string: '{"error":false,"count":4,"total_hits":4,"foreign_citations":[{"patent_id":"10000001","patent":"https://search.patentsview.org/api/v1/patent/10000001/","citation_number":"2013132796","citation_sequence":2,"citation_date":"2013-07-01","citation_category":"cited
+        by applicant","citation_country":"JP"},{"patent_id":"10000001","patent":"https://search.patentsview.org/api/v1/patent/10000001/","citation_number":"10-0512595","citation_sequence":3,"citation_date":"2005-09-01","citation_category":"cited
+        by applicant","citation_country":"KR"},{"patent_id":"10000001","patent":"https://search.patentsview.org/api/v1/patent/10000001/","citation_number":"3276727","citation_sequence":0,"citation_date":"2002-04-01","citation_category":"cited
+        by applicant","citation_country":"JP"},{"patent_id":"10000001","patent":"https://search.patentsview.org/api/v1/patent/10000001/","citation_number":"2009-208412","citation_sequence":1,"citation_date":"2009-09-01","citation_category":"cited
+        by applicant","citation_country":"JP"}]}'
+  recorded_at: 2026-01-07 01:17:31
+recorded_with: VCR-vcr/2.1.0

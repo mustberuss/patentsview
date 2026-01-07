@@ -5,20 +5,18 @@ http_interactions:
   response:
     status: 200
     headers:
-      Allow: GET, POST, HEAD, OPTIONS
-      Connection: keep-alive
-      Content-Encoding: gzip
-      Content-Type: application/json
-      Cross-Origin-Opener-Policy: same-origin
-      Date: Tue, 16 Dec 2025 14:41:35 GMT
-      Referrer-Policy: same-origin
-      Server: nginx
-      Transfer-Encoding: chunked
-      Vary:
+      allow: GET, POST, HEAD, OPTIONS
+      content-encoding: gzip
+      content-type: application/json
+      cross-origin-opener-policy: same-origin
+      date: Tue, 06 Jan 2026 21:29:19 GMT
+      referrer-policy: same-origin
+      server: nginx
+      vary:
       - Accept-Encoding
       - Accept, origin
-      X-Content-Type-Options: nosniff
-      X-Frame-Options: DENY
+      x-content-type-options: nosniff
+      x-frame-options: DENY
     body:
       string: '{"error":false,"count":100,"total_hits":3001,"patents":[{"patent_id":"6009555","cpc_current":[{"cpc_sequence":0,"cpc_class":"https://search.patentsview.org/api/v1/cpc_class/A42/","cpc_class_id":"A42","cpc_subclass":"https://search.patentsview.org/api/v1/cpc_subclass/A42B/","cpc_subclass_id":"A42B","cpc_group":"https://search.patentsview.org/api/v1/cpc_group/A42B1:247/","cpc_group_id":"A42B1/247"},{"cpc_sequence":1,"cpc_class":"https://search.patentsview.org/api/v1/cpc_class/A42/","cpc_class_id":"A42","cpc_subclass":"https://search.patentsview.org/api/v1/cpc_subclass/A42B/","cpc_subclass_id":"A42B","cpc_group":"https://search.patentsview.org/api/v1/cpc_group/A42B3:227/","cpc_group_id":"A42B3/227"},{"cpc_sequence":2,"cpc_class":"https://search.patentsview.org/api/v1/cpc_class/A61/","cpc_class_id":"A61","cpc_subclass":"https://search.patentsview.org/api/v1/cpc_subclass/A61F/","cpc_subclass_id":"A61F","cpc_group":"https://search.patentsview.org/api/v1/cpc_group/A61F9:045/","cpc_group_id":"A61F9/045"},{"cpc_sequence":3,"cpc_class":"https://search.patentsview.org/api/v1/cpc_class/Y10/","cpc_class_id":"Y10","cpc_subclass":"https://search.patentsview.org/api/v1/cpc_subclass/Y10S/","cpc_subclass_id":"Y10S","cpc_group":"https://search.patentsview.org/api/v1/cpc_group/Y10S2:11/","cpc_group_id":"Y10S2/11"}],"inventors":[{"inventor":"https://search.patentsview.org/api/v1/inventor/fl:le_ln:siprut-1/","inventor_id":"fl:le_ln:siprut-1","inventor_name_first":"Leonard
         Albert","inventor_name_last":"Siprut","inventor_gender_code":"M","inventor_location_id":"1893009c-16c8-11ed-9b5f-1234bde3cd05","inventor_city":"San
@@ -226,27 +224,25 @@ http_interactions:
         City","inventor_state":"KS","inventor_country":"US","inventor_sequence":0},{"inventor":"https://search.patentsview.org/api/v1/inventor/fl:ga_ln:embree-1/","inventor_id":"fl:ga_ln:embree-1","inventor_name_first":"Gary
         L.","inventor_name_last":"Embree","inventor_gender_code":"M","inventor_location_id":"d45a77e8-16c7-11ed-9b5f-1234bde3cd05","inventor_city":"Garden
         City","inventor_state":"KS","inventor_country":"US","inventor_sequence":1}],"uspc_at_issue":[{"uspc_mainclass":"https://search.patentsview.org/api/v1/uspc_mainclass/42/","uspc_mainclass_id":"42","uspc_subclass":"https://search.patentsview.org/api/v1/uspc_subclass/42:701.1/","uspc_subclass_id":"42/701.1","uspc_sequence":0},{"uspc_mainclass":"https://search.patentsview.org/api/v1/uspc_mainclass/42/","uspc_mainclass_id":"42","uspc_subclass":"https://search.patentsview.org/api/v1/uspc_subclass/42:700.7/","uspc_subclass_id":"42/700.7","uspc_sequence":1},{"uspc_mainclass":"https://search.patentsview.org/api/v1/uspc_mainclass/206/","uspc_mainclass_id":"206","uspc_subclass":"https://search.patentsview.org/api/v1/uspc_subclass/206:317/","uspc_subclass_id":"206/317","uspc_sequence":2}],"wipo":[{"wipo_field":"https://search.patentsview.org/api/v1/wipo/29/","wipo_field_id":"29","wipo_sequence":0}]}]}'
-  recorded_at: 2025-12-16 14:41:36
+  recorded_at: 2026-01-06 21:29:19
 - request:
     method: GET
     uri: https://search.patentsview.org/api/v1/patent/?q=%7B%22_eq%22%3A%7B%22patent_date%22%3A%222000-01-04%22%7D%7D&f=%5B%22patent_id%22%5D&s=%5B%7B%22patent_id%22%3A%22asc%22%7D%5D&o=%7B%22size%22%3A100%2C%22after%22%3A%226009654%22%7D
   response:
     status: 200
     headers:
-      Allow: GET, POST, HEAD, OPTIONS
-      Connection: keep-alive
-      Content-Encoding: gzip
-      Content-Type: application/json
-      Cross-Origin-Opener-Policy: same-origin
-      Date: Tue, 16 Dec 2025 14:41:36 GMT
-      Referrer-Policy: same-origin
-      Server: nginx
-      Transfer-Encoding: chunked
-      Vary:
+      allow: GET, POST, HEAD, OPTIONS
+      content-encoding: gzip
+      content-type: application/json
+      cross-origin-opener-policy: same-origin
+      date: Tue, 06 Jan 2026 21:29:20 GMT
+      referrer-policy: same-origin
+      server: nginx
+      vary:
       - Accept-Encoding
       - Accept, origin
-      X-Content-Type-Options: nosniff
-      X-Frame-Options: DENY
+      x-content-type-options: nosniff
+      x-frame-options: DENY
     body:
       string: '{"error":false,"count":100,"total_hits":3001,"patents":[{"patent_id":"6009655","cpc_current":[{"cpc_sequence":0,"cpc_class":"https://search.patentsview.org/api/v1/cpc_class/F16/","cpc_class_id":"F16","cpc_subclass":"https://search.patentsview.org/api/v1/cpc_subclass/F16M/","cpc_subclass_id":"F16M","cpc_group":"https://search.patentsview.org/api/v1/cpc_group/F16M13:04/","cpc_group_id":"F16M13/04"},{"cpc_sequence":1,"cpc_class":"https://search.patentsview.org/api/v1/cpc_class/F41/","cpc_class_id":"F41","cpc_subclass":"https://search.patentsview.org/api/v1/cpc_subclass/F41C/","cpc_subclass_id":"F41C","cpc_group":"https://search.patentsview.org/api/v1/cpc_group/F41C33:001/","cpc_group_id":"F41C33/001"}],"inventors":[{"inventor":"https://search.patentsview.org/api/v1/inventor/fl:ro_ln:austin-14/","inventor_id":"fl:ro_ln:austin-14","inventor_name_first":"Ronald
         G.","inventor_name_last":"Austin","inventor_gender_code":"M","inventor_location_id":"0e5bed6a-16c8-11ed-9b5f-1234bde3cd05","inventor_city":"Bleecker","inventor_state":"NY","inventor_country":"US","inventor_sequence":0}],"uspc_at_issue":[{"uspc_mainclass":"https://search.patentsview.org/api/v1/uspc_mainclass/42/","uspc_mainclass_id":"42","uspc_subclass":"https://search.patentsview.org/api/v1/uspc_subclass/42:94/","uspc_subclass_id":"42/94","uspc_sequence":0}],"wipo":[{"wipo_field":"https://search.patentsview.org/api/v1/wipo/29/","wipo_field_id":"29","wipo_sequence":0},{"wipo_field":"https://search.patentsview.org/api/v1/wipo/31/","wipo_field_id":"31","wipo_sequence":1}]},{"patent_id":"6009656","cpc_current":[{"cpc_sequence":0,"cpc_class":"https://search.patentsview.org/api/v1/cpc_class/A01/","cpc_class_id":"A01","cpc_subclass":"https://search.patentsview.org/api/v1/cpc_subclass/A01K/","cpc_subclass_id":"A01K","cpc_group":"https://search.patentsview.org/api/v1/cpc_group/A01K91:065/","cpc_group_id":"A01K91/065"}],"inventors":[{"inventor":"https://search.patentsview.org/api/v1/inventor/qq9gf8veptwhtnsqzwogcbh5y/","inventor_id":"qq9gf8veptwhtnsqzwogcbh5y","inventor_name_first":"Wesley
@@ -452,5 +448,5 @@ http_interactions:
         W. K.","inventor_name_last":"Tsang","inventor_gender_code":"M","inventor_location_id":"6f044ab8-16c8-11ed-9b5f-1234bde3cd05","inventor_city":"Bedford","inventor_state":"MA","inventor_country":"US","inventor_sequence":0},{"inventor":"https://search.patentsview.org/api/v1/inventor/fl:st_ln:sherman-5/","inventor_id":"fl:st_ln:sherman-5","inventor_name_first":"Steven
         J.","inventor_name_last":"Sherman","inventor_gender_code":"M","inventor_location_id":"0e7bcf95-16c8-11ed-9b5f-1234bde3cd05","inventor_city":"Andover","inventor_state":"MA","inventor_country":"US","inventor_sequence":2}],"uspc_at_issue":[{"uspc_mainclass":"https://search.patentsview.org/api/v1/uspc_mainclass/73/","uspc_mainclass_id":"73","uspc_subclass":"https://search.patentsview.org/api/v1/uspc_subclass/73:514.32/","uspc_subclass_id":"73/514.32","uspc_sequence":0},{"uspc_mainclass":"https://search.patentsview.org/api/v1/uspc_mainclass/360/","uspc_mainclass_id":"360","uspc_subclass":"https://search.patentsview.org/api/v1/uspc_subclass/360:280/","uspc_subclass_id":"360/280","uspc_sequence":1}],"wipo":[{"wipo_field":"https://search.patentsview.org/api/v1/wipo/10/","wipo_field_id":"10","wipo_sequence":1},{"wipo_field":"https://search.patentsview.org/api/v1/wipo/22/","wipo_field_id":"22","wipo_sequence":0}]},{"patent_id":"6009754","cpc_current":[{"cpc_sequence":0,"cpc_class":"https://search.patentsview.org/api/v1/cpc_class/G01/","cpc_class_id":"G01","cpc_subclass":"https://search.patentsview.org/api/v1/cpc_subclass/G01V/","cpc_subclass_id":"G01V","cpc_group":"https://search.patentsview.org/api/v1/cpc_group/G01V3:165/","cpc_group_id":"G01V3/165"}],"inventors":[{"inventor":"https://search.patentsview.org/api/v1/inventor/fl:jo_ln:casas-6/","inventor_id":"fl:jo_ln:casas-6","inventor_name_first":"Jose
         G.","inventor_name_last":"Casas","inventor_gender_code":"M","inventor_location_id":"e45b23dc-16c7-11ed-9b5f-1234bde3cd05","inventor_city":"Joliet","inventor_state":"IL","inventor_country":"US","inventor_sequence":0}],"uspc_at_issue":[{"uspc_mainclass":"https://search.patentsview.org/api/v1/uspc_mainclass/73/","uspc_mainclass_id":"73","uspc_subclass":"https://search.patentsview.org/api/v1/uspc_subclass/73:592/","uspc_subclass_id":"73/592","uspc_sequence":0},{"uspc_mainclass":"https://search.patentsview.org/api/v1/uspc_mainclass/324/","uspc_mainclass_id":"324","uspc_subclass":"https://search.patentsview.org/api/v1/uspc_subclass/324:67/","uspc_subclass_id":"324/67","uspc_sequence":1},{"uspc_mainclass":"https://search.patentsview.org/api/v1/uspc_mainclass/324/","uspc_mainclass_id":"324","uspc_subclass":"https://search.patentsview.org/api/v1/uspc_subclass/324:326/","uspc_subclass_id":"324/326","uspc_sequence":2}],"wipo":[{"wipo_field":"https://search.patentsview.org/api/v1/wipo/10/","wipo_field_id":"10","wipo_sequence":0}]}]}'
-  recorded_at: 2025-12-16 14:41:36
-recorded_with: VCR-vcr/2.0.0
+  recorded_at: 2026-01-06 21:29:20
+recorded_with: VCR-vcr/2.1.0
