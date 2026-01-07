@@ -6,30 +6,37 @@ Tests use [vcr](https://docs.ropensci.org/vcr/) to record/replay HTTP responses 
 
 ```r
 devtools::test()                    # All tests
-testthat::test_file("tests/testthat/test-search-pv.R")  # One file
+devtools::test(filter="search-pv")  # runs just test-search-pv.R 
 ```
 
 ## Re-recording Cassettes
 
-Delete the YAML file and re-run the test (requires `PATENTSVIEW_API_KEY`):
+Delete one or more of the YAML files and re-run the test (requires `PATENTSVIEW_API_KEY`):
 
 ```r
 unlink("tests/testthat/_vcr/my-test.yml")
 devtools::test()
 ```
 
-## Live API Tests
+## Running test without recordings
 
-`test-api-bugs.R` hits the live API to detect when bugs are fixed. These tests are skipped by default.
-
-To run live tests (requires `PATENTSVIEW_API_KEY`):
+The vcr package checks for an environmental variable `VCR_TURN_OFF`. If  true it turns off all vcr usage so that all requests are live.  It would be a good idea to do this after an API release.  
 
 ```r
-Sys.setenv(PATENTSVIEW_LIVE_TESTS = "true")
+Sys.setenv(VCR_TURN_OFF = "true")
 devtools::test()
 ```
 
-Live tests are always skipped on CRAN (via `skip_on_cran()`).
+## API Bug Testing
+
+When running live, `test-api-bugs.R` hits the API to detect when bugs are fixed. When a test fails, the bug may be fixed - verify and remove the workaround.
+
+```r
+unlink("tests/testthat/_vcr/bug*.yml")
+devtools::test(filter="api-bugs")
+```
+
+
 
 ## Adding Tests
 
