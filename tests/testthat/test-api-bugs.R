@@ -42,13 +42,14 @@ test_that("patent/foreign_citation returns unadvertised 'patent' field", {
     fields = get_fields("patent/foreign_citation")
   )
 
-  # Bypass repair_resp() by getting url of the last request,
-  # whether we're live/recording or playing back a recording
-  if (vcr::is_recording()) {
-    url <- httr2::last_request()$url
-  } else {
-    url <- vcr::vcr_last_request()$uri
-  }
+  fields <- get_fields("patent/foreign_citation")
+  # Bypass repair_resp() by using retrieve_linked_data()
+  url <- paste0(
+    "https://search.patentsview.org/api/v1/patent/foreign_citation",
+    "?q=%7B%22patent_id%22%3A%2210000001%22%7D",
+    "&f=", URLencode(jsonlite::toJSON(fields)),
+    "&s=&o=%7B%22size%22%3A1000%7D"
+  )
 
   raw <- retrieve_linked_data(url)
   returned <- names(raw$data[[1]])
