@@ -92,7 +92,7 @@ jobs:
         env:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
           # ignore recordings, run live if actor has API key access
-          VCR_TURN_OFF: env.HAVE_API_KEY_ACCESS
+          VCR_TURN_OFF: ${{ env.HAVE_API_KEY_ACCESS }}
         run: |
           options(crayon.enabled = TRUE)
           rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
