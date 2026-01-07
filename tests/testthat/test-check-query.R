@@ -56,14 +56,17 @@ test_that("errors are thrown on invalid queries", {
     "is not a valid operator or not a valid field"
   )
 })
-
 test_that("valid nested field can be queried", {
+  skip_on_cran()
+
   vcr::local_cassette("nested-field-query")
   results <- search_pv(qry_funs$eq("application.rule_47_flag" = TRUE))
   expect_gt(results$query_results$total_hits, 8000000)
 })
 
 test_that("_eq message is thrown for field:value pairs", {
+  skip_on_cran()
+
   vcr::local_cassette("eq-message")
   expect_message(
     search_pv(list(patent_date = "2007-03-06")),
@@ -72,6 +75,8 @@ test_that("_eq message is thrown for field:value pairs", {
 })
 
 test_that("and operator works", {
+  skip_on_cran()
+
   vcr::local_cassette("and-operator")
   query <- with_qfuns(
     and(

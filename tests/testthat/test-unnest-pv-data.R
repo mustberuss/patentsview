@@ -1,4 +1,6 @@
 test_that("unnest works for patent endpoint", {
+  skip_on_cran()
+
   vcr::local_cassette("unnest-patent")
   pv_out <- search_pv(
     query = '{"patent_id":"5116621"}',
@@ -12,6 +14,8 @@ test_that("unnest works for patent endpoint", {
 })
 
 test_that("unnest works for assignee endpoint", {
+  skip_on_cran()
+
   vcr::local_cassette("unnest-assignee")
   pv_out <- search_pv(
     query = '{"_text_phrase":{"assignee_individual_name_last": "Clinton"}}',
@@ -24,6 +28,8 @@ test_that("unnest works for assignee endpoint", {
 })
 
 test_that("unnest works for inventor endpoint", {
+  skip_on_cran()
+
   vcr::local_cassette("unnest-inventor")
   pv_out <- search_pv(
     query = '{"_text_phrase":{"inventor_name_last":"Clinton"}}',
@@ -36,6 +42,8 @@ test_that("unnest works for inventor endpoint", {
 })
 
 test_that("unnest handles empty results gracefully", {
+  skip_on_cran()
+
   # Simulate empty API response (list, not data.frame)
   empty_list <- structure(
     list(patents = list()),
@@ -56,6 +64,8 @@ test_that("unnest handles empty results gracefully", {
 })
 
 test_that("unnest separates nested entities", {
+  skip_on_cran()
+
   vcr::local_cassette("unnest-nested")
   # Get patent with nested inventors and assignees
   pv_out <- search_pv(

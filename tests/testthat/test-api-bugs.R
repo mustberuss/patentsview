@@ -37,7 +37,7 @@ test_that("HATEOAS links no longer contain :80 bug", {
 # Workaround: repair_resp() strips unrequested fields (process-resp.R:54)
 
 test_that("API returns extra fields not requested", {
-  skip_if_not_live()
+  skip_on_cran()
 
   # Bypass repair_resp() by using retrieve_linked_data()
   url <- paste0(
@@ -83,7 +83,7 @@ test_that("patent/foreign_citation returns unadvertised 'patent' field", {
 # String equality is case-sensitive, unlike the old API.
 
 test_that("string equals is case sensitive (PVS-1147)", {
-  skip_if_not_live()
+  skip_on_cran()
 
   # Exact case works
   res <- search_pv(
@@ -116,7 +116,7 @@ test_that("withdrawn patents excluded by default (PVS-1342)", {
 # --- publication rule_47_flag bug (PVS-1884) ---
 
 test_that("publication rule_47_flag query inverted (PVS-1884)", {
-  skip_if_not_live()
+  skip_on_cran()
 
   # FALSE should return results but returns 0
   res <- search_pv(
@@ -131,7 +131,7 @@ test_that("publication rule_47_flag query inverted (PVS-1884)", {
 # Works fine when requesting all fields.
 
 test_that("ipc endpoint fails with default fields (only ipc_id)", {
-  skip_if_not_live()
+  skip_on_cran()
 
   # When no fields specified, search_pv() adds only the primary key ipc_id
   # This triggers a 500 error from the API
@@ -158,7 +158,7 @@ test_that("ipc endpoint works with all fields", {
 # Workaround: stop() with clear error message in search-pv.R
 
 test_that("paging returns inconsistent fields (structure mismatch)", {
-  skip_if_not_live()
+  skip_on_cran()
 
   # This query is known to return different fields across pages
   query <- with_qfuns(

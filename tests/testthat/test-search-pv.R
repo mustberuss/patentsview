@@ -1,4 +1,6 @@
 test_that("DSL-based query works", {
+  skip_on_cran()
+
   vcr::local_cassette("dsl-query")
   query <- with_qfuns(
     and(
@@ -11,6 +13,8 @@ test_that("DSL-based query works", {
 })
 
 test_that("can retrieve all fields for patent endpoint", {
+  skip_on_cran()
+
   vcr::local_cassette("patent-all-fields")
   out <- search_pv(
     query = '{"patent_id":"5116621"}',
@@ -21,6 +25,8 @@ test_that("can retrieve all fields for patent endpoint", {
 })
 
 test_that("sort works", {
+  skip_on_cran()
+
   vcr::local_cassette("sort")
   out <- search_pv(
     qry_funs$neq(assignee_id = ""),
@@ -34,6 +40,8 @@ test_that("sort works", {
 })
 
 test_that("URL encoding works", {
+  skip_on_cran()
+
   vcr::local_cassette("url-encoding")
   organization <- "Johnson & Johnson International"
   query <- with_qfuns(text_phrase(assignee_organization = organization))
@@ -42,6 +50,8 @@ test_that("URL encoding works", {
 })
 
 test_that("can retrieve HATEOAS links", {
+  skip_on_cran()
+
   vcr::local_cassette("hateoas")
   out <- retrieve_linked_data(
     "https://search.patentsview.org/api/v1/cpc_group/G01S7:4811/"
@@ -50,6 +60,8 @@ test_that("can retrieve HATEOAS links", {
 })
 
 test_that("after parameter works for manual paging", {
+  skip_on_cran()
+
   vcr::local_cassette("after-paging")
   query <- qry_funs$eq(patent_date = "2000-01-04")
   sort <- c("patent_id" = "asc")
@@ -68,6 +80,8 @@ test_that("after parameter works for manual paging", {
 })
 
 test_that("all_pages works", {
+  skip_on_cran()
+
   vcr::local_cassette("all-pages")
   # Query that returns ~1500 results to test paging (2 pages)
   query <- with_qfuns(
@@ -83,6 +97,8 @@ test_that("all_pages works", {
 })
 
 test_that("field shorthand returns all requested fields", {
+  skip_on_cran()
+
   vcr::local_cassette("field-shorthand")
   query <- '{"patent_id":"5116621"}'
   all_assignee_fields <- get_fields("patent", groups = "assignees")
