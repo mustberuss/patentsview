@@ -35,7 +35,7 @@ search_pv(query = qry_funs$gt(patent_num_times_cited_by_us_patents = 500),
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 14,782
+#> total_hits = 15,169
 ```
 
 How many distinct inventors are represented by these highly-cited patents?
@@ -58,7 +58,7 @@ search_pv(
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 14,782
+#> total_hits = 15,169
 ```
 
 Where geographically have Microsoft inventors been coming from over the past few years?
@@ -78,10 +78,12 @@ query <- with_qfuns(
 inv_fields <- get_fields(endpoint = "patent", groups="inventors")
 inv_fields <- c("patent_id", inv_fields)
 inv_fields
-#> [1] "patent_id"                     "inventors.inventor_id"        
-#> [3] "inventors.inventor_city"       "inventors.inventor_country"   
-#> [5] "inventors.inventor_name_first" "inventors.inventor_name_last" 
-#> [7] "inventors.inventor_sequence"   "inventors.inventor_state"
+#>  [1] "patent_id"                      "inventors.inventor_id"         
+#>  [3] "inventors.inventor_city"        "inventors.inventor_country"    
+#>  [5] "inventors.inventor_gender_code" "inventors.inventor_id"         
+#>  [7] "inventors.inventor_location_id" "inventors.inventor_name_first" 
+#>  [9] "inventors.inventor_name_last"   "inventors.inventor_sequence"   
+#> [11] "inventors.inventor_state"
 
 # Pull the data
 pv_out <- search_pv(query, fields = inv_fields, all_pages = TRUE, size = 1000)
@@ -89,20 +91,20 @@ pv_out <- search_pv(query, fields = inv_fields, all_pages = TRUE, size = 1000)
 # Unnest the inventor list column
 unnest_pv_data(pv_out$data, "patent_id")
 #> List of 2
-#>  $ inventors:'data.frame':	21467 obs. of  11 variables:
-#>   ..$ patent_id           : chr [1:21467] "11397055" ...
-#>   ..$ inventor            : chr [1:21467] "https://search.patentsview.org:80/"..
-#>   ..$ inventor_id         : chr [1:21467] "fl:tz_ln:lin-54" ...
-#>   ..$ inventor_name_first : chr [1:21467] "Tzu-Yuan" ...
-#>   ..$ inventor_name_last  : chr [1:21467] "Lin" ...
-#>   ..$ inventor_gender_code: chr [1:21467] "M" ...
-#>   ..$ inventor_location_id: chr [1:21467] "13f05eea-16c8-11ed-9b5f-1234bde3cd"..
-#>   ..$ inventor_city       : chr [1:21467] "San Jose" ...
-#>   ..$ inventor_state      : chr [1:21467] "CA" ...
-#>   ..$ inventor_country    : chr [1:21467] "US" ...
-#>   ..$ inventor_sequence   : int [1:21467] 1 2 ...
-#>  $ patents  :'data.frame':	5266 obs. of  1 variable:
-#>   ..$ patent_id: chr [1:5266] "11397055" ...
+#>  $ inventors:'data.frame':	23720 obs. of  11 variables:
+#>   ..$ patent_id           : chr [1:23720] "11397055" ...
+#>   ..$ inventor            : chr [1:23720] "https://search.patentsview.org/api"..
+#>   ..$ inventor_id         : chr [1:23720] "fl:tz_ln:lin-54" ...
+#>   ..$ inventor_name_first : chr [1:23720] "Tzu-Yuan" ...
+#>   ..$ inventor_name_last  : chr [1:23720] "Lin" ...
+#>   ..$ inventor_gender_code: chr [1:23720] "M" ...
+#>   ..$ inventor_location_id: chr [1:23720] "13f05eea-16c8-11ed-9b5f-1234bde3cd"..
+#>   ..$ inventor_city       : chr [1:23720] "San Jose" ...
+#>   ..$ inventor_state      : chr [1:23720] "CA" ...
+#>   ..$ inventor_country    : chr [1:23720] "US" ...
+#>   ..$ inventor_sequence   : int [1:23720] 1 2 ...
+#>  $ patents  :'data.frame':	5796 obs. of  1 variable:
+#>   ..$ patent_id: chr [1:5796] "11397055" ...
 ```
 Which assignees have an interest in beer?
 
@@ -124,8 +126,8 @@ str(res$data)
 #>   ..$ patent_title: chr "Plastic beer keg"
 #>   ..$ assignees   :List of 1
 #>   .. ..$ :'data.frame':	1 obs. of  11 variables:
-#>   .. .. ..$ assignee                      : chr "https://search.patentsview.org:80/api/v1/assignee/96054e4a-2cdf-43f9-b8cd-d7d024a96588/"
-#>   .. .. ..$ assignee_id                   : chr "96054e4a-2cdf-43f9-b8cd-d7d024a96588"
+#>   .. .. ..$ assignee                      : chr "https://search.patentsview.org/api/v1/assignee/4d2d4486-edec-40f7-80fd-64e6639e865e/"
+#>   .. .. ..$ assignee_id                   : chr "4d2d4486-edec-40f7-80fd-64e6639e865e"
 #>   .. .. ..$ assignee_type                 : chr "2"
 #>   .. .. ..$ assignee_individual_name_first: logi NA
 #>   .. .. ..$ assignee_individual_name_last : logi NA
@@ -164,7 +166,7 @@ pv_out
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 13,870
+#> total_hits = 13,999
 ```
  In the new version of the API, the behavior of this endpoint has changed.  See the similar example
 on the [legacy inventors endpoint](https://patentsview.org/apis/api-endpoints/inventors) page
@@ -178,10 +180,12 @@ Chicago, IL as their location when applying for a patent.
 fields <- get_fields('patent', groups="inventors")
 fields <- c("patent_id", fields)
 fields
-#> [1] "patent_id"                     "inventors.inventor_id"        
-#> [3] "inventors.inventor_city"       "inventors.inventor_country"   
-#> [5] "inventors.inventor_name_first" "inventors.inventor_name_last" 
-#> [7] "inventors.inventor_sequence"   "inventors.inventor_state"
+#>  [1] "patent_id"                      "inventors.inventor_id"         
+#>  [3] "inventors.inventor_city"        "inventors.inventor_country"    
+#>  [5] "inventors.inventor_gender_code" "inventors.inventor_id"         
+#>  [7] "inventors.inventor_location_id" "inventors.inventor_name_first" 
+#>  [9] "inventors.inventor_name_last"   "inventors.inventor_sequence"   
+#> [11] "inventors.inventor_state"
 
 query <- '{"_and":[{"_text_phrase": {"inventors.inventor_city":"Chicago"}},
                    {"_text_phrase": {"inventors.inventor_state":"IL"}}]}'
@@ -198,7 +202,7 @@ search_pv(query, fields=fields, endpoint="patent")
 #> $query_results
 #> #### Distinct entity counts across all downloadable pages of output:
 #> 
-#> total_hits = 48,469
+#> total_hits = 49,014
 ```
 
 Note that here all the inventors on a particular patent will be returned, not just the ones whose
@@ -212,11 +216,22 @@ What assignee's organizations start Microsoft?
 
 ``` r
 query <- qry_funs$begins(assignee_organization = "Microsoft")
-fields <- c("assignees")
+fields <- get_fields("assignee")
 pv_out <- search_pv(query, fields = fields, endpoint = "assignee")
-#> Error in `httr2::req_perform()`:
-#> ! HTTP 400 Bad Request.
-#> • Invalid field: assignees
 pv_out$data$assignees$assignee_organization
-#> NULL
+#>  [1] "Microsoft Systems Inc."                          
+#>  [2] "Microsoft Technology Beaming, LLC"               
+#>  [3] "Microsoft Patent Licensing, LLC"                 
+#>  [4] "Microsoft Mobile Internet AB"                    
+#>  [5] "Microsoft Corporation"                           
+#>  [6] "Microsoft Mobile Oy"                             
+#>  [7] "Microsoft Technology, LLC."                      
+#>  [8] "Microsoft Technology Learning, LLC"              
+#>  [9] "Microsoft Israel Research and Development (2002)"
+#> [10] "MICROSOFT INTERNATIONAL HOLDINGS B.V."           
+#> [11] "Microsoft Corporation—One Microsoft Way"         
+#> [12] "MICROSOFT TECHNOLOGY LICENSING, LLC"             
+#> [13] "Microsoft Licensing Technology, LLC"             
+#> [14] "Microsoft Orthopedics Holdings Inc."             
+#> [15] "Microsoft Licencing Corporation, LLC"
 ```

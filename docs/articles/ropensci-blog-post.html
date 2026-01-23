@@ -105,7 +105,7 @@ everyday</strong></p>
 substitute called Smart Balance all have in common?</p>
 <p><span>
 <!-- These are open source images taken from: https://pixabay.com/ -->
-<img src="../reference/figures/2017-09-12-patentsview-iphone.png" width="15%"><img src="../reference/figures/2017-09-12-patentsview-google.jpg" width="25%"><img src="../reference/figures/2017-09-12-patentsview-butter.png" width="25%"></span></p>
+<img src="2017-09-12-patentsview-iphone.png" width="15%"><img src="2017-09-12-patentsview-google.jpg" width="25%"><img src="2017-09-12-patentsview-butter.png" width="25%"></span></p>
 <p>…They all probably wouldn’t be here if not for patents. A patent
 provides its owner with the ability to make money off of something that
 they invented, without having to worry about someone else copying their
@@ -227,7 +227,7 @@ string to <code><a href="../reference/search_pv.html">search_pv()</a></code>:</p
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 3,752,764</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 3,857,653</span></span></code></pre></div>
 <p>…Or you can use the domain specific language (DSL) provided in the
 <code>patentsview</code> package to help you write the query:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -246,7 +246,7 @@ string to <code><a href="../reference/search_pv.html">search_pv()</a></code>:</p
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 3,752,764</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 3,857,653</span></span></code></pre></div>
 <p><code>qry_1</code> and <code>qry_2</code> will result in the same
 HTTP call to the API. Both queries search for patents in USPTO that were
 published after 2014. There are three gotchas to look out for when
@@ -305,7 +305,7 @@ fields are no longer available from the patent endpoint.</p>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 3,752,764</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 3,857,653</span></span></code></pre></div>
 <p>The fields that you can retrieve depends on the endpoint that you are
 hitting. We’ve been using the “patent” endpoint thus far, so all of
 these are retrievable:
@@ -348,7 +348,7 @@ level fields</p>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 3,752,764</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 3,857,653</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -421,8 +421,8 @@ we’ll get a list of the most prolific assignee_organizations</p>
 <span>  <span class="fu"><a href="https://rstudio.github.io/leaflet/reference/map-layers.html" class="external-link">addCircleMarkers</a></span><span class="op">(</span></span>
 <span>    lng <span class="op">=</span> <span class="op">~</span><span class="va">assignee_lastknown_longitude</span>, lat <span class="op">=</span> <span class="op">~</span><span class="va">assignee_lastknown_latitude</span>,</span>
 <span>    popup <span class="op">=</span> <span class="op">~</span><span class="va">popup</span>, radius<span class="op">=</span><span class="fl">2</span>, color <span class="op">=</span> <span class="st">"yellow"</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; Error in loadNamespace(name): there is no package called 'webshot'</span></span></code></pre></div>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p><img src="figure/blogleaflet-1.png"></p>
 <p><br></p>
 <ol start="3" style="list-style-type: decimal">
 <li>Plot the growth of the field’s topics over time</li>
@@ -535,7 +535,7 @@ their miscellaneous help.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

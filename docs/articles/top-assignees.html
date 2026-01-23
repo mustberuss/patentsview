@@ -157,19 +157,19 @@ PatentsView API:</li>
 <span><span class="co">#&gt; #### A list with a single data frame (with list column(s) inside) on patents level:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; List of 1</span></span>
-<span><span class="co">#&gt;  $ patents:'data.frame': 9425 obs. of  7 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id                       : chr [1:9425] "10000987" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_date                     : chr [1:9425] "2018-06-19" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_year                     : int [1:9425] 2018 2018 ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_earliest_application_date: chr [1:9425] "2014-02-20" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_num_us_patents_cited     : int [1:9425] 163 7 ...</span></span>
-<span><span class="co">#&gt;   ..$ application                     :List of 9425</span></span>
-<span><span class="co">#&gt;   ..$ assignees                       :List of 9425</span></span>
+<span><span class="co">#&gt;  $ patents:'data.frame': 9538 obs. of  7 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id                       : chr [1:9538] "10000987" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_date                     : chr [1:9538] "2018-06-19" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_year                     : int [1:9538] 2018 2018 ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_earliest_application_date: chr [1:9538] "2014-02-20" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_num_us_patents_cited     : int [1:9538] 163 7 ...</span></span>
+<span><span class="co">#&gt;   ..$ application                     :List of 9538</span></span>
+<span><span class="co">#&gt;   ..$ assignees                       :List of 9538</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $query_results</span></span>
 <span><span class="co">#&gt; #### Distinct entity counts across all downloadable pages of output:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; total_hits = 9,425</span></span></code></pre></div>
+<span><span class="co">#&gt; total_hits = 9,538</span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Now let’s identify who the top assignees are based on how many
 patents they have in our data set. We’ll also calculate how many total
@@ -182,33 +182,33 @@ relate to databases.</li>
 <span><span class="va">dl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unnest_pv_data.html">unnest_pv_data</a></span><span class="op">(</span><span class="va">pv_out</span><span class="op">$</span><span class="va">data</span>, <span class="st">"patent_id"</span><span class="op">)</span></span>
 <span><span class="va">dl</span></span>
 <span><span class="co">#&gt; List of 3</span></span>
-<span><span class="co">#&gt;  $ application:'data.frame': 9425 obs. of  7 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id       : chr [1:9425] "10000987" ...</span></span>
-<span><span class="co">#&gt;   ..$ application_id  : chr [1:9425] "14/185552" ...</span></span>
-<span><span class="co">#&gt;   ..$ application_type: chr [1:9425] "14" ...</span></span>
-<span><span class="co">#&gt;   ..$ filing_date     : chr [1:9425] "2014-02-20" ...</span></span>
-<span><span class="co">#&gt;   ..$ series_code     : chr [1:9425] "14" ...</span></span>
-<span><span class="co">#&gt;   ..$ rule_47_flag    : logi [1:9425] TRUE ...</span></span>
-<span><span class="co">#&gt;   ..$ filing_type     : chr [1:9425] "14" ...</span></span>
-<span><span class="co">#&gt;  $ assignees  :'data.frame': 8920 obs. of  12 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id                     : chr [1:8920] "10000987" ...</span></span>
-<span><span class="co">#&gt;   ..$ assignee                      : chr [1:8920] "https://search.patentsvie"..</span></span>
-<span><span class="co">#&gt;   ..$ assignee_id                   : chr [1:8920] "661aac33-90aa-467b-88ac-1"..</span></span>
-<span><span class="co">#&gt;   ..$ assignee_type                 : chr [1:8920] "2" ...</span></span>
-<span><span class="co">#&gt;   ..$ assignee_individual_name_first: chr [1:8920] NA ...</span></span>
-<span><span class="co">#&gt;   ..$ assignee_individual_name_last : chr [1:8920] NA ...</span></span>
-<span><span class="co">#&gt;   ..$ assignee_organization         : chr [1:8920] "National Oilwell Varco, L"..</span></span>
-<span><span class="co">#&gt;   ..$ assignee_location_id          : chr [1:8920] "4e49a0a0-16c8-11ed-9b5f-1"..</span></span>
-<span><span class="co">#&gt;   ..$ assignee_city                 : chr [1:8920] "Houston" ...</span></span>
-<span><span class="co">#&gt;   ..$ assignee_state                : chr [1:8920] "TX" ...</span></span>
-<span><span class="co">#&gt;   ..$ assignee_country              : chr [1:8920] "US" ...</span></span>
-<span><span class="co">#&gt;   ..$ assignee_sequence             : int [1:8920] 0 0 ...</span></span>
-<span><span class="co">#&gt;  $ patents    :'data.frame': 9425 obs. of  5 variables:</span></span>
-<span><span class="co">#&gt;   ..$ patent_id                       : chr [1:9425] "10000987" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_date                     : chr [1:9425] "2018-06-19" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_year                     : int [1:9425] 2018 2018 ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_earliest_application_date: chr [1:9425] "2014-02-20" ...</span></span>
-<span><span class="co">#&gt;   ..$ patent_num_us_patents_cited     : int [1:9425] 163 7 ...</span></span>
+<span><span class="co">#&gt;  $ application:'data.frame': 9538 obs. of  7 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id       : chr [1:9538] "10000987" ...</span></span>
+<span><span class="co">#&gt;   ..$ application_id  : chr [1:9538] "14/185552" ...</span></span>
+<span><span class="co">#&gt;   ..$ application_type: chr [1:9538] "14" ...</span></span>
+<span><span class="co">#&gt;   ..$ filing_date     : chr [1:9538] "2014-02-20" ...</span></span>
+<span><span class="co">#&gt;   ..$ series_code     : chr [1:9538] "14" ...</span></span>
+<span><span class="co">#&gt;   ..$ rule_47_flag    : logi [1:9538] TRUE ...</span></span>
+<span><span class="co">#&gt;   ..$ filing_type     : chr [1:9538] "14" ...</span></span>
+<span><span class="co">#&gt;  $ assignees  :'data.frame': 9027 obs. of  12 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id                     : chr [1:9027] "10000987" ...</span></span>
+<span><span class="co">#&gt;   ..$ assignee                      : chr [1:9027] "https://search.patentsvie"..</span></span>
+<span><span class="co">#&gt;   ..$ assignee_id                   : chr [1:9027] "e07b29f0-1b4d-4181-bd2d-0"..</span></span>
+<span><span class="co">#&gt;   ..$ assignee_type                 : chr [1:9027] "2" ...</span></span>
+<span><span class="co">#&gt;   ..$ assignee_individual_name_first: chr [1:9027] NA ...</span></span>
+<span><span class="co">#&gt;   ..$ assignee_individual_name_last : chr [1:9027] NA ...</span></span>
+<span><span class="co">#&gt;   ..$ assignee_organization         : chr [1:9027] "National Oilwell Varco, L"..</span></span>
+<span><span class="co">#&gt;   ..$ assignee_location_id          : chr [1:9027] "4e49a0a0-16c8-11ed-9b5f-1"..</span></span>
+<span><span class="co">#&gt;   ..$ assignee_city                 : chr [1:9027] "Houston" ...</span></span>
+<span><span class="co">#&gt;   ..$ assignee_state                : chr [1:9027] "TX" ...</span></span>
+<span><span class="co">#&gt;   ..$ assignee_country              : chr [1:9027] "US" ...</span></span>
+<span><span class="co">#&gt;   ..$ assignee_sequence             : int [1:9027] 0 0 ...</span></span>
+<span><span class="co">#&gt;  $ patents    :'data.frame': 9538 obs. of  5 variables:</span></span>
+<span><span class="co">#&gt;   ..$ patent_id                       : chr [1:9538] "10000987" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_date                     : chr [1:9538] "2018-06-19" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_year                     : int [1:9538] 2018 2018 ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_earliest_application_date: chr [1:9538] "2014-02-20" ...</span></span>
+<span><span class="co">#&gt;   ..$ patent_num_us_patents_cited     : int [1:9538] 163 7 ...</span></span>
 <span></span>
 <span><span class="co"># We don't get the assignee_total_num_patents back from the patent endpoint any longer.</span></span>
 <span><span class="co"># We'll have to make a call to the assignee endpoint once we know who the top 75</span></span>
@@ -248,9 +248,9 @@ relate to databases.</li>
 <span><span class="va">assignee_counts</span></span>
 <span><span class="co">#&gt; List of 1</span></span>
 <span><span class="co">#&gt;  $ assignees:'data.frame':   75 obs. of  3 variables:</span></span>
-<span><span class="co">#&gt;   ..$ assignee_id          : chr [1:75] "0184ec6a-176c-49f5-8a06-f19bf3bba594"..</span></span>
-<span><span class="co">#&gt;   ..$ assignee_organization: chr [1:75] "MOBILE TECHNOLOGY CORPORATION" ...</span></span>
-<span><span class="co">#&gt;   ..$ assignee_num_patents : int [1:75] 101 140 ...</span></span>
+<span><span class="co">#&gt;   ..$ assignee_id          : chr [1:75] "039fd1f0-2b7d-4640-a6ff-073778f2f50b"..</span></span>
+<span><span class="co">#&gt;   ..$ assignee_organization: chr [1:75] "Digital Global Systems, Inc." ...</span></span>
+<span><span class="co">#&gt;   ..$ assignee_num_patents : int [1:75] 396 566 ...</span></span>
 <span></span>
 <span><span class="co"># Here we redo top_asgns now that we have all the fields we need.</span></span>
 <span><span class="co"># We join in the total counts and mutate in the percentages </span></span>
@@ -279,8 +279,8 @@ relate to databases.</li>
 <span>    <span class="st">"Table 1: Top assignees in 'databases'"</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pageLength <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in loadNamespace(name): there is no package called 'webshot'</span></span></code></pre></div>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="figure/topdatatable-1.png"></p>
 <p><br></p>
 <p>IBM is far and away the biggest player in the field. However, we can
 see that Oracle and Salesforce.com are relatively more interested in
@@ -332,8 +332,8 @@ changed over time.</li>
 <span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_xAxis.html" class="external-link">hc_xAxis</a></span><span class="op">(</span>title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Grant year"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_yAxis.html" class="external-link">hc_yAxis</a></span><span class="op">(</span>title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Patents"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_title.html" class="external-link">hc_title</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Top five assignees in 'databases'"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_subtitle.html" class="external-link">hc_subtitle</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Yearly patent applications over time"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in loadNamespace(name): there is no package called 'webshot'</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_subtitle.html" class="external-link">hc_subtitle</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Yearly patent applications over time"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="figure/topchart-1.png"></p>
 <p>It’s hard to see any clear trends in this graph. What is clear is
 that the top assignees have all been patenting in the field for many
 years.</p>
@@ -385,25 +385,25 @@ time to accumulate citations).</li>
 <tbody>
 <tr class="odd">
 <td align="left">International Business Machines Corporation</td>
-<td align="right">0.4678054</td>
-<td align="right">815</td>
-<td align="right">162903</td>
+<td align="right">0.4678589</td>
+<td align="right">816</td>
+<td align="right">163546</td>
 <td align="right">0.005</td>
 <td align="left">#f1c40f</td>
 </tr>
 <tr class="even">
 <td align="left">SONY GROUP CORPORATION</td>
-<td align="right">0.3554624</td>
+<td align="right">0.3564428</td>
 <td align="right">29</td>
-<td align="right">62327</td>
+<td align="right">62652</td>
 <td align="right">0.000</td>
 <td align="left">#f1c40f</td>
 </tr>
 <tr class="odd">
-<td align="left">Fujitsu Limited</td>
+<td align="left">FUJITSU LIMITED</td>
 <td align="right">0.4034433</td>
 <td align="right">45</td>
-<td align="right">56238</td>
+<td align="right">56293</td>
 <td align="right">0.001</td>
 <td align="left">#f1c40f</td>
 </tr>
@@ -411,7 +411,7 @@ time to accumulate citations).</li>
 <td align="left">Intel Corporation</td>
 <td align="right">0.3462831</td>
 <td align="right">20</td>
-<td align="right">52140</td>
+<td align="right">52745</td>
 <td align="right">0.000</td>
 <td align="left">#f1c40f</td>
 </tr>
@@ -419,7 +419,7 @@ time to accumulate citations).</li>
 <td align="left">General Electric Company</td>
 <td align="right">0.4491179</td>
 <td align="right">24</td>
-<td align="right">51686</td>
+<td align="right">51898</td>
 <td align="right">0.000</td>
 <td align="left">#f1c40f</td>
 </tr>
@@ -427,7 +427,7 @@ time to accumulate citations).</li>
 <td align="left">HITACHI, LTD.</td>
 <td align="right">0.3609991</td>
 <td align="right">50</td>
-<td align="right">43634</td>
+<td align="right">46007</td>
 <td align="right">0.001</td>
 <td align="left">#f1c40f</td>
 </tr>
@@ -458,8 +458,8 @@ percent of the assignee’s patents that relate to databases.</p>
 <span>    x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DB patents"</span>, <span class="st">"Mean cite percentile"</span>, <span class="st">"Fraction DB patents"</span><span class="op">)</span>,</span>
 <span>    y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"{point.db_pats:.0f}"</span>,<span class="st">"{point.mean_perc:.2f}"</span>, <span class="st">"{point.frac_db_pats:.3f}"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_legend.html" class="external-link">hc_legend</a></span><span class="op">(</span>enabled <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in loadNamespace(name): there is no package called 'webshot'</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_legend.html" class="external-link">hc_legend</a></span><span class="op">(</span>enabled <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="figure/tophchart-1.png"></p>
 <p><br></p>
 <p>It looks like Microsoft has relatively high values across all three
 three metrics (average citation percentile, number of database patents,
@@ -476,7 +476,7 @@ percentile.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>
