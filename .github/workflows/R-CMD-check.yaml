@@ -23,10 +23,10 @@ jobs:
     # Only run on ropensci/patentsview - forks use R-CMD-orig.yaml
     if: github.repository == 'ropensci/patentsview'
     steps:
-      - name: Confirm crew102 triggered the build
+      - name: Confirm crew102 or mustberuss triggered the build
         run: |
-          if [ "${{ github.actor }}" == "crew102" ]; then
-            echo "Actor is crew102"
+          if [ "${{ github.actor }}" == "crew102" ] || [ "${{ github.actor }}" == "mustberuss" ]; then
+            echo "Actor ${{ github.actor }} is allowed"
           else
             echo "Actor is ${{ github.actor }}, failing build."
             exit 1
