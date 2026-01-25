@@ -94,11 +94,10 @@ jobs:
           done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
 
       - name: Install dependencies
-        run: |
-          remotes::install_deps(dependencies = TRUE)
-          remotes::install_cran("rcmdcheck")
-          remotes::install_cran("covr")
-        shell: Rscript {0}
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: rcmdcheck devtools # Ensure these packages are installed- failing in ubuntu
+          needs: check # If your package has dependencies listed in DESCRIPTION
 
       - name: Check
         env:
