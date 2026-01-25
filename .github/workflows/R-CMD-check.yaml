@@ -20,11 +20,13 @@ on:
 jobs:
   pre-check:
     runs-on: ubuntu-latest
+    # Only run on ropensci/patentsview - forks use R-CMD-orig.yaml
+    if: github.repository == 'ropensci/patentsview'
     steps:
-      - name: Confirm crew102 triggered the build
+      - name: Confirm crew102 or mustberuss triggered the build
         run: |
-          if [ "${{ github.event.sender.login }}" == "crew102" ]; then
-            echo "Actor is crew102"
+          if [ "${{ github.actor }}" == "crew102" ] || [ "${{ github.actor }}" == "mustberuss" ]; then
+            echo "Actor ${{ github.actor }} is allowed"
           else
             echo "Actor is ${{ github.actor }}, failing build."
             exit 1
@@ -32,6 +34,7 @@ jobs:
 
   R-CMD-check:
     needs: [pre-check]
+    if: github.repository == 'ropensci/patentsview'
     runs-on: ${{ matrix.config.os }}
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
@@ -45,7 +48,7 @@ jobs:
         config:
           - {os: windows-latest, r: 'release'}
           - {os: macOS-latest, r: 'release'}
-          - {os: ubuntu-20.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
+          - {os: ubuntu-latest, r: 'release'}
           # - {os: ubuntu-20.04, r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
 
     env:
@@ -100,6 +103,8 @@ jobs:
       - name: Check
         env:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
+          # ignore recordings, run live 
+          VCR_TURN_OFF: true
         run: |
           options(crayon.enabled = TRUE)
           rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")

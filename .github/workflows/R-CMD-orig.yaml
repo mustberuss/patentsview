@@ -1,0 +1,124 @@
+# For help debugging build failures open an issue on the RStudio community with the 'github-actions' tag.
+# https://community.rstudio.com/new-topic?category=Package%20development&tags=github-actions
+
+# This is the original build script resurrected to run on forks
+# We run live tests if the actor has access to the API secret, otherwise uses recordings
+
+name: R-CMD-orig
+
+on:
+  push:
+    branches-ignore:
+      - 'master'
+      - 'feature/**'
+      - 'bugfix/**'
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  pre-check:
+    runs-on: ubuntu-latest
+    # don't run on ropensci/patentsview - R-CMD-check.yaml runs there
+    if: github.repository != 'ropensci/patentsview'
+    steps:
+      - name: Confirm actor is allowed
+        run: |
+          if [ "${{ github.event.repository.full_name }}" != "ropensci/patentsview" ] || [ "${{ github.actor }}" == "crew102" ]; then
+            echo "Actor ${{ github.actor }} is allowed on ${{ github.event.repository.full_name }}"
+          else
+            echo "Actor ${{ github.actor }} is not allowed on ${{ github.event.repository.full_name }}, failing build."
+            exit 1
+          fi
+
+  R-CMD-check:
+    needs: [pre-check]
+    runs-on: ${{ matrix.config.os }}
+    timeout-minutes: 60
+
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+
+    strategy:
+      # Run sequentially so that we don't run into rate limit errors that our
+      # code would normally work around via retry logic
+
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        config:
+          - {os: ubuntu-latest, r: 'release'}
+          - {os: windows-latest, r: 'release'}
+          - {os: macOS-latest, r: 'release'}
+
+    env:
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      RSPM: ${{ matrix.config.rspm }}
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      PATENTSVIEW_API_KEY: ${{ secrets.PATENTSVIEW_API_KEY }}
+      HAVE_API_KEY_ACCESS: ${{ secrets.PATENTSVIEW_API_KEY == '' && 'false' || 'true' }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.head_ref }} # Do this to avoid checking out the repository in a detached state
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ matrix.config.r }}
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - name: Query dependencies
+        run: |
+          install.packages('remotes')
+          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
+          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
+        shell: Rscript {0}
+
+      - name: Restore R package cache
+        if: runner.os != 'Windows'
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
+
+      - name: Install dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: rcmdcheck devtools # Ensure these packages are installed- failing in ubuntu
+          needs: check # If your package has dependencies listed in DESCRIPTION
+
+      - name: Check
+        env:
+          _R_CHECK_CRAN_INCOMING_REMOTE_: false
+          # ignore recordings, run live if actor has API key access
+          VCR_TURN_OFF: ${{ env.HAVE_API_KEY_ACCESS }}
+        run: |
+          options(crayon.enabled = TRUE)
+          rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
+        shell: Rscript {0}
+
+      - name: Run examples
+        env:
+          _R_CHECK_CRAN_INCOMING_REMOTE_: false
+        run: |
+          options(crayon.enabled = TRUE)
+          remotes::install_cran("devtools")
+          # run dont_run examples if actor can
+          devtools::run_examples(run_dontrun = as.logical(Sys.getenv("HAVE_API_KEY_ACCESS")))
+        shell: Rscript {0}
+
+      - name: Check pkgdown
+        env:
+          _R_CHECK_CRAN_INCOMING_REMOTE_: false
+        run: |
+          options(crayon.enabled = TRUE)
+          remotes::install_cran("pkgdown")
+          pkgdown::check_pkgdown()
+        shell: Rscript {0}
+
+      - name: Upload check results
+        if: failure()
+        uses: actions/upload-artifact@main
+        with:
+          name: ${{ runner.os }}-r${{ matrix.config.r }}-results
+          path: check

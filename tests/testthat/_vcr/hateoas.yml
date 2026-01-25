@@ -1,0 +1,26 @@
+http_interactions:
+- request:
+    method: GET
+    uri: https://search.patentsview.org/api/v1/cpc_group/G01S7:4811/
+  response:
+    status: 200
+    headers:
+      allow: GET, HEAD, OPTIONS
+      content-encoding: gzip
+      content-type: application/json
+      cross-origin-opener-policy: same-origin
+      date: Wed, 07 Jan 2026 13:52:21 GMT
+      referrer-policy: same-origin
+      server: nginx
+      vary:
+      - Accept-Encoding
+      - Accept, origin
+      x-content-type-options: nosniff
+      x-frame-options: DENY
+    body:
+      string: '{"error":false,"count":1,"total_hits":1,"cpc_groups":[{"cpc_group_id":"G01S7/4811","cpc_group_title":"Details
+        of systems according to groups G01S13/00, G01S15/00, G01S17/00-of systems
+        according to group G01S17/00-Constructional features, e.g. arrangements of
+        optical elements-common to transmitter and receiver","cpc_class_id":"G01","cpc_class":"https://search.patentsview.org/api/v1/cpc_class/G01/","cpc_subclass_id":"G01S","cpc_subclass":"https://search.patentsview.org/api/v1/cpc_subclass/G01S/"}]}'
+  recorded_at: 2026-01-07 13:52:21
+recorded_with: VCR-vcr/2.1.0

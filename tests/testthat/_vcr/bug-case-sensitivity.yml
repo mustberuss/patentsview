@@ -1,0 +1,40 @@
+http_interactions:
+- request:
+    method: GET
+    uri: https://search.patentsview.org/api/v1/assignee/?q=%7B%22_eq%22%3A%7B%22assignee_organization%22%3A%22Johnson+%26+Johnson+International%22%7D%7D&f=%5B%22assignee_id%22%5D&s=&o=%7B%22size%22%3A1000%7D
+  response:
+    status: 200
+    headers:
+      date: Wed, 07 Jan 2026 13:51:05 GMT
+      content-type: application/json
+      content-length: '109'
+      server: nginx
+      vary: Accept, origin
+      allow: GET, POST, HEAD, OPTIONS
+      x-frame-options: DENY
+      x-content-type-options: nosniff
+      referrer-policy: same-origin
+      cross-origin-opener-policy: same-origin
+    body:
+      string: '{"error":false,"count":1,"total_hits":1,"assignees":[{"assignee_id":"8547488a-2876-4f43-b3e4-f137ada0e957"}]}'
+  recorded_at: 2026-01-07 13:51:05
+- request:
+    method: GET
+    uri: https://search.patentsview.org/api/v1/assignee/?q=%7B%22_eq%22%3A%7B%22assignee_organization%22%3A%22johnson+%26+johnson+international%22%7D%7D&f=%5B%22assignee_id%22%5D&s=&o=%7B%22size%22%3A1000%7D
+  response:
+    status: 200
+    headers:
+      date: Wed, 07 Jan 2026 13:51:06 GMT
+      content-type: application/json
+      content-length: '55'
+      server: nginx
+      vary: Accept, origin
+      allow: GET, POST, HEAD, OPTIONS
+      x-frame-options: DENY
+      x-content-type-options: nosniff
+      referrer-policy: same-origin
+      cross-origin-opener-policy: same-origin
+    body:
+      string: '{"error":false,"count":0,"total_hits":0,"assignees":[]}'
+  recorded_at: 2026-01-07 13:51:05
+recorded_with: VCR-vcr/2.1.0

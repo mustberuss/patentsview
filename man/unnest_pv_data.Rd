@@ -4,7 +4,7 @@
 \alias{unnest_pv_data}
 \title{Unnest PatentsView data}
 \usage{
-unnest_pv_data(data, pk = get_ok_pk(names(data)))
+unnest_pv_data(data, pk = lifecycle::deprecated())
 }
 \arguments{
 \item{data}{The data returned by \code{\link{search_pv}}. This is the first
@@ -12,10 +12,10 @@ element of the three-element result object you got back from
 \code{search_pv}. It should be a list of length 1, with one data frame
 inside it. See examples.}
 
-\item{pk}{The column/field name that will link the data frames together. This
+\item{pk}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}.
 should be the unique identifier for the primary entity. For example, if you
-used the patents endpoint in your call to \code{search_pv}, you could
-specify \code{pk = "patent_number"}. \strong{This identifier has to have
+used the patent endpoint in your call to \code{search_pv}, you could
+specify \code{pk = "patent_id"}. \strong{This identifier has to have
 been included in your \code{fields} vector when you called
 \code{search_pv}}. You can use \code{\link{get_ok_pk}} to suggest a
 potential primary key for your data.}
@@ -36,9 +36,12 @@ in "R for Data Science" for an in-depth introduction to joining tabular data).
 \examples{
 \dontrun{
 
-fields <- c("patent_id", "patent_title", "inventors.inventor_city", "inventors.inventor_country")
+fields <- c(
+  "patent_id", "patent_title",
+  "inventors.inventor_city", "inventors.inventor_country"
+)
 res <- search_pv(query = '{"_gte":{"patent_year":2015}}', fields = fields)
-unnest_pv_data(data = res$data, pk = "patent_id")
+unnest_pv_data(data = res$data)
 }
 
 }

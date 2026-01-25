@@ -2,49 +2,31 @@
 % Please edit documentation in R/search-pv.R
 \name{retrieve_linked_data}
 \alias{retrieve_linked_data}
-\title{Get Linked Data}
+\title{Retrieve Linked Data}
 \usage{
 retrieve_linked_data(url, api_key = Sys.getenv("PATENTSVIEW_API_KEY"), ...)
 }
 \arguments{
-\item{url}{The link that was returned by the API on a previous call.}
+\item{url}{A link that was returned by the API on a previous call.}
 
-\item{api_key}{API key. See \href{https://patentsview.org/apis/keyrequest}{
-Here} for info on creating a key.}
+\item{api_key}{API key, it defaults to Sys.getenv("PATENTSVIEW_API_KEY"). Request a key
+\href{https://patentsview-support.atlassian.net/servicedesk/customer/portals}{here}.}
 
-\item{...}{Arguments passed along to httr's \code{\link[httr]{GET}} or
-\code{\link[httr]{POST}} function.}
-}
-\value{
-A list with the following three elements:
-\describe{
-\item{data}{A list with one element - a named data frame containing the
-data returned by the server. Each row in the data frame corresponds to a
-single value for the primary entity. For example, if you search the
-assignees endpoint, then the data frame will be on the assignee-level,
-where each row corresponds to a single assignee. Fields that are not on
-the assignee-level would be returned in list columns.}
-
-\item{query_results}{Entity counts across all pages of output (not just
-the page returned to you).}
-
-\item{request}{Details of the HTTP request that was sent to the server.
-When you set \code{all_pages = TRUE}, you will only get a sample request.
-In other words, you will not be given multiple requests for the multiple
-calls that were made to the server (one for each page of results).}
-}
+\item{...}{Curl options passed along to httr2's \code{\link[httr2]{req_options}}
+when we do GETs or POSTs.}
 }
 \description{
 Some of the endpoints now return HATEOAS style links to get more data. E.g.,
-the inventors endpoint may return a link such as:
-"https://search.patentsview.org/api/v1/inventor/252373/"
+the patent endpoint may return a link such as:
+"https://search.patentsview.org/api/v1/inventor/fl:th_ln:jefferson-1/". Use
+this function to fetch details from those links.
 }
 \examples{
 \dontrun{
 
 retrieve_linked_data(
-  "https://search.patentsview.org/api/v1/cpc_subgroup/G01S7:4811/"
- )
+  "https://search.patentsview.org/api/v1/cpc_group/G01S7:4811/"
+)
 }
 
 }

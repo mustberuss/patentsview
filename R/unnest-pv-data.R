@@ -1,27 +1,26 @@
-#' Get OK primary key
-#'
-#' This function suggests a value that you could use for the \code{pk} argument
-#' in \code{\link{unnest_pv_data}}, based on the endpoint you searched.
-#' It will return a potential unique identifier for a given entity (i.e., a
-#' given endpoint). For example, it will return "patent_id" when
-#' \code{endpoint = "patent"}.
-#'
-#' @param endpoint The endpoint which you would like to know a potential primary
-#'   key for.
-#'
-#' @return The name of a primary key (\code{pk}) that you could pass to
-#'   \code{\link{unnest_pv_data}}.
-#'
-#' @examples
-#' get_ok_pk(endpoint = "inventor")
-#' get_ok_pk(endpoint = "cpc_subclass")
-#' get_ok_pk("publication/rel_app_text")
-#'
-#' @export
-get_ok_pk <- function(endpoint) {
-  unnested_endpoint <- sub("^(patent|publication)/", "", endpoint)
-  possible_pks <- c("patent_id", "document_number", paste0(unnested_endpoint, "_id"))
-  fieldsdf[fieldsdf$endpoint == endpoint & fieldsdf$field %in% possible_pks, "field"]
+#' @noRd
+infer_endpoint <- function(data) {
+  potential_eps <- unique(fieldsdf[fieldsdf$group == names(data), "endpoint"])
+  returned_fields <- colnames(data[[1]])
+
+  all_matches <- lapply(potential_eps, function(ep) {
+    this_ep_fields <- fieldsdf[fieldsdf$endpoint == ep, "field"]
+    this_ep_grps <- unique(fieldsdf[fieldsdf$endpoint == ep, "group"])
+    this_ep_pk <- get_ok_pk(ep)
+    # Column names match retrievable col names for endpoint:
+    all_good_cols <- all(returned_fields %in% c(this_ep_fields, this_ep_grps))
+    # And we have the PKs in the data. Pretty sure this check isn't needed
+    # if we have all_good_cols, but including it anyway.
+    pks_in_cols <-  all(this_ep_pk %in% returned_fields)
+    potential_match <- all_good_cols && pks_in_cols
+    if (potential_match) ep else NULL
+  })
+
+  matching_eps <- unlist(all_matches)
+  if (length(matching_eps) > 1) {
+    warning("Infer endpoint issue")
+  }
+  matching_eps[1]
 }
 
 #' Unnest PatentsView data
@@ -37,10 +36,10 @@ get_ok_pk <- function(endpoint) {
 #'   element of the three-element result object you got back from
 #'   \code{search_pv}. It should be a list of length 1, with one data frame
 #'   inside it. See examples.
-#' @param pk The column/field name that will link the data frames together. This
+#' @param pk `r lifecycle::badge("deprecated")`.
 #'   should be the unique identifier for the primary entity. For example, if you
-#'   used the patents endpoint in your call to \code{search_pv}, you could
-#'   specify \code{pk = "patent_number"}. \strong{This identifier has to have
+#'   used the patent endpoint in your call to \code{search_pv}, you could
+#'   specify \code{pk = "patent_id"}. \strong{This identifier has to have
 #'   been included in your \code{fields} vector when you called
 #'   \code{search_pv}}. You can use \code{\link{get_ok_pk}} to suggest a
 #'   potential primary key for your data.
@@ -52,38 +51,38 @@ get_ok_pk <- function(endpoint) {
 #' @examples
 #' \dontrun{
 #'
-#' fields <- c("patent_id", "patent_title", "inventors.inventor_city", "inventors.inventor_country")
+#' fields <- c(
+#'   "patent_id", "patent_title",
+#'   "inventors.inventor_city", "inventors.inventor_country"
+#' )
 #' res <- search_pv(query = '{"_gte":{"patent_year":2015}}', fields = fields)
-#' unnest_pv_data(data = res$data, pk = "patent_id")
+#' unnest_pv_data(data = res$data)
 #' }
 #'
 #' @export
-unnest_pv_data <- function(data, pk = get_ok_pk(names(data))) {
-
+unnest_pv_data <- function(data, pk = lifecycle::deprecated()) {
   validate_pv_data(data)
 
   df <- data[[1]]
 
-  asrt(
-    pk %in% colnames(df),
-    pk, " not in primary entity data frame...Did you include it in your ",
-    "fields list?"
-  )
 
+  # Handle empty results
+  if (!is.data.frame(df) || nrow(df) == 0) {
+    return(structure(
+      list(),
+      class = c("list", "pv_relay_db")
+    ))
+  }
+
+  endpoint <- infer_endpoint(data)
   prim_ent_var <- !vapply(df, is.list, logical(1))
 
   sub_ent_df <- df[, !prim_ent_var, drop = FALSE]
   sub_ents <- colnames(sub_ent_df)
 
-  ok_pk <- get_ok_pk(names(data))
-
+  pk <- get_ok_pk(endpoint)
   out_sub_ent <- lapply2(sub_ents, function(x) {
     temp <- sub_ent_df[[x]]
-    asrt(
-      length(unique(df[, pk])) == length(temp), pk,
-      " cannot act as a primary key because it is not a unique identifier.\n\n",
-      "Try using ", ok_pk, " instead."
-    )
     names(temp) <- df[, pk]
     xn <- do.call("rbind", temp)
     xn[, pk] <- gsub("\\.[0-9]*$", "", rownames(xn))
@@ -96,7 +95,7 @@ unnest_pv_data <- function(data, pk = get_ok_pk(names(data))) {
 
   out_sub_ent_reord <- lapply(out_sub_ent, function(x) {
     coln <- colnames(x)
-    x[, c(pk, coln[!(pk == coln)]), drop = FALSE]
+    x[, unique(c(pk, colnames(x))), drop = FALSE]
   })
 
   structure(

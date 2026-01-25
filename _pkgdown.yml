@@ -1,8 +1,9 @@
+url: https://docs.ropensci.org/patentsview/index.html
 title: patentsview
 
 template:
-  params:
-    bootswatch: united
+  bootstrap: 5
+  bootswatch: united
 
 reference:
   - title: The API client
@@ -17,33 +18,55 @@ reference:
     contents:
     - qry_funs
     - with_qfuns
-  - title: Manipulating patentsview data
+  - title: Manipulating PatentsView data
     contents:
     - unnest_pv_data
+  - title: Utility
+    contents:
     - get_ok_pk
-    - cast_pv_data
     - retrieve_linked_data
-
 navbar:
   components:
+    changes:
+      text: "API Changes"
+      icon: fa-flag
+      menu:
+        - text: "2025 API Changes"
+          icon: fa-exclamation
+          href: articles/api-changes.html
+        - text: "Converting an Existing Script"
+          icon: fa-sync
+          href: articles/converting-an-existing-script.html
+        - text: "Result Set Paging"
+          icon: fa-book
+          href: articles/result-set-paging.html
+        - text: "Understanding the API"
+          icon: fa-school
+          href: articles/understanding-the-api.html
+    starting:
+      text: "Getting started"
+      icon: fa-play
+      href: articles/getting-started.html
     queries:
       text: "Writing queries"
       icon: fa-pencil
       href: articles/writing-queries.html
-    examples:
-      text: "Examples"
-      icon: fa-code
-      href: articles/examples.html
     applications:
       text: "Applications"
       icon: fa-bar-chart
       menu:
+        - text: "Examples"
+          icon: fa-code
+          href: articles/examples.html
         - text: "Top assignees"
           icon: fa-university
           href: articles/top-assignees.html
         - text: "Citation networks"
           icon: fa-long-arrow-left
           href: articles/citation-networks.html
+        - text: ropensci announcement
+          icon: fa-bullhorn
+          href: articles/ropensci-blog-post.html
   structure:
-    left:  [intro, queries, examples, applications, news]
+    left:  [intro, changes, starting, queries, examples, applications, news]
     right: [reference, search, github, lightswitch]

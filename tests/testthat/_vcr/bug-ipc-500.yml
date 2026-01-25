@@ -1,0 +1,30 @@
+http_interactions:
+- request:
+    method: GET
+    uri: https://search.patentsview.org/api/v1/ipc/?q=%7B%22ipc_id%22%3A+%221%22%7D&f=%5B%22ipc_id%22%5D&s=&o=%7B%22size%22%3A1000%7D
+  response:
+    status: 500
+    headers:
+      date: Wed, 07 Jan 2026 13:51:06 GMT
+      content-type: text/html; charset=utf-8
+      content-length: '145'
+      server: nginx
+      x-frame-options: DENY
+      vary: origin
+      x-content-type-options: nosniff
+      referrer-policy: same-origin
+      cross-origin-opener-policy: same-origin
+    body:
+      string: |2
+
+        <!doctype html>
+        <html lang="en">
+        <head>
+          <title>Server Error (500)</title>
+        </head>
+        <body>
+          <h1>Server Error (500)</h1><p></p>
+        </body>
+        </html>
+  recorded_at: 2026-01-07 13:51:05
+recorded_with: VCR-vcr/2.1.0

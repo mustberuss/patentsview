@@ -1,3 +1,40 @@
+# patentsview 1.0.0
+
+### Breaking changes
+
+* **API key required**: The new API requires authentication. Request a key at <https://patentsview-support.atlassian.net/servicedesk/customer/portals> and set `PATENTSVIEW_API_KEY` environment variable.
+
+* **Endpoint changes**: Now 27 endpoints (up from 7). Endpoints are singular (e.g., `patent` not `patents`). The `nber_subcategory` endpoint was removed; `cpc_subsection` is now `cpc_group`.
+
+* **Field changes**: `patent_number` is now `patent_id`. Raw inventor name fields (`rawinventor_first_name`, `rawinventor_last_name`) were removed. Some fields are now nested and require full qualification in queries (e.g., `cpc_current.cpc_group_id`).
+
+* **Paging parameters changed**: `per_page`/`page` replaced by `size`/`after`. Maximum `size` is 1,000 (was 10,000). Result sets are now unbounded (was capped at 100,000).
+
+* **httr to httr2 migration**: If you passed `config = httr::timeout(40)`, now use `timeout = 40` directly.
+
+* **`cast_pv_data()` removed**: The API now returns proper types (boolean, numeric, etc.) instead of strings.
+
+### New features
+
+* `retrieve_linked_data()` fetches data from HATEOAS links returned by the API
+* All fields are now queryable (previously some fields could only be returned, not queried)
+* Group name shorthand for fields: `fields = "assignees"` returns all assignee fields
+* API throttling handled automatically (45 requests/minute limit)
+
+### New vignettes
+
+* "API Changes" - comprehensive guide to migrating from the old API
+* "Converting an Existing Script" - practical migration examples
+* "Result Set Paging" - explains new paging mechanism
+* "Understanding the API" - converted from PatentsView's Jupyter notebook
+
+### Internal
+
+* Tests now use vcr for HTTP mocking, improving speed and reliability
+* `unnest_pv_data()` handles empty API results without crashing
+* Paging structure mismatch now throws an error instead of warning (prevents confusing `rbind` failures)
+* Live API tests skip by default; enable with `PATENTSVIEW_LIVE_TESTS=true`
+
 # patentsview 0.3.0 (2021-09-03)
 
 #### Misc
