@@ -2,8 +2,7 @@
 # https://community.rstudio.com/new-topic?category=Package%20development&tags=github-actions
 
 # This is the original build script resurrected to run on forks
-# If the actor has access to the API secret, we re-record the test cassettes,
-# running live tests and run \dontrun examples.  We then check in the new cassettes
+# We run live tests if the actor has access to the API secret, otherwise uses recordings
 
 name: R-CMD-orig
 
